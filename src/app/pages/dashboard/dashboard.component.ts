@@ -6,11 +6,17 @@ import { DashboardService } from '../../services/dashboard/dashboard.service';
 import { TransactionService } from '../../servicesNodes/transactionService/transaction.service';
 import { FormsModule } from '@angular/forms';
 import { BalanceService } from '../../servicesNodes/balance/balance.service';
+// import { GnfFormatPipe } from '../gnfFormat/gnf-format.pipe';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, CommonModule, FormsModule],
+  imports: [
+    RouterLink,
+    CommonModule,
+    FormsModule,
+    // GnfFormatPipe
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
@@ -57,11 +63,13 @@ export class DashboardComponent implements OnInit {
   constructor(
     private listeCompteCLientService: DashboardService,
     private dixTransactionServiceNode: TransactionService,
-    private balanceService: BalanceService
+    private balanceService: BalanceService,
   ) {}
 
+  totalSolde: any;
+
   processAccounts(): void {
-    console.log("this.listeCompteClient: ",this.listeCompteClient);
+    console.log('this.listeCompteClient: ', this.listeCompteClient);
     if (!this.listeCompteClient || this.listeCompteClient.length === 0) {
       console.log('Aucun compte à traiter');
       return;
@@ -77,13 +85,14 @@ export class DashboardComponent implements OnInit {
 
       console.log('Traitement du compte:', accountNumber);
 
-      this.balanceService.getBalance(accountNumber).subscribe({
+      this.balanceService.getBalance('1000730002').subscribe({
         next: (response) => {
           console.log('Réponse complète pour', accountNumber, ':', response);
 
-          // si backend renvoie { data: ... }
           if (response?.data) {
             console.log('Balance pour', accountNumber, ':', response.data);
+            this.totalSolde = response.data.soldeDisp;
+            console.log('Total Solde: ', this.totalSolde);
           }
         },
         error: (error) => {
@@ -114,7 +123,7 @@ export class DashboardComponent implements OnInit {
   getListeCompteClient(): void {
     if (!this.iOrganisationID) {
       console.warn(
-        'Impossible de récupérer la liste : iOrganisationID non défini'
+        'Impossible de récupérer la liste : iOrganisationID non défini',
       );
       return;
     }
@@ -142,7 +151,7 @@ export class DashboardComponent implements OnInit {
 
             this.dixTransactionsRecentsListe();
             // ✅ ICI SEULEMENT
-    this.processAccounts();
+            this.processAccounts();
           }
         },
         error: (err: any) => {
@@ -153,22 +162,27 @@ export class DashboardComponent implements OnInit {
       });
   }
 
+  loadingDixPremiereTransactions: boolean = false;
+
   listeDixPremiereTransactions: any[] = [];
 
   dixTransactionsRecentsListe() {
-    this.dixTransactionServiceNode
-      .dixTransactionsRecents(this.selectedAccountNumber)
-      .subscribe({
-        next: (response) => {
-          this.listeDixPremiereTransactions = response.data.statement;
-          console.log(
-            'listeDixPremiereTransactions: ',
-            this.listeDixPremiereTransactions
-          );
-        },
-        error: (error) => {},
-      });
-  }
+  this.loadingDixPremiereTransactions = true;
+
+  this.dixTransactionServiceNode
+    .dixTransactionsRecents('1000730002')
+    .subscribe({
+      next: (response) => {
+        this.listeDixPremiereTransactions = response.data.statement;
+        this.loadingDixPremiereTransactions = false;
+      },
+      error: (error) => {
+        console.error(error);
+        this.loadingDixPremiereTransactions = false;
+      },
+    });
+}
+
 
   formatDateOper(dateOper: string): string {
     if (!dateOper || dateOper.length !== 6) return dateOper;
@@ -188,11 +202,11 @@ export class DashboardComponent implements OnInit {
 
   formatMontant(t: any): string {
     const montant = t.amountOper ?? t.AmountOper ?? 0;
-    const signe = t.sigOper === 'D' ? '-' : '+';
+    // const signe = t.sigOper === 'D' ? '-' : '+'; ${signe}
 
     const sign = t.devise;
 
-    return `${signe} ${montant.toLocaleString('fr-FR')} ${sign}`;
+    return `${montant.toLocaleString('fr-FR')} ${sign}`;
   }
 
   iOrganisationID!: number;

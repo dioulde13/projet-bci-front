@@ -11,11 +11,10 @@ export class BalanceService {
 
   private baseUrl = environment.apiUrlNode;
 
-  getBalance(accountNumber: any): Observable<any> {
-    const body = { accountNumber };
+ getBalance(accountNumber: any): Observable<any> {
+  const body = { accountNumber: accountNumber };
+  console.log("Payload sent:", body);   
+  return this.http.post(`${this.baseUrl}/api/balance`, body, { withCredentials: true });
+}
 
-    return this.http.post(`${this.baseUrl}/api/balance`, body, {
-      withCredentials: true,
-    });
-  }
 }

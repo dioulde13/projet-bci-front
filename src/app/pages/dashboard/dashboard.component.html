@@ -5,7 +5,7 @@
         <div
           class="card card-h-100"
           style="
-            background: url('assets/img/images-bci/bg-chart-BCI-Internet_Banking-3.jpg?h=60704d8652a4d6012af3cf7b9e758808')
+            background: url(&quot;assets/img/images-bci/bg-chart-BCI-Internet_Banking-3.jpg?h=60704d8652a4d6012af3cf7b9e758808&quot;)
               right / cover;
           "
         >
@@ -39,7 +39,9 @@
               <div class="col-sm col-lg-6 align-self-center">
                 <div class="mt-4 mt-sm-0">
                   <p class="mb-1">Montant total</p>
-                  <h4 class="text-light mb-4 fs-4"> 247,200,000</h4>
+                  <h4 class="text-light mb-4 fs-4">
+                    {{ totalSolde | number }}
+                  </h4>
                   <!-- <ul class="text-light finance-color-list">
                     <li>
                       <i
@@ -445,7 +447,6 @@
               <div class="card-header bg-transparent">
                 <h4 class="card-title">{{ typesCompte }}</h4>
               </div>
-            
             </div>
           </div>
         </div>
@@ -536,6 +537,57 @@
               </div>
 
               <div class="card-body finance-chart-container">
+                <!-- Loader -->
+                <div
+                  *ngIf="loadingDixPremiereTransactions"
+                  class="d-flex justify-content-center align-items-center py-4"
+                >
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                  </div>
+                </div>
+
+                <!-- Tableau -->
+                <div
+                  class="table-responsive"
+                  *ngIf="!loadingDixPremiereTransactions"
+                >
+                  <table class="table custom-table">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Date</th>
+                        <th class="text-end">Référence</th>
+                        <th class="text-end">Type</th>
+                        <th>Description</th>
+                        <th class="text-end">Montant</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr *ngFor="let t of listeDixPremiereTransactions">
+                        <td>{{ formatDateOper(t.dateOper) }}</td>
+                        <td>{{ t.bankReference }}</td>
+                        <td>{{ t.sigOper }}</td>
+                        <td>{{ t.libelleOper }}</td>
+                        <td class="text-end">{{ formatMontant(t) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <tr
+                *ngIf="
+                  !loadingDixPremiereTransactions &&
+                  listeDixPremiereTransactions.length === 0
+                "
+              >
+                <td colspan="5" class="text-center text-muted">
+                  Aucune transaction trouvée
+                </td>
+              </tr>
+
+              <!-- <div class="card-body finance-chart-container">
                 <div class="table-responsive">
                   <table class="table custom-table">
                     <thead class="table-light">
@@ -569,7 +621,7 @@
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </div> -->
 
               <div class="d-grid p-2 border-top">
                 <a

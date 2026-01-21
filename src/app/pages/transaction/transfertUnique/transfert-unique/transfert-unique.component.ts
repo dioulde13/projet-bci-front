@@ -3,6 +3,7 @@ import { BeneficiaireService } from '../../../../services/beneficiaire/beneficia
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { BalanceService } from '../../../../servicesNodes/balance/balance.service';
 
 @Component({
   selector: 'app-transfert-unique',
@@ -26,12 +27,33 @@ export class TransfertUniqueComponent implements OnInit {
 
   loadingFetch = false; // correction typo
 
-  constructor(private beneficiaireService: BeneficiaireService) {}
+  constructor(
+    private beneficiaireService: BeneficiaireService,
+    private balanceService: BalanceService,
+  ) {}
 
   ngOnInit(): void {
     this.getUserInfo();
     this.loadTypeBeneficiaires();
     this.getListeBeneficiaire();
+    this.getBalance();
+  }
+
+   getBalance() {
+    
+
+    this.balanceService.getBalance("1000730002").subscribe({
+      next: (response: any) => {
+        console.log('response:', response);
+        if (response?.data) {
+            console.log('Balance pour', response.data);
+          }
+        // this.responseData = response;
+      },
+      error: (err) => {
+        console.error('Erreur:', err);
+      }
+    });
   }
 
   private getUserInfo(): void {
@@ -102,56 +124,54 @@ export class TransfertUniqueComponent implements OnInit {
     this.selectedBeneficiaire = null;
   }
 
-//   onBeneficiaireChange(event: Event): void {
-//   const select = event.target as HTMLSelectElement;
-//   const value = select.value;
+  //   onBeneficiaireChange(event: Event): void {
+  //   const select = event.target as HTMLSelectElement;
+  //   const value = select.value;
 
-//   console.log('🔥 change déclenché');
-//   console.log('🔹 Valeur sélectionnée =', value);
+  //   console.log('🔥 change déclenché');
+  //   console.log('🔹 Valeur sélectionnée =', value);
 
-//   if (!value) {
-//     this.filteredBeneficiaireOne = [...this.filteredBeneficiaire];
-//     this.selectedBeneficiaire = null;
-//     return;
-//   }
+  //   if (!value) {
+  //     this.filteredBeneficiaireOne = [...this.filteredBeneficiaire];
+  //     this.selectedBeneficiaire = null;
+  //     return;
+  //   }
 
-//   const selected = value.trim();
+  //   const selected = value.trim();
 
-//   // 🔥 Supprimé setTimeout pour affichage instantané
-//   this.filteredBeneficiaireOne = this.filteredBeneficiaire.filter((b) => {
-//     return b?.BeneficiaryID?.toString() === selected;
-//   });
+  //   // 🔥 Supprimé setTimeout pour affichage instantané
+  //   this.filteredBeneficiaireOne = this.filteredBeneficiaire.filter((b) => {
+  //     return b?.BeneficiaryID?.toString() === selected;
+  //   });
 
-//   this.selectedBeneficiaire = this.filteredBeneficiaireOne[0] ?? null;
+  //   this.selectedBeneficiaire = this.filteredBeneficiaireOne[0] ?? null;
 
-//   console.log('✅ Bénéficiaire sélectionné =', this.selectedBeneficiaire);
-// }
+  //   console.log('✅ Bénéficiaire sélectionné =', this.selectedBeneficiaire);
+  // }
 
-selectedBeneficiaireId: string = ''; // variable temporaire pour l'ID
+  selectedBeneficiaireId: string = ''; // variable temporaire pour l'ID
 
-onBeneficiaireChange(event: Event): void {
-  const select = event.target as HTMLSelectElement;
-  this.selectedBeneficiaireId = select.value;
+  onBeneficiaireChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.selectedBeneficiaireId = select.value;
 
-  console.log('🔥 change déclenché');
-  console.log('🔹 Valeur sélectionnée =', this.selectedBeneficiaireId);
+    console.log('🔥 change déclenché');
+    console.log('🔹 Valeur sélectionnée =', this.selectedBeneficiaireId);
 
-  if (!this.selectedBeneficiaireId) {
-    this.filteredBeneficiaireOne = [...this.filteredBeneficiaire];
-    this.selectedBeneficiaire = null;
-    return;
+    if (!this.selectedBeneficiaireId) {
+      this.filteredBeneficiaireOne = [...this.filteredBeneficiaire];
+      this.selectedBeneficiaire = null;
+      return;
+    }
+
+    const selected = this.selectedBeneficiaireId.trim();
+
+    this.filteredBeneficiaireOne = this.filteredBeneficiaire.filter((b) => {
+      return b?.BeneficiaryID?.toString() === selected;
+    });
+
+    this.selectedBeneficiaire = this.filteredBeneficiaireOne[0] ?? null;
+
+    console.log('✅ Bénéficiaire sélectionné =', this.selectedBeneficiaire);
   }
-
-  const selected = this.selectedBeneficiaireId.trim();
-
-  this.filteredBeneficiaireOne = this.filteredBeneficiaire.filter((b) => {
-    return b?.BeneficiaryID?.toString() === selected;
-  });
-
-  this.selectedBeneficiaire = this.filteredBeneficiaireOne[0] ?? null;
-
-  console.log('✅ Bénéficiaire sélectionné =', this.selectedBeneficiaire);
-}
-
-
 }

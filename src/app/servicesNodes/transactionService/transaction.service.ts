@@ -11,8 +11,8 @@ export class TransactionService {
 
   constructor(private http: HttpClient) {}
 
-  dixTransactionsRecents(accountNumber: string): Observable<any> {
-    const body = { accountNumber };
+  dixTransactionsRecents(accountNumber: any): Observable<any> {
+    const body = { accountNumber: accountNumber };
 
     return this.http.post(
       `${this.baseUrlNode}/api/account/dixTransactionsRecents`,
