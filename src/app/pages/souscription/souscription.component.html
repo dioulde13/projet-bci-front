@@ -1,0 +1,189 @@
+<div class="preview-img overflow-hidden">
+  <div class="swiper-container">
+    <div class="swiper-wrapper preview-thumb">
+      <div class="swiper-slide">
+        <div
+          class="slide-bg"
+          style="
+            background-image: url(assets/img/images-bci/flyers-bci_internet-banking_3.jpg?h=81d6463f975795c60d5fc7a9405ce9e8);
+          "
+        ></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="coming-content min-vh-100 py-4 px-3 py-sm-5">
+  <div class="bg-primary bg-overlay"></div>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 bg-body">
+        <div class="d-flex auth-full-page-content p-sm-5 p-4">
+          <div class="w-100">
+            <div class="d-flex flex-column h-100">
+              <div class="text-center mb-2 mb-md-3">
+                <a class="d-block auth-logo" routerLink="/dashboard"
+                  ><img
+                    class="img-fluid"
+                    src="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking.svg?h=7e87f9d72e96197b57f9b69046cee031"
+                    alt=""
+                    height="100"
+                    width="100"
+                /></a>
+              </div>
+              <div class="my-auto auth-content">
+                <div class="text-center">
+                  <h5 class="mb-0">
+                    Souscription à<span class="fw-semibold ms-2"
+                      >BCI Online</span
+                    >
+                  </h5>
+                </div>
+                <div class="registration-container">
+                  <div class="text-center mb-4">
+                    <h2>BCI-ONLINE</h2>
+                    <p class="text-muted">Inscription - Étape 1/4</p>
+                  </div>
+                  <div class="alert alert-info" role="alert">
+                    <span>
+                      Bienvenue sur BCI-Online ! Veuillez fournir vos
+                      informations de base pour démarrer votre souscription.
+                    </span>
+                  </div>
+                  <form #registrationForm="ngForm" novalidate>
+                    <div class="mb-3">
+                      <label class="form-label" for="bankAccount"
+                        >6 premiers chiffres du numéro de compte *</label
+                      >
+                      <input
+                        class="form-control"
+                        type="text"
+                        id="clientId"
+                        name="clientId"
+                        maxlength="6"
+                        placeholder="123456"
+                        required
+                        [(ngModel)]="clientId"
+                        #bankAccountModel="ngModel"
+                        (keypress)="onlyNumber($event)"
+                        [ngClass]="{
+                          'is-invalid':
+                            bankAccountModel.invalid &&
+                            bankAccountModel.touched,
+                          'is-valid':
+                            bankAccountModel.valid && bankAccountModel.touched
+                        }"
+                      />
+
+                      <div
+                        class="validation-message text-danger"
+                        *ngIf="
+                          bankAccountModel.invalid && bankAccountModel.touched
+                        "
+                      >
+                        Numéro de compte invalide (6 chiffres requis).
+                      </div>
+                    </div>
+
+                    <div class="alert alert-light small" role="alert">
+                      <span
+                        >Vos informations resteront strictement confidentielles
+                        et seront utilisées uniquement pour l'identification et
+                        la validation.</span
+                      >
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                      <button
+                        class="btn btn-primary"
+                        [disabled]="
+                          registrationForm.invalid ||
+                          loading ||
+                          clientId.length !== 6
+                        "
+                        (click)="verifierNumeroCompte()"
+                      >
+                        {{ loading ? "Vérification en cours..." : "Continuer" }}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+                <div class="text-center mt-5 pt-2">
+                  <div class="signin-other-title">
+                    <h5 class="text-muted font-size-14 mb-3 fw-medium">
+                      - Avez-vous déjà un compte? -
+                    </h5>
+                  </div>
+                  <div class="mb-3">
+                    <a
+                      class="btn btn-outline-primary w-100 waves-effect waves-light"
+                      role="button"
+                      routerLink="/login"
+                      >Retournez à la page de connexion</a
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="text-center mt-4 mt-md-5">
+                <p>
+                  <span> ©&nbsp;</span>
+                  <script>
+                    document.write(new Date().getFullYear());
+                  </script>
+                  <span>&nbsp; BCI-Online.</span
+                  ><span class="ms-2">Powered</span
+                  ><i class="icon ion-heart text-danger mx-1"></i
+                  ><span>by&nbsp;<a href="#">MV1</a></span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal"
+  [ngClass]="{ 'show d-block': showModal }"
+  tabindex="-1"
+  role="dialog"
+  *ngIf="showModal"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-white bg-success">
+        <h5 class="modal-title">Validation réussie !</h5>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="closeModal()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="fw-semibold">
+          Vos informations ont été validées avec succès.
+        </p>
+        <p class="fw-semibold">
+          Un code de vérification a été envoyé à
+          {{ "********" + telephone.toString().slice(-2) }}.
+        </p>
+        <p class="fw-semibold" id="otpSentMessage"></p>
+      </div>
+      <div class="modal-footer">
+        <button
+          class="btn btn-success"
+          id="proceedToOTP"
+          data-bs-dismiss="modal"
+          type="button"
+          [routerLink]="'/otpValidation'"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

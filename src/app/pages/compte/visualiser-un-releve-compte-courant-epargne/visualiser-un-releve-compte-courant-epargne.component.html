@@ -1,0 +1,114 @@
+ <!-- Start: Page -->
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
+                                <div>
+                                    <h4 class="fw-bold mb-sm-0 font-size-18">Relevé électronique</h4>
+                                </div>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="index.html"><span>BCI Online</span></a></li>
+                                        <li class="breadcrumb-item"><a href="compteCourantEpargne.html"><span>Compte Courant - Epargne</span></a></li>
+                                        <li class="breadcrumb-item active"><span>Visualiser un relevé</span></li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-8 col-xl-9">
+                            <div class="card">
+                                <div class="card-header bg-light-subtle card-title">
+                                    <h5 class="font-size-15"><strong>Filtres</strong></h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="filtersForm" class="row g-3" novalidate="">
+                                        <div class="pb-3">
+                                            <div class="row mb-3">
+                                                <div class="col-xl">
+                                                    <div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3"><label class="form-label fw-bold text-body required" for="numero-de-compte">Numéro de compte</label><select data-bs-toggle="tooltip" data-bss-tooltip="" class="form-select numero-de-compte" data-trigger="" name="numero-de-compte" placeholder="Numéro de compte" title="exemple message">
+                                                                        <option value="7308054285" selected="">7308054285</option>
+                                                                        <option value="7308057753">7308057753</option>
+                                                                    </select><span>Solde :&nbsp;<span>247 200 000 GNF</span></span>
+                                                                    <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3"><label class="form-label fw-bold text-body required" for="periode">Période</label><select data-bs-toggle="tooltip" data-bss-tooltip="" id="periode" class="form-select periode" data-trigger="" name="periode" placeholder="Période" title="exemple message">
+                                                                        <optgroup label="Visualiser les options">
+                                                                            <option value="mois_courant" selected="">Mois en cours</option>
+                                                                            <option value="mois_precedent">Mois précédent</option>
+                                                                            <option value="trimestre_precedent">Trimestre précédent</option>
+                                                                            <option value="plage">Plage de dates</option>
+                                                                        </optgroup>
+                                                                    </select>
+                                                                    <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3" id="dateRangeSection" style="display: none;">
+                                                <div class="col-xl">
+                                                    <div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3"><label class="form-label fw-bold text-body required" for="startDate">Date de début</label><input class="form-control" id="startDate" type="date">
+                                                                    <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3"><label class="form-label fw-bold text-body required" for="endDate">Date de fin</label><input class="form-control form-control" type="date" id="endDate">
+                                                                    <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-xl">
+                                                <div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3"><label class="form-label fw-bold text-body required" for="transactionType">Type de transaction</label><select data-bs-toggle="tooltip" data-bss-tooltip="" id="transactionType" class="form-select transactionType" data-trigger="" name="transactionType" placeholder="Type de transaction" title="exemple message">
+                                                                    <option value="all" selected="">Tout</option>
+                                                                    <option value="credits">Crédits uniquement</option>
+                                                                    <option value="debits">Débits uniquement</option>
+                                                                </select>
+                                                                <div class="valid-feedback"><span> Looks good! </span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3"><label class="form-label fw-bold text-body required" for="periode-1">Numéro de référence</label><input class="form-control form-control" type="text" id="referenceNumber" placeholder="Numéro de référence">
+                                                                <div class="valid-feedback"><span> Looks good! </span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr class="bg-light">
+                                        <div class="d-flex flex-wrap gap-2"><button class="btn btn-primary waves-effect waves-light" data-bs-toggle="tooltip" data-bss-tooltip="" title="Appliquer le filtre" type="submit"> Appliquer le filtre</button><button class="btn btn-outline-primary waves-effect waves-light" data-bs-toggle="tooltip" data-bss-tooltip="" type="reset" title="Réinitialiser le formulaire"> Réinitialiser </button></div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-xl-3">
+                            <div class="card bg-light mb-4">
+                                <div class="card-body"><a href="#" class="custom-icon-container"><img class="my-3" src="assets/img/images-bci/Icon-Info-BCI.svg?h=971d9075427a2ea3fd79b5880d5e839f"></a>
+                                    <h3 class="text-center">Votre chéquier</h3>
+                                    <p class="text-start mt-3">Il sera livré dans un délai de 10 jours ouvrables à l'adresse que vous avez indiquée dans vos dossiers.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- End: Page -->

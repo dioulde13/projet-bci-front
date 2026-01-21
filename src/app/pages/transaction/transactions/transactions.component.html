@@ -1,0 +1,288 @@
+<!-- Start: Page -->
+<div class="page-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div
+          class="d-sm-flex justify-content-between align-items-center page-title-box mt-4"
+        >
+          <div>
+            <h4 class="mb-sm-0 font-size-18 fw-bolder">Transactions</h4>
+          </div>
+          <div class="page-title-right">
+            <ol class="breadcrumb m-0">
+              <li class="breadcrumb-item active"><span>Transactions</span></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-xl-4">
+        <div class="card text-white bg-primary card-h-100">
+          <div class="card-header bg-transparent">
+            <h4 class="card-title">Compte Courant - Epargne</h4>
+          </div>
+          <div class="card-body align-content-center">
+            <a class="link-light custom-icon-container"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                width="1em"
+                height="1em"
+                fill="currentColor"
+                class="custom-icon-size-grids"
+              >
+                <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. -->
+                <path
+                  d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H80c-8.8 0-16-7.2-16-16s7.2-16 16-16H448c17.7 0 32-14.3 32-32s-14.3-32-32-32H64zM416 272a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                ></path>
+              </svg>
+              <h3 class="text-white mb-1">
+                <span class="currencycounter" data-target="347200000">0</span>
+              </h3>
+              <p><small class="text-white">2 Total des comptes</small></p>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4">
+        <div class="card bg-light card-h-100">
+          <div class="card-header bg-transparent border-bottom border-white">
+            <div class="d-flex align-items-center flex-wrap">
+              <h5 class="card-title me-2">Liens rapides</h5>
+            </div>
+          </div>
+          <div class="card-body finance-chart-container">
+            <div class="row text-center d-xxl-flex justify-content-xxl-center">
+              <div class="col-6 col-md-4 mb-4">
+                <a class="custom-icon-container"
+                  ><i class="icon ion-ios-book custom-icon-size"></i>
+                  <p class="custom-icon-text">Demander un relevé</p>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4">
+        <div class="card bg-light card-h-100">
+          <div class="card-header bg-transparent border-bottom border-white">
+            <div class="d-flex align-items-center flex-wrap">
+              <h5 class="card-title me-2">Liens rapides</h5>
+            </div>
+          </div>
+          <div class="card-body finance-chart-container">
+            <form id="currency-form">
+              <div class="mb-3">
+                <div class="row mb-3">
+                  <div class="col-md">
+                    <div class="mb-3">
+                      <label class="form-label" for="amount">Montant</label
+                      ><input
+                        class="form-control"
+                        type="number"
+                        id="amount"
+                        placeholder="Entrez le montant"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <hr />
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label" for="fromCurrency">De</label
+                      ><select
+                        data-bs-toggle="tooltip"
+                        data-bss-tooltip=""
+                        id="fromCurrency"
+                        class="form-select"
+                      >
+                        <option value="USD" selected="">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GNF">GNF</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label" for="toCurrency"
+                        >Converti en</label
+                      ><select
+                        data-bs-toggle="tooltip"
+                        data-bss-tooltip=""
+                        id="toCurrency"
+                        class="form-select"
+                      >
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GNF" selected="">GNF</option>
+                      </select>
+                      <div class="valid-feedback">
+                        <span> Looks good! </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button
+                class="btn btn-primary btn btn-primary"
+                type="button"
+                onclick="convertCurrency()"
+              >
+                Calculer le taux
+              </button>
+            </form>
+          </div>
+          <div class="card-footer bg-transparent border-top border-white">
+            <h6 id="conversionResult" class="text-muted">Taux de change :</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div
+                class="card shadow mb-4 card-header-entreprise"
+                role="banner"
+              >
+                <div class="card-body bg-primary rounded-4 p-4">
+                  <div class="row align-items-center">
+                    <div class="col-lg-8">
+                      <div class="d-flex align-items-center">
+                        <div
+                          class="align-self-start me-3 avatar-entreprise"
+                          aria-hidden="true"
+                        >
+                          <i class="fas fa-building fs-1 text-light fs"></i>
+                        </div>
+
+                        <div class="flex-grow-1">
+                          <div class="d-flex flex-column">
+                            <h1 class="text-white mb-1 h2">
+                              Société Exemple SARL
+                            </h1>
+
+                            <div>
+                              <span class="text-white">NIF: 123456789 • </span>
+                              <span class="text-white"
+                                >Créée le 15/03/2022</span
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <form class="row gx-3 gy-2 mb-4 mb-lg-0">
+              <div class="col-md-4">
+                <label class="form-label text-muted">Numéro de compte</label>
+                <select
+                  class="form-select-sm form-select mb-0 w-100"
+                  name="selectedAccountNumber"
+                  [(ngModel)]="selectedAccountNumber"
+                  (ngModelChange)="historiqueTransactionsListe()"
+                >
+                  <option
+                    *ngFor="let c of listeCompteClient"
+                    [value]="c.vcAccountNumber"
+                  >
+                    {{ c.vcAccountNumber }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label text-muted">Date début</label>
+                <input
+                  class="form-control"
+                  type="date"
+                  name="dateDebut"
+                  [(ngModel)]="dateDebut"
+                  (change)="historiqueTransactionsListe()"
+                />
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label text-muted">Date fin</label>
+                <input
+                  class="form-control"
+                  type="date"
+                  name="dateFin"
+                  [(ngModel)]="dateFin"
+                  (change)="historiqueTransactionsListe()"
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card">
+          <!-- <div class="card-header bg-light">
+            <ul class="list-group list-group-horizontal-sm">
+              <li class="list-group-item border-0">
+                <span>Solde d'ouverture :</span
+                ><span class="fw-semibold ms-2 money font-size-16"
+                  ><strong>255198000</strong></span
+                >
+              </li>
+              <li class="list-group-item border-0">
+                <span>Solde de clôture :&nbsp;</span
+                ><span class="fw-semibold ms-2 money font-size-16"
+                  ><strong>247000000</strong></span
+                >
+              </li>
+            </ul>
+          </div> -->
+          <div class="card-body">
+            <div class="table-responsive table">
+              <table
+                class="table mb-0 link-table datatable align-middlink-tablele dt-responsive table-check nowrap display"
+              >
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-nowrap">Date</th>
+                    <th class="text-nowrap">Référence</th>
+                    <th class="text-nowrap">Type</th>
+                    <th>Description</th>
+                    <th class="text-nowrap text-end">Montant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let liste of listeHistoriqueTransactions">
+                    <td class="text-nowrap">
+                      {{ formatDateOper(liste.dateOper) }}
+                    </td>
+                    <td>
+                      {{ liste.bankReference }}
+                    </td>
+                    <td>
+                      {{ liste.sigOper }}
+                    </td>
+                    <td>
+                      {{ liste.libelleOper }}
+                    </td>
+                    <td class="text-nowrap text-end">
+                      {{ formatMontant(liste) }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

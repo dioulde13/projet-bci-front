@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, Renderer2 } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -8,5 +9,19 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'bci-angular-front';
+
+    constructor(private router: Router, private rendered: Renderer2) {}
+
+  ngOnInit(): void {
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        const isLoginPage = this.router.url === '/login';
+        if (isLoginPage) {
+          this.rendered.removeAttribute(document.body, 'data-sidebar-size');
+        } else {
+          this.rendered.setAttribute(document.body, 'data-sidebar-size', 'sm');
+        }
+      });
+  }
 }

@@ -1,0 +1,146 @@
+ <!-- Start: Page -->
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
+                                <div>
+                                    <h4 class="mb-sm-0 font-size-18 fw-bolder">Transferts multiples</h4>
+                                </div>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a><span>Transactions</span></a></li>
+                                        <li class="breadcrumb-item active"><span>Transferts multiples</span></li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8 col-xl-9">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="fw-bold flex-grow-1 card-title">Soumission pour Paiement</h4>
+                                    <div class="alert alert-warning alert-dismissible alert-label-icon label-arrow fade show" role="alert"><i class="icon ion-information-circled label-icon"></i><strong>Vérifier</strong><span> - Les paiements pour le cycle de Juin 2024 sont prêts à être soumis pour exécution. Veuillez vérifier les transactions ci-dessous avant de lancer les paiements.</span><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button></div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="py-2 mt-3">
+                                        <h5 class="font-size-15 fw-semibold">Résumé des Paiements&nbsp;:</h5>
+                                    </div>
+                                    <div class="p-4 border rounded">
+                                        <div class="table-responsive">
+                                            <table class="table table-nowrap align-middle mb-0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="width:250px;">
+                                                            <h5 class="font-size-15 mb-1">Nombre Total de bénéficiaire&nbsp;</h5>
+                                                        </td>
+                                                        <td class="fw-semibold text-start font-size-17">4</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <h5 class="font-size-15 mb-1">Montant Total à Payer</h5>
+                                                        </td>
+                                                        <td class="fw-semibold text-start font-size-17">59 885 000&nbsp;GNF</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <h5 class="font-size-15 mb-1">Objet du Transfert</h5>
+                                                        </td>
+                                                        <td class="fw-semibold text-start font-size-17">Orange Guinée</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <h5 class="font-size-15 mb-1">Statut Global</h5>
+                                                        </td>
+                                                        <td class="fw-semibold text-start"><span class="badge badge-soft-success font-size-14">Vérifié</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="py-2 mt-3">
+                                        <h5 class="font-size-15 fw-semibold">Vérification OTP&nbsp;:</h5>
+                                    </div>
+                                    <div class="p-4 border rounded">
+                                        <form class="mb-2">
+                                            <p>Vérification ponctuelle</p>
+                                            <hr class="bg-light">
+                                            <p>Un mot de passe à usage unique (OTP) a été envoyé à votre numéro de téléphone mobile ou à votre adresse e-mail enregistré auprès de BCI Guinée. Veuillez entrer l'OTP ci-dessous pour terminer le processus.</p>
+                                            <div class="row mb-3">
+                                                <div class="col-xl">
+                                                    <div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3"><label class="form-label fw-bold text-body required">Code vérification</label>
+                                                                    <div class="input-group auth-pass-inputgroup"><input class="form-control otpMultiples" type="password" aria-describedby="password-addon" aria-label="Password" placeholder="" maxlength="10" required=""><button class="btn btn-light shadow-none ms-0" type="button" id="password-addon"><i class="mdi mdi-eye-outline"></i></button></div><span><a class="link-primary" href="#">Renvoyer le code</a></span>
+                                                                    <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <h5 class="fw-bold font-size-14">Essais restants<span class="ms-2">4</span></h5>
+                                            <div class="row mb-5 mt-4">
+                                                <div class="col-xl">
+                                                    <div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3"><label class="form-label fw-bold text-body required">Numéro de référence</label><input class="bg-light form-control item transfer-object" type="text" data-bs-toggle="tooltip" data-bss-tooltip="" name="objet_du_transfert" title="exemple message" required="" value="22935577" disabled="" readonly="">
+                                                                    <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="bg-light mt-5">
+                                            <div class="d-flex flex-wrap gap-2"><button class="btn btn-primary waves-effect waves-light" data-bs-toggle="tooltip" data-bss-tooltip="" type="button" title="Confirmer la Transaction" onclick="verifyOtpMultiples()"> Soumettre </button><a class="btn btn-outline-primary waves-effect waves-light" role="button" data-bs-toggle="tooltip" data-bss-tooltip="" title="" onclick="goBack()"> Annuler </a></div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" role="dialog" tabindex="-1" id="LancerExecutionDesPaiements-1" aria-labelledby="LancerExecutionDesPaiements" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Lancer l'Exécution des Paiements</h5><button class="btn-close" aria-label="Close" data-bs-dismiss="modal" type="button"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Êtes-vous sûr de vouloir lancer l'exécution de tous les paiements ?<br>Cette action traitera toutes les transactions en attente.</p>
+                                </div>
+                                <div class="modal-footer"><button class="btn btn-secondary cancel-button" data-bs-dismiss="modal" data-href="soumissionPourPaiement.html" data-message="Assurez-vous que toutes les informations sont correctes." type="button">Annuler</button><button class="btn btn-primary confirm-button" data-href="#" data-message="L'exécution des paiements a été lancée avec succès !" type="button">Confirmer</button></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" role="dialog" tabindex="-1" id="AnnulerTousLesPaiements-1" aria-labelledby="AnnulerTousLesPaiements" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Annuler Tous les Paiements</h5><button class="btn-close" aria-label="Close" data-bs-dismiss="modal" type="button"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Confirmez-vous l'annulation de tous les paiements ?<br>Cette action annulera toutes les transactions en attente.</p>
+                                </div>
+                                <div class="modal-footer"><button class="btn btn-secondary cancel-button" data-bs-dismiss="modal" data-href="soumissionPourPaiement.html" data-message="Assurez-vous que toutes les informations sont correctes." type="button">Annuler</button><button class="btn btn-primary confirm-button" data-href="preparationPaie.html" data-message="Tous les paiements en attente ont été annulés avec succès." type="button">Confirmer</button></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" role="dialog" tabindex="-1" id="VerifierLesTransactionsIndividuellement-1" aria-labelledby="VerifierLesTransactionsIndividuellement" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Validation des Paiements&nbsp;</h5><button class="btn-close" aria-label="Close" data-bs-dismiss="modal" type="button"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Êtes-vous sûr de vouloir valider tous les paiements pour le cycle de&nbsp;&nbsp;<span><strong>Juillet 2024</strong></span>&nbsp;?</p>
+                                </div>
+                                <div class="modal-footer"><button class="btn btn-secondary cancel-button" data-bs-dismiss="modal" data-href="validationApprobation.html" data-message="Veuillez vérifier les détails ci-dessous avant de finaliser." type="button">Annuler</button><button class="btn btn-primary confirm-button" data-href="validationApprobation.html" data-message="Tous les paiements pour le cycle de Juillet 2024 ont été validés avec succès." type="button">Confirmer</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- End: Page -->

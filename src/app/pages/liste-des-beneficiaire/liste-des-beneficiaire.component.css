@@ -1,0 +1,123 @@
+.otp-groups {
+  display: flex;
+  flex-wrap: nowrap; /* Ne jamais passer à la ligne */
+  gap: 8px; /* Espacement entre les inputs */
+  justify-content: flex-start; /* Aligner à gauche */
+  overflow-x: auto; /* Pour permettre le scroll horizontal si trop large */
+}
+
+.otp-box {
+  flex: 0 0 40px; /* Largeur fixe pour chaque input */
+  max-width: 40px; 
+}
+
+.otp-input {
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Optionnel : pour mobile */
+@media (max-width: 576px) {
+  .otp-box {
+    flex: 0 0 30px; /* Inputs plus petits sur mobile */
+  }
+
+  .otp-input {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+}
+
+
+.table-wrapper {
+  min-height: 200px; /* évite que le spinner flotte si vide */
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.photo-square {
+  width: 150px;
+  height: 150px;
+  border: 2px dashed #0d6efd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  margin: auto;
+}
+
+.photo-square img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-square i {
+  font-size: 48px;
+  color: #6c757d;
+}
+
+
+.otp-container {
+  display: flex;           /* aligne horizontalement */
+  justify-content: center; /* centre la ligne d’OTP */
+  gap: 10px;               /* espace entre chaque case */
+  margin-top: 20px;
+}
+
+.otp-box {
+  width: 50px;             /* taille de chaque case */
+}
+
+.otp-input {
+  width: 100%;
+  height: 50px;
+  text-align: center;      /* chiffre centré */
+  font-size: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.otp-input:focus {
+  border-color: #007bff;   /* bleu quand focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Structure du modal */
+.modal-flex {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Formulaire plein hauteur */
+.modal-form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Zone scrollable */
+.modal-body-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+

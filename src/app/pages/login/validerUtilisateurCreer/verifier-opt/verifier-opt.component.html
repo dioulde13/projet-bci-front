@@ -1,0 +1,242 @@
+<!-- <body data-sidebar="brand" data-layout-scrollable="false" data-topbar="brand" data-bs-theme="light"
+    data-layout-size="fluid"> -->
+<div class="preview-img overflow-hidden">
+  <div class="swiper-container">
+    <div class="swiper-wrapper preview-thumb">
+      <div class="swiper-slide">
+        <div
+          class="slide-bg"
+          style="
+            background-image: url(assets/img/images-bci/flyers-bci_internet-banking_3.jpg?h=81d6463f975795c60d5fc7a9405ce9e8);
+          "
+        ></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="coming-content min-vh-100 py-4 px-3 py-sm-5">
+  <div class="bg-primary bg-overlay"></div>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 bg-body">
+        <div class="d-flex auth-full-page-content p-sm-5 p-4">
+          <div class="w-100">
+            <div class="d-flex flex-column h-100">
+              <div class="text-center mb-2 mb-md-3">
+                <img
+                  class="img-fluid"
+                  src="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking.svg?h=7e87f9d72e96197b57f9b69046cee031"
+                  alt=""
+                  height="100"
+                  width="100"
+                />
+              </div>
+              <div class="my-auto auth-content">
+                <div class="text-center mb-3">
+                  <h5 class="mb-0">
+                    Authentification à<span class="fw-semibold ms-2"
+                      >BCI Online</span
+                    >
+                  </h5>
+                </div>
+                <div class="otp-container">
+                  <div class="alert alert-info" role="alert">
+                    <span
+                      >Un code de vérification (OTP) a été envoyé sur votre
+                      numéro de téléphone associé à votre compte. Veuillez
+                      entrer ce code pour valider votre identité.</span
+                    >
+                  </div>
+
+                  <form id="otpForm" class="mt-4" autocomplete="off">
+                    <label class="form-label text-center w-100"
+                      >Entrez votre code OTP</label
+                    >
+                    <div class="otp-inputs d-flex justify-content-center gap-2">
+                      <input
+                        class="form-control otp-input"
+                        type="text"
+                        maxlength="1"
+                        pattern="[0-9]*"
+                        inputmode="numeric"
+                        required
+                        (input)="moveToNext($event, 0)"
+                        #otpInput
+                        [(ngModel)]="otpValues[0]"
+                        name="otp0"
+                      />
+                      <input
+                        class="form-control otp-input"
+                        type="text"
+                        maxlength="1"
+                        pattern="[0-9]*"
+                        inputmode="numeric"
+                        required
+                        (input)="moveToNext($event, 1)"
+                        #otpInput
+                        [(ngModel)]="otpValues[1]"
+                        name="otp1"
+                      />
+                      <input
+                        class="form-control otp-input"
+                        type="text"
+                        maxlength="1"
+                        pattern="[0-9]*"
+                        inputmode="numeric"
+                        required
+                        (input)="moveToNext($event, 2)"
+                        #otpInput
+                        [(ngModel)]="otpValues[2]"
+                        name="otp2"
+                      />
+                      <input
+                        class="form-control otp-input"
+                        type="text"
+                        maxlength="1"
+                        pattern="[0-9]*"
+                        inputmode="numeric"
+                        required
+                        (input)="moveToNext($event, 3)"
+                        #otpInput
+                        [(ngModel)]="otpValues[3]"
+                        name="otp3"
+                      />
+                    </div>
+
+                    <div class="text-center mb-4">
+                      <small class="text-muted">Exemple : 1234</small>
+                    </div>
+
+                    <div class="d-flex justify-content-between my-4">
+                      <button
+                        class="btn btn-outline-primary"
+                        type="button"
+                        routerLink="/login"
+                        id="cancelButton"
+                      >
+                        Annuler
+                      </button>
+                      <button
+                        class="btn btn-primary"
+                        type="button"
+                        [disabled]="!isOtpComplete() || isLoading"
+                        (click)="submitOtp()"
+                      >
+                        {{
+                          isLoading
+                            ? "Validation en cours..."
+                            : "Valider le Code"
+                        }}
+                      </button>
+                    </div>
+
+                    <div class="alert alert-light" role="alert">
+                      <div class="d-flex justify-content-between">
+                        <div>
+                          Vous pouvez renvoyer si vous n'avez pas reçu le code
+                        </div>
+                        <div>
+                          <button
+                            class="btn btn-primary"
+                            type="button"
+                            (click)="reEnvoiOtp()"
+                            [disabled]="isLoadingReEnvoi"
+                          >
+                            {{
+                              isLoadingReEnvoi
+                                ? "Envoi en cours..."
+                                : "Renvoyer"
+                            }}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="alert alert-warning" role="alert">
+                      <small
+                        >Ce code est valable pendant 2 minutes.<br />Pour des
+                        raisons de sécurité, ne partagez pas ce code.</small
+                      >
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="text-center mt-4 mt-md-5">
+                <p>
+                  <span> ©&nbsp;</span>
+                  <script>
+                    document.write(new Date().getFullYear());
+                  </script>
+                  <span>&nbsp; BCI-Online.</span
+                  ><span class="ms-2">Powered</span
+                  ><i class="icon ion-heart text-danger mx-1"></i
+                  ><span>by&nbsp;<a href="#">MV1</a></span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal erreur -->
+<div class="modal fade show d-block" *ngIf="showModalError">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-white bg-danger">
+        <h5 class="modal-title">Code invalide ou expiré</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeModalError()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <span class="fw-semibold"
+          >Le code saisi est incorrect ou a expiré. Veuillez réessayer ou
+          demander un nouveau code.</span
+        >
+      </div>
+      <div class="modal-footer">
+        <button
+          class="btn btn-outline-primary"
+          type="button"
+          (click)="closeModalError()"
+        >
+          Réessayer
+        </button>
+        <button class="btn btn-primary" type="button">Renvoyer le Code</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" role="dialog" tabindex="-1" id="errorModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-white bg-danger">
+        <h5 class="text-white modal-title">Code invalide ou expiré</h5>
+      </div>
+      <div class="modal-body">
+        <span class="fw-semibold">
+          Le code saisi est incorrect ou a expiré. Veuillez réessayer ou
+          demander un nouveau code.
+        </span>
+      </div>
+      <div class="modal-footer">
+        <button
+          class="btn btn-outline-primary"
+          data-bs-dismiss="modal"
+          type="button"
+        >
+          Réessayer</button
+        ><button class="btn btn-primary" id="resendFromModal" type="button">
+          Renvoyer le Code
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- </body> -->

@@ -1,0 +1,592 @@
+<div class="page-content">
+  <div class="container-fluid">
+    <div class="row mt-3">
+      <div class="col-xl-4">
+        <div
+          class="card card-h-100"
+          style="
+            background: url('assets/img/images-bci/bg-chart-BCI-Internet_Banking-3.jpg?h=60704d8652a4d6012af3cf7b9e758808')
+              right / cover;
+          "
+        >
+          <div class="card-header text-light bg-transparent">
+            <div class="d-flex align-items-center flex-wrap">
+              <h5 class="text-nowrap card-title me-2">
+                Vue d'ensemble financière
+              </h5>
+            </div>
+          </div>
+          <div
+            class="card-body text-light finance-chart-container"
+            id="chart-container"
+          >
+            <ol
+              class="breadcrumb text-light finance-breadcrumb mb-0 ps-0"
+              id="financeBreadcrumb"
+            >
+              <li class="breadcrumb-item active">
+                <span class="text-light"></span>
+              </li>
+            </ol>
+            <div class="row align-items-center">
+              <div class="col-sm col-lg-6">
+                <div
+                  id="financeChart"
+                  class="e-charts"
+                  data-colors='["#fd625e", "#2ab57d", "#4ba6ef", "#ffbf53", "#5156be"]'
+                ></div>
+              </div>
+              <div class="col-sm col-lg-6 align-self-center">
+                <div class="mt-4 mt-sm-0">
+                  <p class="mb-1">Montant total</p>
+                  <h4 class="text-light mb-4 fs-4"> 247,200,000</h4>
+                  <!-- <ul class="text-light finance-color-list">
+                    <li>
+                      <i
+                        class="icon ion-stop color-box"
+                        style="color: #ffd700"
+                      ></i
+                      ><span
+                        class="text-nowrap text-truncate text-start font-size-13"
+                        >Compte Courant - Epargne</span
+                      >
+                    </li>
+                  </ul> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4">
+        <div class="card bg-light card-h-100">
+          <div class="card-header bg-transparent border-bottom border-white">
+            <div class="d-flex align-items-center flex-wrap">
+              <h5 class="card-title me-2">Liens rapides</h5>
+            </div>
+          </div>
+          <div class="card-body finance-chart-container">
+            <div class="row text-center justify-content-center">
+              <div class="col-6 col-md-4 mb-4">
+                <a routerLink="/preparationPaie" class="custom-icon-container"
+                  ><i class="icon ion-social-buffer custom-icon-size"></i>
+                  <p class="custom-icon-text">Transferts multiples</p>
+                </a>
+              </div>
+              <div class="col-6 col-md-4 mb-4">
+                <a
+                  class="custom-icon-container"
+                  data-bs-target="#chargementDeFichier"
+                  data-bs-toggle="modal"
+                  ><i class="icon ion-upload custom-icon-size"></i>
+                  <p class="custom-icon-text">Chargement de fichier</p>
+                </a>
+                <div
+                  class="modal fade"
+                  role="dialog"
+                  tabindex="-1"
+                  id="chargementDeFichier"
+                  aria-labelledby="AjouterUnBeneficiaire"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Chargement de</h5>
+                        <button
+                          class="btn-close"
+                          aria-label="Close"
+                          data-bs-dismiss="modal"
+                          type="button"
+                        ></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="row">
+                          <div class="col-12">
+                            <div
+                              class="d-sm-flex justify-content-between align-items-center page-title-box mt-4"
+                            >
+                              <div>
+                                <p
+                                  class="fw-semibold text-body font-size-14 my-sm-2"
+                                >
+                                  Assurez-vous de charger le fichier et de
+                                  vérifier et d'approuver les données avant de
+                                  les ajouter et exécuter.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-12">
+                            <div class="card">
+                              <div class="card-body">
+                                <div class="row justify-content-center">
+                                  <div class="col-lg-12 col-xl-12">
+                                    <div class="card">
+                                      <div class="card-body border-0">
+                                        <div class="p-4">
+                                          <div>
+                                            <form
+                                              id="csvForm"
+                                              class="p-5"
+                                              style="
+                                                min-height: 230px;
+                                                border: 2px dashed
+                                                  var(--bs-border-color);
+                                                background: var(--bs-card-bg);
+                                                border-radius: 6px;
+                                              "
+                                              (submit)="onFormSubmit($event)"
+                                            >
+                                              <div class="mb-4">
+                                                <label
+                                                  for="csvFile"
+                                                  class="form-label font-size-17"
+                                                  >Sélectionnez un fichier
+                                                  CSV</label
+                                                >
+                                                <input
+                                                  type="file"
+                                                  id="csvFile"
+                                                  class="form-control"
+                                                  accept=".csv"
+                                                  (change)="
+                                                    onFileSelected($event)
+                                                  "
+                                                  required
+                                                />
+                                              </div>
+                                              <div class="mb-3">
+                                                <button
+                                                  class="btn btn-primary waves-effect waves-light"
+                                                  type="submit"
+                                                >
+                                                  Charger
+                                                </button>
+                                                <button
+                                                  class="btn btn-outline-dark waves-effect waves-light ms-2"
+                                                  data-bs-dismiss="modal"
+                                                  type="button"
+                                                >
+                                                  Annuler
+                                                </button>
+                                              </div>
+                                            </form>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="row justify-content-center">
+                                  <div class="col-lg-12 col-xl-12">
+                                    <div class="card">
+                                      <div class="card-header">
+                                        <h3
+                                          class="font-size-15 fw-semibold card-title"
+                                        >
+                                          Aperçu des Transactions
+                                        </h3>
+                                      </div>
+                                      <div class="card-body">
+                                        <div id="resultsSection">
+                                          <div class="table-responsive table">
+                                            <table
+                                              *ngIf="csvData.length > 0"
+                                              class="styled-table"
+                                            >
+                                              <thead>
+                                                <tr>
+                                                  <th
+                                                    *ngFor="
+                                                      let header of headers
+                                                    "
+                                                  >
+                                                    {{ header }}
+                                                  </th>
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                                <tr *ngFor="let row of csvData">
+                                                  <td
+                                                    *ngFor="
+                                                      let header of headers
+                                                    "
+                                                  >
+                                                    {{ row[header] }}
+                                                  </td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          class="btn btn-primary my-3 confirm-button"
+                          type="button"
+                          onclick="proceedToValidation()"
+                          routerLink="/preparationPaie"
+                          data-message="La liste des bénéficiaires chargée et approuvée a été intégrée avec succès dans la liste de la préparation de paie."
+                        >
+                          <i
+                            class="icon ion-checkmark font-size-16 align-middle me-2"
+                          ></i
+                          >Valider les Transactions</button
+                        ><button class="btn btn-secondary" type="reset">
+                          Annuler</button
+                        ><button
+                          class="btn btn-link"
+                          type="button"
+                          data-bs-dismiss="modal"
+                        >
+                          Retour
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6 col-md-4 mb-4">
+                <a routerLink="/transfertUnique" class="custom-icon-container"
+                  ><i class="icon ion-ios-people custom-icon-size"></i>
+                  <p class="custom-icon-text">Transfert unique</p>
+                </a>
+              </div>
+              <div class="col-6 col-md-4 mb-4">
+                <a routerLink="/typePaiement" class="custom-icon-container"
+                  ><i class="icon ion-ios-paper custom-icon-size"></i>
+                  <p class="custom-icon-text">Tranfert mobile</p>
+                </a>
+              </div>
+              <div class="col-6 col-md-4 mb-4">
+                <a routerLink="/paiementFacture" class="custom-icon-container"
+                  ><i class="icon ion-ios-paper custom-icon-size"></i>
+                  <p class="custom-icon-text">Paiements de factures</p>
+                </a>
+              </div>
+              <div class="col-6 col-md-4 mb-4">
+                <a routerLink="/listeBeneficiaire" class="custom-icon-container"
+                  ><i class="icon ion-ios-cog custom-icon-size"></i>
+                  <p class="custom-icon-text">Gérer les bénéficiaires</p>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4">
+        <div class="card text-white bg-info card-h-100">
+          <div class="card-header bg-transparent d-flex">
+            <h4 class="flex-grow-1 card-title mb-0">
+              Cliché du travail pour aujourd'hui
+            </h4>
+          </div>
+          <div class="card-body finance-chart-container">
+            <div class="row">
+              <div class="col-lg">
+                <p class="font-size-13">A la date du 23 juin 2025</p>
+              </div>
+              <div class="col-lg-4">
+                <h3 class="text-end text-white mb-1">
+                  <span class="counter-value" data-target="90">0</span>&nbsp;%
+                </h3>
+              </div>
+            </div>
+            <div class="px-3 pt-1" data-simplebar="" style="max-height: 266px">
+              <ul class="list-unstyled activity-wid mb-0">
+                <li class="activity-list activity-border">
+                  <div class="bg-transparent activity-icon avatar-md">
+                    <span
+                      class="text-success bg-success-subtle avatar-title rounded-circle"
+                      ><i class="icon ion-checkmark bx font-size-24"></i
+                    ></span>
+                  </div>
+                  <div class="timeline-list-item">
+                    <div class="d-flex">
+                      <div class="flex-grow-1 overflow-hidden me-4">
+                        <h5 class="text-white font-size-14 mb-2">Traité</h5>
+                        <h5 class="text-light font-size-18 mb-2">3</h5>
+                        <div class="progress mb-0 animated-progess">
+                          <div
+                            class="bg-success progress-bar progress-bar-striped"
+                            role="progressbar"
+                            style="width: 100%"
+                            aria-valuenow="100"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="text-end flex-shrink-0">
+                        <div class="dropdown">
+                          <button
+                            class="btn text-muted font-size-24"
+                            aria-expanded="false"
+                            data-bs-toggle="dropdown"
+                            type="button"
+                            aria-haspopup="true"
+                          >
+                            <i class="icon ion-android-more-vertical"></i>
+                          </button>
+                          <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="#">Voir détails</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li class="activity-list activity-border">
+                  <div class="bg-transparent activity-icon avatar-md">
+                    <span
+                      class="text-warning bg-warning-subtle avatar-title rounded-circle"
+                      ><i class="icon ion-load-a bx font-size-24"></i
+                    ></span>
+                  </div>
+                  <div class="timeline-list-item">
+                    <div class="d-flex">
+                      <div class="flex-grow-1 overflow-hidden me-4">
+                        <h5 class="text-white font-size-14 mb-2">En cours</h5>
+                        <h5 class="text-light font-size-18 mb-2">1</h5>
+                        <div class="progress mb-0 animated-progess">
+                          <div
+                            class="bg-warning progress-bar progress-bar-striped"
+                            role="progressbar"
+                            style="width: 50%"
+                            aria-valuenow="50"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="text-end flex-shrink-0">
+                        <div class="dropdown">
+                          <button
+                            class="btn text-muted font-size-24"
+                            aria-expanded="false"
+                            data-bs-toggle="dropdown"
+                            type="button"
+                            aria-haspopup="true"
+                          >
+                            <i class="icon ion-android-more-vertical"></i>
+                          </button>
+                          <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="#">Voir détails</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li class="activity-list activity-border">
+                  <div class="bg-transparent activity-icon avatar-md">
+                    <span
+                      class="text-danger bg-danger-subtle avatar-title rounded-circle"
+                      ><i class="icon ion-close-circled bx font-size-24"></i
+                    ></span>
+                  </div>
+                  <div class="timeline-list-item">
+                    <div class="d-flex">
+                      <div class="flex-grow-1 overflow-hidden me-4">
+                        <h5 class="text-white font-size-14 mb-2">Rejeté</h5>
+                        <h5 class="text-light font-size-18 mb-2">0</h5>
+                        <div class="progress mb-0 animated-progess">
+                          <div
+                            class="bg-danger progress-bar progress-bar-striped"
+                            role="progressbar"
+                            style="width: 100%"
+                            aria-valuenow="100"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="text-end flex-shrink-0">
+                        <div class="dropdown">
+                          <button
+                            class="btn text-muted font-size-24"
+                            aria-expanded="false"
+                            data-bs-toggle="dropdown"
+                            type="button"
+                            aria-haspopup="true"
+                          >
+                            <i class="icon ion-android-more-vertical"></i>
+                          </button>
+                          <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="#">Voir détails</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xl-8">
+        <div class="card-deck-wrapper">
+          <div class="card-group">
+            <div class="card text-white bg-primary mb-4">
+              <div class="card-header bg-transparent">
+                <h4 class="card-title">{{ typesCompte }}</h4>
+              </div>
+            
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="d-flex align-items-center flex-wrap">
+              <h5 class="text-nowrap card-title me-2">
+                Récapitulatif des comptes
+              </h5>
+              <div class="ms-auto"></div>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <div *ngIf="loading" class="text-center p-3">
+                <strong>Chargement...</strong>
+              </div>
+
+              <div *ngIf="errorMessage" class="alert alert-danger">
+                {{ errorMessage }}
+              </div>
+
+              <table
+                *ngIf="!loading && !errorMessage"
+                class="table table-hover table-striped datatable"
+              >
+                <thead class="table-primary">
+                  <tr>
+                    <th>Nom de la partie</th>
+                    <th>Numéro de compte</th>
+                    <th>Type de compte</th>
+                    <th>Solde net</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngFor="let compte of listeCompteClient">
+                    <td class="text-start align-content-center">
+                      {{ compte.vcPersonalName }}
+                    </td>
+
+                    <td class="text-start align-items-center">
+                      {{ compte.vcAccountNumber }} <br />
+                    </td>
+
+                    <td class="text-start align-content-center">
+                      {{ compte.vcAccountType }}
+                    </td>
+
+                    <td class="text-nowrap align-content-center">
+                      {{ compte.mBalance | number }} GNF
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4">
+        <div class="row">
+          <div class="col-xl-12">
+            <div class="card card-h-100">
+              <div class="card-header bg-transparent d-flex align-items-center">
+                <h4 class="flex-grow-1 card-title mb-0">
+                  Historique des transactions
+                </h4>
+              </div>
+              <div class="card-header d-flex">
+                <div class="row account-info">
+                  <div class="col-12">
+                    <div class="flex-shrink-0 float-end">
+                      <select
+                        class="form-select-sm form-select mb-0 w-100"
+                        [(ngModel)]="selectedAccountNumber"
+                        (ngModelChange)="dixTransactionsRecentsListe()"
+                      >
+                        <option
+                          *ngFor="let c of listeCompteClient"
+                          [value]="c.vcAccountNumber"
+                        >
+                          {{ c.vcAccountNumber }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-body finance-chart-container">
+                <div class="table-responsive">
+                  <table class="table custom-table">
+                    <thead class="table-light">
+                      <tr>
+                        <th class="text-nowrap">Date</th>
+                        <th class="text-end text-nowrap">Référence</th>
+                        <th class="text-end text-nowrap">Type</th>
+                        <th>Description</th>
+                        <th class="text-end text-nowrap">Montant</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr *ngFor="let t of listeDixPremiereTransactions">
+                        <td class="text-nowrap">
+                          {{ formatDateOper(t.dateOper) }}
+                        </td>
+                        <td>
+                          {{ t.bankReference }}
+                        </td>
+                        <td>
+                          {{ t.sigOper }}
+                        </td>
+                        <td>
+                          {{ t.libelleOper }}
+                        </td>
+                        <td class="text-nowrap text-end">
+                          {{ formatMontant(t) }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="d-grid p-2 border-top">
+                <a
+                  class="btn btn-link btn-sm text-center font-size-14"
+                  role="button"
+                  routerLink="/transactions"
+                  ><span
+                    class="d-xxl-flex justify-content-xxl-center align-items-xxl-center"
+                    ><i class="icon ion-eye me-1 font-size-18"></i>Visualiser
+                    plus</span
+                  ></a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

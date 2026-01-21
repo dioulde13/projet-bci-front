@@ -1,0 +1,310 @@
+<!-- Start: Page -->
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
+                                <div>
+                                    <h4 class="mb-sm-0 font-size-18 fw-bolder">Compte Courant - Epargne</h4>
+                                </div>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a routerLink="/dashboard"><span>BCI-Online</span></a></li>
+                                        <li class="breadcrumb-item active"><span>Compte Courant - Epargne</span></li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-xl-4">
+                            <div class="card text-white bg-primary card-h-100">
+                                <div class="card-header bg-transparent">
+                                    <h4 class="card-title">Compte Courant - Epargne</h4>
+                                </div>
+                                <div class="card-body align-content-center"><a class="link-light custom-icon-container"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1em" height="1em" fill="currentColor" class="custom-icon-size-grids">
+                                            <path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H80c-8.8 0-16-7.2-16-16s7.2-16 16-16H448c17.7 0 32-14.3 32-32s-14.3-32-32-32H64zM416 272a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                        </svg>
+                                        <h3 class="text-white mb-1"><span class="currencycounter" data-target="347200000">0</span></h3>
+                                        <p><small class="text-white">2 Total des comptes</small></p>
+                                    </a></div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="card bg-light card-h-100">
+                                <div class="card-header bg-transparent border-bottom border-white">
+                                    <div class="d-flex align-items-center flex-wrap">
+                                        <h5 class="card-title me-2">Liens rapides</h5>
+                                    </div>
+                                </div>
+                                <div class="card-body finance-chart-container">
+                                    <div class="row text-center d-xxl-flex justify-content-xxl-center">
+                                        <div class="col-6 col-md-4 mb-4"><a class="custom-icon-container"><i class="icon ion-compose custom-icon-size"></i>
+                                                <p class="custom-icon-text">Requête sur statuts de chèque</p>
+                                            </a></div>
+                                        <div class="col-6 col-md-4 mb-4"><a class="custom-icon-container"><i class="icon ion-ios-unlocked custom-icon-size"></i>
+                                                <p class="custom-icon-text">Mettre en opposition / débloquer un chèque</p>
+                                            </a></div>
+                                        <div class="col-6 col-md-4 mb-4"><a class="custom-icon-container"><i class="icon ion-chatboxes custom-icon-size"></i>
+                                                <p class="custom-icon-text">Demande de chéquier</p>
+                                            </a></div>
+                                        <div class="col-6 col-md-4 mb-4"><a class="custom-icon-container"><i class="icon ion-ios-book custom-icon-size"></i>
+                                                <p class="custom-icon-text">Demander un relevé</p>
+                                            </a></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="card bg-light card-h-100">
+                                <div class="card-header bg-transparent border-bottom border-white">
+                                    <div class="d-flex align-items-center flex-wrap">
+                                        <h5 class="card-title me-2">Calculateur de change</h5>
+                                    </div>
+                                </div>
+                                <div class="card-body finance-chart-container">
+                                    <form id="currency-form">
+                                        <div class="mb-3">
+                                            <div class="row mb-3">
+                                                <div class="col-md">
+                                                    <div class="mb-3"><label class="form-label" for="amount">Montant</label><input class="form-control" type="number" id="amount" placeholder="Entrez le montant"></div>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3"><label class="form-label" for="fromCurrency">De</label><select data-bs-toggle="tooltip" data-bss-tooltip="" id="fromCurrency" class="form-select">
+                                                            <option value="USD" selected="">USD</option>
+                                                            <option value="EUR">EUR</option>
+                                                            <option value="GNF">GNF</option>
+                                                        </select></div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3"><label class="form-label" for="toCurrency">Converti en</label><select data-bs-toggle="tooltip" data-bss-tooltip="" id="toCurrency" class="form-select">
+                                                            <option value="USD">USD</option>
+                                                            <option value="EUR">EUR</option>
+                                                            <option value="GNF" selected="">GNF</option>
+                                                        </select>
+                                                        <div class="valid-feedback"><span> Looks good! </span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><button class="btn btn-primary btn btn-primary" type="button" onclick="convertCurrency()">Calculer le taux</button>
+                                    </form>
+                                </div>
+                                <div class="card-footer bg-transparent border-top border-white">
+                                    <h6 id="conversionResult" class="text-muted">Taux de change :</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="card bg-light-subtle">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
+                                                <div>
+                                                    <h4 class="mb-sm-0 font-size-18">Informations sur le Compte</h4>
+                                                    <p class="text-secondary font-size-12 my-sm-2">Affichez les informations essentielles de votre compte, y compris le numéro de compte, le type de compte, et le solde actuel.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <form class="row gx-3 gy-2 mb-4 mb-lg-0">
+                                        <div class="col-md-4 row gx-3 gy-2 mb-4 mb-lg-0"><label class="form-label text-muted" for="accountSelect">Numéro de compte</label>
+                                            <div class="input-group"><select class="form-select" data-bs-toggle="tooltip" data-bss-tooltip="" id="accountSelect" name="accountSelect" placeholder="Sélectionner le compte" title="exemple message" style="/*width: 100%;*/">
+                                                    <option value="compte1" selected="">7308054285</option>
+                                                    <option value="compte2">7308057753</option>
+                                                </select></div>
+                                        </div>
+                                        <div class="col-md-4 row gx-3 gy-2 mb-4 mb-lg-0"><label class="form-label text-muted" for="accountName">Nom du compte</label>
+                                            <div class="input-group"><input class="form-control" type="text" id="accountName" name="compte-source" title="exemple message" readonly="" placeholder="Nom du compte"></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div id="infoducompteCompte1" class="infoducompte">
+                                <div class="card-deck-wrapper">
+                                    <div class="card-group">
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h4 class="mb-sm-0 font-size-17">Infos du compte</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">ID client</h5>
+                                                        <p class="font-size-15">431615149</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Type de compte</h5>
+                                                        <p class="font-size-15">Individuel</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Devise du compte</h5>
+                                                        <p class="font-size-15">GNF</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Agence</h5>
+                                                        <p class="font-size-15">BCI AGENCE PRINCIPALE, 6ème Avenue de la République, Sandervalia, Kaloum BP : 359 - Conakry, République de Guinée.</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Statut</h5>
+                                                        <p class="font-size-15">Actif</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h4 class="mb-sm-0 font-size-17">Détails du solde</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Solde disponible</h5>
+                                                        <p class="money font-size-15">247 200 000</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Solde net</h5>
+                                                        <p class="font-size-15 money">247 200 000</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Montant en suspens</h5>
+                                                        <p class="font-size-15 money">0</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Fonds non encore encaissés</h5>
+                                                        <p class="font-size-15 money">0</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h4 class="mb-sm-0 font-size-17">Limites</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Limite de découvert</h5>
+                                                        <p class="money font-size-15">0</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Limite d'avance sur fonds non encore encaissés</h5>
+                                                        <p class="font-size-15 money">0</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Retrait GAB quotidien</h5>
+                                                        <p class="font-size-15 money">0</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Solde minimum requis</h5>
+                                                        <p class="font-size-15 money">0</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="infoducompteCompte2" class="infoducompte">
+                                <div class="card-deck-wrapper">
+                                    <div class="card-group">
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h4 class="mb-sm-0 font-size-17">Infos du compte</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">ID client</h5>
+                                                        <p class="font-size-15">123456788</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Type de compte</h5>
+                                                        <p class="font-size-15">Individuel</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Devise du compte</h5>
+                                                        <p class="font-size-15">GNF</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Agence</h5>
+                                                        <p class="font-size-15">BCI AGENCE PRINCIPALE, 6ème Avenue de la République, Sandervalia, Kaloum BP : 359 - Conakry, République de Guinée.</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Statut</h5>
+                                                        <p class="font-size-15">Actif</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h4 class="mb-sm-0 font-size-17">Détails du solde</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Solde disponible</h5>
+                                                        <p class="money font-size-15">100 000 000</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Solde net</h5>
+                                                        <p class="font-size-15 money">100 000 000</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Montant en suspens</h5>
+                                                        <p class="font-size-15 money">0</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Fonds non encore encaissés</h5>
+                                                        <p class="font-size-15 money">0</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h4 class="mb-sm-0 font-size-17">Limites</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Limite de découvert</h5>
+                                                        <p class="money font-size-15">0</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Limite d'avance sur fonds non encore encaissés</h5>
+                                                        <p class="font-size-15 money">0</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Retrait GAB quotidien</h5>
+                                                        <p class="font-size-15 money">0</p>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-muted font-size-13 mb-0">Solde minimum requis</h5>
+                                                        <p class="font-size-15 money">0</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End: Page -->

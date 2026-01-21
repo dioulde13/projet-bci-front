@@ -1,0 +1,31 @@
+slide-in-right {
+  display: inline-block;
+  transform: translateX(-100%);
+  /* départ à gauche */
+  opacity: 0;
+  animation: slideIn 0.3s forwards;
+  /* 0.3s pour l’animation */
+  margin-left: 10px;
+}
+
+@keyframes slideIn {
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.form-check-input {
+  width: 3em;
+  height: 1.5em;
+  cursor: pointer;
+}
+
+.wrap-text,
+.table td,
+.table th {
+  white-space: normal !important;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+

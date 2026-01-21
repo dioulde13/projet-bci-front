@@ -1,0 +1,169 @@
+/* Assure que le conteneur prend toute la hauteur de la carte */
+
+.finance-chart-container {
+  height: 100%;
+  width: 100%;
+}
+
+/* Définit la hauteur du graphique */
+
+#financeChart {
+  height: 210px;
+  width: 100%;
+}
+
+.finance-color-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.finance-color-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.color-box {
+  /*width: 20px;*/
+  height: 20px;
+  margin-right: 8px;
+  /*display: inline-block;*/
+  border-radius: 3px;
+}
+
+.finance-breadcrumb {
+  margin-bottom: 15px;
+  font-weight: bold;
+  color: #f8f9fa !important;
+}
+
+.finance-breadcrumb .breadcrumb-item > a {
+  color: #f8f9fa !important;
+}
+
+.finance-breadcrumb .breadcrumb-item.active {
+  color: #f8f9fa !important;
+}
+
+/* ==========================================================================
+Grids Responsive
+========================================================================== */
+
+.custom-card {
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+}
+
+.custom-card-body {
+  padding: 1rem;
+}
+
+.custom-icon-size {
+  font-size: 2.5rem;
+  /*color: var(--bs-primary);*/
+  margin-bottom: 0.1rem;
+}
+
+.custom-icon-text {
+  font-size: 14px!important;
+  font-weight: 500;
+  /*color: #343a40;*/
+  margin: 0;
+}
+
+.custom-icon-container:hover .custom-icon-size {
+  /*color: #0056b3;*/
+  transition: color 0.3s;
+}
+
+.custom-icon-container {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.1rem 0;
+}
+
+/* ==========================================================================
+End Grids Responsive
+========================================================================== */
+
+.custom-icon-size-grids {
+  font-size: 2.0rem;
+  color: var(--bs-white);
+  margin-bottom: 1.1rem;
+}
+
+/* ==========================================================================
+Activité Récente
+========================================================================== */
+
+.custom-table {
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.custom-table th, .custom-table td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border: 1px solid #dee2e6;
+}
+
+.custom-table tbody tr:first-child td {
+  border-top: none;
+}
+
+.custom-table tbody tr td {
+  border-left: none;
+  border-right: none;
+}
+
+.custom-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.view-more {
+  text-align: center;
+  padding-top: 1rem;
+}
+
+.view-more a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.view-more a:hover {
+  text-decoration: underline;
+}
+
+.account-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /*margin-bottom: 1rem;*/
+}
+
+.account-info span {
+  font-weight: 500;
+}
+
+/* ==========================================================================
+End Activité Récente
+========================================================================== */
+
+/* ==========================================================================
+Cacher toutes les sections d'infoducomptermation par défaut
+========================================================================== */
+
+.infoducompte {
+  display: none;
+}
+
+/* ==========================================================================
+End Cacher toutes les sections d'infoducomptermation par défaut
+========================================================================== */
+

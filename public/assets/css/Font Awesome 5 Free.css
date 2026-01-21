@@ -1,0 +1,25 @@
+@font-face {
+	font-family: 'Font Awesome 5 Free';
+	src: url(../../assets/fonts/Font%20Awesome%205%20Free-c6b5491bb8e62636560fff0ae70aefe7.eot?h=9102030d25ede9a6918d140c31e5bc4a) format('embedded-opentype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-c6b5491bb8e62636560fff0ae70aefe7.eot?h=9102030d25ede9a6918d140c31e5bc4a) format('embedded-opentype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-a85c01baaf167e22c0bfaa31b4f14954.woff2?h=9102030d25ede9a6918d140c31e5bc4a) format('woff2'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-0a25101595b122087fd0f8af1b143011.woff?h=9102030d25ede9a6918d140c31e5bc4a) format('woff'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-29303a5ae46556afd07b87ee0b05d5bc.ttf?h=9102030d25ede9a6918d140c31e5bc4a) format('truetype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-d5a4a7a43630c748b3b6edcbb7e515ae.svg?h=9102030d25ede9a6918d140c31e5bc4a) format('svg');
+	font-weight: 400;
+	font-style: normal;
+	font-display: block;
+}
+
+@font-face {
+	font-family: 'Font Awesome 5 Free';
+	src: url(../../assets/fonts/Font%20Awesome%205%20Free-12111f0b7e4c90f3d0995abfcb0d4712.eot?h=9102030d25ede9a6918d140c31e5bc4a) format('embedded-opentype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-12111f0b7e4c90f3d0995abfcb0d4712.eot?h=9102030d25ede9a6918d140c31e5bc4a) format('embedded-opentype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-99d0618f30f57419a0f133d01a7f1a14.woff2?h=9102030d25ede9a6918d140c31e5bc4a) format('woff2'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-40daf50f7b38b87e7df92d7bd1aa00fc.woff?h=9102030d25ede9a6918d140c31e5bc4a) format('woff'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-d4e8679f116eed55842b827dddd691f4.ttf?h=9102030d25ede9a6918d140c31e5bc4a) format('truetype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-d6140727537bf87d2975c88f0ed11245.svg?h=9102030d25ede9a6918d140c31e5bc4a) format('svg');
+	font-weight: 900;
+	font-style: normal;
+	font-display: block;
+}

@@ -1,0 +1,278 @@
+ <!-- Start: Page -->
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row d-print-none">
+                        <div class="col-12">
+                            <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
+                                <div>
+                                    <h4 class="mb-sm-0 font-size-18 fw-bolder">Transferts multiples</h4>
+                                </div>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a><span>Transactions</span></a></li>
+                                        <li class="breadcrumb-item"><a onclick="goBack()"><span>Transferts multiples</span></a></li>
+                                        <li class="breadcrumb-item active"><span>Modification de la Paie</span></li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
+                                <div>
+                                    <h4 class="mb-sm-0 font-size-18">Modification de la Paie pour&nbsp;&nbsp;<span><strong>[Nom du Bénéficiaire]</strong></span></h4>
+                                    <p class="text-secondary font-size-12 my-sm-2">Mettez à jour les détails nécessaires et confirmez les changements.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-8 col-xl-9">
+                            <form class="a-besoin-d-une-validation" novalidate="">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="fw-bold text-body card-title mb-0">Informations Personnelles</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-xl">
+                                                <div class="text-muted">
+                                                    <div class="row">
+                                                        <div class="col-xl-3">
+                                                            <div class="text-center"><a class="image-popup" href="../assets/img/avatar-01.jpg?h=dd1c14d25b246d37ddd1889a372096bd"><img class="rounded img-fluid img-preview mb-3 img-thumbnail" id="imagePreview" src="../assets/img/avatar-01.jpg?h=dd1c14d25b246d37ddd1889a372096bd" alt="Aperçu de l'image"></a><button class="btn btn-outline-primary" id="uploadButton">Charger la photo</button><input type="file" accept="image/*" id="inputFile"></div>
+                                                        </div>
+                                                        <div class="col-xl">
+                                                            <div class="text-muted">
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <div class="mb-3"><label class="form-label fw-bold text-body required" for="nomEmploye">Nom du bénéficiaire</label><input class="form-control item" type="text" placeholder="Nom de l'employé" required="" value="Daouda DIALLO" name="nomEmploye">
+                                                                            <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <div class="mb-3"><label class="form-label fw-bold text-body required" for="dateNaissance">Date de naissance</label><input class="form-control date" type="date" value="19/07/1980" required="" name="dateNaissance">
+                                                                            <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <div class="mb-3"><label class="form-label fw-bold text-body required" for="adresse">Adresse</label><input class="form-control item" type="text" data-bs-toggle="tooltip" data-bss-tooltip="" placeholder="Adresse" name="adresse" title="Entrez le nombre total d'heures travaillées hors heures supplémentaires." required="" value="Dixinn échangeur, Conakry, Guinée">
+                                                                            <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <div class="mb-3"><label class="form-label fw-bold text-body required" for="adresseEmail">Adresse E-mail</label><input class="form-control item" type="email" placeholder="exemple@exemple.com" required="" value="daouda.diallo@gmail.com" name="nomEmploye">
+                                                                            <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <div class="mb-3"><label class="form-label fw-bold text-body required" for="NumeroTelephone">Numéro de téléphone 1</label><input class="form-control item phone" type="tel" name="NumeroTelephone" title="Entrez le nombre total d'heures travaillées hors heures supplémentaires." required="" value="+224 623557922">
+                                                                            <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <div class="mb-3"><label class="form-label fw-bold text-body required" for="NumeroTelephone">Numéro de téléphone 2</label><input class="form-control item phone" type="tel" name="NumeroTelephone" title="Entrez le nombre total d'heures travaillées hors heures supplémentaires." required="" value="+224 620055922">
+                                                                            <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <div class="mb-3"><label class="form-label fw-bold text-body required" for="NumeroTelephone">Type de bénéficiaire</label>
+                                                                            <div class="valid-feedback"><span> Looks good! </span></div><select class="form-select" id="paymentType-1" data-trigger="" name="paymentType" placeholder="Type de Paiement" title="exemple message" required="">
+                                                                                <option value="">Sélectionner...</option>
+                                                                                <option value="Autres">Autre Bénéficiaire</option>
+                                                                                <option value="Fournisseur" selected="">Fournisseur</option>
+                                                                                <option value="Employés">Employé</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mb-3">
+                                                                    <div class="col-xl">
+                                                                        <div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-12">
+                                                                                    <div class="mb-3"><label class="form-label fw-bold text-body required">Compte Source</label><select data-bs-toggle="tooltip" data-bss-tooltip="" class="form-select source-account" data-trigger="" name="compte-source" placeholder="Compte Source" title="exemple message">
+                                                                                            <option value="7308054285" selected="">7308054285</option>
+                                                                                            <option value="7308057753">7308057753</option>
+                                                                                        </select><span>Solde :&nbsp;<span>247 200 000 GNF</span></span>
+                                                                                        <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mb-3">
+                                                                    <div class="col-xl">
+                                                                        <div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-12">
+                                                                                    <div class="mb-3"><label class="form-label fw-bold text-body required">Montant</label>
+                                                                                        <div class="row">
+                                                                                            <div class="col-4"><select class="form-select currency" data-trigger="" name="Devise" placeholder="Devise">
+                                                                                                    <option value="GNF" selected="">GNF</option>
+                                                                                                </select></div>
+                                                                                            <div class="col"><input class="form-control item money amount" type="text" data-bs-toggle="tooltip" data-bss-tooltip="" name="montant" title="exemple message" required="" value="39 202 000"><span><a class="link-primary" href="#">Visualiser les limites</a></span></div>
+                                                                                        </div>
+                                                                                        <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mb-3">
+                                                                    <div class="col-xl">
+                                                                        <div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-12">
+                                                                                    <div class="mb-3"><label class="form-label fw-bold text-body required" for="object">Objet du transfert</label><input class="form-control item transfer-object" type="text" data-bs-toggle="tooltip" data-bss-tooltip="" id="object" name="objet_du_transfert" title="exemple message" required="" value="Salaire">
+                                                                                        <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="fw-bold text-body card-title mb-0">Méthode de paiement Salarial</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row my-3">
+                                            <div class="col-xl-2">
+                                                <div>
+                                                    <h5 class="fw-bold text-body font-size-15">Choix du Mode de Paiement :</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl">
+                                                <div class="text-muted">
+                                                    <div class="row">
+                                                        <div class="col-xl">
+                                                            <div class="text-muted">
+                                                                <div class="row mb-3">
+                                                                    <div class="col-md-6">
+                                                                        <div class="mb-3"><label class="form-label fw-bold text-body required" for="paymentType-1">Type de Paiement</label><select class="form-select" id="paymentType" data-trigger="" name="paymentType" placeholder="Type de Paiement" title="exemple message" required="">
+                                                                                <option value="">Sélectionner...</option>
+                                                                                <option value="interne">Interne</option>
+                                                                                <option value="domestique" selected="">Domestique</option>
+                                                                            </select>
+                                                                            <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div id="interneFields" class="payment-fields mb-3" style="display:none;">
+                                                                    <div class="row mb-3">
+                                                                        <div class="col-md-6">
+                                                                            <div class="mb-3"><label class="form-label required">Numéro de compte</label><input class="form-control item numero_compte account-number" type="text" data-bs-toggle="tooltip" data-bss-tooltip="" name="numero-de-compte" title="exemple message" required="">
+                                                                                <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="mb-3"><label class="form-label required">Nom du compte</label><input class="form-control item account-name" type="text" data-bs-toggle="tooltip" data-bss-tooltip="" name="nom-du-compte" title="exemple message" required="">
+                                                                                <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div id="domestiqueFields" class="payment-fields mb-3" style="/*display:none;*/">
+                                                                    <div class="row mb-3">
+                                                                        <div class="col-md-6">
+                                                                            <div class="mb-3"><label class="form-label fw-bold text-body required">Mode de transfert</label>
+                                                                                <div class="mb-3">
+                                                                                    <div class="form-check form-check-inline"><input class="form-check-input transfer-mode" type="radio" id="ach" name="transferMode" value="ACH" checked=""><label class="form-check-label fw-bold text-body" for="ach">ACH</label></div>
+                                                                                    <div class="form-check form-check-inline"><input class="form-check-input transfer-mode" type="radio" id="rtgs" name="transferMode" value="RTGS"><label class="form-check-label fw-bold text-body" for="rtgs">RTGS</label></div>
+                                                                                </div>
+                                                                                <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="mb-3"><label class="form-label fw-bold text-body required" for="banque-du-Beneficiaire">Banque du Bénéficiaire</label><select data-bs-toggle="tooltip" data-bss-tooltip="" class="form-select bank" data-trigger="" name="banque-du-Beneficiaire" placeholder="Banque du Bénéficiaire" title="Banque du Bénéficiaire" required="">
+                                                                                    <option value="">Veuillez sélectionner la banque</option>
+                                                                                    <option value="ACCESS BANK">ACCESS BANK</option>
+                                                                                    <option value="AFRILAND FIRST BANK">AFRILAND FIRST BANK</option>
+                                                                                    <option value="BANQUE CENTRALE DE LA REPUBLIQUE DE GUINEE">BANQUE CENTRALE DE LA REPUBLIQUE DE GUINEE</option>
+                                                                                    <option value="BICIGUI - BANQUE INTERNATIONANLE POUR LE COMMERCE ET L'INDUSTRIE DE GUINEE">BICIGUI - BANQUE INTERNATIONANLE POUR LE COMMERCE ET L'INDUSTRIE DE GUINEE</option>
+                                                                                    <option value="BIG - BANQUE ISLAMIQUE DE GUINEE">BIG - BANQUE ISLAMIQUE DE GUINEE</option>
+                                                                                    <option value="BNG - BANQUE NATIONALE DE GUINEE">BNG - BANQUE NATIONALE DE GUINEE</option>
+                                                                                    <option value="BPMG - BANQUE POPULAIRE DE GUINEE">BPMG - BANQUE POPULAIRE DE GUINEE</option>
+                                                                                    <option value="BSIC - BANQUE SAHELO SAHELIENNE POUR L'INDUSTRIE ET LE COMMERCE">BSIC - BANQUE SAHELO SAHELIENNE POUR L'INDUSTRIE ET LE COMMERCE</option>
+                                                                                    <option value="ECOBANK">ECOBANK</option>
+                                                                                    <option value="FBNBANK">FBNBANK</option>
+                                                                                    <option value="NSIA BANQUE">NSIA BANQUE</option>
+                                                                                    <option value="ORABANK">ORABANK</option>
+                                                                                    <option value="SGG - SOCIETE GENERALE GUINEE">SGG - SOCIETE GENERALE GUINEE</option>
+                                                                                    <option value="SKYE BANK">SKYE BANK</option>
+                                                                                    <option value="UBA - UNITED BANK OF AFRICA" selected="">UBA - UNITED BANK OF AFRICA</option>
+                                                                                    <option value="VISTA BANK">VISTA BANK</option>
+                                                                                </select>
+                                                                                <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row mb-3">
+                                                                        <div class="col-md-6">
+                                                                            <div class="mb-3"><label class="form-label fw-bold text-body required" for="numero-de-compte">Numéro de compte</label><input class="form-control item numero_compte font-size-15 fw-semibold account-number" type="text" data-bs-toggle="tooltip" data-bss-tooltip="" name="numero-de-compte" title="exemple message" required="" value="7308054285">
+                                                                                <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="mb-3"><label class="form-label fw-bold text-body required" for="nom-du-compte">Nom du compte</label><input class="form-control item account-name" type="text" data-bs-toggle="tooltip" data-bss-tooltip="" name="nom-du-compte" title="exemple message" required="" value="Daouda DIALLO">
+                                                                                <div class="valid-feedback"><span> Looks good! </span></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="bg-light">
+                                <div class="d-flex flex-wrap gap-2"><button class="btn btn-primary waves-effect waves-light" data-bs-toggle="tooltip" data-bss-tooltip=""  title="Enregistre les modifications et retourne à la page principale de préparation de la paie."><i class="icon ion-android-done-all font-size-16 align-middle me-2"></i> Sauvegarder les Modifications </button><button class="btn btn-dark waves-effect waves-light" data-bs-toggle="tooltip" data-bss-tooltip="" type="button" title="Annule toutes les modifications non sauvegardées et retourne à la page précédente." onclick="goBack()"><i class="icon ion-close-circled font-size-16 align-middle me-2"></i> Annuler </button><button class="btn btn-outline-primary waves-effect waves-light border-0" data-bs-toggle="tooltip" data-bss-tooltip="" type="button" title="Annule toutes les modifications non sauvegardées et retourne à la page précédente." onclick="goBack()"><i class="icon ion-android-arrow-back font-size-16 align-middle me-2"></i> Retour</button></div>
+                            </form>
+                        </div>
+                        <div class="col-lg-4 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-3">Documents</h5>
+                                    <div>
+                                        <ul class="list-unstyled mb-0">
+                                            <li><a class="d-block py-2 text-muted" href="#"><i class="icon ion-ios-paper text-primary me-1"></i> Reçus de Paiement&nbsp;18/11/2024</a><a class="d-block py-2 text-muted" href="#"><i class="icon ion-ios-paper text-primary me-1"></i> Reçus de Paiement&nbsp;18/11/2024</a><a class="d-block py-2 text-muted" href="#"><i class="icon ion-ios-paper text-primary me-1"></i> Reçus de Paiement&nbsp;18/11/2024</a><a class="d-block py-2 text-muted" href="#"><i class="icon ion-ios-paper text-primary me-1"></i> Reçus de Paiement&nbsp;18/11/2024</a><a class="d-block py-2 text-muted" href="#"><i class="icon ion-ios-paper text-primary me-1"></i> Reçus de Paiement&nbsp;18/11/2024</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-3">Liens Utiles</h5>
+                                    <div>
+                                        <ul class="list-unstyled mb-0">
+                                            <li><a class="d-block py-2 text-muted" href="#"><i class="text-primary mdi mdi-web me-1"></i> Guide d'utilisation</a></li>
+                                            <li><a class="d-block py-2 text-muted" href="#"><i class="text-primary mdi mdi-note-text-outline me-1"></i> FAQ</a></li>
+                                            <li><a class="d-block py-2 text-muted" href="#"><i class="text-primary mdi mdi-note-text-outline me-1"></i>&nbsp;Support technique</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- End: Page -->

@@ -1,0 +1,38 @@
+.loading-container {
+  height: 100vh;
+  /* prend toute la hauteur */
+  display: flex;
+  justify-content: center;
+  /* centre horizontalement */
+  align-items: center;
+  /* centre verticalement */
+  flex-direction: column;
+  /* empile verticalement */
+}
+
+.spinner {
+  border: 8px solid #f3f3f3;
+  /* gris clair */
+  border-top: 8px solid #362A7A;
+  /* bleu */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+.text-loading {
+  font-size: 1.2rem;
+  color: #362A7A;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

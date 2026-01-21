@@ -1,0 +1,228 @@
+<div class="auth-page">
+  <div class="container-fluid p-0">
+    <div class="row g-0">
+      <div class="col-md-5 col-lg-4 col-xxl-3 order-md-last order-xs-first">
+        <div class="d-flex auth-full-page-content p-sm-5 p-4">
+          <div class="w-100">
+            <div class="d-flex flex-column h-100">
+              <div class="text-center mb-2 mb-md-3">
+                <a class="d-block auth-logo" href="index.html">
+                  <img
+                    class="img-fluid"
+                    src="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking.svg"
+                    alt=""
+                    height="100"
+                    width="100"
+                  />
+                </a>
+              </div>
+
+              <div class="my-auto auth-content">
+                <div class="text-center">
+                  <h5 class="mb-0">
+                    Connexion à <span class="fw-semibold ms-2">BCI Online</span>
+                  </h5>
+                </div>
+
+                <form
+                  class="mt-4 pt-2"
+                  [formGroup]="loginForm"
+                  (ngSubmit)="onSubmit()"
+                >
+                  <!-- Nom d'utilisateur -->
+                  <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input
+                      class="form-control"
+                      type="text"
+                      formControlName="email"
+                      placeholder="Entrez votre email"
+                    />
+                    <div
+                      *ngIf="
+                        loginForm.get('email')?.touched &&
+                        loginForm.get('email')?.invalid
+                      "
+                      class="text-danger"
+                    >
+                      Nom d'utilisateur requis
+                    </div>
+                  </div>
+
+                  <!-- Mot de passe -->
+                  <div class="mb-4">
+                    <div class="d-flex align-items-start">
+                      <div class="flex-grow-1">
+                        <label class="form-label">Mot de passe</label>
+                      </div>
+                      <div class="flex-shrink-0">
+                        <a
+                          class="text-muted cursor-pointer"
+                          (click)="sousCription()"
+                          >Mot de passe oublié?</a
+                        >
+                      </div>
+
+                      <!-- <div class="flex-shrink-0">
+                                                    <a class="text-muted" (click)="sousCription()">Mot passe
+                                                        oublié?</a>
+                                                </div> -->
+                    </div>
+                    <div class="input-group auth-pass-inputgroup">
+                      <input
+                        class="form-control"
+                        [type]="passwordVisible ? 'text' : 'password'"
+                        formControlName="password"
+                        placeholder="Entrez votre mot de passe"
+                        aria-label="Mot de passe"
+                      />
+
+                      <button
+                        class="btn btn-light shadow-none ms-0"
+                        type="button"
+                        (click)="togglePasswordVisibility()"
+                        [attr.aria-pressed]="passwordVisible"
+                        [title]="
+                          passwordVisible
+                            ? 'Masquer le mot de passe'
+                            : 'Afficher le mot de passe'
+                        "
+                      >
+                        <i
+                          [ngClass]="
+                            passwordVisible
+                              ? 'mdi mdi-eye-off-outline'
+                              : 'mdi mdi-eye-outline'
+                          "
+                        ></i>
+                      </button>
+                    </div>
+                    <div
+                      *ngIf="message"
+                      [ngClass]="{
+                        'text-success': success,
+                        'text-danger': !success
+                      }"
+                    >
+                      {{ message }}
+                    </div>
+                    <div
+                      *ngIf="
+                        loginForm.get('password')?.touched &&
+                        loginForm.get('password')?.invalid
+                      "
+                      class="text-danger"
+                    >
+                      Mot de passe requis
+                    </div>
+                  </div>
+
+                  <!-- Connexion -->
+                  <div class="mb-3">
+                    <button
+                      class="btn btn-primary w-100 waves-effect waves-light"
+                      [disabled]="loading"
+                      type="submit"
+                    >
+                      {{ loading ? "Connexion en cours..." : "Connexion" }}
+                    </button>
+                  </div>
+
+                  <!-- Captcha -->
+                  <!-- <div class="mb-3 text-center">
+                    <ngx-recaptcha2
+                      [siteKey]="siteKey"
+                      formControlName="recaptcha"
+                    >
+                    </ngx-recaptcha2>
+                    <div
+                      *ngIf="
+                        loginForm.get('recaptcha')?.touched &&
+                        loginForm.get('recaptcha')?.invalid
+                      "
+                      class="text-danger"
+                    >
+                      Veuillez compléter le captcha
+                    </div>
+                  </div> -->
+
+                  <div class="mb-3 text-center">
+                    <ngx-recaptcha2
+                      [siteKey]="siteKey"
+                      formControlName="recaptcha"
+                      (success)="onCaptchaSuccess($event)"
+                      (error)="onCaptchaError()"
+                      (reset)="onCaptchaReset()"
+                    >
+                    </ngx-recaptcha2>
+
+                    <div
+                      *ngIf="
+                        loginForm.get('recaptcha')?.touched &&
+                        loginForm.get('recaptcha')?.invalid
+                      "
+                      class="text-danger"
+                    >
+                      Veuillez compléter le captcha
+                    </div>
+                  </div>
+                </form>
+
+                <!-- Lien inscription -->
+                <div class="text-center">
+                  <div class="signin-other-title">
+                    <h5 class="text-muted font-size-14 fw-medium">
+                      - Vous n'avez pas de compte ? -
+                    </h5>
+                  </div>
+                  <div class="">
+                    <a
+                      class="btn btn-outline-primary w-100 waves-effect waves-light"
+                      role="button"
+                      routerLink="/sousCription"
+                      >Souscrire à BCI Online</a
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer -->
+              <div class="text-center mt-4 mt-md-2">
+                <p>
+                  <span> © </span>
+                  <script>
+                    document.write(new Date().getFullYear());
+                  </script>
+                  <span> BCI-Online.</span>
+                  <span class="ms-2">Powered</span>
+                  <i class="icon ion-heart text-danger mx-1"></i>
+                  <span>by <a href="#">MV1</a></span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arrière-plan -->
+      <div class="col-md-7 col-lg-8 col-xxl-9 order-xs-last">
+        <div class="d-flex auth-bg pt-md-5 p-4">
+          <div class="bg-primary bg-overlay-2"></div>
+          <ul class="bg-bubbles">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+          </ul>
+          <p><br /><br /><br /><br /><br /><br /><br /><br /></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="preview-img overflow-hidden">
+  <div class="swiper-container">
+    <div class="swiper-wrapper preview-thumb">
+      <div class="swiper-slide">
+        <div
+          class="slide-bg"
+          style="
+            background-image: url(assets/img/images-bci/flyers-bci_internet-banking_3.jpg?h=81d6463f975795c60d5fc7a9405ce9e8);
+          "
+        ></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="coming-content min-vh-100 py-4 px-3 py-sm-5">
+  <div class="bg-primary bg-overlay"></div>
+
+  <div class="container d-flex justify-content-center align-items-center">
+  <div class="card shadow-lg" style="max-width: 400px; width: 100%;">
+    <div class="card-body">
+      <h5 class="card-title text-center mb-4">Mot de passe oublié</h5>
+
+      <form [formGroup]="forgotPasswordForm" (ngSubmit)="onSubmit()">
+        <!-- Champ Email -->
+        <div class="mb-3">
+          <label class="form-label">Adresse Email</label>
+          <input type="email" formControlName="email" class="form-control" placeholder="Entrez votre email">
+          <div *ngIf="forgotPasswordForm.get('email')?.touched && forgotPasswordForm.get('email')?.invalid"
+            class="text-danger">
+            Email valide requis
+          </div>
+        </div>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 gap-2">
+           <!-- Bouton retour -->
+          <button class="btn btn-outline-danger px-3 py-2 w-100 w-sm-auto" type="button" routerLink="/login">
+            <i class="fas fa-arrow-left me-2"></i>
+            Retour
+          </button>
+          <!-- Bouton principal -->
+          <button class="btn btn-primary px-4 py-2 w-100 w-sm-auto" type="submit" [disabled]="loading">
+            <i class="bi bi-arrow-repeat me-2" *ngIf="loading"></i>
+            {{ loading ? 'Envoi en cours...' : 'Réinitialiser' }}
+          </button>
+        </div>
+      </form>
+
+      <div *ngIf="message" class="alert mt-3" [ngClass]="{ 'alert-success': success, 'alert-danger': !success }">
+        {{ message }}
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>

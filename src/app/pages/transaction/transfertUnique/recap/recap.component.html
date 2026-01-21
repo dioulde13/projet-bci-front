@@ -1,0 +1,88 @@
+  <!-- Start: Page -->
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12 border-bottom mb-2">
+                            <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
+                                <div>
+                                    <h4 class="fw-bold mb-sm-0 font-size-18">Transfert unique</h4>
+                                </div>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a><span>Transactions</span></a></li>
+                                        <li class="breadcrumb-item active"><span>Transfert unique</span></li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8 col-xl-9">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="fw-bold flex-grow-1 card-title">Récapitulatif du Transfert</h4>
+                                    <div class="alert alert-warning alert-dismissible alert-label-icon label-arrow fade show" role="alert"><i class="icon ion-information-circled label-icon"></i><strong>Vérifier</strong><span> - Vous avez lancé une demande de paiement ad hoc. Veuillez vérifier les détails avant de confirmer</span><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button></div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div>
+                                                <div>
+                                                    <h5 class="text-muted font-size-14 mb-0">Type de paiement</h5>
+                                                    <p class="font-size-16 recap-payment-type"></p>
+                                                </div><!-- Start: Afficher uniquement pour le transfert domestique -->
+                                                <div class="mt-4 recap-bank-container" style="display: none;">
+                                                    <h5 class="text-muted font-size-14 mb-0">Coordonnées bancaire</h5>
+                                                    <p class="font-size-16 mb-1">Informations sur le code BIC/Swift</p>
+                                                    <p class="font-size-16 mb-1 recap-bank"></p>
+                                                    <p class="font-size-16 mb-1">Immeuble Sonoco</p>
+                                                    <p class="font-size-16">Conakry</p>
+                                                </div><!-- End: Afficher uniquement pour le transfert domestique -->
+                                                <!-- Start: Afficher uniquement pour le transfert Mobile Money -->
+                                                <div class="mt-4 recap-mobile-provider-container" style="display: none;">
+                                                    <h5 class="text-muted font-size-14 mb-0">Fournisseur Mobile</h5>
+                                                    <p class="font-size-16 recap-mobile-provider"></p>
+                                                </div><!-- End: Afficher uniquement pour le transfert Mobile Money -->
+                                                <div class="mt-4">
+                                                    <h5 class="text-muted font-size-14 mb-0">Numéro de compte</h5>
+                                                    <p class="font-size-16 recap-account-number"></p>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <h5 class="text-muted font-size-14 mb-0">Nom du compte</h5>
+                                                    <p class="font-size-16 recap-account-name"></p>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <h5 class="text-muted font-size-14 mb-0">Adresse e-mail du bénéficiaire</h5>
+                                                    <p class="font-size-16 recap-beneficiary-email"></p>
+                                                </div><!-- Start: Afficher uniquement pour le transfert domestique -->
+                                                <div class="mt-4 recap-transfer-mode-container" style="display: none;">
+                                                    <h5 class="text-muted font-size-14 mb-0">Réseau</h5>
+                                                    <p class="font-size-16 recap-transfer-mode"></p>
+                                                </div><!-- End: Afficher uniquement pour le transfert domestique -->
+                                                <div class="mt-4">
+                                                    <h5 class="text-muted font-size-14 mb-0">Montant</h5>
+                                                    <p class="font-size-16 recap-amount"><span class="ms-2 recap-currency"></span></p>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <h5 class="text-muted font-size-14 mb-0">Date du transfert</h5>
+                                                    <p class="font-size-16 recap-transfer-time"></p>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <h5 class="text-muted font-size-14 mb-0">Transfert depuis</h5>
+                                                    <p class="font-size-16 recap-source-account"></p>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <h5 class="text-muted font-size-14 mb-0">Note</h5>
+                                                    <p class="font-size-16 recap-transfer-object"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="bg-light mt-5">
+                                    <div class="d-flex flex-wrap gap-2"><button class="btn btn-primary waves-effect waves-light" data-bs-toggle="tooltip" data-bss-tooltip="" type="button" title="Confirmer la Transaction" routerLink="/otpVerificationTransfertUnique"> Confirmer </button><a class="btn btn-outline-primary waves-effect waves-light" role="button" data-bs-toggle="tooltip" data-bss-tooltip="" title="" routerLink="/dashboard"> Annuler </a><a class="btn btn-outline-primary align-self-center waves-effect waves-light border-0" role="button" data-bs-toggle="tooltip" data-bss-tooltip="" title="Retourner à la page précédente." routerLink="/recap">Retour</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- End: Page -->

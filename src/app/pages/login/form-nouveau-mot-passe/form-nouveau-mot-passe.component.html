@@ -1,0 +1,128 @@
+<div class="preview-img overflow-hidden">
+  <div class="swiper-container">
+    <div class="swiper-wrapper preview-thumb">
+      <div class="swiper-slide">
+        <div
+          class="slide-bg"
+          style="
+            background-image: url(assets/img/images-bci/flyers-bci_internet-banking_3.jpg?h=81d6463f975795c60d5fc7a9405ce9e8);
+          "
+        ></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="coming-content min-vh-100 py-4 px-3 py-sm-5">
+  <div class="bg-primary bg-overlay"></div>
+  <div class="container d-flex justify-content-center align-items-center">
+    <div class="card shadow-lg" style="max-width: 400px; width: 100%">
+      <div class="card-body">
+        <h5>Réinitialiser votre mot de passe</h5>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <label>Nouveau mot de passe :</label>
+          <div class="input-group">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="form-control"
+              formControlName="nouveauPassword"
+              placeholder="Entrer le nouveau mot de passe"
+            />
+
+            <span
+              class="input-group-text"
+              (click)="showPassword = !showPassword"
+              style="cursor: pointer"
+            >
+              <i
+                class="mdi"
+                [ngClass]="
+                  showPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'
+                "
+              ></i>
+            </span>
+          </div>
+
+          <div
+            *ngIf="
+              form.get('nouveauPassword')?.hasError('required') &&
+              form.get('nouveauPassword')?.touched
+            "
+            class="text-danger"
+          >
+            Le mot de passe est obligatoire.
+          </div>
+          <div
+            *ngIf="
+              form.get('nouveauPassword')?.hasError('minlength') &&
+              form.get('nouveauPassword')?.touched
+            "
+            class="text-danger"
+          >
+            Le mot de passe doit contenir au moins 8 caractères.
+          </div>
+
+          <label>Confirmer le mot de passe :</label>
+          <div class="input-group">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              class="form-control"
+              formControlName="confirmerPassword"
+              placeholder="Confirmer le mot de passe"
+            />
+
+            <span
+              class="input-group-text"
+              (click)="showConfirmPassword = !showConfirmPassword"
+              style="cursor: pointer"
+            >
+              <i
+                class="mdi"
+                [ngClass]="
+                  showConfirmPassword
+                    ? 'mdi-eye-off-outline'
+                    : 'mdi-eye-outline'
+                "
+              ></i>
+            </span>
+          </div>
+
+          <div
+            *ngIf="
+              form.get('confirmerPassword')?.hasError('required') &&
+              form.get('confirmerPassword')?.touched
+            "
+            class="text-danger"
+          >
+            La confirmation est obligatoire.
+          </div>
+          <div
+            *ngIf="
+              form.get('confirmerPassword')?.hasError('mismatch') &&
+              form.get('confirmerPassword')?.touched
+            "
+            class="text-danger"
+          >
+            Les mots de passe ne correspondent pas.
+          </div>
+
+          <div
+            *ngIf="message"
+            [ngClass]="{ 'text-success': success, 'text-danger': !success }"
+          >
+            {{ message }}
+          </div>
+
+          <button
+            class="btn btn-primary w-100 mt-3"
+            type="submit"
+            [disabled]="loading"
+          >
+            {{ loading ? "Validation en cours..." : "Valider" }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

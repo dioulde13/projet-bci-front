@@ -1,0 +1,68 @@
+
+
+table {
+  table-layout: fixed;
+}
+
+.dialog {
+  width: 600px;
+  max-width: 90%;
+  border: none;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* .dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+} */
+
+.wizard-step {
+  display: inline-block;
+  margin-right: 1rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 3px solid transparent;
+}
+.wizard-step.active {
+  border-bottom-color: #0d6efd; /* bootstrap primary */
+  font-weight: bold;
+}
+.wizard-step-content {
+  /* optionnel, car *ngIf gère l'affichage */
+}
+
+.wizard-step.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed !important;
+}
+
+
+
+
+.compte-card {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 5px;
+}
+
+.input-checkbox{
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.compte{
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.dialog {
+  padding: 20px;
+  border: none;
+  border-radius: 10px;
+  width: 500px;
+}
+.m{
+  margin-left: 5px;
+}
+

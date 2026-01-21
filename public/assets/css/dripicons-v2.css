@@ -1,0 +1,11 @@
+@font-face {
+	font-family: 'dripicons-v2';
+	src: url(../../assets/fonts/dripicons-v2-1da916a8d8e3bb92107624146eb890de.eot?h=9102030d25ede9a6918d140c31e5bc4a) format('embedded-opentype'),
+	url(../../assets/fonts/dripicons-v2-1da916a8d8e3bb92107624146eb890de.eot?h=9102030d25ede9a6918d140c31e5bc4a) format('embedded-opentype'),
+	url(../../assets/fonts/dripicons-v2-2b525063527d53caa9392d8d48328a33.woff?h=9102030d25ede9a6918d140c31e5bc4a) format('woff'),
+	url(../../assets/fonts/dripicons-v2-2590bb6c6ac434736ffe75182f89f7de.ttf?h=9102030d25ede9a6918d140c31e5bc4a) format('truetype'),
+	url(../../assets/fonts/dripicons-v2-56da3c09868e34e7f56691bfa885b9cf.svg?h=9102030d25ede9a6918d140c31e5bc4a) format('svg');
+	font-weight: 400;
+	font-style: normal;
+	font-display: auto;
+}

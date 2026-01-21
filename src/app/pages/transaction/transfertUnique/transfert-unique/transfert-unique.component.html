@@ -1,0 +1,405 @@
+<!-- Start: Page -->
+<div class="page-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div
+          class="d-sm-flex justify-content-between align-items-center page-title-box mt-4"
+        >
+          <div>
+            <h4 class="fw-bold mb-sm-0 font-size-18">Transfert unique</h4>
+          </div>
+          <div class="page-title-right">
+            <ol class="breadcrumb m-0">
+              <li class="breadcrumb-item">
+                <a><span>Transactions</span></a>
+              </li>
+              <li class="breadcrumb-item active">
+                <span>Transfert aux Bénéficiaires Sauvegardés</span>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-8 col-xl-9">
+        <div class="card">
+          <div class="card-body">
+            <form
+              id="transfer-form"
+              class="a-besoin-d-une-validation transfert-form"
+              novalidate=""
+            >
+              <div class="pb-3">
+                <!-- <div class="row mb-3">
+                  <div class="col-xl">
+                    <div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <div class="mb-3">
+                              <label
+                                class="form-label fw-bold text-body required"
+                                >Type de transfert :</label
+                              >
+                              <div>
+                                <div class="form-check form-check-inline">
+                                  <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    id="existing-beneficiary"
+                                    checked=""
+                                    name="transfer-type"
+                                    value="existing"
+                                  /><label
+                                    class="form-check-label fw-semibold text-body"
+                                    for="existing-beneficiary"
+                                    >Bénéficiaire existant</label
+                                  >
+                                </div>
+                                <div class="form-check form-check-inline">
+                                  <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    id="my-accounts"
+                                    name="transfer-type"
+                                    value="my-accounts"
+                                  /><label
+                                    class="form-check-label fw-semibold text-body"
+                                    for="my-accounts"
+                                    >Mes comptes</label
+                                  >
+                                </div>
+                              </div>
+                            </div>
+                            <div class="valid-feedback">
+                              <span> Looks good! </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div> -->
+
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label
+                      class="form-label fw-bold text-body required"
+                      for="beneficiary-category"
+                    >
+                      Catégorie de Bénéficiaire :
+                    </label>
+                    <select
+                      class="form-select"
+                      [(ngModel)]="selectedTypeBeneficiaire"
+                      (change)="testChange($event)"
+                    >
+                      <option value="">-- Sélectionner un type --</option>
+
+                      <option
+                        *ngFor="let type of listeTypeBeneficiaire"
+                        [value]="type.vcName"
+                      >
+                        {{ type.vcName }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row mb-3" *ngIf="filteredBeneficiaire.length > 0">
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold text-body required">
+                      Bénéficiaire :
+                    </label>
+
+                    <select
+                      class="form-select"
+                      [ngModel]="selectedBeneficiaireId"
+                      (change)="onBeneficiaireChange($event)"
+                    >
+                      <option value="">-- Sélectionner un type --</option>
+                      <option
+                        *ngFor="let type of filteredBeneficiaire"
+                        [value]="type.BeneficiaryID"
+                      >
+                        {{ type.vcFirstName + " " + type.vcLastName +" | " +type.vcPhoneNumber }} 
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                 <div class="row mb-3" *ngIf="selectedBeneficiaire">
+                  <div class="col-md-6">
+                    <div id="beneficiary-info" class="info-grid">
+                      <span class="label">Numéro de compte :</span>
+                      <span class="value">{{
+                        selectedBeneficiaire.vcAccountNumber
+                      }}</span>
+
+                      <span class="label">Type de bénéficiaire :</span>
+                      <span class="value">{{
+                        selectedBeneficiaire.BeneficiaryTypeName
+                      }}</span>
+
+                      <span class="label">Nom :</span>
+                      <span class="value">{{
+                        selectedBeneficiaire.vcLastName
+                      }}</span>
+
+                      <span class="label">Prénom :</span>
+                      <span class="value">{{
+                        selectedBeneficiaire.vcFirstName
+                      }}</span>
+
+                      <span class="label">Email :</span>
+                      <span class="value">{{
+                        selectedBeneficiaire.vcEmail
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-xl">
+                    <div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <label
+                              class="form-label fw-bold text-body required"
+                              for="source-account"
+                              >Compte Source</label
+                            ><select
+                              data-bs-toggle="tooltip"
+                              data-bss-tooltip=""
+                              id="source-account"
+                              class="form-select source-account"
+                              data-trigger=""
+                              name="compte-source"
+                              placeholder="Compte Source"
+                              title="exemple message"
+                            >
+                              <option value="7308054285" selected="">
+                                7308054285
+                              </option>
+                              <option value="7308057753">
+                                7308057753
+                              </option></select
+                            ><span
+                              >Solde :&nbsp;<span>247 200 000 GNF</span></span
+                            >
+                            <div class="valid-feedback">
+                              <span> Looks good! </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-xl">
+                    <div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <label
+                              class="form-label fw-bold text-body required"
+                              for="amount"
+                              >Montant</label
+                            >
+                            <div class="row">
+                              <div class="col-4">
+                                <select
+                                  class="form-select currency"
+                                  data-trigger=""
+                                  name="Devise"
+                                  placeholder="Devise"
+                                >
+                                  <option value="GNF" selected="">GNF</option>
+                                </select>
+                              </div>
+                              <div class="col">
+                                <input
+                                  class="form-control item money amount"
+                                  type="text"
+                                  data-bs-toggle="tooltip"
+                                  data-bss-tooltip=""
+                                  id="amount"
+                                  name="montant"
+                                  title="exemple message"
+                                  required=""
+                                  placeholder="Entrez le montant"
+                                /><span
+                                  ><a class="link-primary" href="#"
+                                    >Visualiser les limites</a
+                                  ></span
+                                >
+                              </div>
+                            </div>
+                            <div class="valid-feedback">
+                              <span> Looks good! </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-xl">
+                    <div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <label class="form-label fw-bold text-body required"
+                              >Transférer quand</label
+                            >
+                            <div class="mb-3">
+                              <div class="form-check form-check-inline">
+                                <input
+                                  class="form-check-input transfer-time"
+                                  type="radio"
+                                  checked=""
+                                  name="transferTime"
+                                  value="maintenant"
+                                  onclick="toggleDateInput(false)"
+                                /><label
+                                  class="form-check-label fw-semibold text-body"
+                                  >Maintenant</label
+                                >
+                              </div>
+                              <div class="form-check form-check-inline">
+                                <input
+                                  class="form-check-input transfer-time"
+                                  type="radio"
+                                  name="transferTime"
+                                  value="plus tard"
+                                  onclick="toggleDateInput(true)"
+                                /><label
+                                  class="form-check-label fw-semibold text-body"
+                                  >Plus tard</label
+                                >
+                              </div>
+                            </div>
+                            <input
+                              class="form-control mt-2 transfer-date"
+                              type="datetime-local"
+                              style="display: none"
+                            />
+                            <div class="valid-feedback">
+                              <span> Looks good! </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-xl">
+                    <div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <label
+                              class="form-label fw-bold text-body required"
+                              for="remark"
+                              >Objet du transfert</label
+                            ><input
+                              class="form-control item transfer-object"
+                              type="text"
+                              data-bs-toggle="tooltip"
+                              data-bss-tooltip=""
+                              id="remark"
+                              name="objet_du_transfert"
+                              title="exemple message"
+                              required=""
+                            />
+                            <div class="valid-feedback">
+                              <span> Looks good! </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr class="bg-light" />
+              <div class="d-flex flex-wrap gap-2">
+                <button
+                  class="btn btn-primary waves-effect waves-light"
+                  data-bs-toggle="tooltip"
+                  data-bss-tooltip=""
+                  type="button"
+                  routerLink="/recap"
+                  title="Récapitulatif"
+                >
+                  Payer</button
+                ><button
+                  class="btn btn-outline-primary waves-effect waves-light"
+                  data-bs-toggle="tooltip"
+                  data-bss-tooltip=""
+                  type="reset"
+                  title="Réinitialiser le formulaire"
+                >
+                  Annuler</button
+                ><a
+                  class="btn btn-outline-primary align-self-center waves-effect waves-light border-0"
+                  role="button"
+                  data-bs-toggle="tooltip"
+                  data-bss-tooltip=""
+                  title="Annule toutes les modifications non sauvegardées et retourne à la page précédente."
+                  onclick="window.history.go(-1); return false;"
+                  action="action"
+                  value="Cancel"
+                  >Retour</a
+                >
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-xl-3">
+        <div class="card bg-light mb-4">
+          <div class="card-body">
+            <a href="#" class="custom-icon-container"
+              ><img
+                class="my-3"
+                src="../assets/img/images-bci/Icon-Info-BCI.svg?h=971d9075427a2ea3fd79b5880d5e839f"
+            /></a>
+            <p class="text-start mt-3">
+              Transférez des fonds sur vos comptes de BCI Guinée, vers d’autres
+              banques locales et à l’international.
+            </p>
+            <p class="fw-semibold text-start mt-3">
+              Vous effectuez un transfert international qui nécessite des
+              documents ? Ne vous inquiétez pas, suivez les étapes ci-dessous.
+            </p>
+            <ol>
+              <li>Accéder au menu bascule.</li>
+              <li>Cliquez sur plus de services.</li>
+              <li>Sélectionnez la notification.</li>
+              <li>Cliquez sur email.</li>
+              <li>Sélectionnez « Rédiger un e-mail ».</li>
+              <li>Sélectionnez votre sujet.</li>
+              <li>
+                Rédigez votre e-mail avec les documents suivants en pièces
+                jointes :
+                <ul>
+                  <li>Réception de virement international</li>
+                  <li>Pièces justificatives</li>
+                </ul>
+              </li>
+              <li>Soumettre.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End: Page -->

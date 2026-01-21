@@ -1,13 +1,232 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>BciAngularFront</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body>
-  <app-root></app-root>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>BCI-Online Guinée | Login</title>
+    <base href="/" />
+
+    <!-- Meta Description & Social -->
+    <meta
+      name="description"
+      content="Transformez la gestion financière de votre entreprise avec notre plateforme bancaire en ligne, conçue pour être rapide, sécurisée et facile à utiliser."
+    />
+    <meta
+      name="twitter:description"
+      content="Transformez la gestion financière de votre entreprise avec notre plateforme bancaire en ligne, conçue pour être rapide, sécurisée et facile à utiliser.
+
+- Payez en toute confiance :
+Réglez vos factures, salaires et échéances de prêt en ligne, en toute sécurité.
+
+- Gestion centralisée :
+Réalisez des paiements groupés pour vos bénéficiaires multiples en une seule opération.
+
+- Connectivité régionale :
+Effectuez des transferts de fonds sécurisés à travers l'Afrique via BCI.
+
+Simplifiez vos opérations bancaires avec BCI-Online Guinée, votre partenaire pour une gestion financière efficace."
+    />
+    <meta
+      property="og:description"
+      content="Transformez la gestion financière de votre entreprise avec notre plateforme bancaire en ligne, conçue pour être rapide, sécurisée et facile à utiliser."
+    />
+    <meta
+      property="og:title"
+      content="Tableau de Bord  |  Vue d'Ensemble Centrale"
+    />
+    <meta
+      name="twitter:title"
+      content="Tableau de Bord  |  Vue d'Ensemble Centrale"
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking%20-%202-W.svg?h=7e87f9d72e96197b57f9b69046cee031"
+    />
+    <meta
+      name="twitter:image"
+      content="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking%20-%202-W.svg?h=7e87f9d72e96197b57f9b69046cee031"
+    />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking.svg?h=7e87f9d72e96197b57f9b69046cee031"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking.svg?h=7e87f9d72e96197b57f9b69046cee031"
+      media="(prefers-color-scheme: dark)"
+    />
+
+    <!-- CSS Libraries -->
+    <link
+      rel="stylesheet"
+      href="assets/bootstrap/css/bootstrap.min.css?h=945fb3ff8106aaf5eda73c29e0d47826"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/boxicons.css?h=01ea17421fa239e3fda4042a854310f3"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/dripicons-v2.css?h=9102030d25ede9a6918d140c31e5bc4a"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/Font%20Awesome%205%20Brands.css?h=9102030d25ede9a6918d140c31e5bc4a"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/Font%20Awesome%205%20Free.css?h=9102030d25ede9a6918d140c31e5bc4a"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/Material%20Design%20Icons.css?h=fe00e6850b4c8f5e152476e2d3a5b2f4"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/fonts/ionicons.min.css?h=8c398b0f233f5b03278dc3f336fe836d"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/animate.min.css?h=5512c3e92e3931978c9ddcc7dbeed22b"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/choices.js/public/assets/styles/choices.min.css?h=a1a06d2a8db3d9fca149a133beff564a"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/@simonwep/pickr/themes/classic.min.css?h=2afe4ba7b2960ea218e54d0c0f995a9b"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/@simonwep/pickr/themes/monolith.min.css?h=320a34e462aeddfadeca46c8ee01cd79"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/flatpickr/flatpickr.min.css?h=d2f19a8823dc8e4856efa64342d9f16f"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/@simonwep/pickr/themes/nano.min.css?h=818ac9985aa7a8ad6ea64ff6e6600ff1"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/alertifyjs/build/css/alertify.min.css?h=7cc661044fbf05dcbecebd0869f93362"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css?h=51a463178bbdce761ff5bb18d1b16eb5"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css?h=f48f88c915a4332a2eea3bfa1711b99e"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/alertifyjs/build/css/themes/default.min.css?h=6e2309c2f542f910c6e1c2e88b836407"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css?h=b88e3e3903e65ef872cb9faa2f7f2c27"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/dropzone/min/dropzone.min.css?h=1eb0646b467dce744d6feaf3c8a8aa93"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/glightbox/css/glightbox.min.css?h=449d75dc1ba70a25f3328abfb719e29b"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/libs/twitter-bootstrap-wizard/prettify.css?h=2a968d52385c2ec03b09e875a3858cd5"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/css/preloader.min.css?h=2bf7c500befc5a482fd92647455d4301"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/css/bootstrap.min.css?h=c85cf501e5b9166fdd9779b10b8ab989"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/css/icons.min.css?h=b37985d8d6f28694337b6e7cc0c6670a"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/css/bci-online_app.css?h=02ae9e5fe7564d0e6c214d457b52ecc6"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/css/custom-charts-vue-financiers.css?h=ab95af98bb0406547cee8fd1b24a8c1c"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/css/pages/tableau-de-bord-table.css?h=3888d4a4ce4d9232748d0aff5eac0c51"
+    />
+  </head>
+
+  <body
+    data-sidebar="brand"
+    data-layout-scrollable="false"
+    data-topbar="brand"
+    data-bs-theme="light"
+    data-layout-size="fluid"
+    data-sidebar-size="sm"
+  >
+   <!-- data-sidebar-size="sm" -->
+    <app-root></app-root>
+    <!-- JS Libraries -->
+ <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="assets/js/jquery.min.js?h=6bcc3684f18aa21874fa709f122723cf"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js?h=2cf0875e1daf356bc4e64c053e7a4150"></script>
+    <script src="assets/js/bs-init.js?h=c89b2ee6f7d3254549def0d35e24b569"></script>
+    <script src="assets/js/libs/jquery/jquery.min.js?h=2c872dbe60f4ba70fb85356113d8b35e"></script>
+    <script src="assets/js/libs/metismenu/metisMenu.min.js?h=08aca17433d0babc245a5a2f341dde9f"></script>
+    <script src="assets/js/libs/simplebar/simplebar.min.js?h=4cbf4903e55851c81ff41f4c0a06ff25"></script>
+    <script src="assets/js/libs/node-waves/waves.min.js?h=9a5b3dfca09d9e3005dc697162d4bc65"></script>
+    <script src="assets/js/libs/feather-icons/feather.min.js?h=4602a34fcee444b0dcb253622929411f"></script>
+    <script src="assets/js/libs/flatpickr/flatpickr.min.js?h=19f49a9a1665777b11b2004ff4926d92"></script>
+    <script src="assets/js/libs/choices.js/public/assets/scripts/choices.min.js?h=4fb4b0cf46fce451a8eec2719f558e04"></script>
+    <script src="assets/js/libs/datatables.net/js/jquery.dataTables.min.js?h=0602e844ef173be0763418267b8468be"></script>
+    <script src="assets/js/libs/pace-js/pace.min.js?h=094ce2780af2906e8916dc4c4eab6ee1"></script>
+    <script src="assets/js/libs/@simonwep/pickr/pickr.min.js?h=c26ea595d5c98c762a481542b104ba5e"></script>
+    <script src="assets/js/libs/echarts/echarts.min.js?h=38588d6b8c7c30b9941c28c01b389b88"></script>
+    <script src="assets/js/libs/apexcharts/apexcharts.min.js?h=4da1c3fc47e506122aebb2736bc0a386"></script>
+    <script src="assets/js/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js?h=03d6b9e9ad8a630d96afd0ed2c2128bb"></script>
+    <script src="assets/js/libs/@simonwep/pickr/pickr.es5.min.js?h=9b61bbf5828815a02ec183075e856fd8"></script>
+    <script src="assets/js/libs/datatables.net-responsive/js/dataTables.responsive.min.js?h=ae3a182a71cf172c3b4d394d95101b7a"></script>
+    <script src="assets/js/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js?h=5d1f7825067d7c727c7ef74bfd288582"></script>
+    <script src="assets/js/libs/alertifyjs/build/alertify.min.js?h=4b92e632306b308d628b73ad45c14376"></script>
+    <script src="assets/js/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js?h=5fb16c60d3c8b7759b258689888bf47d"></script>
+    <script src="assets/js/js/bci-online_app.js?h=29f06844732181d1ff697d12a26648ff"></script>
+    <script src="assets/js/js/form-advanced.js?h=13c35c2372f2b00498b3c8991f8ff329"></script>
+    <script src="assets/js/js/tableau_de_bord_bci-online.init.js?h=bb9de87af8f5c5a6c8727ed007f2b2d2"></script>
+    <script src="assets/js/libs/@ckeditor/ckeditor5-build-classic/build/translations/fr.js?h=30fd491ec99f8eec74f02748a86657f6"></script>
+    <script src="assets/js/libs/flatpickr/fr.js?h=207b5636345357bb3674978427292bed"></script>
+    <script src="assets/js/libs/jquery-mask/jquery.mask.min.js?h=cc290e6c3aeecf5021dd82ad8df2512a"></script>
+    <script src="assets/js/js/form-validation.js?h=6d80a217fd001a200a45a25209a435a2"></script>
+    <script src="assets/js/js/input_mask.js?h=45748c9df9e6701495283eba1c636b0e"></script>
+    <script src="assets/js/js/message_editor.js?h=79dc958c9b302febff3cd210f27b7d10"></script>
+    <script src="assets/js/js/notifications-custom1.js?h=a08d4e4c9c5311194c7e64cb8cabc168"></script>
+    <script src="assets/js/libs/glightbox/js/glightbox.min.js?h=2b4c8cbaade24ecb58bcb0d89694ccee"></script>
+    <script src="assets/js/js/lightbox.init.js?h=dd5604614d7708e3fd93fd53dd970ea7"></script>
+    <script src="assets/js/js/others_custom_bci-online.js?h=4a6505b3f32cbea39e9eeda01bab915f"></script>
+    <script src="assets/js/libs/dropzone/min/dropzone.min.js?h=764c30a8823cf32fe9516dd9aff1b743"></script>
+    <script src="assets/js/js/table-row-link-js-others.js?h=b9af3febeca811dd41710261c620d1b"></script>
+    <script src="assets/js/js/btn-show-pill.js?h=c80ccf76be26c599cc967319f60f340b"></script>
+    <script src="assets/js/libs/twitter-bootstrap-wizard/jquery.bootstrap.wizard.min.js?h=d42be8dfc47735399529a0707d8eebc0"></script>
+    <script src="assets/js/js/checkbox-radio-dynamique.js?h=c770479c92f594a049b58b2dbc1c4f8e"></script>
+    <script src="assets/js/libs/twitter-bootstrap-wizard/prettify.js?h=1dff693b7692757c5aeee0c75979301f"></script>
+    <script src="assets/js/js/form-wizard.init.js?h=9a20518aecd2137e9f8cb63c383dee0c"></script>
+    <script src="assets/js/js/preview.image.js?h=9cbe7b557e67799245f2b97c74f2f17a"></script>
+    <script src="assets/js/js/tableau_de_bord.js?h=5b0c2c4727d11355f02c4ed66ac8485a"></script>
+    <script src="assets/js/libs/jsPDF-3-0-1/jspdf.umd.min.js?h=ab0f9618da854f4e6045b9fcb2ae383a"></script>
+  </body>
 </html>

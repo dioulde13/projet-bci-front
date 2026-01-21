@@ -1,0 +1,12 @@
+@font-face {
+	font-family: 'Font Awesome 5 Brands';
+	src: url(../../assets/fonts/Font%20Awesome%205%20Brands-01f926cd6414c3d78c980383447bffcd.eot?h=9102030d25ede9a6918d140c31e5bc4a) format('embedded-opentype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Brands-01f926cd6414c3d78c980383447bffcd.eot?h=9102030d25ede9a6918d140c31e5bc4a) format('embedded-opentype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Brands-568d0e6ae98b66c616924d07e9259379.woff2?h=9102030d25ede9a6918d140c31e5bc4a) format('woff2'),
+	url(../../assets/fonts/Font%20Awesome%205%20Brands-d9e3d182b4e0b82e8859e955522ce9d5.woff?h=9102030d25ede9a6918d140c31e5bc4a) format('woff'),
+	url(../../assets/fonts/Font%20Awesome%205%20Brands-e4d6aa2f441c5183b8280a8b806c06cd.ttf?h=9102030d25ede9a6918d140c31e5bc4a) format('truetype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Brands-b300678e3fd77a4f9f1ab64bde20677d.svg?h=9102030d25ede9a6918d140c31e5bc4a) format('svg');
+	font-weight: 400;
+	font-style: normal;
+	font-display: block;
+}

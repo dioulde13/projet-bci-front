@@ -1,0 +1,7 @@
+.custom-snackbar {
+  background-color: #4caf50; /* vert succès */
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 8px;
+}

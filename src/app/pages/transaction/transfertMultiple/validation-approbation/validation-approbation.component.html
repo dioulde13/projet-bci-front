@@ -1,0 +1,1146 @@
+<!-- Start: Page -->
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
+                    <div>
+                        <h4 class="mb-sm-0 font-size-18 fw-bolder">Transferts multiples</h4>
+                    </div>
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a><span>Transactions</span></a></li>
+                            <li class="breadcrumb-item active"><span>Transferts multiples</span></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header d-flex">
+                        <div class="flex-shrink-0">
+                            <ul class="nav nav-pills card-header-pills">
+                                <li class="nav-item"><a class="nav-link" routerLink="/preparationPaie"><span
+                                            class="d-block d-sm-none" data-bs-toggle="tooltip" data-bss-tooltip=""
+                                            title="Préparation de la Paie"><i
+                                                class="icon ion-load-a font-size-18 align-middle me-2"></i></span><span
+                                            class="d-none d-sm-block"><i
+                                                class="icon ion-load-a font-size-18 align-middle me-2"></i>Préparation
+                                            de la Paie</span></a></li>
+                                <li class="nav-item"><a class="nav-link" routerLink="/calculPaie"><span
+                                            class="d-block d-sm-none" data-bs-toggle="tooltip" data-bss-tooltip=""
+                                            title="Calcul de la Paie"><i
+                                                class="icon ion-calculator font-size-18 align-middle me-2"></i></span><span
+                                            class="d-none d-sm-block"><i
+                                                class="icon ion-calculator font-size-18 align-middle me-2"></i>Calcul de
+                                            la Paie</span></a></li>
+                                <li class="nav-item"><a class="nav-link active"
+                                        routerLink="/validationApprobation"><span class="d-block d-sm-none"
+                                            data-bs-toggle="tooltip" data-bss-tooltip=""
+                                            title="Validation et Approbation"><i
+                                                class="icon ion-android-done-all font-size-18 align-middle me-2"></i></span><span
+                                            class="d-none d-sm-block"><i
+                                                class="icon ion-android-done-all font-size-18 align-middle me-2"></i>Validation
+                                            et Approbation</span></a></li>
+                                <li class="nav-item"><a class="nav-link" routerLink="/executeDistribution"><span
+                                            class="d-block d-sm-none" data-bs-toggle="tooltip" data-bss-tooltip=""
+                                            title="Exécution et Distribution"><i
+                                                class="icon ion-arrow-swap font-size-16 align-middle me-2"></i></span><span
+                                            class="d-none d-sm-block"><i
+                                                class="icon ion-arrow-swap font-size-16 align-middle me-2"></i>Exécution
+                                            et Distribution</span></a></li>
+                                <li class="nav-item"><a class="nav-link"><span class="d-block d-sm-none"
+                                            data-bs-toggle="tooltip" data-bss-tooltip=""
+                                            title="Reporting et Conformité"><i
+                                                class="icon ion-document-text font-size-16 align-middle me-2"></i></span><span
+                                            class="d-none d-sm-block"><i
+                                                class="icon ion-document-text font-size-16 align-middle me-2"></i>Reporting
+                                            et Conformité</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Start: Tab -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
+                                    <div>
+                                        <h4 class="fw-semibold mb-sm-0 font-size-18">Validation et Approbation des
+                                            Paiements</h4>
+                                        <p class="text-secondary font-size-13 my-sm-2">Assurez-vous de vérifier et
+                                            d'approuver les données de paie préparées avant qu'elles ne soient
+                                            finalisées et exécutées.</p>
+                                    </div>
+                                    <div class="page-title-right">
+                                        <div class="d-flex align-items-center gap-1 mb-4">
+                                            <div class="form-group">
+                                                <div class="input-group" #datepickerContainer>
+                                                    <input type="text" class="form-control"
+                                                        placeholder="Sélectionner une date et heure" #datepickerInput>
+                                                    <button class="btn btn-outline-secondary" type="button"
+                                                        (click)="openCalendar()">
+                                                        <i class="bx bx-calendar-event"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card email-leftbar">
+                                            <h6>Menu :</h6>
+                                            <div class="messages-list">
+                                                <div class="flex-column nav nav-pills"
+                                                    id="v-pills-tab-Validation-et-Approbation-des-Paiements"
+                                                    role="tablist" aria-orientation="vertical">
+                                                    <a id="v-pills-recapitulatifDesInformations-tab"
+                                                        (click)="toggleTabPaiements(false)" class="mb-2 active"
+                                                        data-bs-toggle="pill"
+                                                        href="#v-pills-recapitulatifDesInformations" role="tab"
+                                                        aria-controls="v-pills-recapitulatifDesInformations"
+                                                        aria-selected="true">
+                                                        <i class="icon ion-stats-bars font-size-18 align-middle me-2">
+
+                                                        </i>
+                                                        Récapitulatif
+                                                    </a>
+                                                    <a id="v-pills-DetailsDesPaiements-tab" class="mb-2"
+                                                        data-bs-toggle="pill" href="#v-pills-DetailsDesPaiements"
+                                                        role="tab" aria-controls="v-pills-DetailsDesPaiements"
+                                                        aria-selected="false">
+                                                        <i class="icon ion-ios-folder font-size-18 align-middle me-2">
+
+                                                        </i>
+                                                        Détails des paiement
+                                                    </a>
+                                                    <a class="text-nowrap mb-2"
+                                                        id="v-pills-AnomaliesEtAvertissements-tab" data-bs-toggle="pill"
+                                                        href="#v-pills-AnomaliesEtAvertissements" role="tab"
+                                                        aria-controls="v-pills-AnomaliesEtAvertissements"
+                                                        aria-selected="false"><i
+                                                            class="icon ion-alert-circled font-size-18 align-middle me-2"></i>Anomalies</a><a
+                                                        id="v-pills-HistoriqueEtTracabilite-tab" class="mb-2"
+                                                        data-bs-toggle="pill" href="#v-pills-HistoriqueEtTracabilite"
+                                                        role="tab" aria-controls="v-pills-settings"
+                                                        aria-selected="false"><i
+                                                            class="icon ion-ios-paper font-size-18 align-middle me-2"></i>Historique
+                                                        et Traçabilité</a>
+                                                </div>
+                                            </div>
+                                            <h6 class="mt-4">Filtrer par :</h6>
+                                            <div class="messages-list mt-1"><a><span
+                                                        class="text-success float-end mdi mdi-arrow-right-drop-circle"></span>Vérifié</a><a><span
+                                                        class="text-warning float-end mdi mdi-arrow-right-drop-circle"></span>A
+                                                    vérifié</a><a><span
+                                                        class="text-danger float-end mdi mdi-arrow-right-drop-circle"></span>Rejeté</a>
+                                            </div>
+                                        </div>
+                                        <div class="email-rightbar mb-3">
+                                            <div class="card">
+                                                <div class="btn-toolbar gap-2 p-3" role="toolbar">
+                                                    <div class="btn-group" role="group"><button
+                                                            class="btn btn-success waves-light waves-effect"
+                                                            data-bs-toggle="modal" data-bss-tooltip="" type="button"
+                                                            title="Confirmez tous les détails de la paie comme corrects."
+                                                            ata-bs-toggle="modal"
+                                                            data-bs-target="#validerTouslesPaiements-2"><i
+                                                                class="icon ion-checkmark me-2"></i>Valider Tous les
+                                                            Paiements</button><button
+                                                            class="btn btn-primary waves-light waves-effect"
+                                                            data-bs-toggle="modal" data-bss-tooltip="" type="button"
+                                                            title="Soumettre pour Paiement"
+                                                            data-bs-target="#soumettrePourPaiement-1"><i
+                                                                class="icon ion-android-send me-2"></i><span
+                                                                style="color: var(--bs-btn-hover-color);">Soumettre pour
+                                                                Paiement</span></button><button
+                                                            class="btn btn-danger waves-light waves-effect"
+                                                            data-bs-toggle="modal" data-bss-tooltip="" type="button"
+                                                            title="Rejeter et Retourner pour Correction." role="button"
+                                                            data-bs-target="#rejeterEtRetournerPourCorrection-1"><i
+                                                                class="icon ion-close-round me-2"></i><span
+                                                                style="color: var(--bs-btn-hover-color);">Rejeter et
+                                                                Retourner pour Correction</span></button></div>
+                                                </div>
+                                                <div class="text-muted tab-content mt-4 mt-md-0 gap-2 p-3"
+                                                    id="v-pills-tabContent-Validation-et-Approbation-des-Paiements">
+                                                    <div id="v-pills-recapitulatifDesInformations" *ngIf="!isActive"
+                                                        class="tab-pane fade show active" role="tabpanel"
+                                                        aria-labelledby="v-pills-recapitulatifDesInformations-tab">
+                                                        <div class="card mb-0">
+                                                            <div class="card-header pt-5">
+                                                                <h5 class="card-title font-size-15"><i
+                                                                        class="icon ion-stats-bars font-size-18 align-middle me-2">
+                                                                    </i><strong>
+                                                                        Récapitulatif
+                                                                        des Informations de Paie</strong>
+                                                                </h5>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-6 col-xl-4">
+                                                                        <div class="card card-h-100">
+                                                                            <div class="card-header"><span
+                                                                                    class="fw-semibold text-body d-block lh-1">Total
+                                                                                    des Paiements à Émettre</span></div>
+                                                                            <div class="card-body">
+                                                                                <div class="row align-items-center">
+                                                                                    <div class="col-12">
+                                                                                        <h4 class="mb-3"><span
+                                                                                                class="currencycounter"
+                                                                                                data-target="105367000">0</span>
+                                                                                        </h4>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="text-nowrap"><span
+                                                                                        class="badge text-light bg-danger">-
+                                                                                        7%</span><span
+                                                                                        class="text-muted ms-1 font-size-13">Ce
+                                                                                        Mois</span></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-6 col-xl-4">
+                                                                        <div class="card card-h-100">
+                                                                            <div class="card-header"><span
+                                                                                    class="fw-semibold text-body d-block lh-1">Bénéficiaires
+                                                                                    concernés</span></div>
+                                                                            <div class="card-body">
+                                                                                <div class="row align-items-center">
+                                                                                    <div class="col-12">
+                                                                                        <h4 class="mb-3"><span
+                                                                                                class="counter-value"
+                                                                                                data-target="4">0</span>
+                                                                                        </h4>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="text-nowrap"><span
+                                                                                        class="badge text-success bg-success-subtle">+
+                                                                                        2%</span><span
+                                                                                        class="text-muted ms-1 font-size-13">Ce
+                                                                                        Mois</span></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-6 col-xl-4">
+                                                                        <div class="card card-h-100">
+                                                                            <div class="card-header"><span
+                                                                                    class="fw-semibold text-body d-block lh-1">En
+                                                                                    attente de mon approbation</span>
+                                                                            </div>
+                                                                            <div class="card-body">
+                                                                                <div class="row align-items-center">
+                                                                                    <div class="col-12">
+                                                                                        <h4 class="mb-3"><span
+                                                                                                class="counter-value"
+                                                                                                data-target="1">0</span>
+                                                                                        </h4>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="text-nowrap">
+                                                                                    <button *ngIf="!isActive"
+                                                                                        class="btn btn-primary btn-sm mb-2"
+                                                                                        (click)="toggleTabPaiements(true)"
+                                                                                        type="button">
+                                                                                        <i
+                                                                                            class="icon ion-arrow-right-b font-size-14 me-2"></i>
+                                                                                        Consulter la liste
+                                                                                    </button>
+
+                                                                                    <button *ngIf="isActive"
+                                                                                        class="btn btn-secondary btn-sm mb-2"
+                                                                                        (click)="toggleTabPaiements(false)"
+                                                                                        type="button">
+                                                                                        <i
+                                                                                            class="icon ion-arrow-up-b font-size-14 me-2"></i>
+                                                                                        Masquer la liste
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="tab-pane fade" [class.active]="isActive"
+                                                        [class.show]="isActive" id="v-pills-DetailsDesPaiements"
+                                                        role="tabpanel"
+                                                        aria-labelledby="v-pills-DetailsDesPaiements-tab">
+                                                        <div class="card mb-0">
+                                                            <div class="card-header pt-5">
+                                                                <h5 class="card-title font-size-15">
+                                                                    <i
+                                                                        class="icon ion-ios-folder font-size-18 align-middle me-2">
+
+                                                                    </i>
+                                                                    <strong>
+                                                                        En attente de mon approbation
+                                                                    </strong>
+                                                                </h5>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <div class="table-responsive text-nowrap table">
+                                                                    <table
+                                                                        class="table table-striped link-table datatable align-middle dt-responsive table-check nowrap display">
+                                                                        <thead>
+                                                                            <tr class="bg-transparent">
+                                                                                <th style="width:30px;" scope="col">
+                                                                                    <div
+                                                                                        class="form-check font-size-16">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"
+                                                                                            id="checkAll-1" name="check"
+                                                                                            autocomplete="off"
+                                                                                            onclick="eventCheckBox()"
+                                                                                            checked=""><label
+                                                                                            class="form-check-label"
+                                                                                            for="checkAll-1"></label>
+                                                                                    </div>
+                                                                                </th>
+                                                                                <th>ID</th>
+                                                                                <th style="width:120px;">Objet du
+                                                                                    transfert</th>
+                                                                                <th>Date prévue</th>
+                                                                                <th>Montant</th>
+                                                                                <th class="Statut de Vérification">
+                                                                                    Statut de Vérification</th>
+                                                                                <th>Nbre de bénéficiaires</th>
+                                                                                <th class="column300px">Description</th>
+                                                                                <th class="column300px">Compte Source
+                                                                                </th>
+                                                                                <th style="width:150px;">Exporter en PDF
+                                                                                </th>
+                                                                                <th style="width:90px;">Actions</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <tr
+                                                                                data-link="detailsValidationApprobation.html">
+                                                                                <td>
+                                                                                    <div
+                                                                                        class="form-check font-size-16">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"><label
+                                                                                            class="form-check-label"></label>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td>00010</td>
+                                                                                <td><a class="text-body fw-medium"
+                                                                                        href="gestion-de-la-paie/traitement-de-la-paie/details-de-la-paie.html">Orange
+                                                                                        Guinée</a></td>
+                                                                                <td> 02/12/2024 10:00</td>
+                                                                                <td class="money"> 59885000</td>
+                                                                                <td class="no-link"><span
+                                                                                        class="badge badge-soft-success font-size-12">Vérifié</span>
+                                                                                </td>
+                                                                                <td> 4</td>
+                                                                                <td class="column300px"> Ce transfert
+                                                                                    couvre les paiements des recharges
+                                                                                    téléphoniques pour les lignes
+                                                                                    professionnelles de nos employés,
+                                                                                    indispensables pour leurs activités
+                                                                                    quotidiennes. Le montant est basé
+                                                                                    sur le forfait mensuel contractuel.
+                                                                                </td>
+                                                                                <td
+                                                                                    class="text-start align-items-center column300px no-link">
+                                                                                    CPTES COURANTS - SOCIETES<br><a
+                                                                                        routerLink="/detailDuCompte">7308054285</a>
+                                                                                </td>
+                                                                                <td class="no-link">
+                                                                                    <div><button
+                                                                                            class="btn btn-soft-light btn-sm w-xs waves-effect btn-label waves-light"
+                                                                                            type="button"><i
+                                                                                                class="bx bx-download label-icon"></i>
+                                                                                            Pdf</button></div>
+                                                                                </td>
+                                                                                <td class="no-link">
+                                                                                    <div class="dropdown"><button
+                                                                                            class="btn dropdown-toggle btn-link font-size-18 shadow-none py-0 text-muted"
+                                                                                            aria-expanded="false"
+                                                                                            data-bs-toggle="dropdown"
+                                                                                            type="button"><i
+                                                                                                class="icon ion-android-more-horizontal"></i></button>
+                                                                                        <div class="dropdown-menu">
+                                                                                            <a
+                                                                                                class="dropdown-item"
+                                                                                                data-bs-target="#modifierDetailsPaie"
+                                                                                                data-bs-toggle="modal">Éditer</a>
+                                                                                                <a
+                                                                                                class="dropdown-item"
+                                                                                                routerLink="/detailsValidationApprobation">Voir
+                                                                                                Détails</a></div>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr
+                                                                                data-link="detailsValidationApprobation.html">
+                                                                                <td>
+                                                                                    <div
+                                                                                        class="form-check font-size-16">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"><label
+                                                                                            class="form-check-label"></label>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td>00010</td>
+                                                                                <td><a class="text-body fw-medium"
+                                                                                        href="gestion-de-la-paie/traitement-de-la-paie/details-de-la-paie.html">Orange
+                                                                                        Guinée</a></td>
+                                                                                <td> 02/12/2024 10:00</td>
+                                                                                <td class="money"> 59885000</td>
+                                                                                <td class="no-link"><span
+                                                                                        class="badge badge-soft-success font-size-12">Vérifié</span>
+                                                                                </td>
+                                                                                <td> 4</td>
+                                                                                <td class="column300px"> Ce transfert
+                                                                                    couvre les paiements des recharges
+                                                                                    téléphoniques pour les lignes
+                                                                                    professionnelles de nos employés,
+                                                                                    indispensables pour leurs activités
+                                                                                    quotidiennes. Le montant est basé
+                                                                                    sur le forfait mensuel contractuel.
+                                                                                </td>
+                                                                                <td
+                                                                                    class="text-start align-items-center column300px no-link">
+                                                                                    CPTES COURANTS - SOCIETES<br><a
+                                                                                        routerLink="/detailDuCompte">7308054285</a>
+                                                                                </td>
+                                                                                <td class="no-link">
+                                                                                    <div><button
+                                                                                            class="btn btn-soft-light btn-sm w-xs waves-effect btn-label waves-light"
+                                                                                            type="button"><i
+                                                                                                class="bx bx-download label-icon"></i>
+                                                                                            Pdf</button></div>
+                                                                                </td>
+                                                                                <td class="no-link">
+                                                                                    <div class="dropdown"><button
+                                                                                            class="btn dropdown-toggle btn-link font-size-18 shadow-none py-0 text-muted"
+                                                                                            aria-expanded="false"
+                                                                                            data-bs-toggle="dropdown"
+                                                                                            type="button"><i
+                                                                                                class="icon ion-android-more-horizontal"></i></button>
+                                                                                        <div class="dropdown-menu"><a
+                                                                                                class="dropdown-item"
+                                                                                                data-bs-target="#modifierDetailsPaie"
+                                                                                                data-bs-toggle="modal">Éditer</a><a
+                                                                                                class="dropdown-item"
+                                                                                                routerLink="/detailsValidationApprobation">Voir
+                                                                                                Détails</a></div>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr
+                                                                                data-link="detailsValidationApprobation.html">
+                                                                                <td>
+                                                                                    <div
+                                                                                        class="form-check font-size-16">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"><label
+                                                                                            class="form-check-label"></label>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td> 00009</td>
+                                                                                <td><a class="text-body fw-medium">E-Cash
+                                                                                        Guinée</a></td>
+                                                                                <td> 05/12/2024 09:20</td>
+                                                                                <td class="money">148000000</td>
+                                                                                <td class="no-link"><span
+                                                                                        class="badge badge-soft-warning font-size-12">En
+                                                                                        attente de ma validation</span>
+                                                                                </td>
+                                                                                <td> 60</td>
+                                                                                <td class="column300px">Paiement destiné
+                                                                                    à alimenter les portefeuilles
+                                                                                    électroniques de nos partenaires
+                                                                                    commerciaux. Ce transfert vise à
+                                                                                    faciliter les transactions pour le
+                                                                                    règlement des prestations récentes.
+                                                                                </td>
+                                                                                <td
+                                                                                    class="text-start align-items-center column300px no-link">
+                                                                                    CPTES COURANTS INTERIMAIRE<br><a
+                                                                                        routerLink="/detailDuCompte">7308057753</a>
+                                                                                </td>
+                                                                                <td class="no-link">
+                                                                                    <div><button
+                                                                                            class="btn btn-soft-light btn-sm w-xs waves-effect btn-label waves-light"
+                                                                                            type="button"><i
+                                                                                                class="bx bx-download label-icon"></i>
+                                                                                            Pdf</button></div>
+                                                                                </td>
+                                                                                <td class="no-link">
+                                                                                    <div class="dropdown"><button
+                                                                                            class="btn dropdown-toggle btn-link font-size-18 shadow-none py-0 text-muted"
+                                                                                            aria-expanded="false"
+                                                                                            data-bs-toggle="dropdown"
+                                                                                            type="button"><i
+                                                                                                class="icon ion-android-more-horizontal"></i></button>
+                                                                                        <div class="dropdown-menu"><a
+                                                                                                class="dropdown-item"
+                                                                                                data-bs-target="#modifierDetailsPaie"
+                                                                                                data-bs-toggle="modal">Éditer</a><a
+                                                                                                class="dropdown-item"
+                                                                                                routerLink="/detailsValidationApprobation">Voir
+                                                                                                Détails</a></div>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr
+                                                                                data-link="detailsValidationApprobation.html">
+                                                                                <td>
+                                                                                    <div
+                                                                                        class="form-check font-size-16">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"><label
+                                                                                            class="form-check-label"></label>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td> 00008</td>
+                                                                                <td><a class="text-body fw-medium">Distributeur
+                                                                                        Mamadou</a></td>
+                                                                                <td> 07/12/2024 12:30</td>
+                                                                                <td class="money"> 60229000</td>
+                                                                                <td class="no-link"><span
+                                                                                        class="badge badge-soft-warning font-size-12">En
+                                                                                        attente de ma validation</span>
+                                                                                </td>
+                                                                                <td> 100</td>
+                                                                                <td class="column300px">Ce paiement
+                                                                                    représente les commissions dues au
+                                                                                    distributeur agréé Mamadou pour la
+                                                                                    gestion efficace de la distribution
+                                                                                    de nos produits dans les régions
+                                                                                    assignées au cours du mois dernier.
+                                                                                </td>
+                                                                                <td
+                                                                                    class="text-start align-items-center column300px no-link">
+                                                                                    CPTES COURANTS INTERIMAIRE<br><a
+                                                                                        routerLink="/detailDuCompte">7308057753</a>
+                                                                                </td>
+                                                                                <td class="no-link">
+                                                                                    <div><button
+                                                                                            class="btn btn-soft-light btn-sm w-xs waves-effect btn-label waves-light"
+                                                                                            type="button"><i
+                                                                                                class="bx bx-download label-icon"></i>
+                                                                                            Pdf</button></div>
+                                                                                </td>
+                                                                                <td class="no-link">
+                                                                                    <div class="dropdown"><button
+                                                                                            class="btn dropdown-toggle btn-link font-size-18 shadow-none py-0 text-muted"
+                                                                                            aria-expanded="false"
+                                                                                            data-bs-toggle="dropdown"
+                                                                                            type="button"><i
+                                                                                                class="icon ion-android-more-horizontal"></i></button>
+                                                                                        <div class="dropdown-menu"><a
+                                                                                                class="dropdown-item"
+                                                                                                data-bs-target="#modifierDetailsPaie"
+                                                                                                data-bs-toggle="modal">Éditer</a><a
+                                                                                                class="dropdown-item"
+                                                                                                routerLink="/detailsValidationApprobation">Voir
+                                                                                                Détails</a></div>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="v-pills-AnomaliesEtAvertissements" class="tab-pane fade"
+                                                        role="tabpanel"
+                                                        aria-labelledby="v-pills-AnomaliesEtAvertissements-tab">
+                                                        <div class="card mb-0">
+                                                            <div class="card-header pt-5">
+                                                                <h5 class="card-title font-size-15"><i
+                                                                        class="icon ion-ios-paper font-size-18 align-middle me-2"></i><strong>Anomalies
+                                                                        et Avertissements</strong></h5>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <div class="table-responsive text-nowrap table">
+                                                                    <table
+                                                                        class="table table-striped link-table datatable align-middle dt-responsive table-check nowrap display">
+                                                                        <thead>
+                                                                            <tr class="bg-transparent">
+                                                                                <th style="width:30px;" scope="col">
+                                                                                    <div
+                                                                                        class="form-check font-size-16">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"
+                                                                                            id="checkAll-2" name="check"
+                                                                                            autocomplete="off"
+                                                                                            onclick="eventCheckBox()"
+                                                                                            checked=""><label
+                                                                                            class="form-check-label"
+                                                                                            for="checkAll-2"></label>
+                                                                                    </div>
+                                                                                </th>
+                                                                                <th>ID</th>
+                                                                                <th style="width:120px;">Nom de
+                                                                                    l'Employé</th>
+                                                                                <th>Statut</th>
+                                                                                <th class="text-break">Anomalies
+                                                                                    Identifiées</th>
+                                                                                <th style="width:90px;">Actions</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <tr
+                                                                                data-link="detailsValidationApprobation.html">
+                                                                                <td>
+                                                                                    <div
+                                                                                        class="form-check font-size-16">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"><label
+                                                                                            class="form-check-label"></label>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td>00009</td>
+                                                                                <td><a class="text-body fw-medium"
+                                                                                        href="/details-de-la-paie.html">Henry
+                                                                                        TOURE</a></td>
+                                                                                <td class="no-link"><span
+                                                                                        class="badge badge-soft-danger font-size-12"><i
+                                                                                            class="icon ion-alert-circled font-size-18 align-middle me-2"></i>Erreur</span>
+                                                                                </td>
+                                                                                <td class="text-break"> Déductions
+                                                                                    supérieures aux seuils autorisés.
+                                                                                </td>
+                                                                                <td class="no-link">
+                                                                                    <div class="dropdown"><button
+                                                                                            class="btn dropdown-toggle btn-link font-size-18 shadow-none py-0 text-muted"
+                                                                                            aria-expanded="false"
+                                                                                            data-bs-toggle="dropdown"
+                                                                                            type="button"><i
+                                                                                                class="icon ion-android-more-horizontal"></i></button>
+                                                                                        <div class="dropdown-menu"><a
+                                                                                                class="dropdown-item"
+                                                                                                routerLink="/modificationDetailBeneficiaire">Corriger</a><!-- Start: Ignorer une anomalie --><a
+                                                                                                class="dropdown-item"
+                                                                                                data-bs-target="#IgnorerAnomalie-1"
+                                                                                                data-bs-toggle="modal"
+                                                                                                type="button"
+                                                                                                title="Ignorer une anomalie détectée.">Ignorer</a><!-- End: Ignorer une anomalie --><a
+                                                                                                class="dropdown-item"
+                                                                                                routerLink="/detailsValidationApprobation">Voir
+                                                                                                Détails</a></div>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr
+                                                                                data-link="detailsValidationApprobation.html">
+                                                                                <td>
+                                                                                    <div
+                                                                                        class="form-check font-size-16">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"><label
+                                                                                            class="form-check-label"></label>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td> 00008</td>
+                                                                                <td><a class="text-body fw-medium">Henry
+                                                                                        TOURE</a></td>
+                                                                                <td class="no-link"><span
+                                                                                        class="badge badge-soft-danger font-size-12"><i
+                                                                                            class="icon ion-alert-circled font-size-18 align-middle me-2"></i>Erreur</span>
+                                                                                </td>
+                                                                                <td class="text-break"> Heures
+                                                                                    supplémentaires non conformes aux
+                                                                                    règles de l'entreprise.</td>
+                                                                                <td class="no-link">
+                                                                                    <div class="dropdown"><button
+                                                                                            class="btn dropdown-toggle btn-link font-size-18 shadow-none py-0 text-muted"
+                                                                                            aria-expanded="false"
+                                                                                            data-bs-toggle="dropdown"
+                                                                                            type="button"><i
+                                                                                                class="icon ion-android-more-horizontal"></i></button>
+                                                                                        <div class="dropdown-menu"><a
+                                                                                                class="dropdown-item"
+                                                                                                routerLink="/modificationDetailBeneficiaire">Corriger</a><!-- Start: Ignorer une anomalie --><a
+                                                                                                class="dropdown-item"
+                                                                                                data-bs-target="#IgnorerAnomalie-1"
+                                                                                                data-bs-toggle="modal"
+                                                                                                type="button"
+                                                                                                title="Ignorer une anomalie détectée.">Ignorer</a><!-- End: Ignorer une anomalie --><a
+                                                                                                class="dropdown-item"
+                                                                                                routerLink="/detailsValidationApprobation">Voir
+                                                                                                Détails</a></div>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="v-pills-HistoriqueEtTracabilite" class="tab-pane fade"
+                                                        role="tabpanel"
+                                                        aria-labelledby="v-pills-HistoriqueEtTracabilite-tab">
+                                                        <div class="card mb-0">
+                                                            <div class="card-header pt-5">
+                                                                <h5 class="card-title font-size-15"><i
+                                                                        class="icon ion-ios-paper font-size-18 align-middle me-2"></i><strong>Historique
+                                                                        et Traçabilité</strong></h5>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <div class="table-responsive text-nowrap table">
+                                                                    <table
+                                                                        class="table table-striped link-table datatable align-middle dt-responsive table-check nowrap display">
+                                                                        <thead>
+                                                                            <tr class="bg-transparent">
+                                                                                <th style="width:30px;" scope="col">
+                                                                                    <div
+                                                                                        class="form-check font-size-16">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"
+                                                                                            id="checkAll-3" name="check"
+                                                                                            autocomplete="off"
+                                                                                            onclick="eventCheckBox()"
+                                                                                            checked=""><label
+                                                                                            class="form-check-label"
+                                                                                            for="checkAll-3"></label>
+                                                                                    </div>
+                                                                                </th>
+                                                                                <th>Date</th>
+                                                                                <th style="width:120px;">Heure</th>
+                                                                                <th>Action</th>
+                                                                                <th>Utilisateur</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <tr
+                                                                                data-link="gestion-de-la-paie/traitement-de-la-paie/details-de-la-paie.html">
+                                                                                <td>
+                                                                                    <div
+                                                                                        class="form-check font-size-16">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"><label
+                                                                                            class="form-check-label"></label>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td>20/07/2024</td>
+                                                                                <td><a class="text-body fw-medium"
+                                                                                        href="gestion-de-la-paie/traitement-de-la-paie/details-de-la-paie.html">09:00</a>
+                                                                                </td>
+                                                                                <td> Envoi pour Vérification</td>
+                                                                                <td> Marie Louise CAMARA&nbsp;<span
+                                                                                        class="ms-1 text-muted">(Assistant
+                                                                                        comptable)</span></td>
+                                                                            </tr>
+                                                                            <tr
+                                                                                data-link="gestion-de-la-paie/traitement-de-la-paie/details-de-la-paie.html">
+                                                                                <td>
+                                                                                    <div
+                                                                                        class="form-check font-size-16">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"><label
+                                                                                            class="form-check-label"></label>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td> 21/07/2024</td>
+                                                                                <td><a class="text-body fw-medium">
+                                                                                        10:30</a></td>
+                                                                                <td> Vérification Complétée</td>
+                                                                                <td> Thierry HABA&nbsp;<span
+                                                                                        class="ms-1 text-muted">(Assistant
+                                                                                        comptable)</span></td>
+                                                                            </tr>
+                                                                            <tr
+                                                                                data-link="gestion-de-la-paie/traitement-de-la-paie/details-de-la-paie.html">
+                                                                                <td>
+                                                                                    <div
+                                                                                        class="form-check font-size-16">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"><label
+                                                                                            class="form-check-label"></label>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td> 22/07/2024</td>
+                                                                                <td><a
+                                                                                        class="text-body fw-medium">11:00</a>
+                                                                                </td>
+                                                                                <td> Soumission pour Approbation</td>
+                                                                                <td> Alpha DIALLO&nbsp;<span
+                                                                                        class="ms-1 text-muted">(Assistant
+                                                                                        comptable)</span></td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- End: Tab -->
+                    </div>
+                </div>
+                <div class="modal fade" role="dialog" tabindex="-1" id="rejeterEtRetournerPourCorrection-1"
+                    aria-labelledby="rejeterEtRetournerPourCorrection-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Rejeter et Retourner pour Correction</h5><button
+                                    class="btn-close" aria-label="Close" data-bs-dismiss="modal" type="button"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Êtes-vous sûr de vouloir rejeté les paiements pour exécution finale ?</p>
+                            </div>
+                            <div class="modal-footer"><button class="btn btn-secondary cancel-button"
+                                    data-bs-dismiss="modal" routerLink="/validationApprobation"
+                                    data-message="Assurez-vous que toutes les informations sont correctes."
+                                    type="button">Annuler</button><button class="btn btn-primary confirm-button"
+                                    data-bs-dismiss="modal" routerLink="/preparationPaie"
+                                    data-message="Les paiements sélectionnés ont été rejetés et nécessitent des corrections. Veuillez fournir les détails des corrections requises."
+                                    type="button">Confirmer</button></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" role="dialog" tabindex="-1" id="soumettrePourPaiement-1"
+                    aria-labelledby="soumettrePourPaiement-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Soumettre pour Paiement</h5><button class="btn-close"
+                                    aria-label="Close" data-bs-dismiss="modal" type="button"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Êtes-vous sûr de vouloir soumettre tous les paiements pour exécution finale ?</p>
+                            </div>
+                            <div class="modal-footer"><button class="btn btn-secondary cancel-button"
+                                    data-bs-dismiss="modal" routerLink="/validationApprobation"
+                                    data-message="Assurez-vous que toutes les informations sont correctes."
+                                    type="button">Annuler</button><button class="btn btn-primary confirm-button"
+                                    data-bs-dismiss="modal" routerLink="/soumissionPaiement"
+                                    data-message="Les paiements validés ont été soumis pour exécution finale."
+                                    type="button">Confirmer</button></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" role="dialog" tabindex="-1" id="validerTouslesPaiements-2"
+                    aria-labelledby="validerTouslesPaiements-2" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Validation des Paiements&nbsp;</h5><button class="btn-close"
+                                    aria-label="Close" data-bs-dismiss="modal" type="button"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Êtes-vous sûr de vouloir valider tous les paiements ?</p>
+                            </div>
+                            <div class="modal-footer"><button class="btn btn-secondary cancel-button"
+                                    data-bs-dismiss="modal" routerLink="/validationApprobation"
+                                    data-message="Veuillez vérifier les détails ci-dessous avant de finaliser."
+                                    type="button">Annuler</button><button class="btn btn-primary confirm-button"
+                                    data-bs-dismiss="modal" routerLink="/validationApprobation"
+                                    data-message="Tous les paiements pour le cycle de Juillet 2024 ont été validés avec succès."
+                                    type="button">Confirmer</button></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" role="dialog" tabindex="-1" id="IgnorerAnomalie-1"
+                    aria-labelledby="IgnorerAnomalie-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title"> Ignorer Anomalie</h5><button class="btn-close"
+                                    aria-label="Close" data-bs-dismiss="modal" type="button"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Vous avez choisi d'ignorer l'anomalie détectée pour&nbsp;&nbsp;<span><strong>[Nom du
+                                            Bénéficiaire]</strong></span>&nbsp;.&nbsp;Cette action&nbsp;peut avoir des
+                                    conséquences.</p>
+                                <p>Êtes-vous sûr de vouloir ignorer cette anomalie ?</p>
+                            </div>
+                            <div class="modal-footer"><button class="btn btn-secondary cancel-button"
+                                    data-bs-dismiss="modal" data-href="validationApprobation.html"
+                                    data-message="Veuillez vérifier les détails ci-dessous avant de finaliser."
+                                    type="button">Annuler</button><button class="btn btn-primary confirm-button"
+                                    data-href="validationApprobation.html"
+                                    data-message="Vous avez choisi d'ignorer l'anomalie détectée pour [Nom de l'Employé] . Cette action peut avoir des conséquences."
+                                    type="button">Confirmer</button></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" role="dialog" tabindex="-1" id="modifierDetailsPaie"
+                    aria-labelledby="modifierDetailsPaie" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <form class="a-besoin-d-une-validation transfert-form" novalidate=""
+                                enctype="multipart/form-data">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Modification des détails</h5><button class="btn-close"
+                                        aria-label="Close" data-bs-dismiss="modal" type="button"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="fw-semibold text-body mb-3">Vous êtes sur le point de modifier les détails
+                                        de la paie.&nbsp;Mettez à jour les détails nécessaires et confirmez.</p>
+                                    <div class="card card-h-100">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title font-size-14"><strong>Récapitulatif de la
+                                                    Paie</strong></h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex border border border-start-0 border-end-0 border-top-0">
+                                                <div class="flex-grow-1 p-2"><span>Montant total des paiements à émettre
+                                                        : </span></div>
+                                                <div class="p-2"><span class="currencycounter fw-bolder"
+                                                        data-target="59885000">0</span></div>
+                                            </div>
+                                            <div class="d-flex border border-start-0 border-end-0 border-bottom-0">
+                                                <div class="flex-grow-1 p-2"><span>Nombre total de bénéficiaires :
+                                                    </span></div>
+                                                <div class="p-2"><span class="counter-value fw-bolder"
+                                                        data-target="4">0</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="fw-bold text-body card-title mb-0">Pouvez-vous me donner plus de
+                                                détails sur ce paiement en masse?</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-xl">
+                                                    <div class="text-muted">
+                                                        <div class="row">
+                                                            <div class="col-xl">
+                                                                <div class="text-muted">
+                                                                    <div class="row mb-3">
+                                                                        <div class="col-xl">
+                                                                            <div>
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <div class="mb-3"><label
+                                                                                                class="form-label fw-bold text-body required"
+                                                                                                for="object">Objet du
+                                                                                                transfert</label><input
+                                                                                                class="form-control item transfer-object"
+                                                                                                type="text"
+                                                                                                data-bs-toggle="tooltip"
+                                                                                                data-bss-tooltip=""
+                                                                                                id="object-1"
+                                                                                                name="objet_du_transfert"
+                                                                                                title="exemple message"
+                                                                                                required=""
+                                                                                                value="E-Cash Guinée">
+                                                                                            <div class="valid-feedback">
+                                                                                                <span> Looks good!
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row mb-3">
+                                                                        <div class="col-xl">
+                                                                            <div>
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <div class="mb-3 email-editor">
+                                                                                            <label
+                                                                                                class="form-label fw-bold text-body required"
+                                                                                                for="detailsCorrection">Description</label><textarea
+                                                                                                class="form-control email-editor2 text-body"
+                                                                                                id="description-1"
+                                                                                                placeholder="descriptions du transfert"
+                                                                                                rows="4">Paiement destiné à alimenter les portefeuilles électroniques de nos partenaires commerciaux. Ce transfert vise à faciliter les transactions pour le règlement des prestations récentes.</textarea>
+                                                                                            <div class="valid-feedback">
+                                                                                                <span> Looks good!
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="mb-3"><label
+                                                                                                class="form-label fw-bold text-body required"
+                                                                                                for="DatePrevue-1">Date
+                                                                                                prévue pour effectuer
+                                                                                                ses
+                                                                                                paiements</label><input
+                                                                                                class="form-control item transfer-date"
+                                                                                                id="DatePrevue-1"
+                                                                                                name="DatePrevue"
+                                                                                                title="exemple message"
+                                                                                                required=""
+                                                                                                value="05/12/2024 09:20"
+                                                                                                type="datetime-local">
+                                                                                            <div class="valid-feedback">
+                                                                                                <span> Looks good!
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row mb-3">
+                                                                        <div class="col-xl">
+                                                                            <div>
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <div class="mb-3"><label
+                                                                                                class="form-label fw-bold text-body required">Compte
+                                                                                                Source</label><select
+                                                                                                data-bs-toggle="tooltip"
+                                                                                                data-bss-tooltip=""
+                                                                                                class="form-select source-account"
+                                                                                                data-trigger=""
+                                                                                                name="compte-source"
+                                                                                                placeholder="Compte Source"
+                                                                                                title="exemple message">
+                                                                                                <option
+                                                                                                    value="7308054285"
+                                                                                                    selected="">
+                                                                                                    7308054285</option>
+                                                                                                <option
+                                                                                                    value="7308057753">
+                                                                                                    7308057753</option>
+                                                                                            </select><span>Solde
+                                                                                                :&nbsp;<span>247 200 000
+                                                                                                    GNF</span></span>
+                                                                                            <div class="valid-feedback">
+                                                                                                <span> Looks good!
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card card-h-100">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title font-size-14"><strong>Validation des Calculs de
+                                                    Paie</strong></h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="py-2 mt-3">
+                                                <h5 class="font-size-15 fw-semibold">Validation et Commentaires :</h5>
+                                            </div>
+                                            <div class="p-4 border rounded">
+                                                <div class="text-muted">
+                                                    <div class="row">
+                                                        <div class="col-xl">
+                                                            <div class="text-muted">
+                                                                <div class="row mb-3">
+                                                                    <div class="col">
+                                                                        <div class="mb-3"><label
+                                                                                class="form-label required">Statut de
+                                                                                Vérification</label>
+                                                                            <div class="mb-3">
+                                                                                <div
+                                                                                    class="form-check form-check-inline">
+                                                                                    <input
+                                                                                        class="form-check-input transfer-mode"
+                                                                                        type="radio"
+                                                                                        id="statutVerificationAVerifier"
+                                                                                        name="statutVerification"
+                                                                                        value="À Vérifier"
+                                                                                        checked=""><label
+                                                                                        class="form-check-label fw-semibold text-body"
+                                                                                        for="statutVerificationAVerifier">À
+                                                                                        Vérifier</label>
+                                                                                </div>
+                                                                                <div
+                                                                                    class="form-check form-check-inline">
+                                                                                    <input
+                                                                                        class="form-check-input transfer-mode"
+                                                                                        type="radio"
+                                                                                        id="statutVerificationVerifier"
+                                                                                        name="statutVerification"
+                                                                                        value="Vérifier"><label
+                                                                                        class="form-check-label fw-semibold text-body"
+                                                                                        for="statutVerificationVerifier">Vérifié</label>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="valid-feedback"><span> Looks
+                                                                                    good! </span></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mb-3">
+                                                                    <div class="col">
+                                                                        <div class="mb-3 email-editor"><label
+                                                                                class="form-label required"
+                                                                                for="commentaires">Commentaires</label><textarea
+                                                                                class="form-control email-editor2"
+                                                                                id="commentaires"
+                                                                                placeholder="Commentaires sur les vérifications effectuées, les anomalies trouvées, ou les actions prises. Cela aide à documenter le processus de validation et à communiquer les actions nécessaires."></textarea>
+                                                                            <div class="valid-feedback"><span> Looks
+                                                                                    good! </span></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="py-2 mt-3">
+                                                <h5 class="font-size-15 fw-semibold">Actions Correctives&nbsp;:</h5>
+                                            </div>
+                                            <div class="p-4 border rounded">
+                                                <div class="text-muted">
+                                                    <div class="row">
+                                                        <div class="col-xl">
+                                                            <div class="text-muted">
+                                                                <div class="row mb-3">
+                                                                    <div class="col">
+                                                                        <div class="mb-3 email-editor"><label
+                                                                                class="form-label required"
+                                                                                for="detailsCorrection">Détails de la
+                                                                                Correction</label><textarea
+                                                                                class="form-control email-editor2"
+                                                                                id="detailsCorrection"
+                                                                                placeholder="Détails sur les corrections apportées aux anomalies détectées. Cela assure que les actions correctives sont bien documentées et traçables."></textarea>
+                                                                            <div class="valid-feedback"><span> Looks
+                                                                                    good! </span></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer"><button class="btn btn-secondary cancel-button"
+                                        data-bs-dismiss="modal" routerLink="/preparationPaie"
+                                        data-message="Assurez-vous que toutes les informations sont correctes."
+                                        type="button">Annuler</button><button class="btn btn-primary confirm-button"
+                                        data-bs-dismiss="modal" routerLink="/validationApprobation"
+                                        data-message="Les paiements pour [Objet du transfert] ont été approuvée par [Nom de l'Approbateur]."
+                                        type="button">Valider</button></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End: Page -->

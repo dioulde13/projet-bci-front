@@ -1,0 +1,467 @@
+<div class="page-content">
+  <div class="container-fluid border-bottom">
+    <div class="row mt-3">
+      <div class="col-12">
+        <div
+          class="d-sm-flex justify-content-between align-items-center mt-4 page-title-box"
+        >
+          <div>
+            <h4 class="fw-semibold text-primary mb-sm-0 h3">
+              Demandes de souscription
+            </h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid mt-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card bci-card">
+          <ul class="nav nav-tabs card-header" role="tablist" id="supportTabs">
+            <!-- Attentes -->
+            <li class="nav-item" role="presentation">
+              <a
+                class="nav-link fw-semibold"
+                [ngClass]="{
+                  active: isActive('attente'),
+                  'bg-primary text-white': isActive('attente')
+                }"
+                role="tab"
+                data-bs-toggle="tab"
+                (click)="setActiveTab('attente')"
+                [attr.aria-selected]="isActive('attente')"
+              >
+                <i class="fas fa-tachometer-alt me-2"></i>En Attentes
+                <span class="badge bg-warning ms-2">{{
+                  isLoadingDemandes ? "" : demandes.length
+                }}</span>
+              </a>
+            </li>
+
+            <!-- Traites -->
+            <li class="nav-item" role="presentation">
+              <a
+                class="nav-link fw-semibold"
+                [ngClass]="{
+                  active: isActive('traiter'),
+                  'bg-primary text-white': isActive('traiter')
+                }"
+                role="tab"
+                data-bs-toggle="tab"
+                (click)="setActiveTab('traiter')"
+                [attr.aria-selected]="isActive('traiter')"
+              >
+                <i class="fas fa-user me-2"></i>Traitées
+                <span class="badge bg-success ms-2">{{
+                  isLoadingDemandes ? "" : traitedDemandes.length
+                }}</span>
+              </a>
+            </li>
+
+            <!-- Rejecter -->
+            <li class="nav-item" role="presentation">
+              <a
+                class="nav-link fw-semibold"
+                [ngClass]="{
+                  active: isActive('rejetes'),
+                  'bg-primary text-white': isActive('rejetes')
+                }"
+                role="tab"
+                data-bs-toggle="tab"
+                href="#rejetes"
+                (click)="setActiveTab('rejetes')"
+                [attr.aria-selected]="isActive('rejetes')"
+              >
+                <i class="fas fa-arrow-up me-2"></i> Réjétés
+                <span class="badge bg-danger ms-2">{{
+                  isLoadingDemandes ? "" : rejectedDemandes.length
+                }}</span>
+              </a>
+            </li>
+          </ul>
+
+          <div class="tab-content card-body">
+            <!-- Attentes -->
+            <div
+              class="tab-pane"
+              [ngClass]="{ active: isActive('attente') }"
+              role="tabpanel"
+              id="attente"
+            >
+              <div class="table-responsive">
+                <div class="d-flex justify-content-between mb-2">
+            <button class="btn btn-success" (click)="exportExcelDemandes()">
+              Exporter Excel
+            </button>
+            <input
+              type="text"
+              class="form-control w-25"
+              placeholder="Rechercher..."
+              [(ngModel)]="searchTextDemandes"
+              (input)="currentPageDemandes = 1"
+            />
+          </div>
+                <table
+                  *ngIf="!isLoadingDemandes"
+                  id="table-attente"
+                  class="table table-hover text-center"
+                >
+                  <thead class="table-primary">
+                    <tr>
+                      <th>Date</th>
+                      <th>Nom</th>
+                      <th>Prénom</th>
+                      <th>Email</th>
+                      <th>Type</th>
+                      <th>Banque</th>
+                      <th>N° Compte</th>
+                      <th>Statut</th>
+                      <th class="text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let demande of pagedDemendeEnAttente; let i = index">
+                      <td>
+                        {{ demande.BeneficiaryCreatedDate | date : "short" }}
+                      </td>
+                      <td>{{ demande.vcLastName }}</td>
+                      <td>{{ demande.vcFirstName }}</td>
+                      <td>{{ demande.vcEmail }}</td>
+                      <td>{{ demande.BeneficiaryTypeName }}</td>
+                      <td>{{ demande.BankName || "—" }}</td>
+                      <td>{{ demande.vcAccountNumber || "—" }}</td>
+                      <td>
+                        <span class="badge bg-warning">{{
+                          demande.vcStatus
+                        }}</span>
+                      </td>
+                      <td class="text-center">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-primary"
+                          (click)="detailBeneficiaire(demande.BeneficiaryID)"
+                          title="Voir les détails"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+
+                        <!-- <a
+                          routerLink="/agent-demandes/{{
+                            demande.BeneficiaryID
+                          }}"
+                          class="btn btn-sm btn-outline-primary"
+                          title="Voir détails"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </a> -->
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <!-- Pagination -->
+                <div
+                  class="d-flex justify-content-between align-items-center mt-2"
+                >
+                  <div>
+                    Affichage {{ startIndexDemandes() }} à {{ endIndexDemandes() }} sur
+                    {{ filteredDataDemandes.length }} éléments
+                  </div>
+                  <div>
+                    <button
+                      class="btn btn-sm btn-outline-secondary me-1"
+                      (click)="previousPageDemandes()"
+                      [disabled]="currentPageDemandes === 1"
+                    >
+                      Précédent
+                    </button>
+
+                    <button
+                      *ngFor="let page of getPagesDemandes()"
+                      class="btn btn-sm me-1"
+                      [ngClass]="{
+                        'btn-outline-secondary':
+                          page !== currentPageDemandes && page !== '...',
+                        'btn-secondary': page === currentPageDemandes,
+                        disabled: page === '...'
+                      }"
+                      (click)="onPageClickDemandes(page)"
+                    >
+                      {{ page }}
+                    </button>
+
+                    <button
+                      class="btn btn-sm btn-outline-secondary"
+                      (click)="nextPageDemandes()"
+                      [disabled]="currentPageDemandes === totalPagesDemandes()"
+                    >
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- au chargement des donnne -->
+              <div *ngIf="isLoadingDemandes" class="text-center my-3">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden"
+                    >Chargement des données en cours...</span
+                  >
+                </div>
+                <p class="text-muted">
+                  Veuillez patientez pendant que les données se chargent.
+                </p>
+              </div>
+
+              <!-- Si liste est vide -->
+              <div
+                *ngIf="!isLoadingDemandes && demandes.length === 0"
+                class="text-center py-5"
+              >
+                <div class="mb-3">
+                  <i class="text-muted bi bi-inbox display-1"></i>
+                </div>
+                <h5 class="text-muted">Aucune demandes trouvée....</h5>
+                <p class="text-muted">
+                  Il n'y a pas de demandes en attentes pour l'instant !
+                </p>
+              </div>
+            </div>
+
+            <!-- Traites -->
+            <div
+              class="tab-pane"
+              [ngClass]="{ active: isActive('traiter') }"
+              role="tabpanel"
+              id="traiter"
+            >
+              <div class="table-responsive">
+                <table
+                  *ngIf="!isLoadingDemandes"
+                  datatable
+                  [dtOptions]="dtOptions[0]"
+                  [dtTrigger]="dtTriggers[0]"
+                  id="table-attente"
+                  class="table table-hover text-center"
+                >
+                  <thead class="table-primary">
+                    <tr>
+                      <th>Date</th>
+                      <th>Nom</th>
+                      <th>Prénom</th>
+                      <th>Email</th>
+                      <th>Type</th>
+                      <th>Banque</th>
+                      <th>N° Compte</th>
+                      <th>Statut</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let demande of pageTraitedDemandes; let i = index">
+                      <td>
+                        {{ demande.BeneficiaryCreatedDate | date : "short" }}
+                      </td>
+                      <td>{{ demande.vcLastName }}</td>
+                      <td>{{ demande.vcFirstName }}</td>
+                      <td>{{ demande.vcEmail }}</td>
+                      <td>{{ demande.BeneficiaryTypeName }}</td>
+                      <td>{{ demande.BankName || "—" }}</td>
+                      <td>{{ demande.vcAccountNumber || "—" }}</td>
+                      <td>
+                        <span class="badge bg-success">{{
+                          demande.vcStatus
+                        }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                 <!-- Pagination -->
+                <div
+                  class="d-flex justify-content-between align-items-center mt-2"
+                >
+                  <div>
+                    Affichage {{ startIndexTraitedDemandes() }} à {{ endIndexTraitedDemandes() }} sur
+                    {{ filteredDataTraitedDemandes.length }} éléments
+                  </div>
+                  <div>
+                    <button
+                      class="btn btn-sm btn-outline-secondary me-1"
+                      (click)="previousPageTraitedDemandes()"
+                      [disabled]="currentPageTraitedDemandes === 1"
+                    >
+                      Précédent
+                    </button>
+
+                    <button
+                      *ngFor="let page of getPagesTraitedDemandes()"
+                      class="btn btn-sm me-1"
+                      [ngClass]="{
+                        'btn-outline-secondary':
+                          page !== currentPageTraitedDemandes && page !== '...',
+                        'btn-secondary': page === currentPageTraitedDemandes,
+                        disabled: page === '...'
+                      }"
+                      (click)="onPageClickTraitedDemandes(page)"
+                    >
+                      {{ page }}
+                    </button>
+
+                    <button
+                      class="btn btn-sm btn-outline-secondary"
+                      (click)="nextPageTraitedDemandes()"
+                      [disabled]="currentPageTraitedDemandes === totalPagesTraitedDemandes()"
+                    >
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- au chargement des donnne -->
+              <div *ngIf="isLoadingDemandes" class="text-center my-3">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden"
+                    >Chargement des données en cours...</span
+                  >
+                </div>
+                <p class="text-muted">
+                  Veuillez patientez pendant que les données se chargent.
+                </p>
+              </div>
+
+              <!-- Si liste est vide -->
+              <div
+                *ngIf="!isLoadingDemandes && traitedDemandes.length === 0"
+                class="text-center py-5"
+              >
+                <div class="mb-3">
+                  <i class="text-muted bi bi-inbox display-1"></i>
+                </div>
+                <h5 class="text-muted">Aucune demandes trouvée....</h5>
+                <p class="text-muted">
+                  Il n'y a pas de demandes traitées pour l'instant !
+                </p>
+              </div>
+            </div>
+
+            <!-- Rejecter -->
+            <div
+              class="tab-pane"
+              [ngClass]="{ active: isActive('rejetes') }"
+              role="tabpanel"
+              id="rejetes"
+            >
+              <div class="table-responsive">
+                <table
+                  *ngIf="!isLoadingDemandes"
+                  id="table-attente"
+                  class="table table-hover text-center"
+                >
+                  <thead class="table-primary">
+                    <tr>
+                      <th>Date</th>
+                      <th>Nom</th>
+                      <th>Prénom</th>
+                      <th>Email</th>
+                      <th>Type</th>
+                      <th>Banque</th>
+                      <th>N° Compte</th>
+                      <th>Statut</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let demande of pageRejectedDemandes; let i = index">
+                      <td>
+                        {{ demande.BeneficiaryCreatedDate | date : "short" }}
+                      </td>
+                      <td>{{ demande.vcLastName }}</td>
+                      <td>{{ demande.vcFirstName }}</td>
+                      <td>{{ demande.vcEmail }}</td>
+                      <td>{{ demande.BeneficiaryTypeName }}</td>
+                      <td>{{ demande.BankName || "—" }}</td>
+                      <td>{{ demande.vcAccountNumber || "—" }}</td>
+                      <td>
+                        <span class="badge bg-danger">{{
+                          demande.vcStatus
+                        }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                  <!-- Pagination -->
+                <div
+                  class="d-flex justify-content-between align-items-center mt-2"
+                >
+                  <div>
+                    Affichage {{ startIndexRejectedDemandes() }} à {{ endIndexRejectedDemandes() }} sur
+                    {{ filteredDataRejectedDemandes.length }} éléments
+                  </div>
+                  <div>
+                    <button
+                      class="btn btn-sm btn-outline-secondary me-1"
+                      (click)="previousPageRejectedDemandes()"
+                      [disabled]="currentPageRejectedDemandes === 1"
+                    >
+                      Précédent
+                    </button>
+
+                    <button
+                      *ngFor="let page of getPagesRejectedDemandes()"
+                      class="btn btn-sm me-1"
+                      [ngClass]="{
+                        'btn-outline-secondary':
+                          page !== currentPageRejectedDemandes && page !== '...',
+                        'btn-secondary': page === currentPageRejectedDemandes,
+                        disabled: page === '...'
+                      }"
+                      (click)="onPageClickRejectedDemandes(page)"
+                    >
+                      {{ page }}
+                    </button>
+
+                    <button
+                      class="btn btn-sm btn-outline-secondary"
+                      (click)="nextPageRejectedDemandes()"
+                      [disabled]="currentPageRejectedDemandes === totalPagesRejectedDemandes()"
+                    >
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- au chargement des donnne -->
+              <div *ngIf="isLoadingDemandes" class="text-center my-3">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden"
+                    >Chargement des données en cours...</span
+                  >
+                </div>
+                <p class="text-muted">
+                  Veuillez patientez pendant que les données se chargent.
+                </p>
+              </div>
+
+              <!-- Si liste est vide -->
+              <div
+                *ngIf="!isLoadingDemandes && rejectedDemandes.length === 0"
+                class="text-center py-5"
+              >
+                <div class="mb-3">
+                  <i class="text-muted bi bi-inbox display-1"></i>
+                </div>
+                <h5 class="text-muted">Aucune demandes trouvée....</h5>
+                <p class="text-muted">
+                  Il n'y a pas de demandes réjétées pour l'instant !
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

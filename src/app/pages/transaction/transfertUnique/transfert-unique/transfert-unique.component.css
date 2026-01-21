@@ -1,0 +1,18 @@
+.info-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr; /* labels auto-width, valeurs restent alignées */
+  gap: 0.5rem 1rem;                       /* espacement lignes / colonnes */
+  align-items: center;                   /* aligne verticalement les lignes */
+  max-width: 600px;
+  margin: auto;
+  font-size: 16px;
+}
+
+.label {
+  font-weight: bold;
+  color: #6c757d;
+}
+
+.value {
+  color: #000;
+}

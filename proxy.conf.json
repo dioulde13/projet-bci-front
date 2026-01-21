@@ -1,0 +1,16 @@
+{
+  "/sanctum": {
+    "target": "https://dev-api-bcibank.ecash-guinee.com",
+    "secure": true,
+    "changeOrigin": true,
+    "withCredentials": true,
+    "logLevel": "debug"
+  },
+  "/loginTest": {
+    "target": "https://dev-api-bcibank.ecash-guinee.com",
+    "secure": true,
+    "changeOrigin": true,
+    "withCredentials": true,
+    "logLevel": "debug"
+  }
+}

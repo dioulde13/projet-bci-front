@@ -1,0 +1,234 @@
+<!-- Start: Page -->
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
+                    <div>
+                        <h4 class="fw-bold mb-sm-0 font-size-18">Paiements de factures</h4>
+                    </div>
+                    <!-- <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a><span>Transactions</span></a></li>
+                            <li class="breadcrumb-item active"><span>Paiements de factures</span></li>
+                        </ol>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 col-xl-9">
+                <div class="card">
+                    <div class="card-body">
+                        <form id="paymentForm" class="a-besoin-d-une-validation" novalidate="">
+                            <div class="pb-3">
+                                <div class="row mb-3">
+                                    <div class="col-xl">
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="numeroMobile">
+                                                            Comment le bénéficiaire souhaite-t-il recevoir l’argent ?
+                                                        </label>
+                                                        <input type="text" id="numeroMobile"
+                                                            formControlName="numeroMobile"
+                                                            placeholder="Entrez le numéro mobile" value="Mobile Money">
+                                                    </div>
+
+
+                                                    <!-- <div class="form-group"
+                                                        *ngIf="transfertForm.value.typePaiement === 'Mobile Money'">
+                                                        <label for="fournisseur">Comment le bénéficiaire souhaite-t-il
+                                                            recevoir l’argent ?</label>
+                                                        <select id="fournisseur" formControlName="fournisseur">
+                                                            <option *ngFor="let f of fournisseursMobileMoney"
+                                                                [value]="f">{{ f }}</option>
+                                                        </select>
+
+                                                    </div> -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-xl">
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="numeroMobile">Numéro de compte Mobile *</label>
+                                                        <input type="text" id="numeroMobile"
+                                                            formControlName="numeroMobile"
+                                                            placeholder="Entrez le numéro mobile">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-xl">
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="nomCompte">Nom du compte *</label>
+                                                        <input type="text" id="nomCompte" formControlName="nomCompte"
+                                                            placeholder="Nom du compte bénéficiaire">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row mb-3">
+                                    <div class="col-xl">
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="emailBeneficiaire">Adresse e-mail du bénéficiaire
+                                                            *</label>
+                                                        <input type="email" id="emailBeneficiaire"
+                                                            formControlName="emailBeneficiaire"
+                                                            placeholder="exemple@domaine.com">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-xl">
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group montant-group">
+                                                        <label for="montant">Montant *</label>
+                                                        <div class="montant-input">
+                                                            <select formControlName="devise" class="devise-select">
+                                                                <option value="GNF">GNF</option>
+                                                                <option value="USD">USD</option>
+                                                                <!-- autres devises si besoin -->
+                                                            </select>
+                                                            <input type="number" id="montant" formControlName="montant"
+                                                                placeholder="Montant à transférer">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                  <div class="row mb-3">
+                                    <div class="col-xl">
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3"><label
+                                                            class="form-label fw-bold text-body required"
+                                                            for="remark">Frais</label><input
+                                                            class="form-control item" type="text"
+                                                            data-bs-toggle="tooltip" data-bss-tooltip="" id="remark"
+                                                            name="objet_du_transfert" title="exemple message"
+                                                            required="">
+                                                        <div class="valid-feedback"><span> Looks good! </span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-xl">
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3"><label
+                                                            class="form-label fw-bold text-body required"
+                                                            for="source-account">Compte Source</label><select
+                                                            data-bs-toggle="tooltip" data-bss-tooltip=""
+                                                            id="source-account" class="form-select" data-trigger=""
+                                                            name="compte-source" placeholder="Compte Source"
+                                                            title="exemple message">
+                                                            <option value="7308054285" selected="">7308054285</option>
+                                                            <option value="7308057753">7308057753</option>
+                                                        </select>
+                                                        <span>Solde :&nbsp;<span>247 200 000 GNF</span>
+                                                        </span>
+                                                        <div class="valid-feedback"><span> Looks good! </span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row mb-3">
+                                    <div class="col-xl">
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3"><label
+                                                            class="form-label fw-bold text-body required"
+                                                            for="remark">Objet du paiement</label><input
+                                                            class="form-control item" type="text"
+                                                            data-bs-toggle="tooltip" data-bss-tooltip="" id="remark"
+                                                            name="objet_du_transfert" title="exemple message"
+                                                            required="">
+                                                        <div class="valid-feedback"><span> Looks good! </span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                
+                            </div>
+                            <hr class="bg-light">
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-primary waves-effect waves-light" title="Récapitulatif"
+                                    routerLink="/recapModePaiement">
+                                    Payer
+                                </button>
+                                <button class="btn btn-outline-primary waves-effect waves-light"
+                                    data-bs-toggle="tooltip" data-bss-tooltip="" type="reset"
+                                    title="Réinitialiser le formulaire"> Annuler </button><a
+                                    class="btn btn-outline-primary align-self-center waves-effect waves-light border-0"
+                                    role="button" data-bs-toggle="tooltip" data-bss-tooltip=""
+                                    title="Annule toutes les modifications non sauvegardées et retourne à la page précédente."
+                                    onclick="window.history.go(-1); return false;" action="action"
+                                    value="Cancel">Retour</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-xl-3">
+                <div class="card bg-light mb-4">
+                    <div class="card-body"><a href="#" class="custom-icon-container"><img class="my-3"
+                                src="assets/img/images-bci/Icon-Info-BCI.svg?h=971d9075427a2ea3fd79b5880d5e839f"></a>
+                        <h4 class="fw-bold text-center">Payez vos factures facilement&nbsp; !</h4>
+                        <p class="text-start mt-3">Grâce à notre service, réglez vos factures rapidement et sans
+                            complications, en toute simplicité. Profitez d’un paiement sécurisé, fiable et accessible à
+                            tout moment pour tous vos besoins.</p>
+                        <p class="text-start mt-3">Que ce soit pour vos factures d’électricité, d’eau ou autres
+                            services, BCI Guinée vous offre une solution pratique pour gagner du temps.</p>
+                        <p class="fw-semibold text-start mt-3">Un service conçu pour vous offrir rapidité, confort et
+                            sécurité, sans tracas ni files d'attente.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- End: Page -->

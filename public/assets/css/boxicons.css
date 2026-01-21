@@ -1,0 +1,12 @@
+@font-face {
+	font-family: 'boxicons';
+	src: url(../../assets/fonts/boxicons-18f7a42b6da0833a77ebf4a4798940cf.eot?h=01ea17421fa239e3fda4042a854310f3) format('embedded-opentype'),
+	url(../../assets/fonts/boxicons-18f7a42b6da0833a77ebf4a4798940cf.eot?h=01ea17421fa239e3fda4042a854310f3) format('embedded-opentype'),
+	url(../../assets/fonts/boxicons-408b06ed63f1c7e1e821427ad242f93f.woff2?h=01ea17421fa239e3fda4042a854310f3) format('woff2'),
+	url(../../assets/fonts/boxicons-9873ae316b67783f24eb111d695fa186.woff?h=01ea17421fa239e3fda4042a854310f3) format('woff'),
+	url(../../assets/fonts/boxicons-a08a29be7a87a0186da98a637ec397c9.ttf?h=01ea17421fa239e3fda4042a854310f3) format('truetype'),
+	url(../../assets/fonts/boxicons-319cda753007d9efe0155ad06f999991.svg?h=01ea17421fa239e3fda4042a854310f3) format('svg');
+	font-weight: 400;
+	font-style: normal;
+	font-display: auto;
+}
