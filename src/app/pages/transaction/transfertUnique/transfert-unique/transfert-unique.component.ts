@@ -40,13 +40,11 @@ export class TransfertUniqueComponent implements OnInit {
   }
 
    getBalance() {
-    
-
     this.balanceService.getBalance("1000730002").subscribe({
       next: (response: any) => {
         console.log('response:', response);
         if (response?.data) {
-            console.log('Balance pour', response.data);
+            console.log('Balance pour: ', response.data);
           }
         // this.responseData = response;
       },

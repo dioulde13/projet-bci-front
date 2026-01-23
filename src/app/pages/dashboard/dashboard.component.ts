@@ -66,41 +66,41 @@ export class DashboardComponent implements OnInit {
     private balanceService: BalanceService,
   ) {}
 
-  totalSolde: any;
+  // totalSolde: any;
 
-  processAccounts(): void {
-    console.log('this.listeCompteClient: ', this.listeCompteClient);
-    if (!this.listeCompteClient || this.listeCompteClient.length === 0) {
-      console.log('Aucun compte à traiter');
-      return;
-    }
+  // processAccounts(): void {
+  //   console.log('this.listeCompteClient: ', this.listeCompteClient);
+  //   if (!this.listeCompteClient || this.listeCompteClient.length === 0) {
+  //     console.log('Aucun compte à traiter');
+  //     return;
+  //   }
 
-    this.listeCompteClient.forEach((compte: any) => {
-      const accountNumber = compte.vcAccountNumber;
+  //   this.listeCompteClient.forEach((compte: any) => {
+  //     const accountNumber = compte.vcAccountNumber;
 
-      if (!accountNumber) {
-        console.warn('Compte sans numéro:', compte);
-        return;
-      }
+  //     if (!accountNumber) {
+  //       console.warn('Compte sans numéro:', compte);
+  //       return;
+  //     }
 
-      console.log('Traitement du compte:', accountNumber);
+  //     console.log('Traitement du compte:', accountNumber);
 
-      this.balanceService.getBalance('1000730002').subscribe({
-        next: (response) => {
-          console.log('Réponse complète pour', accountNumber, ':', response);
+  //     this.balanceService.getBalance('1000730002').subscribe({
+  //       next: (response) => {
+  //         console.log('Réponse complète pour', accountNumber, ':', response);
 
-          if (response?.data) {
-            console.log('Balance pour', accountNumber, ':', response.data);
-            this.totalSolde = response.data.soldeDisp;
-            console.log('Total Solde: ', this.totalSolde);
-          }
-        },
-        error: (error) => {
-          console.error('Erreur pour', accountNumber, ':', error);
-        },
-      });
-    });
-  }
+  //         if (response?.data) {
+  //           console.log('Balance pour', accountNumber, ':', response.data);
+  //           this.totalSolde = response.data.soldeDisp;
+  //           console.log('Total Solde: ', this.totalSolde);
+  //         }
+  //       },
+  //       error: (error) => {
+  //         console.error('Erreur pour', accountNumber, ':', error);
+  //       },
+  //     });
+  //   });
+  // }
 
   // processAccounts() {
   //   this.accountNumbers.forEach((accNum: string) => {
@@ -151,7 +151,7 @@ export class DashboardComponent implements OnInit {
 
             this.dixTransactionsRecentsListe();
             // ✅ ICI SEULEMENT
-            this.processAccounts();
+            // this.processAccounts();
           }
         },
         error: (err: any) => {
@@ -167,22 +167,21 @@ export class DashboardComponent implements OnInit {
   listeDixPremiereTransactions: any[] = [];
 
   dixTransactionsRecentsListe() {
-  this.loadingDixPremiereTransactions = true;
+    this.loadingDixPremiereTransactions = true;
 
-  this.dixTransactionServiceNode
-    .dixTransactionsRecents('1000730002')
-    .subscribe({
-      next: (response) => {
-        this.listeDixPremiereTransactions = response.data.statement;
-        this.loadingDixPremiereTransactions = false;
-      },
-      error: (error) => {
-        console.error(error);
-        this.loadingDixPremiereTransactions = false;
-      },
-    });
-}
-
+    this.dixTransactionServiceNode
+      .dixTransactionsRecents(this.selectedAccountNumber)
+      .subscribe({
+        next: (response) => {
+          this.listeDixPremiereTransactions = response.data.statement;
+          this.loadingDixPremiereTransactions = false;
+        },
+        error: (error) => {
+          console.error(error);
+          this.loadingDixPremiereTransactions = false;
+        },
+      });
+  }
 
   formatDateOper(dateOper: string): string {
     if (!dateOper || dateOper.length !== 6) return dateOper;
