@@ -92,6 +92,10 @@ export class TransactionsComponent implements OnInit {
   historiqueTransactionsListe(): void {
     if (!this.selectedAccountNumber) return;
 
+    console.log(this.dateDebut);
+    console.log(this.dateFin);
+
+
     this.isLoadingUser = true;
 
     this.TransactionServiceNode.historiqueTransactions(

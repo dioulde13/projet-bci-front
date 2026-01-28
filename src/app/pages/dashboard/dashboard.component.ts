@@ -85,7 +85,7 @@ export class DashboardComponent implements OnInit {
 
   //     console.log('Traitement du compte:', accountNumber);
 
-  //     this.balanceService.getBalance('1000730002').subscribe({
+  //     this.balanceService.getBalance(accountNumber).subscribe({
   //       next: (response) => {
   //         console.log('Réponse complète pour', accountNumber, ':', response);
 

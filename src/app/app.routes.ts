@@ -289,7 +289,7 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
-        path: 'paiementFactureEDG',
+        path: 'paiementFactureEDG/:id',
         loadComponent: () =>
           import('./pages/factures/paiements-de-factures-edg/paiements-de-factures-edg.component')
             .then(m => m.PaiementsDeFacturesEDGComponent),
