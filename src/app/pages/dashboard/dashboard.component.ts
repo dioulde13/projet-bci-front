@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, HostListener, OnInit } from '@angular/core';
 import Papa from 'papaparse';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -19,6 +19,7 @@ import { BalanceService } from '../../servicesNodes/balance/balance.service';
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DashboardComponent implements OnInit {
   csvData: any[] = [];
@@ -65,6 +66,43 @@ export class DashboardComponent implements OnInit {
     private dixTransactionServiceNode: TransactionService,
     private balanceService: BalanceService,
   ) {}
+
+  //   totalSolde: any;
+
+  // processAccounts(): void {
+  //   console.log('this.listeCompteClient: ', this.listeCompteClient);
+  //   if (!this.listeCompteClient || this.listeCompteClient.length === 0) {
+  //     console.log('Aucun compte à traiter');
+  //     return;
+  //   }
+
+  //   // On ne prend que les 3 premiers comptes
+  //   this.listeCompteClient.slice(0, 3).forEach((compte: any) => {
+  //     const accountNumber = compte.vcAccountNumber;
+
+  //     if (!accountNumber) {
+  //       console.warn('Compte sans numéro:', compte);
+  //       return;
+  //     }
+
+  //     console.log('Traitement du compte:', accountNumber);
+
+  //     this.balanceService.getBalance(accountNumber).subscribe({
+  //       next: (response) => {
+  //         console.log('Réponse complète pour', accountNumber, ':', response);
+
+  //         if (response?.data) {
+  //           console.log('Balance pour', accountNumber, ':', response.data);
+  //           this.totalSolde = response.data.soldeDisp;
+  //           console.log('Total Solde: ', this.totalSolde);
+  //         }
+  //       },
+  //       error: (error) => {
+  //         console.error('Erreur pour', accountNumber, ':', error);
+  //       },
+  //     });
+  //   });
+  // }
 
   // totalSolde: any;
 
@@ -150,6 +188,7 @@ export class DashboardComponent implements OnInit {
             console.log('selectedAccountNumber :', this.selectedAccountNumber);
 
             this.dixTransactionsRecentsListe();
+            this.onDebitAccountChange(this.selectedAccountNumber);
             // ✅ ICI SEULEMENT
             // this.processAccounts();
           }
@@ -162,9 +201,55 @@ export class DashboardComponent implements OnInit {
       });
   }
 
+  onDebitAccountSelect(event: Event): void {
+    const value = (event.target as HTMLSelectElement)?.value;
+    if (value) this.onDebitAccountChange(value);
+  }
+
+  soldeDebiteur: any = '';
+
+  onDebitAccountChange(accountNumber: string): void {
+    this.getBalance(accountNumber);
+  }
+
+  getBalance(accountNumber: string): void {
+    this.balanceService.getBalance(accountNumber).subscribe({
+      next: (res) => {
+        if (res && res.data) {
+          this.soldeDebiteur = this.formatSolde(res?.data?.soldeDisp);
+        } else {
+          this.soldeDebiteur = 0;
+        }
+      },
+      error: (error) => {
+        console.error('Erreur lors de la récupération du solde :', error);
+        this.soldeDebiteur = 0;
+      },
+    });
+  }
+
+  formatSolde(solde: any): number {
+    if (solde === null || solde === undefined) return 0;
+
+    // Si c'est déjà un number
+    if (typeof solde === 'number') return solde;
+
+    // Si c'est une string avec virgule (ex: "2416,51")
+    if (typeof solde === 'string') {
+      return Number(solde.replace(',', '.')) || 0;
+    }
+
+    return 0;
+  }
+
   loadingDixPremiereTransactions: boolean = false;
 
+  // états
+  allTransactions: any[] = [];
   listeDixPremiereTransactions: any[] = [];
+  page = 0;
+  limit = 2; // combien d’éléments à afficher à chaque scroll
+  loadingMore = false;
 
   dixTransactionsRecentsListe() {
     this.loadingDixPremiereTransactions = true;
@@ -173,7 +258,12 @@ export class DashboardComponent implements OnInit {
       .dixTransactionsRecents(this.selectedAccountNumber)
       .subscribe({
         next: (response) => {
-          this.listeDixPremiereTransactions = response.data.statement;
+          // sauve toutes les transactions en mémoire
+          this.allTransactions = response.data.statement ?? [];
+
+          // affiche le premier lot
+          this.addItemsOnScroll();
+
           this.loadingDixPremiereTransactions = false;
         },
         error: (error) => {
@@ -182,6 +272,57 @@ export class DashboardComponent implements OnInit {
         },
       });
   }
+
+  addItemsOnScroll() {
+    if (this.loadingMore) return;
+
+    this.loadingMore = true;
+
+    const nextBatch = this.allTransactions.slice(
+      this.page * this.limit,
+      (this.page + 1) * this.limit,
+    );
+
+    this.listeDixPremiereTransactions.push(...nextBatch);
+
+    this.page++;
+    this.loadingMore = false;
+  }
+
+  @HostListener('window:scroll', [])
+  onScroll() {
+    const pos = window.innerHeight + window.scrollY;
+    const max = document.documentElement.scrollHeight;
+
+    // si l’utilisateur est proche de la fin
+    if (
+      pos >= max - 100 &&
+      this.page * this.limit < this.allTransactions.length
+    ) {
+      this.addItemsOnScroll();
+    }
+  }
+
+  // loadingDixPremiereTransactions: boolean = false;
+
+  // listeDixPremiereTransactions: any[] = [];
+
+  // dixTransactionsRecentsListe() {
+  //   this.loadingDixPremiereTransactions = true;
+
+  //   this.dixTransactionServiceNode
+  //     .dixTransactionsRecents(this.selectedAccountNumber)
+  //     .subscribe({
+  //       next: (response) => {
+  //         this.listeDixPremiereTransactions = response.data.statement;
+  //         this.loadingDixPremiereTransactions = false;
+  //       },
+  //       error: (error) => {
+  //         console.error(error);
+  //         this.loadingDixPremiereTransactions = false;
+  //       },
+  //     });
+  // }
 
   formatDateOper(dateOper: string): string {
     if (!dateOper || dateOper.length !== 6) return dateOper;
@@ -232,5 +373,41 @@ export class DashboardComponent implements OnInit {
 
     // this.dixTransactionsRecentsListe();
     // this.processAccounts();
+  }
+
+  title = 'generic file import';
+  openModal = false; // Example des colonnes attendues
+  fields: any[] = [
+    { key: 'nom', label: 'Nom', required: true },
+    { key: 'prenom', label: 'Prénom', required: true },
+    { key: 'email', label: 'Email' },
+    { key: 'age', label: 'Âge', type: 'number' },
+  ]; //Cette méthode est appelée quand l'enfant clique sur "Valider les Transactions"
+
+  onImportedData(event: any) {
+    const data = event.detail || event;
+    console.log('Données finales reçues du composant enfant :', data); // Demander confirmation avant de valider
+
+    const confirmDemande = confirm(
+      'Voulez-vous vraiment valider ces données ?',
+    );
+
+    if (confirmDemande) {
+      // L'utilisateur a cliqué sur "OK"
+      // Ici, tu peux appeler ton API pour sauvegarder les données
+      // this.myService.saveTransactions(data).subscribe(
+      //   response => {
+      //     alert('Les données ont été validées et sauvegardées avec succès !');
+      //   },
+      //   error => {
+      //     alert('Une erreur est survenue lors de la sauvegarde.');
+      //   }
+      // );
+
+      alert('Les données ont été validées avec succès !');
+    } else {
+      // L'utilisateur a cliqué sur "Annuler"
+      console.log('Validation annulée par l’utilisateur.');
+    }
   }
 }

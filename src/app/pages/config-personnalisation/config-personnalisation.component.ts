@@ -111,11 +111,14 @@ export class ConfigPersonnalisationComponent implements OnInit {
     });
   }
 
-  getRoleOrganisationListe() {
+  getRoleOrganisationListe() { 
     this.configurationPer.getRoleOrganisation().subscribe({
       next: (response) => {
-        this.listeRoleNiveau = response.data;
-        // console.log(this.listeRoleNiveau);
+        console.log(response.data);
+        this.listeRoleNiveau = response.data.filter(
+          (f: any) => f.vcRoleName !== "DAF"
+        );
+        console.log(this.listeRoleNiveau);
         // console.log(this.listeRoleNiveau);
       },
       error(err: any) {},
@@ -1098,7 +1101,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
       lienValue: this.validationConfiguredLien ? '' : this.lienSaisi,
     };
 
-    console.log('💡 Payload complet pour addSouscription:', payload);
+    // console.log('💡 Payload complet pour addSouscription:', payload);
 
     // 5️⃣ Appel service
     this.configurationPer

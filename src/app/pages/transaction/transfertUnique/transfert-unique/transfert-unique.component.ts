@@ -120,10 +120,10 @@ export class TransfertUniqueComponent implements OnInit {
             const firstAccount = this.listeCompteClient[0].vcAccountNumber;
 
             this.selectedDebitAccount = firstAccount;
-            this.selectedBalanceAccount = firstAccount;
+            // this.selectedBalanceAccount = firstAccount;
 
             this.onDebitAccountChange(firstAccount);
-            this.onBalanceAccountChange(firstAccount);
+            // this.onBalanceAccountChange(firstAccount);
           }
         },
         error: (err) => {
@@ -143,6 +143,7 @@ export class TransfertUniqueComponent implements OnInit {
 
   onDebitAccountChange(accountNumber: string): void {
     this.getAccountName(accountNumber);
+    this.getBalance(accountNumber);
   }
 
   getAccountName(accountNumber: string): void {
@@ -151,25 +152,57 @@ export class TransfertUniqueComponent implements OnInit {
       error: () => (this.nomDebiteur = ''),
     });
   }
+  
+
+
+    getBalance(accountNumber: string): void {
+  this.balanceService.getBalance(accountNumber).subscribe({
+    next: (res) => {
+      if (res && res.data) {
+        this.soldeDebiteur = this.formatSolde(res?.data?.soldeDisp);
+      } else {
+        this.soldeDebiteur = 0;
+      }
+    },
+    error: (error) => {
+      console.error('Erreur lors de la récupération du solde :', error);
+      this.soldeDebiteur = 0;
+    },
+  });
+}
+
+formatSolde(solde: any): number {
+  if (solde === null || solde === undefined) return 0;
+
+  // Si c'est déjà un number
+  if (typeof solde === 'number') return solde;
+
+  // Si c'est une string avec virgule (ex: "2416,51")
+  if (typeof solde === 'string') {
+    return Number(solde.replace(',', '.')) || 0;
+  }
+
+  return 0;
+}
 
   // =====================
   // SOLDE DÉBITEUR
   // =====================
-  onBalanceAccountSelect(event: Event): void {
-    const value = (event.target as HTMLSelectElement)?.value;
-    if (value) this.onBalanceAccountChange(value);
-  }
+  // onBalanceAccountSelect(event: Event): void {
+  //   const value = (event.target as HTMLSelectElement)?.value;
+  //   if (value) this.onBalanceAccountChange(value);
+  // }
 
-  onBalanceAccountChange(accountNumber: string): void {
-    this.getBalance(accountNumber);
-  }
+  // onBalanceAccountChange(accountNumber: string): void {
+  //   this.getBalance(accountNumber);
+  // }
 
-  getBalance(accountNumber: string): void {
-    this.balanceService.getBalance(accountNumber).subscribe({
-      next: (res) => (this.soldeDebiteur = res?.data?.soldeDisp ?? ''),
-      error: () => (this.soldeDebiteur = ''),
-    });
-  }
+  // getBalance(accountNumber: string): void {
+  //   this.balanceService.getBalance(accountNumber).subscribe({
+  //     next: (res) => (this.soldeDebiteur = res?.data?.soldeDisp ?? ''),
+  //     error: () => (this.soldeDebiteur = ''),
+  //   });
+  // }
 
   // =====================
   // BANQUES

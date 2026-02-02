@@ -1,37 +1,28 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MarchandService } from '../../../servicesNodes/paiementsMarchandEGD/marchand.service';
 import { DashboardService } from '../../../services/dashboard/dashboard.service';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { CommonModule } from '@angular/common';
 import { GnfNumberFormatDirective } from '../../../directives/gnf-number-format.directive';
-import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-paiements-de-factures-edg',
-  standalone: true,
-  imports: [
+  selector: 'app-paiement-facture-electricite',
+   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     GnfNumberFormatDirective,
   ],
-  templateUrl: './paiements-de-factures-edg.component.html',
-  styleUrl: './paiements-de-factures-edg.component.css',
+  templateUrl: './paiement-facture-electricite.component.html',
+  styleUrl: './paiement-facture-electricite.component.css'
 })
-export class PaiementsDeFacturesEDGComponent implements OnInit {
+export class PaiementFactureElectriciteComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private marchandService: MarchandService,
     private listeCompteCLientService: DashboardService,
     private toastr: ToastrService,
-    private route: ActivatedRoute,
   ) {}
 
   paymentForm!: FormGroup;
@@ -49,20 +40,9 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
   typesCompte = '';
   listeCompteClient: any[] = [];
 
-  nomFacture: string | null = null;
-
   ngOnInit(): void {
-    const rawNomFacture = this.route.snapshot.paramMap.get('nomFacture');
-
-    this.nomFacture = rawNomFacture
-      ? decodeURIComponent(rawNomFacture).trim().toUpperCase()
-      : null;
-
-    console.log('this.nomFacture: ', this.nomFacture);
-
     this.initForm();
-    this.initialPrepayerEDG();
-    this.initPostpayerForm();
+
     this.getAllFacturiers();
 
     const userJson = localStorage.getItem('userInfo');
@@ -81,181 +61,10 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       console.warn('iOrganisationID non défini');
       this.loading = false;
     }
-
-    this.loginAvoirTokenEdg();
-  }
-
-  loginAvoirTokenEdg() {
-    this.marchandService.loginAvoirTokenEdg().subscribe({
-      next: (response: any) => {
-        this.marchandService.saveToken(response.token);
-        console.log('response: ', response);
-      },
-    });
   }
 
   activeTab: string = 'tab1';
 
-  paymentFormPostpayerEDG!: FormGroup;
-
-  afficherInfosPostpayer = false;
-  loadingEDGPostpayer = false;
-  compteurValidePostpayer = false;
-
-  infosCompteurPostpayer: any = null;
-  facturesCompteur: any[] = []; // pour stocker toutes les factures
-
-  initPostpayerForm(): void {
-    this.paymentFormPostpayerEDG = this.fb.group({
-      numeroCompteurPostpayer: [''],
-    });
-  }
-
-  // 🔒 chiffres uniquement
-  onlyNumbersPostpayer(event: any): void {
-    const value = event.target.value.replace(/[^0-9]/g, '');
-    this.paymentFormPostpayerEDG
-      .get('numeroCompteurPostpayer')
-      ?.setValue(value, { emitEvent: false });
-  }
-
- // 🔥 appelé automatiquement quand l’input perd le focus
-onCompteurBlurPostpayer(): void {
-  const compteur =
-    this.paymentFormPostpayerEDG.get('numeroCompteurPostpayer')?.value;
-
-  console.log('compteur:', compteur);
-
-  // Reset UI
-  this.afficherInfosPostpayer = false;
-  this.compteurValidePostpayer = false;
-  this.infosCompteurPostpayer = null;
-  this.facturesCompteur = [];
-
-  // Vérification simple
-  if (!compteur || compteur.length < 5) {
-    return;
-  }
-
-  this.afficherInfosPostpayer = true;
-  this.loadingEDGPostpayer = true;
-
-  const msisdn = '666421034';
-
-  // 🔍 Vérifier le compteur + récupérer les factures
-  this.marchandService.verifierCompteurPostpayer(compteur, msisdn).subscribe({
-    next: (res) => {
-      console.log('Réponse API brute:', res);
-
-      const apiData = res?.data?.[0];
-
-      if (!apiData?.APIResponse) {
-        this.compteurValidePostpayer = false;
-        this.loadingEDGPostpayer = false;
-        return;
-      }
-
-      let parsed: any;
-      try {
-        parsed = JSON.parse(apiData.APIResponse);
-      } catch (e) {
-        console.error('Erreur JSON.parse', e);
-        this.compteurValidePostpayer = false;
-        this.loadingEDGPostpayer = false;
-        return;
-      }
-
-      console.log('APIResponse parsée:', parsed);
-
-      // ✅ SUCCESS = returnId === 0
-      if (parsed.returnId === 0) {
-        this.compteurValidePostpayer = true;
-        this.infosCompteurPostpayer = parsed;
-
-        if (Array.isArray(parsed.content)) {
-          this.facturesCompteur = parsed.content;
-        }
-      } else {
-        this.compteurValidePostpayer = false;
-      }
-
-      this.loadingEDGPostpayer = false;
-    },
-
-    error: (err) => {
-      console.error('Erreur API:', err);
-      this.compteurValidePostpayer = false;
-      this.loadingEDGPostpayer = false;
-    },
-  });
-}
-
-
-  paymentFormPrepayerEDG!: FormGroup;
-
-  afficherInfosPrepayer = false;
-  loadingEDGPrepayer = false;
-  compteurValidePrepayer = false;
-
-  infosCompteurPrepayer: any = null;
-
-  initialPrepayerEDG(): void {
-    this.paymentFormPrepayerEDG = this.fb.group({
-      numeroCompteurPrepayer: [''],
-    });
-  }
-
-  // 🔒 chiffres uniquement
-  onlyNumbersPrepayer(event: any): void {
-    const value = event.target.value.replace(/[^0-9]/g, '');
-    this.paymentFormPrepayerEDG
-      .get('numeroCompteurPrepayer')
-      ?.setValue(value, { emitEvent: false });
-  }
-
-  // 🔥 appelé automatiquement quand l’input perd le focus
-  onCompteurBlurPrepayer(): void {
-    const compteur = this.paymentFormPrepayerEDG.get(
-      'numeroCompteurPrepayer',
-    )?.value;
-
-    // if (!compteur || compteur.length !== 11) {
-    //   this.afficherInfos = false;
-    //   return;
-    // }
-
-    this.afficherInfosPrepayer = true;
-    this.loadingEDGPrepayer = true;
-    this.compteurValidePrepayer = false;
-    this.infosCompteurPrepayer = null;
-
-    const msisdn = '666421034';
-
-    this.marchandService.verifierCompteurPrepayer(compteur, msisdn).subscribe({
-      next: (res) => {
-        const apiData = res?.data?.[0];
-
-        if (apiData?.APIResponse) {
-          const parsed = JSON.parse(apiData.APIResponse);
-
-          if (parsed.status === 'OK') {
-            this.compteurValidePrepayer = true;
-            this.infosCompteurPrepayer = parsed;
-          } else {
-            this.compteurValidePrepayer = false;
-          }
-        } else {
-          this.compteurValidePrepayer = false;
-        }
-
-        this.loadingEDGPrepayer = false;
-      },
-      error: () => {
-        this.compteurValidePrepayer = false;
-        this.loadingEDGPrepayer = false;
-      },
-    });
-  }
 
   // =====================
   initForm(): void {

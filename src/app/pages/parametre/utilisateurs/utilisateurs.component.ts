@@ -512,6 +512,7 @@ export class UtilisateursComponent implements OnInit {
     this.authService.listeRole(this.iOrganisationID).subscribe({
       next: (res) => {
         this.roles = res.data;
+        console.log("this.roles: ",this.roles);
         this.isLoading = false;
       },
       error: (err) => {

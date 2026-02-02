@@ -1,0 +1,18 @@
+<button
+  class="bg-[#3B3B7A] hover:bg-[#2E2E60] m-5 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-xl"
+  (click)="openModal = true"
+>
+    Ouvrir le formulaire
+</button>
+
+<bci-generic-file-import
+  [isOpenModal]="openModal"
+  [fields]="fields"
+  title="Importation des Salaires BCI"
+  instructions="Veuillez charger le fichier des virements du mois en cours."
+  previewTitle="Récapitulatif des virements"
+  validateButtonText="Confirmer l'envoi à la banque"
+  (importDataCompleted)="onImportedData($event)"
+  (modalClosed)="openModal = false"
+>
+</bci-generic-file-import>

@@ -40,7 +40,7 @@
                 <div class="mt-4 mt-sm-0">
                   <p class="mb-1">Montant total</p>
                   <h4 class="text-light mb-4 fs-4">
-                    <!-- {{ totalSolde | number }} -->
+                    {{ soldeDebiteur | number: "1.2-2" }}
                   </h4>
                   <!-- <ul class="text-light finance-color-list">
                     <li>
@@ -76,14 +76,32 @@
                 </a>
               </div>
               <div class="col-6 col-md-4 mb-4">
-                <a
+                <!-- <button
+                  class="text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-xl"
+                  (click)="openModal = true"
+                >
+                    Ouvrir le formulaire
+                </button> -->
+
+                <bci-generic-file-import
+                  [isOpenModal]="openModal"
+                  [fields]="fields"
+                  title="Importation des Salaires BCI"
+                  instructions="Veuillez charger le fichier des virements du mois en cours."
+                  previewTitle="Récapitulatif des virements"
+                  validateButtonText="Confirmer l'envoi à la banque"
+                  (importDataCompleted)="onImportedData($event)"
+                  (modalClosed)="openModal = false"
+                >
+                </bci-generic-file-import>
+
+                <button
                   class="custom-icon-container"
-                  data-bs-target="#chargementDeFichier"
-                  data-bs-toggle="modal"
+                 (click)="openModal = true"
                   ><i class="icon ion-upload custom-icon-size"></i>
                   <p class="custom-icon-text">Chargement de fichier</p>
-                </a>
-                <div
+                </button>
+                <!-- <div
                   class="modal fade"
                   role="dialog"
                   tabindex="-1"
@@ -257,7 +275,7 @@
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> -->
               </div>
               <div class="col-6 col-md-4 mb-4">
                 <a routerLink="/transfertUnique" class="custom-icon-container"
@@ -497,7 +515,7 @@
                     </td>
 
                     <td class="text-nowrap align-content-center">
-                      {{ compte.mBalance | number }} {{compte.vcCurrency}}
+                      {{ compte.mBalance | number }} {{ compte.vcCurrency }}
                     </td>
                   </tr>
                 </tbody>
@@ -512,7 +530,7 @@
             <div class="card card-h-100">
               <div class="card-header bg-transparent d-flex align-items-center">
                 <h4 class="flex-grow-1 card-title mb-0">
-                 Dix dernières transactions
+                  Dix dernières transactions
                 </h4>
               </div>
               <div class="card-header d-flex">
@@ -523,6 +541,7 @@
                         class="form-select-sm form-select mb-0 w-100"
                         [(ngModel)]="selectedAccountNumber"
                         (ngModelChange)="dixTransactionsRecentsListe()"
+                        (change)="onDebitAccountSelect($event)"
                       >
                         <option
                           *ngFor="let c of listeCompteClient"
@@ -537,7 +556,67 @@
               </div>
 
               <div class="card-body finance-chart-container">
-                <!-- Loader -->
+                <div
+                  *ngIf="loadingDixPremiereTransactions"
+                  class="d-flex justify-content-center align-items-center py-4"
+                >
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                  </div>
+                </div>
+                <div
+                  class="table-responsive"
+                  *ngIf="!loadingDixPremiereTransactions"
+                >
+                  <table class="table custom-table">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Date</th>
+                        <th class="text-end">Référence</th>
+                        <th class="text-end">Type</th>
+                        <th>Description</th>
+                        <th class="text-end">Montant</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr *ngFor="let t of listeDixPremiereTransactions">
+                        <td>{{ formatDateOper(t.dateOper) }}</td>
+                        <td>{{ t.bankReference }}</td>
+                        <td>{{ t.sigOper }}</td>
+                        <td>{{ t.libelleOper }}</td>
+                        <td class="text-end">{{ formatMontant(t) }}</td>
+                      </tr>
+
+                      <!-- Spinner quand on charge plus -->
+                      <tr *ngIf="loadingMore">
+                        <td colspan="5" class="text-center py-3">
+                          <div
+                            class="spinner-border text-primary"
+                            role="status"
+                          >
+                            <span class="visually-hidden">Chargement...</span>
+                          </div>
+                        </td>
+                      </tr>
+
+                      <!-- Aucun résultat -->
+                      <tr
+                        *ngIf="
+                          !loadingDixPremiereTransactions &&
+                          listeDixPremiereTransactions.length === 0
+                        "
+                      >
+                        <td colspan="5" class="text-center text-muted">
+                          Aucune transaction trouvée
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- <div class="card-body finance-chart-container">
                 <div
                   *ngIf="loadingDixPremiereTransactions"
                   class="d-flex justify-content-center align-items-center py-4"
@@ -547,7 +626,6 @@
                   </div>
                 </div>
 
-                <!-- Tableau -->
                 <div
                   class="table-responsive"
                   *ngIf="!loadingDixPremiereTransactions"
@@ -585,7 +663,7 @@
                 <td colspan="5" class="text-center text-muted">
                   Aucune transaction trouvée
                 </td>
-              </tr>
+              </tr> -->
 
               <!-- <div class="card-body finance-chart-container">
                 <div class="table-responsive">

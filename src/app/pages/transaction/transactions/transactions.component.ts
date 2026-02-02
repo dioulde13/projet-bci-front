@@ -4,6 +4,9 @@ import { DashboardService } from '../../../services/dashboard/dashboard.service'
 import { TransactionService } from '../../../servicesNodes/transactionService/transaction.service';
 import { CommonModule } from '@angular/common';
 import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 
 @Component({
   selector: 'app-transactions',
@@ -32,12 +35,10 @@ export class TransactionsComponent implements OnInit {
   listeHistoriqueTransactions: any[] = [];
 
   ngOnInit(): void {
-    // Dates par défaut
     const today = new Date().toISOString().split('T')[0];
     this.dateDebut = today;
     this.dateFin = today;
 
-    // Récupération infos user
     const userJson = localStorage.getItem('userInfo');
     if (userJson) {
       try {
@@ -56,6 +57,8 @@ export class TransactionsComponent implements OnInit {
     this.getListeCompteClient();
   }
 
+  nombreCompte:any;
+
   getListeCompteClient(): void {
     this.listeCompteCLientService
       .getListeCompteClient(this.iOrganisationID)
@@ -63,7 +66,8 @@ export class TransactionsComponent implements OnInit {
         next: (response) => {
           this.listeCompteClient = response.data?.[0]?.comptes ?? [];
 
-          // Si comptes trouvés → sélection automatique du 1er
+          this.nombreCompte = response.data?.[0]?.comptes.length;
+
           if (this.listeCompteClient.length > 0) {
             this.selectedAccountNumber =
               this.listeCompteClient[0].vcAccountNumber;
@@ -73,7 +77,6 @@ export class TransactionsComponent implements OnInit {
               this.selectedAccountNumber,
             );
 
-            // Charger les transactions du premier compte
             this.historiqueTransactionsListe();
           }
 
@@ -239,6 +242,45 @@ export class TransactionsComponent implements OnInit {
     // Générer le fichier Excel
     XLSX.writeFile(wb, 'beneficiaires.xlsx');
   }
+
+
+  exportPdf() {
+  if (this.filteredData.length === 0) return;
+
+  const doc = new jsPDF('l', 'mm', 'a4'); // paysage
+
+  doc.setFontSize(14);
+  doc.text('Liste des transactions', 14, 15);
+
+  // Colonnes du tableau
+  const columns = [
+    { header: 'Date', dataKey: 'date' },
+    { header: 'Référence', dataKey: 'reference' },
+    { header: 'Signe', dataKey: 'signe' },
+    { header: 'Description', dataKey: 'description' },
+  ];
+
+  // Données
+  const rows = this.filteredData.map(d => ({
+    date: new Date(d.dateOper).toLocaleString(),
+    reference: d.bankReference,
+    signe: d.sigOper,
+    description: d.libelleOper,
+  }));
+
+  autoTable(doc, {
+    startY: 25,
+    headStyles: { fillColor: [22, 160, 133] }, // vert stylé 😎
+    columns: columns,
+    body: rows,
+    styles: {
+      fontSize: 9,
+    },
+  });
+
+  doc.save('beneficiaires.pdf');
+}
+
 
   onPageClick(page: number | string) {
     if (typeof page === 'number') this.goToPage(page);

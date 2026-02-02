@@ -1,4 +1,3 @@
-<!-- Start: Page -->
 <div class="page-content">
   <div class="container-fluid">
     <div class="row">
@@ -7,7 +6,9 @@
           class="d-sm-flex justify-content-between align-items-center page-title-box mt-4"
         >
           <div>
-            <h4 class="fw-bold mb-sm-0 font-size-18">Paiements de factures</h4>
+            <h4 class="fw-bold mb-sm-0 font-size-18">
+              Paiements de factures {{ nomFacture }}
+            </h4>
           </div>
           <div class="page-title-right">
             <ol class="breadcrumb m-0">
@@ -40,7 +41,7 @@
                     <div class="col-sm-6 col-md-8">
                       <div class="card-body">
                         <h5 class="fw-bold card-title">
-                          Électricité de Guinée (EDG)
+                          {{ nomFacture }}
                         </h5>
                       </div>
                     </div>
@@ -48,8 +49,13 @@
                 </div>
               </div>
             </div>
-            <div id="alertContainer"></div>
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
+
+            <ul
+              class="nav nav-tabs"
+              id="myTab"
+              role="tablist"
+              *ngIf="nomFacture?.trim() === 'EDG PREPAIER'"
+            >
               <li class="nav-item" role="presentation">
                 <button
                   class="nav-link active"
@@ -58,13 +64,11 @@
                   data-bs-target="#home"
                   type="button"
                   role="tab"
-                  aria-controls="home"
-                  aria-selected="true"
                 >
-                Postpayé
-                  
+                  Prepayé
                 </button>
               </li>
+
               <li class="nav-item" role="presentation">
                 <button
                   class="nav-link"
@@ -73,186 +77,307 @@
                   data-bs-target="#profile"
                   type="button"
                   role="tab"
-                  aria-controls="profile"
-                  aria-selected="false"
                 >
-                  Prepayé
+                  Postpayé
                 </button>
               </li>
             </ul>
-            <div class="tab-content" id="myTabContent">
-              <div
-                class="tab-pane fade show active"
-                id="home"
-                role="tabpanel"
-                aria-labelledby="home-tab"
-              >
+
+            <div
+              class="tab-content"
+              id="myTabContent"
+              *ngIf="nomFacture?.trim() === 'EDG PREPAIER'"
+            >
+              <div class="tab-pane fade show active" id="home" role="tabpanel">
                 <form
-                  class="a-besoin-d-une-validation"
-                  [formGroup]="paymentForm"
-                  (ngSubmit)="submitPaiement()"
+                  *ngIf="paymentFormPrepayerEDG"
+                  [formGroup]="paymentFormPrepayerEDG"
                   novalidate
                 >
-                  <div class="pb-3 pt-4">
-                    <div class="row mb-3">
-                      <div class="col-xl">
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="mb-3">
-                              <label
-                                class="form-label fw-bold text-body required"
-                                for="source-account"
-                              >
-                                Compte débiteur
-                              </label>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold required">
+                      Entrer le numéro de compteur
+                    </label>
 
-                              <select
-                                class="form-select-sm form-select w-100"
-                                formControlName="debitAccount"
-                                (change)="onDebitAccountSelect($event)"
-                              >
-                                <option
-                                  *ngFor="let c of listeCompteClient"
-                                  [value]="c.vcAccountNumber"
-                                >
-                                  {{ c.vcAccountNumber }}
-                                </option>
-                              </select>
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="numeroCompteurPrepayer"
+                      inputmode="numeric"
+                      maxlength="11"
+                      placeholder="Ex: 70006212859"
+                      (input)="onlyNumbersPrepayer($event)"
+                      (blur)="onCompteurBlurPrepayer()"
+                    />
+                  </div>
 
-                              <div class="valid-feedback">Looks good!</div>
-                            </div>
+                  <!-- INFOS COMPTEUR -->
+                  <div class="row mb-3" *ngIf="afficherInfosPrepayer">
+                    <div class="col-md-6">
+                      <!-- LOADING -->
+                      <div *ngIf="loadingEDGPrepayer" class="alert alert-info">
+                        Vérification en cours...
+                      </div>
+
+                      <!-- ERREUR -->
+                      <div
+                        *ngIf="!loadingEDGPrepayer && !compteurValidePrepayer"
+                        class="alert alert-danger"
+                      >
+                        Compteur invalide ❌
+                      </div>
+
+                      <h3 *ngIf="!loadingEDGPrepayer && compteurValidePrepayer">
+                        Les infos du compteur :
+                      </h3>
+
+                      <!-- SUCCÈS -->
+                      <div
+                        *ngIf="!loadingEDGPrepayer && compteurValidePrepayer"
+                        class="alert alert-success"
+                      >
+                        Compteur valide ✅
+                      </div>
+
+                      <!-- DÉTAILS -->
+                      <div
+                        *ngIf="compteurValidePrepayer && infosCompteurPrepayer"
+                        class="info-grid mt-2"
+                      >
+                        <span class="label">Numéro de compteur :</span>
+                        <span class="value">{{
+                          infosCompteurPrepayer.ref_abonne
+                        }}</span>
+
+                        <span class="label">Nom du client :</span>
+                        <span class="value">{{
+                          infosCompteurPrepayer.nom_abonne
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div class="tab-pane fade" id="profile" role="tabpanel">
+                <form
+                  *ngIf="paymentFormPostpayerEDG"
+                  [formGroup]="paymentFormPostpayerEDG"
+                  novalidate
+                >
+                  <div class="mb-3">
+                    <label class="form-label fw-bold required">
+                      Entrer le numéro de compteur
+                    </label>
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="numeroCompteurPostpayer"
+                      inputmode="numeric"
+                      maxlength="11"
+                      placeholder="Ex: 70006212859"
+                      (input)="onlyNumbersPostpayer($event)"
+                      (blur)="onCompteurBlurPostpayer()"
+                    />
+                  </div>
+
+                  <!-- INFOS COMPTEUR -->
+                  <div class="row mb-3" *ngIf="afficherInfosPostpayer">
+                    <div class="col-md-12">
+                      <!-- LOADING -->
+                      <div *ngIf="loadingEDGPostpayer" class="alert alert-info">
+                        Vérification en cours...
+                      </div>
+
+                      <!-- ERREUR -->
+                      <div
+                        *ngIf="!loadingEDGPostpayer && !compteurValidePostpayer"
+                        class="alert alert-danger"
+                      >
+                        Compteur invalide ❌
+                      </div>
+
+                      <!-- SUCCÈS -->
+                      <div
+                        *ngIf="!loadingEDGPostpayer && compteurValidePostpayer"
+                        class="alert alert-success"
+                      >
+                        Compteur valide ✅
+                      </div>
+
+                      <!-- INFOS CLIENT -->
+                      <!-- <div
+                        *ngIf="
+                          compteurValidePostpayer && infosCompteurPostpayer
+                        "
+                        class="mb-3"
+                      >
+                        <h5>Informations du client :</h5>
+                        <div class="info-grid">
+                          <span class="label">Référence client :</span>
+                          <span class="value">{{
+                            infosCompteurPostpayer.ref_code
+                          }}</span>
+
+                          <span class="label">Nom du client :</span>
+                          <span class="value">{{
+                            infosCompteurPostpayer.name
+                          }}</span>
+                        </div>
+                      </div> -->
+
+                      <!-- FACTURES -->
+                      <div *ngIf="facturesCompteur.length > 0">
+                        <h5>Factures :</h5>
+                        <table class="table table-bordered table-striped">
+                          <thead>
+                            <tr>
+                              <th>Code facture</th>
+                              <th>Date</th>
+                              <th>Période</th>
+                              <th>Montant</th>
+                              <th>Solde</th>
+                              <th>Nombre de paiements</th>
+                              <th>Date limite</th>
+                              <th>Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let facture of facturesCompteur">
+                              <td>{{ facture.code }}</td>
+                              <td>{{ facture.date }}</td>
+                              <td>{{ facture.period }}</td>
+                              <td>{{ facture.amt | number: "1.0-0" }}</td>
+                              <td>{{ facture.balance | number: "1.0-0" }}</td>
+                              <td>{{ facture.pay_times }}</td>
+                              <td>{{ facture.date_limit }}</td>
+                              <td>{{ facture.status }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div
+              class="tab-content"
+              id="myTabContent"
+              *ngIf="nomFacture?.trim() === 'EDG COLLECTES'"
+            >
+              <form
+                class="a-besoin-d-une-validation"
+                [formGroup]="paymentForm"
+                (ngSubmit)="submitPaiement()"
+                novalidate
+              >
+                <div class="pb-3 pt-4">
+                  <div class="row mb-3">
+                    <div class="col-xl">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <label
+                              class="form-label fw-bold text-body required"
+                              for="source-account"
+                            >
+                              Compte débiteur
+                            </label>
+
+                            <select
+                              class="form-select-sm form-select w-100"
+                              formControlName="debitAccount"
+                              (change)="onDebitAccountSelect($event)"
+                            >
+                              <option
+                                *ngFor="let c of listeCompteClient"
+                                [value]="c.vcAccountNumber"
+                              >
+                                {{ c.vcAccountNumber }}
+                              </option>
+                            </select>
+
+                            <div class="valid-feedback">Looks good!</div>
                           </div>
+                        </div>
 
-                          <div class="col-md-6">
-                            <div class="mb-3">
-                              <label class="form-label fw-bold required">
-                                Facturier
-                              </label>
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <label class="form-label fw-bold required">
+                              Facturier
+                            </label>
 
-                              <select
-                                class="form-select"
-                                formControlName="facturier"
+                            <select
+                              class="form-select"
+                              formControlName="facturier"
+                            >
+                              <option [ngValue]="null">
+                                -- Sélectionner --
+                              </option>
+                              <option
+                                *ngFor="let f of facturiers"
+                                [ngValue]="f"
                               >
-                                <option [ngValue]="null">
-                                  -- Sélectionner --
-                                </option>
-                                <option
-                                  *ngFor="let f of facturiers"
-                                  [ngValue]="f"
-                                >
-                                  {{ f.FacturierName }}
-                                </option>
-                              </select>
-                            </div>
+                                {{ f.FacturierName }}
+                              </option>
+                            </select>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <div class="mb-3">
-                    <label class="form-label fw-bold required"> Montant </label>
-                    <input
-                      type="text"
-                      gnfNumberFormat
-                      class="form-control"
-                      formControlName="amount"
-                    />
-                  </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold required"> Montant </label>
+                  <input
+                    type="text"
+                    gnfNumberFormat
+                    class="form-control"
+                    formControlName="amount"
+                  />
+                </div>
 
-                  <!-- NOTES -->
-                  <div class="mb-3">
-                    <label class="form-label fw-bold required"> Notes </label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      formControlName="notes"
-                    />
-                  </div>
+                <!-- NOTES -->
+                <div class="mb-3">
+                  <label class="form-label fw-bold required"> Notes </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="notes"
+                  />
+                </div>
 
-                  <hr class="bg-light" />
+                <hr class="bg-light" />
 
-                  <div class="d-flex flex-wrap gap-2">
-                    <button
-                      class="btn btn-primary waves-effect waves-light"
-                      type="submit"
-                      [disabled]="paymentForm.invalid || loadingEdg"
-                    >
-                      {{ loadingEdg ? "Paiement en cours..." : "Payer" }}
-                    </button>
+                <div class="d-flex flex-wrap gap-2">
+                  <button
+                    class="btn btn-primary waves-effect waves-light"
+                    type="submit"
+                    [disabled]="paymentForm.invalid || loadingEdg"
+                  >
+                    {{ loadingEdg ? "Paiement en cours..." : "Payer" }}
+                  </button>
 
-                    <!-- <button
-                  class="btn btn-outline-primary waves-effect waves-light"
-                  type="reset"
-                >
-                  Annuler
-                </button> -->
-
-                    <a
-                      class="btn btn-outline-primary align-self-center waves-effect waves-light border-0"
-                      role="button"
-                      onclick="
-                        window.history.go(-1);
-                        return false;
-                      "
-                    >
-                      Retour
-                    </a>
-                  </div>
-                </form>
-              </div>
-              <div
-                class="tab-pane fade"
-                id="profile"
-                role="tabpanel"
-                aria-labelledby="profile-tab"
-              >
-                ...
-              </div>
-              <div
-                class="tab-pane fade"
-                id="contact"
-                role="tabpanel"
-                aria-labelledby="contact-tab"
-              >
-                ...
-              </div>
+                  <a
+                    class="btn btn-outline-primary align-self-center waves-effect waves-light border-0"
+                    role="button"
+                    onclick="
+                      window.history.go(-1);
+                      return false;
+                    "
+                  >
+                    Retour
+                  </a>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- <div class="col-lg-4 col-xl-3">
-        <div class="card bg-light mb-4">
-          <div class="card-body">
-            <a href="#" class="custom-icon-container"
-              ><img
-                class="my-3"
-                src="assets/img/images-bci/Icon-Info-BCI.svg?h=971d9075427a2ea3fd79b5880d5e839f"
-            /></a>
-            <h4 class="fw-bold text-center">
-              Payez vos factures facilement&nbsp; !
-            </h4>
-            <p class="text-start mt-3">
-              Grâce à notre service, réglez vos factures rapidement et sans
-              complications, en toute simplicité. Profitez d’un paiement
-              sécurisé, fiable et accessible à tout moment pour tous vos
-              besoins.
-            </p>
-            <p class="text-start mt-3">
-              Que ce soit pour vos factures d’électricité, d’eau ou autres
-              services, BCI Guinée vous offre une solution pratique pour gagner
-              du temps.
-            </p>
-            <p class="fw-semibold text-start mt-3">
-              Un service conçu pour vous offrir rapidité, confort et sécurité,
-              sans tracas ni files d'attente.
-            </p>
-          </div>
-        </div>
-      </div> -->
     </div>
   </div>
 </div>
-
-<!-- End: Page -->

@@ -1,41 +1,49 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-formulaire-mode-paiement',
-  imports: [ ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink],
   standalone: true,
   templateUrl: './formulaire-mode-paiement.component.html',
-  styleUrl: './formulaire-mode-paiement.component.css'
+  styleUrl: './formulaire-mode-paiement.component.css',
 })
 export class FormulaireModePaiementComponent implements OnInit {
-
   transfertForm!: FormGroup;
 
-  // pour illustrer les options du type de paiement etc.
-  typesPaiement = ['Interne', 'Domestique', 'Mobile Money'];
-  fournisseursMobileMoney = ['Orange Money', 'MTN Mobile Money', 'Moov Money']; // etc.
+  typeOperateur!: string;
 
-  comptesSource = [
-    { numero: '7308054285', solde: 247_200_000 },
-    // ajouter d'autres si nécessaire
-  ];
-
-  constructor(private fb: FormBuilder) { }
+  constructor(
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
+    this.typeOperateur =
+      this.route.snapshot.paramMap.get('typeOperateur') || '';
+
+    console.log('Type opérateur reçu : ', this.typeOperateur);
+
     this.transfertForm = this.fb.group({
       typePaiement: ['Mobile Money', Validators.required],
       fournisseur: ['Orange Money', Validators.required],
-      numeroMobile: ['', [Validators.required, Validators.pattern(/^\d{8,15}$/)]],  // adapter le pattern
+      numeroMobile: [
+        '',
+        [Validators.required, Validators.pattern(/^\d{8,15}$/)],
+      ], 
       nomCompte: ['', [Validators.required, Validators.minLength(2)]],
       emailBeneficiaire: ['', [Validators.required, Validators.email]],
-      compteSource: [this.comptesSource[0].numero, Validators.required],
+      compteSource: ['', Validators.required],
       montant: ['', [Validators.required, Validators.min(1)]],
       devise: ['GNF', Validators.required],
-      objetTransfert: ['', [Validators.required, Validators.minLength(3)]]
+      objetTransfert: ['', [Validators.required, Validators.minLength(3)]],
     });
   }
 
@@ -50,6 +58,5 @@ export class FormulaireModePaiementComponent implements OnInit {
     }
     const formValue = this.transfertForm.value;
     console.log('Transfert soumis :', formValue);
-    // ici appeler le service pour traitement
   }
 }

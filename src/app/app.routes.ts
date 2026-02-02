@@ -27,6 +27,12 @@ export const routes: Routes = [
       import('./pages/otp-validation/otp-validation.component')
         .then(m => m.OtpValidationComponent),
   },
+   {
+    path: 'importFile',
+    loadComponent: () =>
+      import('./pages/file-import/file-import.component')
+        .then(m => m.FileImportComponent),
+  },
   {
     path: 'sousCription',
     loadComponent: () =>
@@ -240,7 +246,7 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
-        path: 'modePaiment',
+        path: 'modePaiment/:typeOperateur',
         loadComponent: () =>
           import('./pages/modePaiement/formulaire-mode-paiement/formulaire-mode-paiement.component')
             .then(m => m.FormulaireModePaiementComponent),
@@ -289,7 +295,7 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
-        path: 'paiementFactureEDG/:id',
+        path: 'paiementFactureEDG/:nomFacture',
         loadComponent: () =>
           import('./pages/factures/paiements-de-factures-edg/paiements-de-factures-edg.component')
             .then(m => m.PaiementsDeFacturesEDGComponent),

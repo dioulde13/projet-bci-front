@@ -156,6 +156,10 @@
                             Nom debiteur:
                             <span class="fw-bold">{{ nomDebiteur }}</span>
                           </span>
+                          <span class="d-block mt-2">
+                            Solde debiteur:
+                            <span class="fw-bold">{{ soldeDebiteur | number:'1.2-2' }}</span>
+                          </span>
                           <div class="valid-feedback">Looks good!</div>
                         </div>
                       </div>
@@ -163,7 +167,7 @@
                   </div>
                 </div>
 
-                <div class="row mb-3">
+                <!-- <div class="row mb-3">
                   <div class="col-xl">
                     <div class="row">
                       <div class="col-md-6">
@@ -175,7 +179,6 @@
                             Solde débiteur
                           </label>
 
-                          <!-- SOLDE DÉBITEUR -->
                           <select
                             class="form-select-sm form-select w-100"
                             [(ngModel)]="selectedBalanceAccount"
@@ -199,7 +202,7 @@
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> -->
 
                 <div class="row mb-3">
                   <div class="col-xl">
