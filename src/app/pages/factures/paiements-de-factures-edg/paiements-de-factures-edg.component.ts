@@ -13,6 +13,8 @@ import { ToastrService } from 'ngx-toastr';
 import { GnfNumberFormatDirective } from '../../../directives/gnf-number-format.directive';
 import { ActivatedRoute } from '@angular/router';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-paiements-de-factures-edg',
   standalone: true,
@@ -62,6 +64,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
     this.initForm();
     this.initialPrepayerEDG();
+    this.initialPostPayer();
     this.initPostpayerForm();
     this.getAllFacturiers();
 
@@ -119,78 +122,79 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       ?.setValue(value, { emitEvent: false });
   }
 
- // 🔥 appelé automatiquement quand l’input perd le focus
-onCompteurBlurPostpayer(): void {
-  const compteur =
-    this.paymentFormPostpayerEDG.get('numeroCompteurPostpayer')?.value;
+  // 🔥 appelé automatiquement quand l’input perd le focus
+  onCompteurBlurPostpayer(): void {
+    const compteur = this.paymentFormPostpayerEDG.get(
+      'numeroCompteurPostpayer',
+    )?.value;
 
-  console.log('compteur:', compteur);
+    console.log('compteur:', compteur);
 
-  // Reset UI
-  this.afficherInfosPostpayer = false;
-  this.compteurValidePostpayer = false;
-  this.infosCompteurPostpayer = null;
-  this.facturesCompteur = [];
+    // Reset UI
+    this.afficherInfosPostpayer = false;
+    this.compteurValidePostpayer = false;
+    this.infosCompteurPostpayer = null;
+    this.facturesCompteur = [];
 
-  // Vérification simple
-  if (!compteur || compteur.length < 5) {
-    return;
+    // Vérification simple
+    if (!compteur || compteur.length < 5) {
+      return;
+    }
+
+    this.afficherInfosPostpayer = true;
+    this.loadingEDGPostpayer = true;
+
+    const msisdn = '666421034';
+
+    // 🔍 Vérifier le compteur + récupérer les factures
+    this.marchandService.verifierCompteurPostpayer(compteur, msisdn).subscribe({
+      next: (res) => {
+        console.log('Réponse API brute:', res);
+
+        const apiData = res?.data?.[0];
+
+        if (!apiData?.APIResponse) {
+          this.compteurValidePostpayer = false;
+          this.loadingEDGPostpayer = false;
+          return;
+        }
+
+        let parsed: any;
+        try {
+          parsed = JSON.parse(apiData.APIResponse);
+        } catch (e) {
+          console.error('Erreur JSON.parse', e);
+          this.compteurValidePostpayer = false;
+          this.loadingEDGPostpayer = false;
+          return;
+        }
+
+        console.log('APIResponse parsée:', parsed);
+
+        // ✅ SUCCESS = returnId === 0
+        if (parsed.returnId === 0) {
+          this.compteurValidePostpayer = true;
+          this.infosCompteurPostpayer = parsed;
+
+          if (Array.isArray(parsed.content)) {
+            this.facturesCompteur = parsed.content;
+          }
+        } else {
+          this.compteurValidePostpayer = false;
+        }
+
+        this.loadingEDGPostpayer = false;
+      },
+
+      error: (err) => {
+        console.error('Erreur API:', err);
+        this.compteurValidePostpayer = false;
+        this.loadingEDGPostpayer = false;
+      },
+    });
   }
 
-  this.afficherInfosPostpayer = true;
-  this.loadingEDGPostpayer = true;
-
-  const msisdn = '666421034';
-
-  // 🔍 Vérifier le compteur + récupérer les factures
-  this.marchandService.verifierCompteurPostpayer(compteur, msisdn).subscribe({
-    next: (res) => {
-      console.log('Réponse API brute:', res);
-
-      const apiData = res?.data?.[0];
-
-      if (!apiData?.APIResponse) {
-        this.compteurValidePostpayer = false;
-        this.loadingEDGPostpayer = false;
-        return;
-      }
-
-      let parsed: any;
-      try {
-        parsed = JSON.parse(apiData.APIResponse);
-      } catch (e) {
-        console.error('Erreur JSON.parse', e);
-        this.compteurValidePostpayer = false;
-        this.loadingEDGPostpayer = false;
-        return;
-      }
-
-      console.log('APIResponse parsée:', parsed);
-
-      // ✅ SUCCESS = returnId === 0
-      if (parsed.returnId === 0) {
-        this.compteurValidePostpayer = true;
-        this.infosCompteurPostpayer = parsed;
-
-        if (Array.isArray(parsed.content)) {
-          this.facturesCompteur = parsed.content;
-        }
-      } else {
-        this.compteurValidePostpayer = false;
-      }
-
-      this.loadingEDGPostpayer = false;
-    },
-
-    error: (err) => {
-      console.error('Erreur API:', err);
-      this.compteurValidePostpayer = false;
-      this.loadingEDGPostpayer = false;
-    },
-  });
-}
-
-
+  //Debut code Prepayer EDG
   paymentFormPrepayerEDG!: FormGroup;
 
   afficherInfosPrepayer = false;
@@ -199,10 +203,188 @@ onCompteurBlurPostpayer(): void {
 
   infosCompteurPrepayer: any = null;
 
+  montantEDG: number = 0;
+  montantTotalEDG: number = 0;
+
   initialPrepayerEDG(): void {
     this.paymentFormPrepayerEDG = this.fb.group({
-      numeroCompteurPrepayer: [''],
+      debitAccountEDG: ['', Validators.required],
+      numeroCompteurPrepayer: ['', Validators.required],
+      montantEDG: ['', Validators.required],
+      notesEDG: [''],
     });
+
+    this.paymentFormPrepayerEDG
+      .get('montantEDG')
+      ?.valueChanges.subscribe((value) => {
+        const montant = this.parseMontant(value);
+        this.montantEDG = montant;
+        this.calculerMontantTotal(montant);
+      });
+  }
+
+  parseMontant(value: any): number {
+    if (!value) return 0;
+
+    return (
+      Number(
+        value
+          .toString()
+          .replace(/\s/g, '') // enlève les espaces
+          .replace(/,/g, ''), // enlève les virgules
+      ) || 0
+    );
+  }
+
+  goBack() {
+    window.history.back();
+  }
+
+  calculerMontantTotal(montant: number): void {
+    let fraisEcash = 0;
+    let fraisBank = 0;
+
+    if (!montant || montant <= 0) {
+      this.montantTotalEDG = 0;
+      return;
+    }
+
+    if (this.btFeesIncluded) {
+      // Ecash inclus → 0
+      fraisEcash = 0;
+
+      // Bank
+      fraisBank = this.btFeesBankUsePercent
+        ? (montant * Number(this.fraisNFeesBankEDG)) / 100
+        : Number(this.fraisNFeesBankEDG);
+    } else {
+      // Ecash
+      fraisEcash = this.btFeesUsePercent
+        ? montant * Number(this.fraisNFeesEDG / 100)
+        : Number(this.fraisNFeesEDG);
+
+      // Bank
+      fraisBank = this.btFeesBankUsePercent
+        ? montant * Number(this.fraisNFeesBankEDG / 100)
+        : Number(this.fraisNFeesBankEDG);
+    }
+    if (this.btFeesIncluded) {
+      this.montantTotalEDG = montant;
+    } else {
+      this.montantTotalEDG = montant + fraisEcash + fraisBank;
+    }
+  }
+
+  ligneSelectionner: any;
+  fraisNFeesEDG: any;
+  fraisNFeesBankEDG: any;
+  btFeesUsePercent: boolean = false;
+  btFeesBankUsePercent: boolean = false;
+  btFeesIncluded: boolean = false;
+
+  getAllFacturiers(): void {
+    this.marchandService.getAllFacturiers().subscribe({
+      next: (res) => {
+        this.facturiers = res?.data ?? [];
+
+        // Filtrer les facturiers dont le nom correspond à this.nomFacture
+        this.ligneSelectionner = this.facturiers.filter((l: any) => {
+          console.log('l.FacturierName: ', l.FacturierName);
+          console.log('this.nomFacture: ', this.nomFacture);
+          return l.FacturierName === this.nomFacture; // condition de filtrage
+        });
+
+        console.log('this.ligneSelectionner: ', this.ligneSelectionner[0]);
+        this.fraisNFeesEDG = this.ligneSelectionner[0].nFees;
+        this.fraisNFeesBankEDG = this.ligneSelectionner[0].nFeesBank;
+        this.btFeesUsePercent = this.ligneSelectionner[0].btFeesUsePercent;
+        this.btFeesBankUsePercent =
+          this.ligneSelectionner[0].btFeesBankUsePercent;
+        this.btFeesIncluded = this.ligneSelectionner[0].btFeesIncluded;
+        console.log('this.facturiers: ', this.facturiers);
+      },
+      error: (err) => {
+        console.error('Erreur chargement facturiers', err);
+      },
+    });
+  }
+
+  onDebitAccountSelectEDG(event: Event): void {
+    const value = (event.target as HTMLSelectElement)?.value;
+    if (value) this.onDebitAccountChangeEDG(value);
+  }
+
+  onDebitAccountChangeEDG(accountNumber: string): void {
+    console.log(accountNumber);
+  }
+
+  loadingPrepayerEDG: boolean = false;
+
+  submitPayementPrepayerEDG() {
+    if (this.paymentFormPrepayerEDG.invalid) {
+      this.paymentFormPrepayerEDG.markAllAsTouched();
+      return;
+    }
+
+    this.loadingPrepayerEDG = true;
+
+    console.log('this.ligneSelectionner: ', this.ligneSelectionner);
+
+    const v = this.paymentFormPrepayerEDG.value;
+
+    // Détermine si les frais sont inclus
+    const feesIncluded = this.btFeesIncluded;
+
+    // Calcul des frais
+    const feesEcash = feesIncluded ? 0 : Number(this.fraisNFeesBankEDG);
+
+    // Si nFeesBank est un pourcentage (ex: 0.025 pour 2.5%)
+    const feesBCI = this.fraisNFeesBankEDG;
+
+    // Total envoyé dans l’API
+    const payload = {
+      vcPayerAccount: v.debitAccountEDG,
+      vcBenefName: this.nomFacture ?? '',
+      vcBenefAccount: '',
+      mAmount: this.montantTotalEDG,
+      mFeesEcash: feesEcash,
+      mFeesBCI: feesBCI,
+      btFeesIncluded: feesIncluded ? 1 : 0,
+      vcNotes: 'Recharment prepayer',
+    };
+
+    console.log('PAYLOAD ENVOYÉ 👉', payload);
+
+    // this.marchandService
+    //   .postPaiementMarchant(
+    //     payload.vcPayerAccount,
+    //     payload.vcBenefName,
+    //     payload.vcBenefAccount,
+    //     payload.mAmount,
+    //     payload.mFeesEcash,
+    //     payload.mFeesBCI,
+    //     payload.vcNotes,
+    //     payload.btFeesIncluded,
+    //   )
+    //   .subscribe({
+    //     next: (response: any) => {
+    //       console.log('Réponse API 👉', response);
+    //       if (response.status === 200) {
+    //         this.toastr.success('Le paiement a été effectué avec succès', '', {
+    //           positionClass: 'toast-custom-center',
+    //         });
+    //         this.loadingPrepayerEDG = false;
+    //         this.paymentForm.reset();
+    //       }
+    //     },
+    //     error: (err) => {
+    //       this.toastr.error(err.error.message, '', {
+    //         positionClass: 'toast-custom-center',
+    //       });
+    //       this.loadingPrepayerEDG = false;
+    //       console.error('Erreur API 👉', err);
+    //     },
+    //   });
   }
 
   // 🔒 chiffres uniquement
@@ -257,6 +439,164 @@ onCompteurBlurPostpayer(): void {
     });
   }
 
+  //Fin code facture Prepayer
+
+  //debut code facture PostPayer
+
+  postpayModalForm!: FormGroup;
+  selectedPostpayFacture: any;
+
+  initialPostPayer(): void {
+    this.postpayModalForm = this.fb.group({
+      modalDebitAccountPost: ['', Validators.required],
+      modalMontantPost: ['', Validators.required],
+    });
+  }
+
+  openPostpayModal(facture: any) {
+    this.selectedPostpayFacture = facture;
+
+    // Pré-remplir le montant par défaut avec le solde de la facture
+    this.postpayModalForm.patchValue({
+      modalMontantPost: facture.balance,
+    });
+
+    // Ouvrir le modal Bootstrap
+    const modalEl = document.getElementById('postpayModal');
+    const modal = new bootstrap.Modal(modalEl!);
+    modal.show();
+  }
+
+  submitPostpayPayment() {
+    if (this.postpayModalForm.invalid) return;
+    console.log(
+      ' facture: this.selectedPostpayFacture: ',
+      this.selectedPostpayFacture,
+    );
+
+    // Détermine si les frais sont inclus
+    const feesIncluded = this.btFeesIncluded;
+
+    // Calcul des frais
+    const feesEcash = feesIncluded ? 0 : Number(this.fraisNFeesBankEDG);
+
+    // Si nFeesBank est un pourcentage (ex: 0.025 pour 2.5%)
+    const feesBCI = this.fraisNFeesBankEDG;
+
+    let fraisEcash = 0;
+    let fraisBank = 0;
+    let montantTotalPostPayerEDG = 0;
+
+    if (this.btFeesIncluded) {
+      // Ecash inclus → 0
+      fraisEcash = 0;
+
+      // Bank
+      fraisBank = this.btFeesBankUsePercent
+        ? (this.postpayModalForm.value.modalMontantPost *
+            Number(this.fraisNFeesBankEDG)) /
+          100
+        : Number(this.fraisNFeesBankEDG);
+    } else {
+      // Ecash
+      fraisEcash = this.btFeesUsePercent
+        ? this.postpayModalForm.value.modalMontantPost *
+          Number(this.fraisNFeesEDG / 100)
+        : Number(this.fraisNFeesEDG);
+
+      // Bank
+      fraisBank = this.btFeesBankUsePercent
+        ? this.postpayModalForm.value.modalMontantPost *
+          Number(this.fraisNFeesBankEDG / 100)
+        : Number(this.fraisNFeesBankEDG);
+    }
+    if (this.btFeesIncluded) {
+      montantTotalPostPayerEDG = this.postpayModalForm.value.modalMontantPost;
+    } else {
+      montantTotalPostPayerEDG =
+        this.postpayModalForm.value.modalMontantPost + fraisEcash + fraisBank;
+    }
+
+    // Total envoyé dans l’API
+    const payload = {
+      vcPayerAccount: this.postpayModalForm.value.modalDebitAccountPost,
+      vcBenefName: this.nomFacture ?? '',
+      vcBenefAccount: '',
+      mAmount: montantTotalPostPayerEDG,
+      mFeesEcash: feesEcash,
+      mFeesBCI: feesBCI,
+      btFeesIncluded: feesIncluded ? 1 : 0,
+      vcNotes: 'Recharment PostPayer',
+    };
+
+    console.log('PAYLOAD ENVOYÉ 👉', payload);
+
+    if (montantTotalPostPayerEDG > this.selectedPostpayFacture.balance) {
+      this.toastr.error('Le montant payer plus frais ne doit pas depasser le solde restant', '', {
+        positionClass: 'toast-custom-center',
+      });
+      console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
+      console.log('this.selectedPostpayFacture.balance: ', this.selectedPostpayFacture.balance);
+    } else {
+         console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
+      console.log('this.selectedPostpayFacture.balance: ', this.selectedPostpayFacture.balance);
+      this.marchandService
+      .postPaiementMarchant(
+        payload.vcPayerAccount,
+        payload.vcBenefName,
+        payload.vcBenefAccount,
+        payload.mAmount,
+        payload.mFeesEcash,
+        payload.mFeesBCI,
+        payload.vcNotes,
+        payload.btFeesIncluded,
+      )
+      .subscribe({
+        next: (response: any) => {
+          console.log('Réponse API 👉', response);
+          if (response.status === 200) {
+            this.toastr.success('Le paiement a été effectué avec succès', '', {
+              positionClass: 'toast-custom-center',
+            });
+            this.onCompteurBlurPostpayer();
+            // this.loadingPrepayerEDG = false;
+            this.postpayModalForm.reset();
+          }
+        },
+        error: (err) => {
+          this.toastr.error(err.error.message, '', {
+            positionClass: 'toast-custom-center',
+          });
+          // this.loadingPrepayerEDG = false;
+          console.error('Erreur API 👉', err);
+        },
+      });
+   
+    }
+
+
+    // Fermer le modal
+    const modalEl = document.getElementById('postpayModal');
+    const modal = bootstrap.Modal.getInstance(modalEl!);
+    modal?.hide();
+  }
+
+  formatDateOper(dateOper: string): string {
+    if (!dateOper || dateOper.length !== 6) return dateOper;
+
+    const year = 2000 + Number(dateOper.substring(0, 2));
+    const month = Number(dateOper.substring(2, 4)) - 1;
+    const day = Number(dateOper.substring(4, 6));
+
+    const date = new Date(year, month, day);
+
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
+
   // =====================
   initForm(): void {
     this.paymentForm = this.fb.group({
@@ -270,17 +610,6 @@ onCompteurBlurPostpayer(): void {
   }
 
   // =====================
-  getAllFacturiers(): void {
-    this.marchandService.getAllFacturiers().subscribe({
-      next: (res) => {
-        this.facturiers = res?.data ?? [];
-        console.log('this.facturiers: ', this.facturiers);
-      },
-      error: (err) => {
-        console.error('Erreur chargement facturiers', err);
-      },
-    });
-  }
 
   loadingEdg: boolean = false;
 

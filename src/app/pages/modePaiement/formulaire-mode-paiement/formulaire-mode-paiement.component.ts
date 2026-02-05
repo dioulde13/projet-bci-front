@@ -3,41 +3,286 @@ import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { BeneficiaireService } from '../../../services/beneficiaire/beneficiaire.service';
+import { DashboardService } from '../../../services/dashboard/dashboard.service';
+import { MobileMoneyService } from '../../../servicesNodes/modePaiementOperateur/mobileMoney/mobile-money.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-formulaire-mode-paiement',
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './formulaire-mode-paiement.component.html',
   styleUrl: './formulaire-mode-paiement.component.css',
 })
 export class FormulaireModePaiementComponent implements OnInit {
-  transfertForm!: FormGroup;
+  userInfo: any;
+  idOrganisation!: number;
 
-  typeOperateur!: string;
+  typeOperateur!: 'ORANGE MONEY' | 'MOBILE MONEY';
+
+  orangeMoneyForm!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
+    private beneficiaireService: BeneficiaireService,
+    private listeCompteCLientService: DashboardService,
+    private mobileMoneyService: MobileMoneyService,
+    private toastr: ToastrService,
   ) {}
 
+  mobileMoneyForm!: FormGroup;
+  // lodingFetch: boolean = false;
+
+  listeBeneficiaire: any[] = [];
+  selectedDebitAccountBeneficiaire: any;
+
+  getListeBeneficiaire(): void {
+    // this.lodingFetch = true;
+    this.beneficiaireService
+      .getListeBeneficiaire(Number(this.idOrganisation))
+      .subscribe({
+        next: (response: any) => {
+          this.listeBeneficiaire = response?.data ?? [];
+          // this.lodingFetch = false;
+          console.log('liste beneficiaire :', this.listeBeneficiaire);
+
+          if (this.listeBeneficiaire.length > 0) {
+            const firstAccount = this.listeBeneficiaire[0].vcAccountNumber;
+
+            this.selectedDebitAccountBeneficiaire = firstAccount;
+
+            this.onDebitAccountChangeBeneficiaire(firstAccount);
+          }
+        },
+        error: (err) => {
+          // this.lodingFetch = false;
+          console.error('Erreur lors du chargement des bénéficiaires :', err);
+        },
+      });
+  }
+
+  onDebitAccountSelectBeneficiaire(event: Event): void {
+    const value = (event.target as HTMLSelectElement)?.value;
+    if (value) this.onDebitAccountChangeBeneficiaire(value);
+  }
+
+  onDebitAccountChangeBeneficiaire(accountNumber: string): void {
+    console.log('accountNumber beneficiaire: ', accountNumber);
+  }
+
+  /** Récupération infos utilisateur */
+  private getUserInfo(): void {
+    const user = localStorage.getItem('userInfo');
+    console.log('user: ', user);
+    if (user) {
+      this.userInfo = JSON.parse(user);
+      this.idOrganisation = this.userInfo.iOrganisationID;
+    }
+  }
+
   ngOnInit(): void {
+    // 1️⃣ récupérer l'utilisateur
+    this.getUserInfo();
+
+    // 2️⃣ vérifier que l'id organisation existe
+    if (this.idOrganisation) {
+      this.getListeBeneficiaire();
+      this.getListeCompteClient();
+    } else {
+      console.error('ID Organisation introuvable');
+    }
+
+    // 3️⃣ récupérer type opérateur
     this.typeOperateur =
-      this.route.snapshot.paramMap.get('typeOperateur') || '';
+      (this.route.snapshot.paramMap.get('typeOperateur') as
+        | 'ORANGE MONEY'
+        | 'MOBILE MONEY') || 'MOBILE MONEY';
 
-    console.log('Type opérateur reçu : ', this.typeOperateur);
+    // 4️⃣ init formulaires
+    this.initOrangeMoneyForm();
+    this.initMobileMoneyForm();
 
-    this.transfertForm = this.fb.group({
+    console.log('Type opérateur :', this.typeOperateur);
+  }
+
+
+   phoneMaxLength = 9;
+
+// Autoriser uniquement les chiffres + touches utiles
+onlyDigits(event: KeyboardEvent): void {
+  const allowedKeys = [
+    'Backspace',
+    'ArrowLeft',
+    'ArrowRight',
+    'Delete',
+    'Tab',
+  ];
+
+  if (allowedKeys.includes(event.key)) return;
+
+  // Bloquer tout sauf chiffres
+  if (!/^\d$/.test(event.key)) {
+    event.preventDefault();
+    return;
+  }
+
+  const input = event.target as HTMLInputElement;
+
+  // Bloquer si longueur max atteinte
+  if (input.value.length >= this.phoneMaxLength) {
+    event.preventDefault();
+  }
+}
+
+// Bloquer le collage invalide
+onPaste(event: ClipboardEvent): void {
+  const pastedData = event.clipboardData?.getData('text') || '';
+
+  // Autoriser uniquement chiffres
+  if (!/^\d+$/.test(pastedData)) {
+    event.preventDefault();
+    return;
+  }
+
+  const input = event.target as HTMLInputElement;
+
+  // Bloquer si dépasse 9 chiffres
+  if (input.value.length + pastedData.length > this.phoneMaxLength) {
+    event.preventDefault();
+  }
+}
+
+
+  // 🔷 MOBILE MONEY
+  initMobileMoneyForm(): void {
+    this.mobileMoneyForm = this.fb.group({
+      compteSource: ['', Validators.required],
+
+      telephone: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]{9,12}$'), // numéro valide
+        ],
+      ],
+
+      montant: ['', [Validators.required, Validators.min(1)]],
+
+      frais: [''],
+
+      description: ['', Validators.required],
+
+      typeTransactionMM: ['B2W', Validators.required],
+    });
+  }
+
+  loadingMobileMoney: boolean = false;
+
+  // 🔥 SUBMIT MOBILE
+  submitMobileMoney(): void {
+    if (this.mobileMoneyForm.invalid) {
+      this.mobileMoneyForm.markAllAsTouched();
+      return;
+    }
+
+    this.loadingMobileMoney = true;
+
+    const formValue = this.mobileMoneyForm.value;
+
+    const payload = {
+      vcPayerAccount:
+        formValue.typeTransactionMM === 'B2W'
+          ? formValue.compteSource
+          : formValue.telephone,
+
+      vcBenefAccount:
+        formValue.typeTransactionMM === 'B2W'
+          ? formValue.telephone
+          : formValue.compteSource,
+
+      mAmount: Number(formValue.montant),
+      vcOperatorAccount: this.typeOperateur,
+      mFees: 200,
+      vcNotes: formValue.description,
+      vcOperationType: formValue.typeTransactionMM
+    };
+
+    console.log('Payload Mobile Money :', payload);
+
+    this.mobileMoneyService.payerMobileMoney(payload).subscribe({
+      next: (res) => {
+        console.log('Paiement réussi :', res);
+        this.loadingMobileMoney = false;
+      },
+      error: (err) => {
+        this.loadingMobileMoney = false;
+        console.error('Erreur paiement :', err);
+        // toast erreur ici
+      },
+    });
+  }
+
+  listeCompteClient: any[] = [];
+  selectedDebitAccount = '';
+
+  errorMessage = '';
+  typesCompte = '';
+
+  getListeCompteClient(): void {
+    if (!this.idOrganisation) return;
+
+    this.listeCompteCLientService
+      .getListeCompteClient(this.idOrganisation)
+      .subscribe({
+        next: (response: any) => {
+          this.listeCompteClient = response?.data?.[0]?.comptes ?? [];
+
+          this.typesCompte = [
+            ...new Set(this.listeCompteClient.map((c) => c.vcAccountType)),
+          ].join(' - ');
+
+          if (this.listeCompteClient.length > 0) {
+            const firstAccount = this.listeCompteClient[0].vcAccountNumber;
+
+            this.selectedDebitAccount = firstAccount;
+
+            this.onDebitAccountChange(firstAccount);
+          }
+        },
+        error: (err) => {
+          this.errorMessage = err.message;
+        },
+      });
+  }
+
+  // =====================
+  // COMPTE DÉBITEUR
+  // =====================
+  onDebitAccountSelect(event: Event): void {
+    const value = (event.target as HTMLSelectElement)?.value;
+    if (value) this.onDebitAccountChange(value);
+  }
+
+  onDebitAccountChange(accountNumber: string): void {
+    console.log(accountNumber);
+  }
+
+  // 🔶 ORANGE MONEY
+  initOrangeMoneyForm(): void {
+    this.orangeMoneyForm = this.fb.group({
       typePaiement: ['Mobile Money', Validators.required],
       fournisseur: ['Orange Money', Validators.required],
       numeroMobile: [
         '',
         [Validators.required, Validators.pattern(/^\d{8,15}$/)],
-      ], 
+      ],
       nomCompte: ['', [Validators.required, Validators.minLength(2)]],
       emailBeneficiaire: ['', [Validators.required, Validators.email]],
       compteSource: ['', Validators.required],
@@ -47,16 +292,12 @@ export class FormulaireModePaiementComponent implements OnInit {
     });
   }
 
-  get f() {
-    return this.transfertForm.controls;
-  }
-
-  onSubmit(): void {
-    if (this.transfertForm.invalid) {
-      this.transfertForm.markAllAsTouched();
+  // 🔥 SUBMIT ORANGE
+  submitOrangeMoney(): void {
+    if (this.orangeMoneyForm.invalid) {
+      this.orangeMoneyForm.markAllAsTouched();
       return;
     }
-    const formValue = this.transfertForm.value;
-    console.log('Transfert soumis :', formValue);
+    console.log('Orange Money :', this.orangeMoneyForm.value);
   }
 }

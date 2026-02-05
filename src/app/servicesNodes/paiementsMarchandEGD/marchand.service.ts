@@ -12,7 +12,7 @@ export class MarchandService {
   private baseUrl = environment.apiUrlNode;
 
   getAllFacturiers(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/api/facturiers`, {
+    return this.http.get(`${this.baseUrl}/api/facturiers/active/list`, {
       withCredentials: true,
     });
   }

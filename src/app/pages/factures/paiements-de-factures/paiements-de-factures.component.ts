@@ -25,6 +25,7 @@ export class PaiementsDeFacturesComponent implements OnInit {
     private router: Router,
   ) {}
 
+
   ngOnInit(): void {
     this.getAllFacturiers();
   }

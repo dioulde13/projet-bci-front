@@ -6,9 +6,7 @@
           class="d-sm-flex justify-content-between align-items-center page-title-box mt-4"
         >
           <div>
-            <h4 class="fw-bold mb-sm-0 font-size-18">
-              Paiements de factures
-            </h4>
+            <h4 class="fw-bold mb-sm-0 font-size-18">Paiements de factures</h4>
           </div>
           <div class="page-title-right">
             <ol class="breadcrumb m-0">
@@ -40,8 +38,11 @@
                 >
                   <div class="card text-center">
                     <img
-                      class="img-fluid card-img-top w-100 d-block card-img-top"
-                      [src]="baseLogoUrl"
+                      class="img-fluid card-img-top w-100 d-block card-img-top facturier-logo"
+                      [src]="
+                        'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
+                        facturier.vcLogoPath
+                      "
                       [alt]="facturier.FacturierName"
                     />
                     <div class="card-body">
@@ -63,21 +64,17 @@
         <div class="card bg-light mb-4">
           <div class="card-body">
             <a href="#" class="custom-icon-container">
-              <img
-                class="my-3"
-                src="assets/img/images-bci/Icon-Info-BCI.svg"
-              />
+              <img class="my-3" src="assets/img/images-bci/Icon-Info-BCI.svg" />
             </a>
             <h4 class="fw-bold text-center">
               Payez vos factures facilement&nbsp;!
             </h4>
             <p class="text-start mt-3">
-              Grâce à notre service, réglez vos factures rapidement et
-              sans complications, en toute simplicité.
+              Grâce à notre service, réglez vos factures rapidement et sans
+              complications, en toute simplicité.
             </p>
             <p class="fw-semibold text-start mt-3">
-              Un service conçu pour vous offrir rapidité, confort et
-              sécurité.
+              Un service conçu pour vous offrir rapidité, confort et sécurité.
             </p>
           </div>
         </div>

@@ -1,0 +1,4 @@
+.facturier-logo {
+  height: 60px; 
+  object-fit: contain;   /* Garde la proportion de l’image */
+}

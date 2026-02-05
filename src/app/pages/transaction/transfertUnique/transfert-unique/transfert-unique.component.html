@@ -29,27 +29,37 @@
             <form
               id="transfer-form"
               class="a-besoin-d-une-validation transfert-form"
-              #transferForm="ngForm"
-              (ngSubmit)="submitForm(transferForm)"
+              [formGroup]="transferFormPaiementInterneExterne"
+              (ngSubmit)="submitFormPayementInterneExterne()"
               novalidate
             >
               <div class="pb-3">
+                <!-- Catégorie bénéficiaire -->
                 <div class="row mb-3">
                   <div class="col-md-6">
-                    <label
-                      class="form-label fw-bold text-body required"
-                      for="beneficiary-category"
-                    >
+                    <label class="form-label fw-bold text-body required">
                       Catégorie de Bénéficiaire :
                     </label>
-                    <select
+                    <!-- <select
                       class="form-select"
-                      [(ngModel)]="selectedTypeBeneficiaire"
+                      formControlName="vcBenefName"
                       (change)="testChange($event)"
-                      name="selectedTypeBeneficiaire"
                     >
                       <option value="">-- Sélectionner un type --</option>
+                      <option
+                        *ngFor="let type of listeTypeBeneficiaire"
+                        [value]="type.vcName"
+                      >
+                        {{ type.vcName }}
+                      </option>
+                    </select> -->
 
+                    <select
+                      class="form-select"
+                      formControlName="beneficiaryCategory"
+                      (change)="onCategoryChange($event)"
+                    >
+                      <option value="">-- Sélectionner un type --</option>
                       <option
                         *ngFor="let type of listeTypeBeneficiaire"
                         [value]="type.vcName"
@@ -57,14 +67,21 @@
                         {{ type.vcName }}
                       </option>
                     </select>
-                    <div
-                      *ngIf="
-                        transferForm.submitted && !selectedTypeBeneficiaire
-                      "
+
+                    <small
                       class="text-danger"
+                      *ngIf="
+                        transferFormPaiementInterneExterne
+                          .get('vcBenefName')
+                          ?.hasError('required') &&
+                        (transferFormPaiementInterneExterne.get('vcBenefName')
+                          ?.touched ||
+                          transferFormPaiementInterneExterne.get('vcBenefName')
+                            ?.dirty)
+                      "
                     >
-                      Ce champ est obligatoire
-                    </div>
+                      Champ obligatoire
+                    </small>
                   </div>
                 </div>
 
@@ -73,10 +90,25 @@
                     <label class="form-label fw-bold text-body required">
                       Bénéficiaire :
                     </label>
-
                     <select
                       class="form-select"
-                      [ngModel]="selectedBeneficiaireId"
+                      formControlName="selectedBeneficiaireId"
+                      (change)="onBeneficiaireChange($event)"
+                    >
+                      <option value="">
+                        -- Sélectionner un bénéficiaire --
+                      </option>
+                      <option
+                        *ngFor="let type of filteredBeneficiaire"
+                        [value]="type.BeneficiaryID"
+                      >
+                        {{ type.vcFirstName }} {{ type.vcLastName }} |
+                        {{ type.vcPhoneNumber }}
+                      </option>
+                    </select>
+                    <!-- <select
+                      class="form-select"
+                      formControlName="selectedBeneficiaireId"
                       (change)="onBeneficiaireChange($event)"
                     >
                       <option value="">-- Sélectionner un type --</option>
@@ -92,10 +124,9 @@
                             type.vcPhoneNumber
                         }}
                       </option>
-                    </select>
+                    </select> -->
                   </div>
                 </div>
-
                 <div class="row mb-3" *ngIf="selectedBeneficiaire">
                   <div class="col-md-6">
                     <div id="beneficiary-info" class="info-grid">
@@ -103,22 +134,18 @@
                       <span class="value">{{
                         selectedBeneficiaire.vcAccountNumber
                       }}</span>
-
                       <span class="label">Type de bénéficiaire :</span>
                       <span class="value">{{
                         selectedBeneficiaire.BeneficiaryTypeName
                       }}</span>
-
                       <span class="label">Nom :</span>
                       <span class="value">{{
                         selectedBeneficiaire.vcLastName
                       }}</span>
-
                       <span class="label">Prénom :</span>
                       <span class="value">{{
                         selectedBeneficiaire.vcFirstName
                       }}</span>
-
                       <span class="label">Email :</span>
                       <span class="value">{{
                         selectedBeneficiaire.vcEmail
@@ -127,284 +154,183 @@
                   </div>
                 </div>
 
+                <!-- Compte débiteur -->
                 <div class="row mb-3">
-                  <div class="col-xl">
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold text-body required">
+                      Compte débiteur
+                    </label>
+                    <select
+                      class="form-select-sm form-select w-100"
+                      formControlName="vcPayerAccount"
+                      (change)="onDebitAccountSelect($event)"
+                    >
+                      <option value="">-- Sélectionner --</option>
+                      <option
+                        *ngFor="let c of listeCompteClient"
+                        [value]="c.vcAccountNumber"
+                      >
+                        {{ c.vcAccountNumber }}
+                      </option>
+                    </select>
+
+                    <small
+                      class="text-danger"
+                      *ngIf="
+                        transferFormPaiementInterneExterne
+                          .get('vcPayerAccount')
+                          ?.hasError('required') &&
+                        transferFormPaiementInterneExterne.get('vcPayerAccount')
+                          ?.touched
+                      "
+                    >
+                      Champ obligatoire
+                    </small>
+
+                    <span class="d-block mt-2">
+                      Nom débiteur : <b>{{ nomDebiteur }}</b>
+                    </span>
+                    <span class="d-block mt-2">
+                      Solde : <b>{{ soldeDebiteur | number: "1.2-2" }}</b>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Banque -->
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold text-body required">
+                      Nom Banque
+                    </label>
+                    <select
+                      class="form-select-sm form-select w-100"
+                      formControlName="vcBenefBicCode"
+                      (change)="onBicCodeSelect($event)"
+                    >
+                      <option value="">-- Sélectionner --</option>
+                      <option *ngFor="let b of listeBanques" [value]="b.vcBIC">
+                        {{ b.vcBIC }}
+                      </option>
+                    </select>
+
+                    <small
+                      class="text-danger"
+                      *ngIf="
+                        transferFormPaiementInterneExterne
+                          .get('vcBenefBicCode')
+                          ?.hasError('required') &&
+                        transferFormPaiementInterneExterne.get('vcBenefBicCode')
+                          ?.touched
+                      "
+                    >
+                      Champ obligatoire
+                    </small>
+
+                    <span class="d-block mt-2">
+                      Nom banque : <b>{{ nomBanque }}</b>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Montant -->
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold text-body required"
+                      >Montant</label
+                    >
                     <div class="row">
-                      <div class="col-md-6">
-                        <div class="mb-3">
-                          <label
-                            class="form-label fw-bold text-body required"
-                            for="source-account"
-                          >
-                            Compte débiteur
-                          </label>
-
-                          <select
-                            class="form-select-sm form-select w-100"
-                            [(ngModel)]="selectedDebitAccount"
-                            (change)="onDebitAccountSelect($event)"
-                          >
-                            <option
-                              *ngFor="let c of listeCompteClient"
-                              [value]="c.vcAccountNumber"
-                            >
-                              {{ c.vcAccountNumber }}
-                            </option>
-                          </select>
-
-                          <span class="d-block mt-2">
-                            Nom debiteur:
-                            <span class="fw-bold">{{ nomDebiteur }}</span>
-                          </span>
-                          <span class="d-block mt-2">
-                            Solde debiteur:
-                            <span class="fw-bold">{{ soldeDebiteur | number:'1.2-2' }}</span>
-                          </span>
-                          <div class="valid-feedback">Looks good!</div>
-                        </div>
+                      <div class="col-4">
+                        <select
+                          class="form-select"
+                          formControlName="vcBenefCurrency"
+                        >
+                          <option value="GNF">GNF</option>
+                          <option value="EURO">EURO</option>
+                        </select>
+                      </div>
+                      <div class="col">
+                        <input
+                          class="form-control"
+                          type="text"
+                          placeholder="Entrez le montant"
+                          formControlName="mAmount"
+                        />
                       </div>
                     </div>
+
+                    <small
+                      class="text-danger"
+                      *ngIf="
+                        transferFormPaiementInterneExterne
+                          .get('mAmount')
+                          ?.hasError('required') &&
+                        transferFormPaiementInterneExterne.get('mAmount')
+                          ?.touched
+                      "
+                    >
+                      Champ obligatoire
+                    </small>
                   </div>
                 </div>
 
-                <!-- <div class="row mb-3">
-                  <div class="col-xl">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="mb-3">
-                          <label
-                            class="form-label fw-bold text-body required"
-                            for="source-account"
-                          >
-                            Solde débiteur
-                          </label>
-
-                          <select
-                            class="form-select-sm form-select w-100"
-                            [(ngModel)]="selectedBalanceAccount"
-                            (change)="onBalanceAccountSelect($event)"
-                          >
-                            <option
-                              *ngFor="let c of listeCompteClient"
-                              [value]="c.vcAccountNumber"
-                            >
-                              {{ c.vcAccountNumber }}
-                            </option>
-                          </select>
-
-                          <span class="d-block mt-2">
-                            Solde debiteur :
-                            <span class="fw-bold">{{ soldeDebiteur }}</span>
-                          </span>
-
-                          <div class="valid-feedback">Looks good!</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> -->
-
+                <!-- Date -->
                 <div class="row mb-3">
-                  <div class="col-xl">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="mb-3">
-                          <label
-                            class="form-label fw-bold text-body required"
-                            for="source-account"
-                          >
-                            Nom Banque
-                          </label>
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold text-body required">
+                      Transférer quand
+                    </label>
 
-                          <select
-                            class="form-select-sm form-select w-100"
-                            [(ngModel)]="selectedBicCode"
-                            (change)="onBicCodeSelect($event)"
-                          >
-                            <option
-                              *ngFor="let b of listeBanques"
-                              [value]="b.vcBIC"
-                            >
-                              {{ b.vcBIC }}
-                            </option>
-                          </select>
+                    <input
+                      class="form-control mt-2"
+                      type="datetime-local"
+                      formControlName="dtPaymentDate"
+                    />
 
-                          <span class="d-block mt-2">
-                            Nom banque :
-                            <span class="fw-bold">{{ nomBanque }}</span>
-                          </span>
-
-                          <div class="valid-feedback">Looks good!</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row mb-3">
-                  <div class="col-xl">
-                    <div>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="mb-3">
-                            <label
-                              class="form-label fw-bold text-body required"
-                              for="amount"
-                              >Montant</label
-                            >
-                            <div class="row">
-                              <div class="col-4">
-                                <select
-                                  class="form-select currency"
-                                  data-trigger=""
-                                  name="Devise"
-                                  placeholder="Devise"
-                                >
-                                  <option value="GNF" selected="">GNF</option>
-                                </select>
-                              </div>
-                              <div class="col">
-                                <input
-                                  class="form-control item money amount"
-                                  type="text"
-                                  data-bs-toggle="tooltip"
-                                  data-bss-tooltip=""
-                                  id="amount"
-                                  name="montant"
-                                  title="exemple message"
-                                  required=""
-                                  placeholder="Entrez le montant"
-                                /><span
-                                  ><a class="link-primary" href="#"
-                                    >Visualiser les limites</a
-                                  ></span
-                                >
-                              </div>
-                            </div>
-                            <div class="valid-feedback">
-                              <span> Looks good! </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row mb-3">
-                  <div class="col-xl">
-                    <div>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="mb-3">
-                            <label class="form-label fw-bold text-body required"
-                              >Transférer quand</label
-                            >
-                            <div class="mb-3">
-                              <div class="form-check form-check-inline">
-                                <input
-                                  class="form-check-input transfer-time"
-                                  type="radio"
-                                  checked=""
-                                  name="transferTime"
-                                  value="maintenant"
-                                  onclick="toggleDateInput(false)"
-                                />
-                                <label
-                                  class="form-check-label fw-semibold text-body"
-                                >
-                                  Maintenant
-                                </label>
-                              </div>
-                              <div class="form-check form-check-inline">
-                                <input
-                                  class="form-check-input transfer-time"
-                                  type="radio"
-                                  name="transferTime"
-                                  value="plus tard"
-                                  onclick="toggleDateInput(true)"
-                                /><label
-                                  class="form-check-label fw-semibold text-body"
-                                  >Plus tard</label
-                                >
-                              </div>
-                            </div>
-                            <input
-                              class="form-control mt-2 transfer-date"
-                              type="datetime-local"
-                              style="display: none"
-                            />
-                            <div class="valid-feedback">
-                              <span> Looks good! </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row mb-3">
-                  <div class="col-xl">
-                    <div>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="mb-3">
-                            <label
-                              class="form-label fw-bold text-body required"
-                              for="remark"
-                              >Objet du transfert</label
-                            ><input
-                              class="form-control item transfer-object"
-                              type="text"
-                              data-bs-toggle="tooltip"
-                              data-bss-tooltip=""
-                              id="remark"
-                              name="objet_du_transfert"
-                              title="exemple message"
-                              required=""
-                            />
-                            <div class="valid-feedback">
-                              <span> Looks good! </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <small
+                      class="text-danger"
+                      *ngIf="
+                        transferFormPaiementInterneExterne
+                          .get('dtPaymentDate')
+                          ?.hasError('required') &&
+                        transferFormPaiementInterneExterne.get('dtPaymentDate')
+                          ?.touched
+                      "
+                    >
+                      Champ obligatoire
+                    </small>
                   </div>
                 </div>
               </div>
-              <hr class="bg-light" />
-              <div class="d-flex flex-wrap gap-2">
+
+              <!-- Message global -->
+              <!-- <div
+                class="alert alert-danger"
+                *ngIf="
+                  transferFormPaiementInterneExterne.invalid &&
+                  transferFormPaiementInterneExterne.touched
+                "
+              >
+                Veuillez remplir tous les champs obligatoires.
+              </div> -->
+
+              <hr />
+
+              <div class="d-flex gap-2">
                 <button
-                  class="btn btn-primary waves-effect waves-light"
-                  data-bs-toggle="tooltip"
-                  data-bss-tooltip=""
-                  title="Récapitulatif"
+                  class="btn btn-primary"
+                  [disabled]="loadingPayementInterneExterne"
                   type="submit"
                 >
-                  Payer
-                  </button
-                ><button
-                  class="btn btn-outline-primary waves-effect waves-light"
-                  data-bs-toggle="tooltip"
-                  data-bss-tooltip=""
-                  type="reset"
-                  title="Réinitialiser le formulaire"
-                >
-                  Annuler</button
-                ><a
-                  class="btn btn-outline-primary align-self-center waves-effect waves-light border-0"
-                  role="button"
-                  data-bs-toggle="tooltip"
-                  data-bss-tooltip=""
-                  title="Annule toutes les modifications non sauvegardées et retourne à la page précédente."
-                  onclick="
-                    window.history.go(-1);
-                    return false;
-                  "
-                  action="action"
-                  value="Cancel"
-                  >Retour</a
-                >
+                  {{
+                    loadingPayementInterneExterne
+                      ? "Paiement en cours..."
+                      : "Payer"
+                  }}
+                </button>
+                <button class="btn btn-outline-primary" type="reset">
+                  Annuler
+                </button>
+                <a class="btn btn-outline-primary border-0">Retour</a>
               </div>
             </form>
           </div>
