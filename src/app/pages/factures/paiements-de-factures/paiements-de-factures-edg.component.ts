@@ -281,6 +281,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
   btFeesUsePercent: boolean = false;
   btFeesBankUsePercent: boolean = false;
   btFeesIncluded: boolean = false;
+  photoRecuperer: any;
 
   getAllFacturiers(): void {
     this.marchandService.getAllFacturiers().subscribe({
@@ -295,6 +296,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         });
 
         console.log('this.ligneSelectionner: ', this.ligneSelectionner[0]);
+        this.photoRecuperer = this.ligneSelectionner[0].vcLogoPath;
         this.fraisNFeesEDG = this.ligneSelectionner[0].nFees;
         this.fraisNFeesBankEDG = this.ligneSelectionner[0].nFeesBank;
         this.btFeesUsePercent = this.ligneSelectionner[0].btFeesUsePercent;
@@ -532,48 +534,60 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     console.log('PAYLOAD ENVOYÉ 👉', payload);
 
     if (montantTotalPostPayerEDG > this.selectedPostpayFacture.balance) {
-      this.toastr.error('Le montant payer plus frais ne doit pas depasser le solde restant', '', {
-        positionClass: 'toast-custom-center',
-      });
+      this.toastr.error(
+        'Le montant payer plus frais ne doit pas depasser le solde restant',
+        '',
+        {
+          positionClass: 'toast-custom-center',
+        },
+      );
       console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
-      console.log('this.selectedPostpayFacture.balance: ', this.selectedPostpayFacture.balance);
+      console.log(
+        'this.selectedPostpayFacture.balance: ',
+        this.selectedPostpayFacture.balance,
+      );
     } else {
-         console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
-      console.log('this.selectedPostpayFacture.balance: ', this.selectedPostpayFacture.balance);
+      console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
+      console.log(
+        'this.selectedPostpayFacture.balance: ',
+        this.selectedPostpayFacture.balance,
+      );
       this.marchandService
-      .postPaiementMarchant(
-        payload.vcPayerAccount,
-        payload.vcBenefName,
-        payload.vcBenefAccount,
-        payload.mAmount,
-        payload.mFeesEcash,
-        payload.mFeesBCI,
-        payload.vcNotes,
-        payload.btFeesIncluded,
-      )
-      .subscribe({
-        next: (response: any) => {
-          console.log('Réponse API 👉', response);
-          if (response.status === 200) {
-            this.toastr.success('Le paiement a été effectué avec succès', '', {
+        .postPaiementMarchant(
+          payload.vcPayerAccount,
+          payload.vcBenefName,
+          payload.vcBenefAccount,
+          payload.mAmount,
+          payload.mFeesEcash,
+          payload.mFeesBCI,
+          payload.vcNotes,
+          payload.btFeesIncluded,
+        )
+        .subscribe({
+          next: (response: any) => {
+            console.log('Réponse API 👉', response);
+            if (response.status === 200) {
+              this.toastr.success(
+                'Le paiement a été effectué avec succès',
+                '',
+                {
+                  positionClass: 'toast-custom-center',
+                },
+              );
+              this.onCompteurBlurPostpayer();
+              // this.loadingPrepayerEDG = false;
+              this.postpayModalForm.reset();
+            }
+          },
+          error: (err) => {
+            this.toastr.error(err.error.message, '', {
               positionClass: 'toast-custom-center',
             });
-            this.onCompteurBlurPostpayer();
             // this.loadingPrepayerEDG = false;
-            this.postpayModalForm.reset();
-          }
-        },
-        error: (err) => {
-          this.toastr.error(err.error.message, '', {
-            positionClass: 'toast-custom-center',
-          });
-          // this.loadingPrepayerEDG = false;
-          console.error('Erreur API 👉', err);
-        },
-      });
-   
+            console.error('Erreur API 👉', err);
+          },
+        });
     }
-
 
     // Fermer le modal
     const modalEl = document.getElementById('postpayModal');

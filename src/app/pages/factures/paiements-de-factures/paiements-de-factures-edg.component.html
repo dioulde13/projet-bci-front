@@ -34,8 +34,11 @@
                     <div class="col-sm-6 col-md-4">
                       <img
                         class="img-fluid card-img"
-                        src="assets/img/factures/logoEDG.png?h=5b01d80a817cfe5e24aea24f610ca4c3"
-                        alt="Card image"
+                        [src]="
+                          'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
+                          photoRecuperer
+                        "
+                        [alt]="nomFacture"
                       />
                     </div>
                     <div class="col-sm-6 col-md-8">
@@ -54,7 +57,7 @@
               class="nav nav-tabs"
               id="myTab"
               role="tablist"
-              *ngIf="nomFacture?.trim() === 'EDG PREPAIER'"
+              *ngIf="nomFacture?.trim() === 'EDG'"
             >
               <li class="nav-item" role="presentation">
                 <button
@@ -90,7 +93,7 @@
             <div
               class="tab-content"
               id="myTabContent"
-              *ngIf="nomFacture?.trim() === 'EDG PREPAIER'"
+              *ngIf="nomFacture?.trim() === 'EDG'"
             >
               <!-- ========== PREPAYÉ ========== -->
               <div
@@ -312,7 +315,7 @@
                           </thead>
                           <tbody>
                             <tr *ngFor="let facture of facturesCompteur">
-                              <td>{{ facture.code }}</td> 
+                              <td>{{ facture.code }}</td>
                               <td>{{ facture.date }}</td>
                               <td>{{ formatDateOper(facture.period) }}</td>
                               <td>{{ facture.name }}</td>

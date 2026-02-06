@@ -48,14 +48,10 @@
             </div>
           </div>
 
-
-
-
           <div class="card-body">
             <div class="row">
               <div class="col-lg-12">
                 <div class="card">
-
                   <div class="card-header">
                     <div class="row">
                       <div class="col-sm">
@@ -69,124 +65,6 @@
                             ></i>
                             Ajouter un Bénéficiaire
                           </button>
-                          <div
-                            class="modal fade"
-                            role="dialog"
-                            tabindex="-1"
-                            id="AjouterUneCategorie"
-                            aria-labelledby="AjouterUneCategorie"
-                            aria-hidden="true"
-                          >
-                            <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-                              <div class="modal-content modal-flex">
-                                <div class="modal-header">
-                                  <h5 class="modal-title">
-                                    Ajouter une catégorie
-                                  </h5>
-                                  <button
-                                    class="btn-close"
-                                    aria-label="Close"
-                                    data-bs-dismiss="modal"
-                                    type="button"
-                                  ></button>
-                                </div>
-                                <div class="modal-body">
-                                  <div class="mb-3">
-                                    <label
-                                      class="form-label fw-semibold required"
-                                      >Nom de la catégorie</label
-                                    ><input
-                                      type="text"
-                                      class="form-control"
-                                      id="addCatNom"
-                                      placeholder="Ex: Achats divers"
-                                    />
-                                  </div>
-                                  <div class="mb-3">
-                                    <label class="form-label fw-semibold"
-                                      >Description (optionnel)</label
-                                    ><input
-                                      type="text"
-                                      class="form-control"
-                                      id="addCatDesc"
-                                      placeholder="Ex: Paiements ponctuels"
-                                    />
-                                  </div>
-                                  <div class="mb-3">
-                                    <label class="form-label fw-semibold"
-                                      >Règles d’approbation</label
-                                    >
-                                    <div class="form-check">
-                                      <input
-                                        type="checkbox"
-                                        class="form-check-input"
-                                        name="regleCatAdd[]"
-                                        value="Aucun"
-                                        id="regleAucun"
-                                      />
-                                      <label
-                                        class="form-check-label"
-                                        for="regleAucun"
-                                        >Aucun</label
-                                      >
-                                    </div>
-                                    <div class="form-check">
-                                      <input
-                                        type="checkbox"
-                                        class="form-check-input"
-                                        name="regleCatAdd[]"
-                                        value="Niveau 1"
-                                        id="regleNiv1"
-                                      />
-                                      <label
-                                        class="form-check-label"
-                                        for="regleNiv1"
-                                        >Niveau 1</label
-                                      >
-                                    </div>
-                                    <div class="form-check">
-                                      <input
-                                        type="checkbox"
-                                        class="form-check-input"
-                                        name="regleCatAdd[]"
-                                        value="Niveau 1 et 2"
-                                        id="regleNiv12"
-                                      />
-                                      <label
-                                        class="form-check-label"
-                                        for="regleNiv12"
-                                        >Niveau 1 et 2</label
-                                      >
-                                    </div>
-                                  </div>
-
-                                  <div
-                                    class="warning-text"
-                                    id="addCatWarning"
-                                    style="display: none"
-                                  >
-                                    <span
-                                      >Le nom de la catégorie est
-                                      obligatoire.</span
-                                    >
-                                  </div>
-                                </div>
-                                <div class="modal-footer">
-                                  <button
-                                    class="btn btn-secondary"
-                                    data-bs-dismiss="modal"
-                                  >
-                                    Annuler</button
-                                  ><button
-                                    class="btn btn-primary"
-                                    id="addCatBtn"
-                                  >
-                                    Enregistrer
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
 
                           <div
                             *ngIf="showAjoutBeneficiaireModal"
@@ -195,7 +73,10 @@
                             role="dialog"
                             style="background: rgba(0, 0, 0, 0.5)"
                           >
-                            <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+                            <div
+                              class="modal-dialog modal-xl modal-dialog-centered"
+                              role="document"
+                            >
                               <div class="modal-content modal-flex">
                                 <form
                                   id="add-beneficiary-form"
@@ -507,7 +388,13 @@
 
                                                               <small
                                                                 class="text-danger"
-                                                                *ngIf="submitted && f['telephone']?.errors?.['required']"
+                                                                *ngIf="
+                                                                  submitted &&
+                                                                  f['telephone']
+                                                                    ?.errors?.[
+                                                                    'required'
+                                                                  ]
+                                                                "
                                                               >
                                                                 Téléphone
                                                                 obligatoire
@@ -515,7 +402,13 @@
 
                                                               <small
                                                                 class="text-danger"
-                                                                *ngIf="submitted && f['telephone']?.errors?.['pattern']"
+                                                                *ngIf="
+                                                                  submitted &&
+                                                                  f['telephone']
+                                                                    ?.errors?.[
+                                                                    'pattern'
+                                                                  ]
+                                                                "
                                                               >
                                                                 Numéro invalide
                                                                 (9 chiffres)
@@ -656,8 +549,6 @@
                                                 </div>
                                               </div>
 
-
-
                                               <div class="col-xl">
                                                 <div class="text-muted">
                                                   <div class="row">
@@ -767,7 +658,7 @@
                                                                         [ngClass]="{
                                                                           'is-invalid':
                                                                             submitted &&
-                                                                            ctrl.invalid
+                                                                            ctrl.invalid,
                                                                         }"
                                                                         #otpInput
                                                                       />
@@ -819,6 +710,11 @@
                                                                 <select
                                                                   class="form-select bank"
                                                                   formControlName="banqueBeneficiaire"
+                                                                  (change)="
+                                                                    onBanqueChange(
+                                                                      $event
+                                                                    )
+                                                                  "
                                                                 >
                                                                   <option
                                                                     value=""
@@ -827,6 +723,7 @@
                                                                     sélectionner
                                                                     la banque
                                                                   </option>
+
                                                                   <option
                                                                     *ngFor="
                                                                       let banque of listeBanques
@@ -1013,20 +910,56 @@
                         aria-labelledby="tab-autres"
                       >
                         <div class="table-responsive table">
-                          <div class="d-flex justify-content-between mb-2">
-                            <button
-                              class="btn btn-success"
-                              (click)="exportExcel()"
-                            >
-                              Exporter Excel
-                            </button>
-                            <input
-                              type="text"
-                              class="form-control w-25"
-                              placeholder="Rechercher..."
-                              [(ngModel)]="searchText"
-                              (input)="currentPage = 1"
-                            />
+                          <div class="row align-items-center mb-3 gx-3">
+                            <!-- Bouton Export Excel -->
+                            <div class="col-12 col-md-6 col-lg-2">
+                              <button
+                                class="btn btn-success w-100"
+                                (click)="exportExcel()"
+                              >
+                                Exporter Excel
+                              </button>
+                            </div>
+
+                            <!-- Bouton Export PDF -->
+                            <div class="col-12 col-md-6 col-lg-2">
+                              <button
+                                class="btn btn-danger w-100"
+                                (click)="exportPdf()"
+                              >
+                                Exporter PDF
+                              </button>
+                            </div>
+
+                            <!-- Champ Recherche -->
+                            <div class="col-12 col-md-6 col-lg-4">
+                              <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Rechercher..."
+                                [(ngModel)]="searchText"
+                                (input)="currentPage = 1"
+                              />
+                            </div>
+
+                            <!-- Select Catégorie -->
+                            <div class="col-12 col-md-6 col-lg-4">
+                              <select
+                                class="form-select"
+                                formControlName="beneficiaryCategory"
+                                (change)="onCategoryChange($event)"
+                              >
+                                <option value="">
+                                  -- Sélectionner un type --
+                                </option>
+                                <option
+                                  *ngFor="let type of listeTypeBeneficiaire"
+                                  [value]="type.vcName"
+                                >
+                                  {{ type.vcName }}
+                                </option>
+                              </select>
+                            </div>
                           </div>
 
                           <table
@@ -1038,9 +971,11 @@
                                 <th (click)="sort('BeneficiaryCreatedDate')">
                                   Date
                                 </th>
-                                <th (click)="sort('vcLastName')">Nom</th> 
+                                <th (click)="sort('vcLastName')">Nom</th>
                                 <th (click)="sort('vcFirstName')">Prénom</th>
-                                <th (click)="sort('vcPhoneNumber')">Télephone</th>
+                                <th (click)="sort('vcPhoneNumber')">
+                                  Télephone
+                                </th>
                                 <th (click)="sort('vcEmail')">Email</th>
                                 <th (click)="sort('BeneficiaryTypeName')">
                                   Type
@@ -1059,10 +994,10 @@
                                 <td>
                                   {{
                                     benefice.BeneficiaryCreatedDate
-                                      | date : "dd/MM/yyyy HH:mm"
+                                      | date: "dd/MM/yyyy HH:mm"
                                   }}
                                 </td>
-                                <td>{{ benefice.vcLastName }}</td> 
+                                <td>{{ benefice.vcLastName }}</td>
                                 <td>{{ benefice.vcFirstName }}</td>
                                 <td>{{ benefice.vcPhoneNumber }}</td>
                                 <td>{{ benefice.vcEmail }}</td>
@@ -1078,7 +1013,7 @@
                                         benefice.vcStatus === 'Rejete',
                                       'bg-success':
                                         benefice.vcStatus !== 'En traitement' &&
-                                        benefice.vcStatus !== 'Rejete'
+                                        benefice.vcStatus !== 'Rejete',
                                     }"
                                   >
                                     {{ benefice.vcStatus }}
@@ -1087,7 +1022,7 @@
 
                                 <td class="text-center">
                                   <button
-                                    class="btn btn-sm btn-outline-primary me-2"
+                                    class="btn btn-sm btn-outline-primary me-2 my-2"
                                     (click)="
                                       modifierBeneficiaire(
                                         benefice.BeneficiaryID
@@ -1133,7 +1068,7 @@
                                   'btn-outline-secondary':
                                     page !== currentPage && page !== '...',
                                   'btn-secondary': page === currentPage,
-                                  disabled: page === '...'
+                                  disabled: page === '...',
                                 }"
                                 (click)="onPageClick(page)"
                               >

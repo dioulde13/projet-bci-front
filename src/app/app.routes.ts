@@ -290,14 +290,14 @@ export const routes: Routes = [
       {
         path: 'paiementFacture',
         loadComponent: () =>
-          import('./pages/factures/paiements-de-factures/paiements-de-factures.component')
+          import('./pages/factures/liste-de-factures/paiements-de-factures.component')
             .then(m => m.PaiementsDeFacturesComponent),
         canActivate: [AuthGuard],
       },
       {
         path: 'paiementFactureEDG/:nomFacture',
         loadComponent: () =>
-          import('./pages/factures/paiements-de-factures-edg/paiements-de-factures-edg.component')
+          import('./pages/factures/paiements-de-factures/paiements-de-factures-edg.component')
             .then(m => m.PaiementsDeFacturesEDGComponent),
         canActivate: [AuthGuard],
       },

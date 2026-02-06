@@ -36,12 +36,12 @@ export class ValiderOtpAfterLoginComponent implements AfterViewInit, OnInit {
   ngOnInit() {
     this.loginEmail = localStorage.getItem('loginEmail');
 
-    this.authServiceNode.login(String(this.loginEmail)).subscribe({
-      next: (response) => {
-        console.log(response);
-      },
-      error: (error) => {},
-    });
+    // this.authServiceNode.login(String(this.loginEmail)).subscribe({
+    //   next: (response) => {
+    //     console.log(response);
+    //   },
+    //   error: (error) => {},
+    // });
   }
 
   // Modals

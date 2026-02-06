@@ -59,10 +59,13 @@
                       formControlName="beneficiaryCategory"
                       (change)="onCategoryChange($event)"
                     >
-                      <option value="">-- Sélectionner un type --</option>
+                      <option [ngValue]="null">
+                        -- Sélectionner un type --
+                      </option>
+
                       <option
                         *ngFor="let type of listeTypeBeneficiaire"
-                        [value]="type.vcName"
+                        [ngValue]="type"
                       >
                         {{ type.vcName }}
                       </option>
@@ -85,48 +88,7 @@
                   </div>
                 </div>
 
-                <div class="row mb-3" *ngIf="filteredBeneficiaire.length > 0">
-                  <div class="col-md-6">
-                    <label class="form-label fw-bold text-body required">
-                      Bénéficiaire :
-                    </label>
-                    <select
-                      class="form-select"
-                      formControlName="selectedBeneficiaireId"
-                      (change)="onBeneficiaireChange($event)"
-                    >
-                      <option value="">
-                        -- Sélectionner un bénéficiaire --
-                      </option>
-                      <option
-                        *ngFor="let type of filteredBeneficiaire"
-                        [value]="type.BeneficiaryID"
-                      >
-                        {{ type.vcFirstName }} {{ type.vcLastName }} |
-                        {{ type.vcPhoneNumber }}
-                      </option>
-                    </select>
-                    <!-- <select
-                      class="form-select"
-                      formControlName="selectedBeneficiaireId"
-                      (change)="onBeneficiaireChange($event)"
-                    >
-                      <option value="">-- Sélectionner un type --</option>
-                      <option
-                        *ngFor="let type of filteredBeneficiaire"
-                        [value]="type.BeneficiaryID"
-                      >
-                        {{
-                          type.vcFirstName +
-                            " " +
-                            type.vcLastName +
-                            " | " +
-                            type.vcPhoneNumber
-                        }}
-                      </option>
-                    </select> -->
-                  </div>
-                </div>
+                
                 <div class="row mb-3" *ngIf="selectedBeneficiaire">
                   <div class="col-md-6">
                     <div id="beneficiary-info" class="info-grid">

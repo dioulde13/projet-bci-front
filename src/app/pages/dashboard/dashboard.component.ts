@@ -6,7 +6,22 @@ import { DashboardService } from '../../services/dashboard/dashboard.service';
 import { TransactionService } from '../../servicesNodes/transactionService/transaction.service';
 import { FormsModule } from '@angular/forms';
 import { BalanceService } from '../../servicesNodes/balance/balance.service';
+import * as XLSX from 'xlsx';
+
 // import { GnfFormatPipe } from '../gnfFormat/gnf-format.pipe';
+export interface BeneficiaireExcel {
+  prenom: string;
+  nom: string;
+  typeBeneficiaire: string;
+  numeroCompte: string;
+  bic: string;
+  montant: number;
+  devise: string;
+  modePaiement: string;
+  nomBanque: string;
+  adresseBanque: string;
+  objetPaiement: string;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -22,6 +37,52 @@ import { BalanceService } from '../../servicesNodes/balance/balance.service';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DashboardComponent implements OnInit {
+
+
+ beneficiaires: BeneficiaireExcel[] = [];
+  columns: string[] = [];
+
+  onFileChange(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (e: any) => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+
+      const rows: any[] = XLSX.utils.sheet_to_json(worksheet, {
+        defval: ''
+      });
+
+      this.beneficiaires = rows.map(row => ({
+        prenom: row['Prénom'],
+        nom: row['Nom'],
+        typeBeneficiaire: row['Type de bénéficiaire'],
+        numeroCompte: row['Numéro de compte'],
+        bic: row['BIC'],
+        montant: Number(row['Montant']),
+        devise: row['Devise'],
+        modePaiement: row['Mode paiement'],
+        nomBanque: row['Nom de la banque du bénéficiaire'],
+        adresseBanque: row['Adresse de la banque du bénéficiaire'],
+        objetPaiement: row['Objet du paiement']
+      }));
+
+      this.columns = Object.keys(this.beneficiaires[0] || {});
+    };
+
+    reader.readAsArrayBuffer(file);
+  }
+
+
+
+
+
   csvData: any[] = [];
   headers: string[] = [];
   selectedFile: File | null = null;

@@ -11,6 +11,8 @@ import flatpickr from 'flatpickr';
 import { French } from 'flatpickr/dist/l10n/fr.js';
 import { NgIf, NgFor, CommonModule } from '@angular/common';
 import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 import {
   FormBuilder,
@@ -67,7 +69,7 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     private beneficiaireService: BeneficiaireService,
     private beneficiaireNodeService: BeneficiaireNodeService,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -86,17 +88,19 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
 
   getListeBeneficiaire(): void {
     this.lodingFetch = true;
-    this.beneficiaireService.getListeBeneficiaire(Number(this.idOrganisation)).subscribe({
-      next: (response: any) => {
-        this.listeBeneficiaire = response?.data ?? [];
-        this.lodingFetch = false;
-        console.log('liste beneficiaire :', this.listeBeneficiaire);
-      },
-      error: (err) => {
-        this.lodingFetch = false;
-        console.error('Erreur lors du chargement des bénéficiaires :', err);
-      },
-    });
+    this.beneficiaireService
+      .getListeBeneficiaire(Number(this.idOrganisation))
+      .subscribe({
+        next: (response: any) => {
+          this.listeBeneficiaire = response?.data ?? [];
+          this.lodingFetch = false;
+          console.log('liste beneficiaire :', this.listeBeneficiaire);
+        },
+        error: (err) => {
+          this.lodingFetch = false;
+          console.error('Erreur lors du chargement des bénéficiaires :', err);
+        },
+      });
   }
 
   pageSize = 5;
@@ -104,6 +108,13 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
   searchText = '';
   sortColumn = '';
   sortDirection: 'asc' | 'desc' = 'asc';
+  selectedBeneficiaryType = '';
+
+  onCategoryChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.selectedBeneficiaryType = value;
+    console.log('value: ', value);
+  }
 
   // Filtrer et trier
   get filteredData() {
@@ -114,8 +125,15 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       const term = this.searchText.toLowerCase();
       data = data.filter((d) =>
         Object.values(d).some((val) =>
-          val?.toString().toLowerCase().includes(term)
-        )
+          val?.toString().toLowerCase().includes(term),
+        ),
+      );
+    }
+
+    // 🎯 Filtre par type
+    if (this.selectedBeneficiaryType) {
+      data = data.filter(
+        (d) => d.BeneficiaryTypeName === this.selectedBeneficiaryType,
       );
     }
 
@@ -184,7 +202,7 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
           this.currentPage,
           this.currentPage + 1,
           '...',
-          total
+          total,
         );
       }
     }
@@ -225,6 +243,59 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
 
     // Générer le fichier Excel
     XLSX.writeFile(wb, 'beneficiaires.xlsx');
+  }
+
+  exportPdf() {
+    if (this.filteredData.length === 0) return;
+
+    const doc = new jsPDF('l', 'mm', 'a4'); // paysage pour plus de place
+
+    doc.setFontSize(14);
+    doc.text('Liste des bénéficiaires', 14, 15);
+
+    const tableColumn = [
+      'Date',
+      'Nom',
+      'Prénom',
+      'Email',
+      'Type',
+      'Banque',
+      'N° Compte',
+      'Statut',
+    ];
+
+    const tableRows = this.filteredData.map((d) => [
+      new Date(d.BeneficiaryCreatedDate).toLocaleString(),
+      d.vcLastName,
+      d.vcFirstName,
+      d.vcEmail,
+      d.BeneficiaryTypeName,
+      d.BankName,
+      d.vcAccountNumber,
+      d.vcStatus,
+    ]);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 25,
+      styles: {
+        fontSize: 8,
+      },
+      headStyles: {
+        fillColor: [40, 167, 69], // vert Bootstrap (optionnel)
+      },
+    });
+
+    doc.save('beneficiaires.pdf');
+  }
+
+  /** Chargement type bénéficiaire */
+  private loadTypeBeneficiaires(): void {
+    this.beneficiaireService.getListeTypeBeneficiaire().subscribe({
+      next: (res) => (this.listeTypeBeneficiaire = res.data),
+      error: (err) => console.error('Erreur type bénéficiaire', err),
+    });
   }
 
   onPageClick(page: number | string) {
@@ -285,7 +356,7 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       typeBeneficiaire: ['', Validators.required],
       vcCurrency: ['', Validators.required],
 
-       banqueBeneficiaire: [''],
+      banqueBeneficiaire: [''],
       numeroCompte: [''],
       vcNomCompte: [''],
 
@@ -293,9 +364,32 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       vcNomCompteMobile: [''],
 
       vcNomCompteOtp: [''],
+      bicCode: [''],
 
-      otp: this.fb.array(Array(18).fill('').map(() => this.fb.control(''))),
+      otp: this.fb.array(
+        Array(18)
+          .fill('')
+          .map(() => this.fb.control('')),
+      ),
     });
+  }
+
+  onBanqueChange(event: Event): void {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+
+    const banqueSelectionnee = this.listeBanques.find(
+      (banque: any) => banque.vcName === selectedValue,
+    );
+
+    if (banqueSelectionnee) {
+      console.log('Nom banque:', banqueSelectionnee.vcName);
+      console.log('BIC:', banqueSelectionnee.vcBIC);
+
+      // Exemple : remplir automatiquement le champ bicCode
+      this.formBeneficiaire.patchValue({
+        bicCode: banqueSelectionnee.vcBIC,
+      });
+    }
   }
 
   onTypePaiementChange(event: Event): void {
@@ -334,7 +428,7 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     }
 
     Object.keys(this.f).forEach((key) =>
-      this.f[key].updateValueAndValidity({ emitEvent: false })
+      this.f[key].updateValueAndValidity({ emitEvent: false }),
     );
   }
 
@@ -380,33 +474,6 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       .get('telephone')
       ?.setValue(input.value, { emitEvent: false });
   }
-
-  /** Gestion du type de paiement */
-
-  /** Supprimer les validators dynamiques */
-  // private clearPaymentValidators(): void {
-  //   // Paiement bancaire
-  //   [
-  //     'banqueBeneficiaire',
-  //     'numeroCompte',
-  //     'vcNomCompte',
-  //     'vcNomCompteOtp',
-  //     'numeroMobile',
-  //     'vcNomCompteMobile',
-  //   ].forEach((field) => {
-  //     this.f[field].clearValidators();
-  //     this.f[field].setValue('');
-  //     this.f[field].updateValueAndValidity({ emitEvent: false });
-  //   });
-
-  //   // OTP
-  //   this.otp.controls.forEach((ctrl) => {
-  //     ctrl.clearValidators();
-  //     ctrl.setValue('');
-  //     ctrl.updateValueAndValidity({ emitEvent: false });
-  //   });
-  // }
-
 
   // 🔹 Saisie normale
   onInput(event: Event, index: number) {
@@ -455,31 +522,29 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
   isLoading: boolean = false;
 
   private resetFormulaire(): void {
-  this.submitted = false;
-  this.selectedTypePaiementId = null;
+    this.submitted = false;
+    this.selectedTypePaiementId = null;
 
-  // Reset complet du formulaire
-  this.formBeneficiaire.reset();
+    // Reset complet du formulaire
+    this.formBeneficiaire.reset();
 
-  // Clear le form array OTP
-  this.otp.controls.forEach((ctrl) => {
-    ctrl.setValue('');
-    ctrl.clearValidators();
-    ctrl.updateValueAndValidity({ emitEvent: false });
-  });
+    // Clear le form array OTP
+    this.otp.controls.forEach((ctrl) => {
+      ctrl.setValue('');
+      ctrl.clearValidators();
+      ctrl.updateValueAndValidity({ emitEvent: false });
+    });
 
-  // On retire aussi les validators de paiement
-  this.clearPaymentValidators();
+    // On retire aussi les validators de paiement
+    this.clearPaymentValidators();
 
-  // Remet à zéro tous les champs
-  Object.keys(this.f).forEach((key) => {
-    this.f[key].setErrors(null);
-    this.f[key].markAsPristine();
-    this.f[key].markAsUntouched();
-  });
-}
-
-
+    // Remet à zéro tous les champs
+    Object.keys(this.f).forEach((key) => {
+      this.f[key].setErrors(null);
+      this.f[key].markAsPristine();
+      this.f[key].markAsUntouched();
+    });
+  }
 
   submit(): void {
     this.isLoading = true;
@@ -533,7 +598,7 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
 
         // Vérifie OTP avant de joindre
         const invalidOtp = formValue.otp.some(
-          (val: string) => !val.match(/^[0-9]$/)
+          (val: string) => !val.match(/^[0-9]$/),
         );
         if (invalidOtp) {
           this.isLoading = false;
@@ -545,11 +610,13 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
         formData.append('vcAccountNumber', formValue.otp.join(''));
 
         formData.append('vcBanque', 'BCI');
+        formData.append('bicCode', 'COLIGNGNXXX');
       } else if (this.selectedTypePaiementId === '2') {
         console.log('🏦 Paiement Type 2 (Banque)');
         formData.append('vcBanque', String(formValue.banqueBeneficiaire));
         formData.append('vcAccountNumber', formValue.numeroCompte);
         formData.append('vcNomCompte', formValue.vcNomCompte);
+        formData.append('bicCode', formValue.bicCode);
       } else if (this.selectedTypePaiementId === '3') {
         console.log('📱 Paiement Type 3 (Mobile)');
         formData.append('vcAccountNumber', formValue.numeroMobile);
@@ -560,7 +627,7 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
 
         console.warn(
           '⚠️ Aucun type de paiement sélectionné ou non géré',
-          this.selectedTypePaiementId
+          this.selectedTypePaiementId,
         );
       }
 
@@ -641,15 +708,8 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     if (user) {
       this.userInfo = JSON.parse(user);
       this.idOrganisation = this.userInfo.iOrganisationID;
+      console.log('this.idOrganisation: ', this.idOrganisation);
     }
-  }
-
-  /** Chargement type bénéficiaire */
-  private loadTypeBeneficiaires(): void {
-    this.beneficiaireService.getListeTypeBeneficiaire().subscribe({
-      next: (res) => (this.listeTypeBeneficiaire = res.data),
-      error: (err) => console.error('Erreur type bénéficiaire', err),
-    });
   }
 
   private listeDesBanques(): void {

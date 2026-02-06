@@ -97,8 +97,9 @@
 
                 <button
                   class="custom-icon-container"
-                 (click)="openModal = true"
-                  ><i class="icon ion-upload custom-icon-size"></i>
+                  (click)="openModal = true"
+                >
+                  <i class="icon ion-upload custom-icon-size"></i>
                   <p class="custom-icon-text">Chargement de fichier</p>
                 </button>
                 <!-- <div
@@ -524,6 +525,56 @@
           </div>
         </div>
       </div>
+
+      <!-- Bouton pour sélectionner le fichier -->
+      <button class="btn btn-primary mb-3" (click)="fileInput.click()">
+        Charger le fichier Excel
+      </button>
+
+      <!-- Input type file caché -->
+      <input
+        #fileInput
+        type="file"
+        accept=".xlsx, .xls"
+        (change)="onFileChange($event)"
+        style="display: none"
+      />
+
+      <table
+        class="table table-bordered table-hover"
+        *ngIf="beneficiaires.length"
+      >
+        <thead class="table-light">
+          <tr>
+            <th>Prénom</th>
+            <th>Nom</th>
+            <th>Type</th>
+            <th>Compte</th>
+            <th>BIC</th>
+            <th>Montant</th>
+            <th>Devise</th>
+            <th>Mode paiement</th>
+            <th>Banque</th>
+            <th>Adresse banque</th>
+            <th>Objet</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of beneficiaires">
+            <td>{{ b.prenom }}</td>
+            <td>{{ b.nom }}</td>
+            <td>{{ b.typeBeneficiaire }}</td>
+            <td>{{ b.numeroCompte }}</td>
+            <td>{{ b.bic }}</td>
+            <td>{{ b.montant | number: "1.0-2" }}</td>
+            <td>{{ b.devise }}</td>
+            <td>{{ b.modePaiement }}</td>
+            <td>{{ b.nomBanque }}</td>
+            <td>{{ b.adresseBanque }}</td>
+            <td>{{ b.objetPaiement }}</td>
+          </tr>
+        </tbody>
+      </table>
       <div class="col-xl-4">
         <div class="row">
           <div class="col-xl-12">

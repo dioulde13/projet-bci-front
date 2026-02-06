@@ -31,14 +31,53 @@
                 class="col-sm-6 col-xl-3"
                 *ngFor="let facturier of listeFacturier"
               >
-                <button
+              <button
                   type="button"
                   class="p-0 border-0 bg-transparent w-100 text-start"
                   (click)="nextPages(facturier.FacturierName)"
                 >
-                  <div class="card text-center">
+                <div class="card card-custom text-center" style="height: 14rem;">
+                  <img 
+                  style="height: 10rem;"
+                   [src]="
+                        'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
+                        facturier.vcLogoPath
+                      "
+                      [alt]="facturier.FacturierName"
+                  />
+                  <div class="card-body">
+                     <h5 class="fw-semibold font-size-16 mb-1">
+                        <span class="text-body">{{
+                          facturier.FacturierName
+                        }}</span>
+                      </h5>
+                  </div>
+                </div>
+              </button>
+
+                <!-- <button
+                  type="button"
+                  class="p-0 border-0 bg-transparent w-100 text-start"
+                  (click)="nextPages(facturier.FacturierName)"
+                >
+                  <div class="card" style="width: 18rem">
+                    <img 
+                    [src]="
+                        'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
+                        facturier.vcLogoPath
+                      "
+                      [alt]="facturier.FacturierName"
+                    />
+                    <div class="card-body">
+                      <p class="card-text">
+                        Some quick example text to build on the card title and
+                        make up the bulk of the card's content.
+                      </p>
+                    </div>
+                  </div> -->
+                <!-- <div class="card card-custom text-center">
                     <img
-                      class="img-fluid card-img-top w-100 d-block card-img-top facturier-logo"
+                      class="card-img-top"
                       [src]="
                         'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
                         facturier.vcLogoPath
@@ -47,13 +86,13 @@
                     />
                     <div class="card-body">
                       <h5 class="fw-semibold font-size-16 mb-1">
-                        <span class="text-body">
-                          {{ facturier.FacturierName }}
-                        </span>
+                        <span class="text-body">{{
+                          facturier.FacturierName
+                        }}</span>
                       </h5>
                     </div>
-                  </div>
-                </button>
+                  </div> -->
+                <!-- </button> -->
               </div>
             </div>
           </div>

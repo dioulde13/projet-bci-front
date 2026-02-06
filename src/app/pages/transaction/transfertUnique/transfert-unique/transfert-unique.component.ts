@@ -45,7 +45,6 @@ export class TransfertUniqueComponent implements OnInit {
   // LISTES
   // =====================
   listeCompteClient: any[] = [];
-  listeTypeBeneficiaire: any[] = [];
   listeBeneficiaire: any[] = [];
   filteredBeneficiaire: any[] = [];
   filteredBeneficiaireOne: any[] = [];
@@ -56,7 +55,7 @@ export class TransfertUniqueComponent implements OnInit {
   // =====================
   selectedTypeBeneficiaire = '';
   selectedBeneficiaire: any = null;
-  selectedBeneficiaireId = '';
+  selectedBeneficiaireId: any;
   selectedDebitAccount = '';
   selectedBicCode = '';
 
@@ -108,6 +107,7 @@ export class TransfertUniqueComponent implements OnInit {
     this.getListeBeneficiaire();
     this.getListeBanques();
     this.initFormPaiementInterneExterne();
+    this.getInfosBeneficiaire();
   }
 
   // =====================
@@ -213,12 +213,17 @@ export class TransfertUniqueComponent implements OnInit {
     this.idOrganisation = this.userInfo?.iOrganisationID;
   }
 
+  listeTypeBeneficiaire: any[] = [];
+
   // =====================
   // BÉNÉFICIAIRES
   // =====================
   private loadTypeBeneficiaires(): void {
     this.beneficiaireService.getListeTypeBeneficiaire().subscribe({
-      next: (res) => (this.listeTypeBeneficiaire = res?.data ?? []),
+      next: (res) => {
+        this.listeTypeBeneficiaire = res?.data ?? [];
+        console.log('this.listeTypeBeneficiaire: ', this.listeTypeBeneficiaire);
+      },
       error: (err) => console.error(err),
     });
   }
@@ -240,53 +245,55 @@ export class TransfertUniqueComponent implements OnInit {
       });
   }
 
-  onCategoryChange(event: Event): void {
-  const value = (event.target as HTMLSelectElement).value;
+  selectedBeneficiaireName = '';
 
-  this.selectedBeneficiaire = null;
-  this.transferFormPaiementInterneExterne.patchValue({
-    selectedBeneficiaireId: '',
-  });
+ onCategoryChange(event: Event) {
+  // const select = event.target as HTMLSelectElement;
+  const selectedType = this.transferFormPaiementInterneExterne.get('beneficiaryCategory')?.value;
 
-  if (!value) {
-    this.filteredBeneficiaire = [...this.listeBeneficiaire];
-    return;
-  }
+  console.log('Objet sélectionné : ', selectedType);
+  console.log('ID : ', selectedType?.id);
+  console.log('vcName : ', selectedType?.vcName);
 
-  const selected = value.trim().toLowerCase();
 
-  this.filteredBeneficiaire = this.listeBeneficiaire.filter((b) =>
-    (b?.BeneficiaryTypeName ?? '')
-      .toString()
-      .trim()
-      .toLowerCase() === selected
-  );
+  this.selectedBeneficiaireId = selectedType?.id;
+  this.selectedBeneficiaireName = selectedType?.vcName;
+  this.getInfosBeneficiaire();
 }
 
-onBeneficiaireChange(event: Event): void {
-  const id = (event.target as HTMLSelectElement).value;
+  // onBeneficiaireChange(event: Event): void {
+  //   const id = (event.target as HTMLSelectElement).value;
 
-  if (!id) {
-    this.selectedBeneficiaire = null;
-    return;
-  }
+  //   if (!id) {
+  //     this.selectedBeneficiaire = null;
+  //     return;
+  //   }
 
-  this.selectedBeneficiaire = this.filteredBeneficiaire.find(
-    (b) => b?.BeneficiaryID?.toString() === id
-  );
+  //   this.selectedBeneficiaire = this.filteredBeneficiaire.find(
+  //     (b) => b?.BeneficiaryID?.toString() === id,
+  //   );
 
-  if (this.selectedBeneficiaire) {
-    this.transferFormPaiementInterneExterne.patchValue({
-      vcBenefName:
-        this.selectedBeneficiaire.vcFirstName +
-        ' ' +
-        this.selectedBeneficiaire.vcLastName,
-      vcBenefAccount: this.selectedBeneficiaire.vcAccountNumber,
+  //   if (this.selectedBeneficiaire) {
+  //     this.transferFormPaiementInterneExterne.patchValue({
+  //       vcBenefName:
+  //         this.selectedBeneficiaire.vcFirstName +
+  //         ' ' +
+  //         this.selectedBeneficiaire.vcLastName,
+  //       vcBenefAccount: this.selectedBeneficiaire.vcAccountNumber,
+  //     });
+  //   }
+  // }
+
+  infosBeneficiaire: any;
+
+  getInfosBeneficiaire() {
+    this.beneficiaireService.getInfosBeneficiaire(this.selectedBeneficiaireId).subscribe({
+      next: (response: any) => {
+        this.infosBeneficiaire = response.data;
+        console.log('this.infosBeneficiaire: ', this.infosBeneficiaire);
+      },
     });
   }
-}
-
-  
 
   // =====================
   // SUBMIT
@@ -306,14 +313,12 @@ onBeneficiaireChange(event: Event): void {
       vcBenefBicCode: ['', Validators.required],
       mAmount: ['', Validators.required],
       vcCorrespBicCode: ['', Validators.required],
-      vcBenefCurrency: ['', Validators.required]
+      vcBenefCurrency: ['', Validators.required],
     });
   }
   loadingPayementInterneExterne: boolean = false;
 
   submitFormPayementInterneExterne(): void {
-
-
     console.log('selectedBeneficiaire: ', this.selectedBeneficiaire);
 
     let vcBenefAccountNumber = this.selectedBeneficiaire?.vcAccountNumber;
@@ -325,35 +330,37 @@ onBeneficiaireChange(event: Event): void {
     const payload = {
       vcPayerName: this.nomDebiteur,
       dtPaymentDate: formValue.dtPaymentDate,
-      vcPaymentReference: "REF123",
+      vcPaymentReference: 'REF123',
       vcPayerAccount: formValue.vcPayerAccount,
-      vcBenefName: formValue.beneficiaryCategory, 
-      mAmount: formValue.mAmount, 
+      vcBenefName: this.selectedBeneficiaireName,
+      mAmount: formValue.mAmount,
       vcBenefAccount: vcBenefAccountNumber,
       vcBenefBicCode: formValue.vcBenefBicCode,
-      vcCorrespBicCode: "REF123",
-      vcBenefCurrency: formValue.vcBenefCurrency
+      vcCorrespBicCode: 'REF123',
+      vcBenefCurrency: formValue.vcBenefCurrency,
     };
 
     console.log('Payload Mobile Money :', payload);
 
-    this.paiementInterneExterneService.payementInterneExterne(payload).subscribe({
-      next: (res) => {
-        console.log('Paiement réussi :', res);
-        this.loadingPayementInterneExterne = false;
-        this.toastr.success(res.data.message, '', {
-        positionClass: 'toast-custom-center',
+    this.paiementInterneExterneService
+      .payementInterneExterne(payload)
+      .subscribe({
+        next: (res) => {
+          console.log('Paiement réussi :', res);
+          this.loadingPayementInterneExterne = false;
+          this.toastr.success(res.data.message, '', {
+            positionClass: 'toast-custom-center',
+          });
+        },
+        error: (err) => {
+          this.toastr.error(err.error.message, '', {
+            positionClass: 'toast-custom-center',
+          });
+          this.loadingPayementInterneExterne = false;
+          console.error('Erreur paiement :', err);
+          // toast erreur ici
+        },
       });
-      },
-      error: (err) => {
-        this.toastr.error(err.error.message, '', {
-        positionClass: 'toast-custom-center',
-      });
-        this.loadingPayementInterneExterne = false;
-        console.error('Erreur paiement :', err);
-        // toast erreur ici
-      },
-    });
 
     console.log(
       '✅ DONNÉES FORMULAIRE :',

@@ -14,6 +14,7 @@ export class BeneficiaireService {
 
   // beneficiaire.service.ts
   ajouterBeneficiaire(formData: FormData) {
+    console.log('formData: ', formData);
     return this.http.post(`${this.baseUrl}/api/addBeneficiaire`, formData, {
       withCredentials: true,
     });
@@ -25,7 +26,7 @@ export class BeneficiaireService {
       formData,
       {
         withCredentials: true,
-      }
+      },
     );
   }
 
@@ -40,7 +41,7 @@ export class BeneficiaireService {
   detailBeneficiaire(BeneficiaryID: number): Observable<any> {
     const params = new HttpParams().set(
       'BeneficiaryID',
-      BeneficiaryID.toString()
+      BeneficiaryID.toString(),
     );
 
     return this.http.get<any>(`${this.baseUrl}/api/detailBeneficiaire`, {
@@ -53,6 +54,18 @@ export class BeneficiaireService {
     return this.http.get(`${this.baseUrl}/api/getListeTypeBeneficiaire`, {
       withCredentials: true,
     });
+  }
+
+  getInfosBeneficiaire(idCategorieBeneficiaire: number): Observable<any> {
+    return this.http.get(
+      `${this.baseUrl}/api/getListeBeneficiaireByCategorie`,
+      {
+        params: {
+          idCategorieBeneficiaire: idCategorieBeneficiaire,
+        },
+        withCredentials: true,
+      },
+    );
   }
 
   getCurrency(): Observable<any> {
