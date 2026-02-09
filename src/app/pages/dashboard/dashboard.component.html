@@ -89,6 +89,7 @@
                   title="Importation des Salaires BCI"
                   instructions="Veuillez charger le fichier des virements du mois en cours."
                   previewTitle="Récapitulatif des virements"
+                  [duplicateCheckFields]="['numeroCompte', 'bic', 'montant']"
                   validateButtonText="Confirmer l'envoi à la banque"
                   (importDataCompleted)="onImportedData($event)"
                   (modalClosed)="openModal = false"
@@ -527,12 +528,12 @@
       </div>
 
       <!-- Bouton pour sélectionner le fichier -->
-      <button class="btn btn-primary mb-3" (click)="fileInput.click()">
+      <!-- <button class="btn btn-primary mb-3" (click)="fileInput.click()">
         Charger le fichier Excel
-      </button>
+      </button> -->
 
       <!-- Input type file caché -->
-      <input
+      <!-- <input
         #fileInput
         type="file"
         accept=".xlsx, .xls"
@@ -574,7 +575,7 @@
             <td>{{ b.objetPaiement }}</td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
       <div class="col-xl-4">
         <div class="row">
           <div class="col-xl-12">

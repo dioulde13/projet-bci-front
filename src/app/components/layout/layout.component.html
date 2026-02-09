@@ -107,7 +107,7 @@
             </form>
           </div>
         </div>
-        <div class="d-none d-sm-inline-block dropdown">
+        <!-- <div class="d-none d-sm-inline-block dropdown">
           <button class="btn header-item" type="button">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -137,7 +137,10 @@
               ></path>
             </svg>
           </button>
-        </div>
+        </div> -->
+        
+
+
         <div class="d-none d-sm-inline-block dropdown">
           <button class="btn header-item" id="mode-setting-btn" type="button">
             <svg
@@ -170,6 +173,114 @@
             </svg>
           </button>
         </div>
+
+
+        <!-- Notification Reseau -->
+        <div class="dropdown">
+          <button
+            class="btn position-relative header-item noti-icon"
+            aria-expanded="false"
+            data-bs-toggle="dropdown"
+            id="page-header-notifications-dropdown"
+            aria-haspopup="true"
+            type="button"
+          >
+            <i class="fas fa-wifi"></i>
+            <span class="badge rounded-pill bg-info">1</span>
+          </button>
+          <div
+            class="dropdown-menu dropdown-menu-end p-0 dropdown-menu-lg"
+            aria-labelledby="page-header-notifications-dropdown"
+          >
+            <div class="p-3">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h6 class="m-0">Notifications Reseau</h6>
+                </div>
+                <div class="col-auto">
+                  <a
+                    class="small text-reset text-decoration-underline"
+                    href="#!"
+                  >
+                    Non lue(s) (2)
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="calcul-pay-custom-div" data-simplebar>
+              <a class="text-reset notification-item" href="#!">
+                <div class="d-flex">
+                  <div class="flex-shrink-0 me-3 avatar-sm">
+                    <span
+                      class="bg-warning avatar-title rounded-circle font-size-16"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 640 640"
+                      >
+                        <path
+                          d="M320 160C229.1 160 146.8 196 86.3 254.6C73.6 266.9 53.3 266.6 41.1 253.9C28.9 241.2 29.1 220.9 41.8 208.7C113.7 138.9 211.9 96 320 96C428.1 96 526.3 138.9 598.3 208.7C611 221 611.3 241.3 599 253.9C586.7 266.5 566.4 266.9 553.8 254.6C493.2 196 410.9 160 320 160zM272 496C272 469.5 293.5 448 320 448C346.5 448 368 469.5 368 496C368 522.5 346.5 544 320 544C293.5 544 272 522.5 272 496zM200 390.2C188.3 403.5 168.1 404.7 154.8 393C141.5 381.3 140.3 361.1 152 347.8C193 301.4 253.1 272 320 272C386.9 272 447 301.4 488 347.8C499.7 361.1 498.4 381.3 485.2 393C472 404.7 451.7 403.4 440 390.2C410.6 356.9 367.8 336 320 336C272.2 336 229.4 356.9 200 390.2z"
+                        />
+                      </svg>
+                    </span>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">Problème Réseau</h6>
+                    <div class="text-muted font-size-13">
+                      <p class="mb-1">
+                        Probleme de connection ou service indisponible
+                      </p>
+                      <p class="mb-0">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="1em"
+                          height="1em"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          class="me-1"
+                        >
+                          <path
+                            d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></path>
+                        </svg>
+                        <span>3 min</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="d-grid p-2 border-top">
+              <a
+                class="btn btn-link btn-sm text-center font-size-14"
+                role="button"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  class="me-1 icon-sm"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18ZM13.7071 9.29289L10.7071 6.29289C10.3166 5.90237 9.68342 5.90237 9.29289 6.29289C8.90237 6.68342 8.90237 7.31658 9.29289 7.70711L10.5858 9L7 9C6.44772 9 6 9.44771 6 10C6 10.5523 6.44772 11 7 11H10.5858L9.29289 12.2929C8.90237 12.6834 8.90237 13.3166 9.29289 13.7071C9.68342 14.0976 10.3166 14.0976 10.7071 13.7071L13.7071 10.7071C14.0976 10.3166 14.0976 9.68342 13.7071 9.29289Z"
+                    fill="currentColor"
+                  ></path>
+                </svg>
+                <span>Afficher plus</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        
         <div class="dropdown">
           <button
             class="btn header-item noti-icon position-relative"
@@ -309,6 +420,8 @@
             </div>
           </div>
         </div>
+
+
         <span *ngIf="getUserInfoConfig() as user"> </span>
         <div class="dropdown d-inline-block">
           <button

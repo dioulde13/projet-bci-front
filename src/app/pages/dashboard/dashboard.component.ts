@@ -1,4 +1,9 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, HostListener, OnInit } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  HostListener,
+  OnInit,
+} from '@angular/core';
 import Papa from 'papaparse';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -7,6 +12,7 @@ import { TransactionService } from '../../servicesNodes/transactionService/trans
 import { FormsModule } from '@angular/forms';
 import { BalanceService } from '../../servicesNodes/balance/balance.service';
 import * as XLSX from 'xlsx';
+import { SaveFichierCSVService } from '../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
 
 // import { GnfFormatPipe } from '../gnfFormat/gnf-format.pipe';
 export interface BeneficiaireExcel {
@@ -37,9 +43,7 @@ export interface BeneficiaireExcel {
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DashboardComponent implements OnInit {
-
-
- beneficiaires: BeneficiaireExcel[] = [];
+  beneficiaires: BeneficiaireExcel[] = [];
   columns: string[] = [];
 
   onFileChange(event: any) {
@@ -56,10 +60,10 @@ export class DashboardComponent implements OnInit {
       const worksheet = workbook.Sheets[sheetName];
 
       const rows: any[] = XLSX.utils.sheet_to_json(worksheet, {
-        defval: ''
+        defval: '',
       });
 
-      this.beneficiaires = rows.map(row => ({
+      this.beneficiaires = rows.map((row) => ({
         prenom: row['Prénom'],
         nom: row['Nom'],
         typeBeneficiaire: row['Type de bénéficiaire'],
@@ -70,7 +74,7 @@ export class DashboardComponent implements OnInit {
         modePaiement: row['Mode paiement'],
         nomBanque: row['Nom de la banque du bénéficiaire'],
         adresseBanque: row['Adresse de la banque du bénéficiaire'],
-        objetPaiement: row['Objet du paiement']
+        objetPaiement: row['Objet du paiement'],
       }));
 
       this.columns = Object.keys(this.beneficiaires[0] || {});
@@ -78,10 +82,6 @@ export class DashboardComponent implements OnInit {
 
     reader.readAsArrayBuffer(file);
   }
-
-
-
-
 
   csvData: any[] = [];
   headers: string[] = [];
@@ -126,6 +126,7 @@ export class DashboardComponent implements OnInit {
     private listeCompteCLientService: DashboardService,
     private dixTransactionServiceNode: TransactionService,
     private balanceService: BalanceService,
+    private saveFichierCSVService: SaveFichierCSVService,
   ) {}
 
   //   totalSolde: any;
@@ -436,38 +437,76 @@ export class DashboardComponent implements OnInit {
     // this.processAccounts();
   }
 
-  title = 'generic file import';
-  openModal = false; // Example des colonnes attendues
+  // title = 'generic file import';
+  openModal = false;
   fields: any[] = [
-    { key: 'nom', label: 'Nom', required: true },
     { key: 'prenom', label: 'Prénom', required: true },
-    { key: 'email', label: 'Email' },
-    { key: 'age', label: 'Âge', type: 'number' },
-  ]; //Cette méthode est appelée quand l'enfant clique sur "Valider les Transactions"
+    { key: 'nom', label: 'Nom', required: true },
+    {
+      key: 'typeBeneficiaire',
+      label: 'Type de bénéficiaire',
+      required: true,
+    },
+    { key: 'numeroCompte', label: 'Numéro de compte', required: true },
+    { key: 'bic', label: 'BIC', required: true },
+    { key: 'montant', label: 'Montant', required: true, type: 'number' },
+    { key: 'devise', label: 'Devise', required: true },
+    { key: 'modePaiement', label: 'Mode paiement', required: true },
+    {
+      key: 'nomBanque',
+      label: 'Nom de la banque du bénéficiaire',
+    },
+    {
+      key: 'adresseBanque',
+      label: 'Adresse de la banque du bénéficiaire',
+    },
+    { key: 'objetPaiement', label: 'Objet du paiement' },
+  ];
+
+  mapToBackendFormat(item: any) {
+    return {
+      vcFullName: `${item.Prenom} ${item.Nom}`,
+      vcFirstName: item.Prenom,
+      vcLastName: item.Nom,
+      vcAccountNumber: item['Numero de compte'],
+      vcBeneficiaryType: item['Type de beneficiaire'],
+      mAmount: item.Montant,
+      vcCurrency: item.Devise,
+      vcBIC: item.BIC,
+      vcPaymentMode: item['Mode paiement'],
+      vcBeneficiaryBankName: item['Nom de la banque du beneficiaire'],
+      vcBeneficiaryBankFullAddress:
+        item['Adresse de la banque du beneficiaire'],
+      vcDescription: item['Objet du paiement'],
+      iEnterpriseID: '', // ou dynamique
+      iOrganisationID: 53, // ou dynamique
+    };
+  }
 
   onImportedData(event: any) {
-    const data = event.detail || event;
-    console.log('Données finales reçues du composant enfant :', data); // Demander confirmation avant de valider
+    const tableData = event.detail || event;
+
+    console.log('Données du tableau :', tableData);
+
+    const payload = tableData.map((item: any) => this.mapToBackendFormat(item));
+
+    console.log('Payload envoyé au backend :', payload);
 
     const confirmDemande = confirm(
       'Voulez-vous vraiment valider ces données ?',
     );
 
     if (confirmDemande) {
-      // L'utilisateur a cliqué sur "OK"
-      // Ici, tu peux appeler ton API pour sauvegarder les données
-      // this.myService.saveTransactions(data).subscribe(
-      //   response => {
-      //     alert('Les données ont été validées et sauvegardées avec succès !');
-      //   },
-      //   error => {
-      //     alert('Une erreur est survenue lors de la sauvegarde.');
-      //   }
-      // );
-
-      alert('Les données ont été validées avec succès !');
+      this.saveFichierCSVService.saveFichierCSVTransaction(payload).subscribe({
+        next: (res) => {
+          console.log('response:', res);
+          alert('Données envoyées avec succès !');
+        },
+        error: () => {
+          alert('Erreur lors de l’envoi des données.');
+        },
+      });
     } else {
-      // L'utilisateur a cliqué sur "Annuler"
       console.log('Validation annulée par l’utilisateur.');
     }
   }

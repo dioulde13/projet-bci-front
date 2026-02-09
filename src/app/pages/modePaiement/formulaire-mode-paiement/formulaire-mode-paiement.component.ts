@@ -12,6 +12,7 @@ import { BeneficiaireService } from '../../../services/beneficiaire/beneficiaire
 import { DashboardService } from '../../../services/dashboard/dashboard.service';
 import { MobileMoneyService } from '../../../servicesNodes/modePaiementOperateur/mobileMoney/mobile-money.service';
 import { ToastrService } from 'ngx-toastr';
+import { GetAccountNameService } from '../../../servicesNodes/verifierNomDebiteur/get-account-name.service';
 
 @Component({
   selector: 'app-formulaire-mode-paiement',
@@ -31,51 +32,15 @@ export class FormulaireModePaiementComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private beneficiaireService: BeneficiaireService,
+    // private beneficiaireService: BeneficiaireService,
     private listeCompteCLientService: DashboardService,
     private mobileMoneyService: MobileMoneyService,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
+    private getAccount: GetAccountNameService,
   ) {}
 
   mobileMoneyForm!: FormGroup;
-  // lodingFetch: boolean = false;
-
-  listeBeneficiaire: any[] = [];
-  selectedDebitAccountBeneficiaire: any;
-
-  getListeBeneficiaire(): void {
-    // this.lodingFetch = true;
-    this.beneficiaireService
-      .getListeBeneficiaire(Number(this.idOrganisation))
-      .subscribe({
-        next: (response: any) => {
-          this.listeBeneficiaire = response?.data ?? [];
-          // this.lodingFetch = false;
-          console.log('liste beneficiaire :', this.listeBeneficiaire);
-
-          if (this.listeBeneficiaire.length > 0) {
-            const firstAccount = this.listeBeneficiaire[0].vcAccountNumber;
-
-            this.selectedDebitAccountBeneficiaire = firstAccount;
-
-            this.onDebitAccountChangeBeneficiaire(firstAccount);
-          }
-        },
-        error: (err) => {
-          // this.lodingFetch = false;
-          console.error('Erreur lors du chargement des bénéficiaires :', err);
-        },
-      });
-  }
-
-  onDebitAccountSelectBeneficiaire(event: Event): void {
-    const value = (event.target as HTMLSelectElement)?.value;
-    if (value) this.onDebitAccountChangeBeneficiaire(value);
-  }
-
-  onDebitAccountChangeBeneficiaire(accountNumber: string): void {
-    console.log('accountNumber beneficiaire: ', accountNumber);
-  }
+ 
 
   /** Récupération infos utilisateur */
   private getUserInfo(): void {
@@ -88,12 +53,13 @@ export class FormulaireModePaiementComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     // 1️⃣ récupérer l'utilisateur
     this.getUserInfo();
 
     // 2️⃣ vérifier que l'id organisation existe
     if (this.idOrganisation) {
-      this.getListeBeneficiaire();
+      // this.getListeBeneficiaire();
       this.getListeCompteClient();
     } else {
       console.error('ID Organisation introuvable');
@@ -110,78 +76,98 @@ export class FormulaireModePaiementComponent implements OnInit {
     this.initMobileMoneyForm();
 
     console.log('Type opérateur :', this.typeOperateur);
+    
   }
 
+  phoneMaxLength = 9;
 
-   phoneMaxLength = 9;
+  // Autoriser uniquement les chiffres + touches utiles
+  onlyDigits(event: KeyboardEvent): void {
+    const allowedKeys = [
+      'Backspace',
+      'ArrowLeft',
+      'ArrowRight',
+      'Delete',
+      'Tab',
+    ];
 
-// Autoriser uniquement les chiffres + touches utiles
-onlyDigits(event: KeyboardEvent): void {
-  const allowedKeys = [
-    'Backspace',
-    'ArrowLeft',
-    'ArrowRight',
-    'Delete',
-    'Tab',
-  ];
+    if (allowedKeys.includes(event.key)) return;
 
-  if (allowedKeys.includes(event.key)) return;
+    // Bloquer tout sauf chiffres
+    if (!/^\d$/.test(event.key)) {
+      event.preventDefault();
+      return;
+    }
 
-  // Bloquer tout sauf chiffres
-  if (!/^\d$/.test(event.key)) {
-    event.preventDefault();
-    return;
+    const input = event.target as HTMLInputElement;
+
+    // Bloquer si longueur max atteinte
+    if (input.value.length >= this.phoneMaxLength) {
+      event.preventDefault();
+    }
   }
 
-  const input = event.target as HTMLInputElement;
+  // Bloquer le collage invalide
+  onPaste(event: ClipboardEvent): void {
+    const pastedData = event.clipboardData?.getData('text') || '';
 
-  // Bloquer si longueur max atteinte
-  if (input.value.length >= this.phoneMaxLength) {
-    event.preventDefault();
+    // Autoriser uniquement chiffres
+    if (!/^\d+$/.test(pastedData)) {
+      event.preventDefault();
+      return;
+    }
+
+    const input = event.target as HTMLInputElement;
+
+    // Bloquer si dépasse 9 chiffres
+    if (input.value.length + pastedData.length > this.phoneMaxLength) {
+      event.preventDefault();
+    }
   }
-}
-
-// Bloquer le collage invalide
-onPaste(event: ClipboardEvent): void {
-  const pastedData = event.clipboardData?.getData('text') || '';
-
-  // Autoriser uniquement chiffres
-  if (!/^\d+$/.test(pastedData)) {
-    event.preventDefault();
-    return;
-  }
-
-  const input = event.target as HTMLInputElement;
-
-  // Bloquer si dépasse 9 chiffres
-  if (input.value.length + pastedData.length > this.phoneMaxLength) {
-    event.preventDefault();
-  }
-}
-
 
   // 🔷 MOBILE MONEY
-  initMobileMoneyForm(): void {
-    this.mobileMoneyForm = this.fb.group({
-      compteSource: ['', Validators.required],
-
-      telephone: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern('^[0-9]{9,12}$'), // numéro valide
-        ],
+  // 🔷 MOBILE MONEY
+initMobileMoneyForm(): void {
+  this.mobileMoneyForm = this.fb.group({
+    compteSource: ['', Validators.required],
+    telephone: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern('^[0-9]{9,12}$'), // numéro valide
       ],
+    ],
+    montant: ['', [Validators.required, Validators.min(1)]],
+    frais: [''],
+    description: ['', Validators.required],
+    typeTransactionMM: ['B2W', Validators.required],
+  });
 
-      montant: ['', [Validators.required, Validators.min(1)]],
+  // Écouter le changement du compte sélectionné
+  this.mobileMoneyForm.get('compteSource')?.valueChanges.subscribe(
+    (accountNumber) => {
+      if (accountNumber) {
+        this.getAccountName(accountNumber);
+      } else {
+        this.soldeDebiteur = '';
+      }
+    }
+  );
+}
 
-      frais: [''],
+soldeDebiteur: any;
 
-      description: ['', Validators.required],
-
-      typeTransactionMM: ['B2W', Validators.required],
-    });
-  }
+getAccountName(accountNumber: string): void {
+  this.getAccount.getNomDebiteur(accountNumber).subscribe({
+    next: (res) => {
+      this.soldeDebiteur = res?.data?.soldeDisp;
+      console.log('this.soldeDebiteur: ', this.soldeDebiteur);
+    },
+    error: () => {
+      this.soldeDebiteur = '';
+    },
+  });
+}
 
   loadingMobileMoney: boolean = false;
 
@@ -211,7 +197,7 @@ onPaste(event: ClipboardEvent): void {
       vcOperatorAccount: this.typeOperateur,
       mFees: 200,
       vcNotes: formValue.description,
-      vcOperationType: formValue.typeTransactionMM
+      vcOperationType: formValue.typeTransactionMM,
     };
 
     console.log('Payload Mobile Money :', payload);
@@ -243,35 +229,11 @@ onPaste(event: ClipboardEvent): void {
       .subscribe({
         next: (response: any) => {
           this.listeCompteClient = response?.data?.[0]?.comptes ?? [];
-
-          this.typesCompte = [
-            ...new Set(this.listeCompteClient.map((c) => c.vcAccountType)),
-          ].join(' - ');
-
-          if (this.listeCompteClient.length > 0) {
-            const firstAccount = this.listeCompteClient[0].vcAccountNumber;
-
-            this.selectedDebitAccount = firstAccount;
-
-            this.onDebitAccountChange(firstAccount);
-          }
         },
         error: (err) => {
           this.errorMessage = err.message;
         },
       });
-  }
-
-  // =====================
-  // COMPTE DÉBITEUR
-  // =====================
-  onDebitAccountSelect(event: Event): void {
-    const value = (event.target as HTMLSelectElement)?.value;
-    if (value) this.onDebitAccountChange(value);
-  }
-
-  onDebitAccountChange(accountNumber: string): void {
-    console.log(accountNumber);
   }
 
   // 🔶 ORANGE MONEY

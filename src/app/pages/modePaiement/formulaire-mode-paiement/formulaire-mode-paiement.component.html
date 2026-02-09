@@ -108,6 +108,7 @@
                 >
                   Champ obligatoire
                 </small>
+                
               </div>
 
               <!-- COMPTE -->
@@ -133,6 +134,10 @@
                 >
                   Champ obligatoire
                 </small>
+                 <span class="d-block mt-2" *ngIf="mobileMoneyForm.get('typeTransactionMM')?.value === 'B2W'">
+                      Solde : <b>{{ soldeDebiteur | number: "1.2-2" }}</b>
+                    </span>
+                
               </div>
 
               <!-- TELEPHONE -->
