@@ -7,12 +7,10 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { BalanceService } from '../../../../servicesNodes/balance/balance.service';
 import { DashboardService } from '../../../../services/dashboard/dashboard.service';
 import { GetAccountNameService } from '../../../../servicesNodes/verifierNomDebiteur/get-account-name.service';
 import { BeneficiaireNodeService } from '../../../../servicesNodes/beneficiaireNode/beneficiaire-node.service';
 import { BanqueNameVerifierService } from '../../../../servicesNodes/verifierBanqueName/banque-name-verifier.service';
-import { MarchandService } from '../../../../servicesNodes/paiementsMarchandEGD/marchand.service';
 import { PaiementInterneExterneService } from '../../../../servicesNodes/paiementInterneExterne/paiement-interne-externe.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -24,9 +22,6 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./transfert-unique.component.css'],
 })
 export class TransfertUniqueComponent implements OnInit {
-  // =====================
-  // ÉTAT GÉNÉRAL
-  // =====================
   loading = true;
   loadingFetch = false;
   errorMessage = '';
@@ -36,32 +31,20 @@ export class TransfertUniqueComponent implements OnInit {
   idOrganisation!: number;
   iOrganisationID!: number;
 
-  // =====================
-  // FORMULAIRE
-  // =====================
   transferFormPaiementInterneExterne!: FormGroup;
 
-  // =====================
-  // LISTES
-  // =====================
   listeCompteClient: any[] = [];
   listeBeneficiaire: any[] = [];
   filteredBeneficiaire: any[] = [];
   filteredBeneficiaireOne: any[] = [];
   listeBanques: any[] = [];
 
-  // =====================
-  // SÉLECTIONS
-  // =====================
   selectedTypeBeneficiaire = '';
   selectedBeneficiaire: any = null;
   selectedBeneficiaireId: any;
   selectedDebitAccount = '';
   selectedBicCode = '';
 
-  // =====================
-  // INFOS AFFICHÉES
-  // =====================
   nomDebiteur = '';
   soldeDebiteur: any = '';
   nomBanque = '';
@@ -71,21 +54,15 @@ export class TransfertUniqueComponent implements OnInit {
     private fb: FormBuilder,
     private getAccount: GetAccountNameService,
     private beneficiaireService: BeneficiaireService,
-    // private balanceService: BalanceService,
     private listeCompteCLientService: DashboardService,
     private beneficiaireNodeService: BeneficiaireNodeService,
     private banqueNameVerifierService: BanqueNameVerifierService,
     private paiementInterneExterneService: PaiementInterneExterneService,
     private toastr: ToastrService,
-    // private marchandService: MarchandService,
   ) {}
 
-  // =====================
-  // INIT
-  // =====================
   ngOnInit(): void {
     const userJson = localStorage.getItem('userInfo');
-
     if (userJson) {
       try {
         this.infosUser = JSON.parse(userJson);
@@ -107,15 +84,10 @@ export class TransfertUniqueComponent implements OnInit {
     this.getListeBeneficiaire();
     this.getListeBanques();
     this.initFormPaiementInterneExterne();
-    this.getInfosBeneficiaire();
   }
 
-  // =====================
-  // COMPTES CLIENT
-  // =====================
   getListeCompteClient(): void {
     if (!this.iOrganisationID) return;
-
     this.listeCompteCLientService
       .getListeCompteClient(this.iOrganisationID)
       .subscribe({
@@ -147,7 +119,6 @@ export class TransfertUniqueComponent implements OnInit {
 
   onDebitAccountChange(accountNumber: string): void {
     this.getAccountName(accountNumber);
-
     this.transferFormPaiementInterneExterne.patchValue({
       vcPayerAccount: accountNumber,
     });
@@ -166,14 +137,10 @@ export class TransfertUniqueComponent implements OnInit {
     });
   }
 
-  // =====================
-  // BANQUES
-  // =====================
   getListeBanques(): void {
     this.beneficiaireNodeService.getListeBanque().subscribe({
       next: (res) => {
         this.listeBanques = res?.data ?? [];
-
         if (this.listeBanques.length > 0) {
           this.selectedBicCode = this.listeBanques[0].vcBICCode;
           this.onBicCodeChange(this.selectedBicCode);
@@ -189,7 +156,6 @@ export class TransfertUniqueComponent implements OnInit {
 
   onBicCodeChange(bicCode: string): void {
     this.getNomBanque(bicCode);
-
     this.transferFormPaiementInterneExterne.patchValue({
       vcBenefBicCode: bicCode,
     });
@@ -202,27 +168,19 @@ export class TransfertUniqueComponent implements OnInit {
     });
   }
 
-  // =====================
-  // UTILISATEUR
-  // =====================
   private getUserInfo(): void {
     const user = localStorage.getItem('userInfo');
     if (!user) return;
-
     this.userInfo = JSON.parse(user);
     this.idOrganisation = this.userInfo?.iOrganisationID;
   }
 
   listeTypeBeneficiaire: any[] = [];
 
-  // =====================
-  // BÉNÉFICIAIRES
-  // =====================
   private loadTypeBeneficiaires(): void {
     this.beneficiaireService.getListeTypeBeneficiaire().subscribe({
       next: (res) => {
         this.listeTypeBeneficiaire = res?.data ?? [];
-        console.log('this.listeTypeBeneficiaire: ', this.listeTypeBeneficiaire);
       },
       error: (err) => console.error(err),
     });
@@ -230,9 +188,7 @@ export class TransfertUniqueComponent implements OnInit {
 
   private getListeBeneficiaire(): void {
     if (!this.idOrganisation) return;
-
     this.loadingFetch = true;
-
     this.beneficiaireService
       .getListeBeneficiaire(this.idOrganisation)
       .subscribe({
@@ -246,62 +202,49 @@ export class TransfertUniqueComponent implements OnInit {
   }
 
   selectedBeneficiaireName = '';
+  listeBeneficiaires: any[] = [];
 
- onCategoryChange(event: Event) {
-  // const select = event.target as HTMLSelectElement;
-  const selectedType = this.transferFormPaiementInterneExterne.get('beneficiaryCategory')?.value;
+  onCategoryChange(event: Event) {
+    const selectedType = this.transferFormPaiementInterneExterne.get(
+      'beneficiaryCategory',
+    )?.value;
 
-  console.log('Objet sélectionné : ', selectedType);
-  console.log('ID : ', selectedType?.id);
-  console.log('vcName : ', selectedType?.vcName);
-
-
-  this.selectedBeneficiaireId = selectedType?.id;
-  this.selectedBeneficiaireName = selectedType?.vcName;
-  this.getInfosBeneficiaire();
-}
-
-  // onBeneficiaireChange(event: Event): void {
-  //   const id = (event.target as HTMLSelectElement).value;
-
-  //   if (!id) {
-  //     this.selectedBeneficiaire = null;
-  //     return;
-  //   }
-
-  //   this.selectedBeneficiaire = this.filteredBeneficiaire.find(
-  //     (b) => b?.BeneficiaryID?.toString() === id,
-  //   );
-
-  //   if (this.selectedBeneficiaire) {
-  //     this.transferFormPaiementInterneExterne.patchValue({
-  //       vcBenefName:
-  //         this.selectedBeneficiaire.vcFirstName +
-  //         ' ' +
-  //         this.selectedBeneficiaire.vcLastName,
-  //       vcBenefAccount: this.selectedBeneficiaire.vcAccountNumber,
-  //     });
-  //   }
-  // }
-
-  infosBeneficiaire: any;
-
-  getInfosBeneficiaire() {
-    this.beneficiaireService.getInfosBeneficiaire(this.selectedBeneficiaireId).subscribe({
-      next: (response: any) => {
-        this.infosBeneficiaire = response.data;
-        console.log('this.infosBeneficiaire: ', this.infosBeneficiaire);
-      },
-    });
+    this.selectedBeneficiaireId = selectedType?.id;
+    this.selectedBeneficiaireName = selectedType?.vcName;
+    this.getListeBeneficiaireByCategorie();
   }
 
-  // =====================
-  // SUBMIT
-  // =====================
+  getListeBeneficiaireByCategorie(): void {
+    if (!this.selectedBeneficiaireId) return;
+    this.paiementInterneExterneService
+      .getListeBeneficiaireByCategorie(this.selectedBeneficiaireId)
+      .subscribe({
+        next: (response: any) => {
+          this.listeBeneficiaires = response?.data || [];
+        },
+        error: () => {
+          this.listeBeneficiaires = [];
+        },
+      });
+  }
 
-  // =====================
-  // FORMULAIRE
-  // =====================
+  onBeneficiaireChange(event: Event): void {
+    const id = (event.target as HTMLSelectElement).value;
+    if (!id) {
+      this.selectedBeneficiaire = null;
+      return;
+    }
+    this.selectedBeneficiaire = this.listeBeneficiaires.find(
+      (b) => b?.BeneficiaryID?.toString() === id,
+    );
+    if (this.selectedBeneficiaire) {
+      this.transferFormPaiementInterneExterne.patchValue({
+        vcBenefName: `${this.selectedBeneficiaire.vcFirstName} ${this.selectedBeneficiaire.vcLastName}`,
+        vcBenefAccount: this.selectedBeneficiaire.vcAccountNumber,
+      });
+    }
+  }
+
   initFormPaiementInterneExterne(): void {
     this.transferFormPaiementInterneExterne = this.fb.group({
       vcPayerName: ['', Validators.required],
@@ -309,22 +252,19 @@ export class TransfertUniqueComponent implements OnInit {
       vcPaymentReference: ['', Validators.required],
       vcPayerAccount: ['', Validators.required],
       beneficiaryCategory: ['', Validators.required],
-      // vcBenefAccount: ['', Validators.required],
-      vcBenefBicCode: ['', Validators.required],
       mAmount: ['', Validators.required],
       vcCorrespBicCode: ['', Validators.required],
-      vcBenefCurrency: ['', Validators.required],
     });
   }
+
   loadingPayementInterneExterne: boolean = false;
 
   submitFormPayementInterneExterne(): void {
-    console.log('selectedBeneficiaire: ', this.selectedBeneficiaire);
-
     let vcBenefAccountNumber = this.selectedBeneficiaire?.vcAccountNumber;
+    let vcBenefBicCode = this.selectedBeneficiaire?.vcBIC;
+    let vcBenefCurrency = this.selectedBeneficiaire?.vcCurrency;
 
     this.loadingPayementInterneExterne = true;
-
     const formValue = this.transferFormPaiementInterneExterne.value;
 
     const payload = {
@@ -335,36 +275,26 @@ export class TransfertUniqueComponent implements OnInit {
       vcBenefName: this.selectedBeneficiaireName,
       mAmount: formValue.mAmount,
       vcBenefAccount: vcBenefAccountNumber,
-      vcBenefBicCode: formValue.vcBenefBicCode,
-      vcCorrespBicCode: 'REF123',
-      vcBenefCurrency: formValue.vcBenefCurrency,
+      vcBenefBicCode: vcBenefBicCode,
+      vcCorrespBicCode: '',
+      vcBenefCurrency: vcBenefCurrency,
     };
 
-    console.log('Payload Mobile Money :', payload);
-
-    this.paiementInterneExterneService
-      .payementInterneExterne(payload)
-      .subscribe({
-        next: (res) => {
-          console.log('Paiement réussi :', res);
-          this.loadingPayementInterneExterne = false;
-          this.toastr.success(res.data.message, '', {
-            positionClass: 'toast-custom-center',
-          });
-        },
-        error: (err) => {
-          this.toastr.error(err.error.message, '', {
-            positionClass: 'toast-custom-center',
-          });
-          this.loadingPayementInterneExterne = false;
-          console.error('Erreur paiement :', err);
-          // toast erreur ici
-        },
-      });
-
-    console.log(
-      '✅ DONNÉES FORMULAIRE :',
-      this.transferFormPaiementInterneExterne.value,
-    );
+    // console.log('Payload Mobile Money :', payload);
+    // this.paiementInterneExterneService
+    //  .payementInterneExterne(payload)
+    //  .subscribe({  next: (res) => { 
+    // console.log('Paiement réussi :', res);
+    //  this.loadingPayementInterneExterne = false; 
+    // this.toastr.success(res.data.message, '', { 
+    // positionClass: 'toast-custom-center', 
+    // }); // }, 
+    // error: (err) => { 
+    // this.toastr.error(err.error.message, '', { 
+    // positionClass: 'toast-custom-center',
+    //  }); // this.loadingPayementInterneExterne = false; 
+    // console.error('Erreur paiement :', err); // 
+    // }); 
+    // console.log('✅ DONNÉES FORMULAIRE :', formValue);
   }
 }

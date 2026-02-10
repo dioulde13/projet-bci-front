@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { BalanceService } from '../../servicesNodes/balance/balance.service';
 import * as XLSX from 'xlsx';
 import { SaveFichierCSVService } from '../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
+import { BciLoaderService } from '../../servicesNodes/bciLoader/bci-loader.service';
 
 // import { GnfFormatPipe } from '../gnfFormat/gnf-format.pipe';
 export interface BeneficiaireExcel {
@@ -127,6 +128,7 @@ export class DashboardComponent implements OnInit {
     private dixTransactionServiceNode: TransactionService,
     private balanceService: BalanceService,
     private saveFichierCSVService: SaveFichierCSVService,
+    private bciLoaderService: BciLoaderService
   ) {}
 
   //   totalSolde: any;
@@ -411,10 +413,16 @@ export class DashboardComponent implements OnInit {
     return `${montant.toLocaleString('fr-FR')} ${sign}`;
   }
 
+
+  getBciLoader(){
+    this.bciLoaderService.load();
+  }
+
   iOrganisationID!: number;
   infosUser: any;
 
   ngOnInit(): void {
+    this.getBciLoader();
     const userJson = localStorage.getItem('userInfo');
 
     if (userJson) {
@@ -465,20 +473,20 @@ export class DashboardComponent implements OnInit {
 
   mapToBackendFormat(item: any) {
     return {
-      vcFullName: `${item.Prenom} ${item.Nom}`,
-      vcFirstName: item.Prenom,
-      vcLastName: item.Nom,
-      vcAccountNumber: item['Numero de compte'],
-      vcBeneficiaryType: item['Type de beneficiaire'],
-      mAmount: item.Montant,
-      vcCurrency: item.Devise,
-      vcBIC: item.BIC,
-      vcPaymentMode: item['Mode paiement'],
-      vcBeneficiaryBankName: item['Nom de la banque du beneficiaire'],
+      vcFullName: `${item.prenom} ${item.nom}`,
+      vcFirstName: item.prenom,
+      vcLastName: item.nom,
+      vcAccountNumber: item['numeroCompte'],
+      vcBeneficiaryType: item['typeBeneficiaire'],
+      mAmount: item.montant,
+      vcCurrency: item.devise,
+      vcBIC: item.bic,
+      vcPaymentMode: item['modePaiement'],
+      vcBeneficiaryBankName: item['nomBanque'],
       vcBeneficiaryBankFullAddress:
-        item['Adresse de la banque du beneficiaire'],
-      vcDescription: item['Objet du paiement'],
-      iEnterpriseID: '', // ou dynamique
+        item['adresseBanque'],
+      vcDescription: item['objetPaiement'],
+      iEnterpriseID: 1, // ou dynamique
       iOrganisationID: 53, // ou dynamique
     };
   }

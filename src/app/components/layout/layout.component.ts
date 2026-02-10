@@ -7,6 +7,7 @@ import Papa from 'papaparse';
 import { AuthService } from '../../services/authServices/auth.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ToastrService } from 'ngx-toastr';
+import { StatutBancaireService } from '../../servicesNodes/statutBancaire/statut-bancaire.service';
 
 @Component({
   selector: 'app-layout',
@@ -30,7 +31,8 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
     private router: Router,
     @Inject(DOCUMENT) private document: Document,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private statutBancaireService: StatutBancaireService,
   ) {}
 
   userCurrentTimeZone: string = '';
@@ -85,11 +87,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     const result = this.authService.userInfoConfig();
     // console.log('Résultat de userInfoConfig:', result);
 
-     const dataConfig = result;
+    const dataConfig = result;
     // console.log('dataConfig : ', dataConfig);
     if (dataConfig) {
       this.userCurrentTimeZone = dataConfig.organisation.find(
-        (c: any) => c.vcKey === 'TimeZone'
+        (c: any) => c.vcKey === 'TimeZone',
       )?.vcValue;
       // console.log('userCurrentTimeZone : ', this.userCurrentTimeZone);
     }
@@ -98,7 +100,36 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   currentUserInfo: any;
 
+  statusCoreBanking: any;
+  showNetworkNotification = false;
+
+  recuperStatusCoreBanking() {
+    this.statutBancaireService.coreBankingStatus().subscribe({
+      next: (response: any) => {
+        this.statusCoreBanking = response.data;
+        console.log('this.statusCoreBanking: ', this.statusCoreBanking);
+
+        if (
+          this.statusCoreBanking?.available === false &&
+          this.statusCoreBanking?.status === 'ko'
+        ) {
+          // afficher notification seulement si service indisponible
+          this.showNetworkNotification =
+            this.statusCoreBanking?.available === true;
+        } else{
+          this.showNetworkNotification =
+            this.statusCoreBanking?.available === false;
+        }
+      },
+      error: () => {
+        // en cas d’erreur API → considérer comme indisponible
+        this.showNetworkNotification = false;
+      },
+    });
+  }
+
   ngOnInit(): void {
+    this.recuperStatusCoreBanking();
     // const dataConfig = this.getUserInfoConfig();
     // console.log('dataConfig : ', dataConfig);
     // if (dataConfig) {
