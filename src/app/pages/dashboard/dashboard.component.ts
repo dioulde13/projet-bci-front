@@ -14,6 +14,7 @@ import { BalanceService } from '../../servicesNodes/balance/balance.service';
 import * as XLSX from 'xlsx';
 import { SaveFichierCSVService } from '../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
 import { BciLoaderService } from '../../servicesNodes/bciLoader/bci-loader.service';
+import { ToastrService } from 'ngx-toastr';
 
 // import { GnfFormatPipe } from '../gnfFormat/gnf-format.pipe';
 export interface BeneficiaireExcel {
@@ -128,7 +129,8 @@ export class DashboardComponent implements OnInit {
     private dixTransactionServiceNode: TransactionService,
     private balanceService: BalanceService,
     private saveFichierCSVService: SaveFichierCSVService,
-    private bciLoaderService: BciLoaderService
+    private bciLoaderService: BciLoaderService,
+    private toastr: ToastrService,
   ) {}
 
   //   totalSolde: any;
@@ -413,8 +415,7 @@ export class DashboardComponent implements OnInit {
     return `${montant.toLocaleString('fr-FR')} ${sign}`;
   }
 
-
-  getBciLoader(){
+  getBciLoader() {
     this.bciLoaderService.load();
   }
 
@@ -483,8 +484,7 @@ export class DashboardComponent implements OnInit {
       vcBIC: item.bic,
       vcPaymentMode: item['modePaiement'],
       vcBeneficiaryBankName: item['nomBanque'],
-      vcBeneficiaryBankFullAddress:
-        item['adresseBanque'],
+      vcBeneficiaryBankFullAddress: item['adresseBanque'],
       vcDescription: item['objetPaiement'],
       iEnterpriseID: 1, // ou dynamique
       iOrganisationID: 53, // ou dynamique
@@ -500,22 +500,28 @@ export class DashboardComponent implements OnInit {
 
     console.log('Payload envoyé au backend :', payload);
 
-    const confirmDemande = confirm(
-      'Voulez-vous vraiment valider ces données ?',
-    );
+    // const confirmDemande = confirm(
+    //   'Voulez-vous vraiment valider ces données ?',
+    // );
 
-    if (confirmDemande) {
-      this.saveFichierCSVService.saveFichierCSVTransaction(payload).subscribe({
-        next: (res) => {
-          console.log('response:', res);
-          alert('Données envoyées avec succès !');
-        },
-        error: () => {
-          alert('Erreur lors de l’envoi des données.');
-        },
-      });
-    } else {
-      console.log('Validation annulée par l’utilisateur.');
-    }
+    // if (confirmDemande) {
+    this.saveFichierCSVService.saveFichierCSVTransaction(payload).subscribe({
+      next: (res) => {
+        console.log('response:', res);
+        this.toastr.success('Données envoyées avec succès', '', {
+          positionClass: 'toast-custom-center',
+        });
+        // alert('Données envoyées avec succès !');
+      },
+      error: (error: any) => {
+        this.toastr.error("Erreur lors de l'envoie des données ", '', {
+          positionClass: 'toast-custom-center',
+        });
+        // alert('Erreur lors de l’envoi des données.');
+      },
+    });
+    // } else {
+    //   console.log('Validation annulée par l’utilisateur.');
+    // }
   }
 }

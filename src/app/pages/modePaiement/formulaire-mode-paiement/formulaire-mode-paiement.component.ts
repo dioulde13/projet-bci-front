@@ -35,7 +35,7 @@ export class FormulaireModePaiementComponent implements OnInit {
     // private beneficiaireService: BeneficiaireService,
     private listeCompteCLientService: DashboardService,
     private mobileMoneyService: MobileMoneyService,
-    // private toastr: ToastrService,
+    private toastr: ToastrService,
     private getAccount: GetAccountNameService,
   ) {}
 
@@ -200,17 +200,19 @@ getAccountName(accountNumber: string): void {
       vcOperationType: formValue.typeTransactionMM,
     };
 
-    console.log('Payload Mobile Money :', payload);
+    // console.log('Payload Mobile Money :', payload);
 
     this.mobileMoneyService.payerMobileMoney(payload).subscribe({
       next: (res) => {
-        console.log('Paiement réussi :', res);
+        // console.log('Paiement réussi :', res);
+        this.toastr.success(res.data.message,'',{ positionClass: 'toast-custom-center'});
         this.loadingMobileMoney = false;
       },
       error: (err) => {
+        this.toastr.error("Une erreur est survenu lors de l'ajout",'',{ positionClass: 'toast-custom-center'});
         this.loadingMobileMoney = false;
         console.error('Erreur paiement :', err);
-        // toast erreur ici
+        // toast erreur ic
       },
     });
   }

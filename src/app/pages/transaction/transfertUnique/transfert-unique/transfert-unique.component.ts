@@ -259,42 +259,103 @@ export class TransfertUniqueComponent implements OnInit {
 
   loadingPayementInterneExterne: boolean = false;
 
-  submitFormPayementInterneExterne(): void {
-    let vcBenefAccountNumber = this.selectedBeneficiaire?.vcAccountNumber;
-    let vcBenefBicCode = this.selectedBeneficiaire?.vcBIC;
-    let vcBenefCurrency = this.selectedBeneficiaire?.vcCurrency;
+  submitAttempt = false;
 
-    this.loadingPayementInterneExterne = true;
-    const formValue = this.transferFormPaiementInterneExterne.value;
+submitFormPayementInterneExterne(): void {
+  // Marquer tous les champs comme touchés
+  this.submitAttempt = true;
+  this.transferFormPaiementInterneExterne.markAllAsTouched();
 
-    const payload = {
-      vcPayerName: this.nomDebiteur,
-      dtPaymentDate: formValue.dtPaymentDate,
-      vcPaymentReference: 'REF123',
-      vcPayerAccount: formValue.vcPayerAccount,
-      vcBenefName: this.selectedBeneficiaireName,
-      mAmount: formValue.mAmount,
-      vcBenefAccount: vcBenefAccountNumber,
-      vcBenefBicCode: vcBenefBicCode,
-      vcCorrespBicCode: '',
-      vcBenefCurrency: vcBenefCurrency,
-    };
+  // if (this.transferFormPaiementInterneExterne.invalid || !this.selectedBeneficiaire) {
+  //   this.toastr.error('Veuillez remplir tous les champs obligatoires', '', {
+  //     positionClass: 'toast-custom-center',
+  //   });
+  //   return;
+  // }
 
-    // console.log('Payload Mobile Money :', payload);
-    // this.paiementInterneExterneService
-    //  .payementInterneExterne(payload)
-    //  .subscribe({  next: (res) => { 
-    // console.log('Paiement réussi :', res);
-    //  this.loadingPayementInterneExterne = false; 
-    // this.toastr.success(res.data.message, '', { 
-    // positionClass: 'toast-custom-center', 
-    // }); // }, 
-    // error: (err) => { 
-    // this.toastr.error(err.error.message, '', { 
-    // positionClass: 'toast-custom-center',
-    //  }); // this.loadingPayementInterneExterne = false; 
-    // console.error('Erreur paiement :', err); // 
-    // }); 
-    // console.log('✅ DONNÉES FORMULAIRE :', formValue);
-  }
+  const formValue = this.transferFormPaiementInterneExterne.value;
+
+  const payload = {
+    vcPayerName: this.nomDebiteur,
+    dtPaymentDate: formValue.dtPaymentDate,
+    vcPaymentReference: 'REF123',
+    vcPayerAccount: formValue.vcPayerAccount,
+    vcBenefName: this.selectedBeneficiaireName,
+    mAmount: formValue.mAmount,
+    vcBenefAccount: this.selectedBeneficiaire.vcAccountNumber,
+    vcBenefBicCode: this.selectedBeneficiaire.vcBIC,
+    vcCorrespBicCode: '',
+    vcBenefCurrency: this.selectedBeneficiaire.vcCurrency,
+  };
+
+  console.log('Payload Mobile Money :', payload);
+
+  this.loadingPayementInterneExterne = true;
+
+  this.paiementInterneExterneService.payementInterneExterne(payload)
+    .subscribe({
+      next: (res) => {
+        console.log('Paiement réussi :', res);
+        this.toastr.success(res.data.message, '', {
+          positionClass: 'toast-custom-center',
+        });
+        this.loadingPayementInterneExterne = false;
+      },
+      error: (err) => {
+        console.error('Erreur paiement :', err);
+        this.toastr.error(err.error?.message || 'Erreur lors du paiement', '', {
+          positionClass: 'toast-custom-center',
+        });
+        this.loadingPayementInterneExterne = false;
+      }
+    });
+}
+
+  // submitFormPayementInterneExterne(): void {
+  //   if (!this.selectedBeneficiaire) {
+  //     this.toastr.error('Veuillez sélectionner un bénéficiaire', '', {
+  //       positionClass: 'toast-custom-center',
+  //     });
+  //     return;
+  //   }
+
+  //   const formValue = this.transferFormPaiementInterneExterne.value;
+
+  //   const payload = {
+  //     vcPayerName: this.nomDebiteur,
+  //     dtPaymentDate: formValue.dtPaymentDate,
+  //     vcPaymentReference: 'REF123',
+  //     vcPayerAccount: formValue.vcPayerAccount,
+  //     vcBenefName: this.selectedBeneficiaireName,
+  //     mAmount: formValue.mAmount,
+  //     vcBenefAccount: this.selectedBeneficiaire.vcAccountNumber,
+  //     vcBenefBicCode: this.selectedBeneficiaire.vcBIC,
+  //     vcCorrespBicCode: '',
+  //     vcBenefCurrency: this.selectedBeneficiaire.vcCurrency,
+  //   };
+
+  //   console.log('Payload Mobile Money :', payload);
+
+  //   this.loadingPayementInterneExterne = true;
+
+  //   this.paiementInterneExterneService.payementInterneExterne(payload)
+  //     .subscribe({
+  //       next: (res) => {
+  //         console.log('Paiement réussi :', res);
+  //         this.toastr.success(res.data.message, '', {
+  //           positionClass: 'toast-custom-center',
+  //         });
+  //         this.loadingPayementInterneExterne = false;
+  //       },
+  //       error: (err) => {
+  //         console.error('Erreur paiement :', err);
+  //         this.toastr.error(err.error?.message || 'Erreur lors du paiement', '', {
+  //           positionClass: 'toast-custom-center',
+  //         });
+  //         this.loadingPayementInterneExterne = false;
+  //       }
+  //     });
+
+  //   // console.log('✅ DONNÉES FORMULAIRE :', formValue);
+  // }
 }
