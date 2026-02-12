@@ -13,11 +13,12 @@ import { BeneficiaireNodeService } from '../../../../servicesNodes/beneficiaireN
 import { BanqueNameVerifierService } from '../../../../servicesNodes/verifierBanqueName/banque-name-verifier.service';
 import { PaiementInterneExterneService } from '../../../../servicesNodes/paiementInterneExterne/paiement-interne-externe.service';
 import { ToastrService } from 'ngx-toastr';
+import { GnfNumberFormatDirective } from '../../../../directives/gnf-number-format.directive';
 
 @Component({
   selector: 'app-transfert-unique',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, GnfNumberFormatDirective],
   templateUrl: './transfert-unique.component.html',
   styleUrls: ['./transfert-unique.component.css'],
 })

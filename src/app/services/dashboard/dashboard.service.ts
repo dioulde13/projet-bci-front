@@ -7,7 +7,9 @@ import { Observable, throwError } from 'rxjs';
   providedIn: 'root',
 })
 export class DashboardService {
-  private baseUrl = environment.apiUrl; 
+  private baseUrl = environment.apiUrl;
+  private baseUrlNode = environment.apiUrlNode;
+
 
   constructor(private http: HttpClient) {}
 
@@ -29,11 +31,22 @@ export class DashboardService {
     //   'Content-Type': 'application/json',
     // });
 
-    const params = new HttpParams().set('idOrganisation', idOrganisation.toString());
+    const params = new HttpParams().set(
+      'idOrganisation',
+      idOrganisation.toString(),
+    );
 
     return this.http.get(`${this.baseUrl}/api/getListeCompteClient`, {
       withCredentials: true,
       params,
+    });
+  }
+
+  getSwiftDetails(vcBIC: string): Observable<any> {
+    const body = { vcBIC: vcBIC };
+
+    return this.http.post(`${this.baseUrlNode}/api/bank/detail`, body, {
+      withCredentials: true,
     });
   }
 }

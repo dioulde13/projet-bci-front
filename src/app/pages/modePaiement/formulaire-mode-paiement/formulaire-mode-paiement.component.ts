@@ -8,16 +8,22 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { BeneficiaireService } from '../../../services/beneficiaire/beneficiaire.service';
+// import { BeneficiaireService } from '../../../services/beneficiaire/beneficiaire.service';
 import { DashboardService } from '../../../services/dashboard/dashboard.service';
 import { MobileMoneyService } from '../../../servicesNodes/modePaiementOperateur/mobileMoney/mobile-money.service';
 import { ToastrService } from 'ngx-toastr';
 import { GetAccountNameService } from '../../../servicesNodes/verifierNomDebiteur/get-account-name.service';
+import { GnfNumberFormatDirective } from '../../../directives/gnf-number-format.directive';
 
 @Component({
   selector: 'app-formulaire-mode-paiement',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    GnfNumberFormatDirective,
+  ],
   templateUrl: './formulaire-mode-paiement.component.html',
   styleUrl: './formulaire-mode-paiement.component.css',
 })
@@ -25,7 +31,7 @@ export class FormulaireModePaiementComponent implements OnInit {
   userInfo: any;
   idOrganisation!: number;
 
-  typeOperateur!: 'ORANGE MONEY' | 'MOBILE MONEY';
+  // typeOperateur!: 'ORANGE MONEY' | 'MOBILE MONEY';
 
   orangeMoneyForm!: FormGroup;
 
@@ -40,7 +46,6 @@ export class FormulaireModePaiementComponent implements OnInit {
   ) {}
 
   mobileMoneyForm!: FormGroup;
- 
 
   /** Récupération infos utilisateur */
   private getUserInfo(): void {
@@ -52,7 +57,36 @@ export class FormulaireModePaiementComponent implements OnInit {
     }
   }
 
+  listeOperateur:any[] = [];
+  operateur: any;
+
+  recupererListeOperateur(){
+    this.mobileMoneyService.listeMobileOperators().subscribe({
+       next: (response: any) => {
+        this.listeOperateur = (response?.data ?? []).filter(
+          (f: any) => f.btEnabled === true
+        );
+        this.operateur = (response?.data ?? []).filter(
+          (f: any) => f.FacturierName === this.typeOperateur
+        );
+        console.log('operateur: ', this.operateur);
+      },
+      error: (err) => console.error(err),
+    })
+  }
+
+  typeOperateur: string | null = null;
+
   ngOnInit(): void {
+    const rawNomFacture = this.route.snapshot.paramMap.get('typeOperateur');
+
+    this.typeOperateur = rawNomFacture
+      ? decodeURIComponent(rawNomFacture).trim().toUpperCase()
+      : null;
+
+    console.log('this.typeOperateur: ', this.typeOperateur);
+
+    this.recupererListeOperateur();
 
     // 1️⃣ récupérer l'utilisateur
     this.getUserInfo();
@@ -76,7 +110,6 @@ export class FormulaireModePaiementComponent implements OnInit {
     this.initMobileMoneyForm();
 
     console.log('Type opérateur :', this.typeOperateur);
-    
   }
 
   phoneMaxLength = 9;
@@ -127,47 +160,47 @@ export class FormulaireModePaiementComponent implements OnInit {
 
   // 🔷 MOBILE MONEY
   // 🔷 MOBILE MONEY
-initMobileMoneyForm(): void {
-  this.mobileMoneyForm = this.fb.group({
-    compteSource: ['', Validators.required],
-    telephone: [
-      '',
-      [
-        Validators.required,
-        Validators.pattern('^[0-9]{9,12}$'), // numéro valide
+  initMobileMoneyForm(): void {
+    this.mobileMoneyForm = this.fb.group({
+      compteSource: ['', Validators.required],
+      telephone: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]{9,12}$'), // numéro valide
+        ],
       ],
-    ],
-    montant: ['', [Validators.required, Validators.min(1)]],
-    frais: [''],
-    description: ['', Validators.required],
-    typeTransactionMM: ['B2W', Validators.required],
-  });
+      montant: ['', [Validators.required, Validators.min(1)]],
+      frais: [''],
+      description: ['', Validators.required],
+      typeTransactionMM: ['B2W', Validators.required],
+    });
 
-  // Écouter le changement du compte sélectionné
-  this.mobileMoneyForm.get('compteSource')?.valueChanges.subscribe(
-    (accountNumber) => {
-      if (accountNumber) {
-        this.getAccountName(accountNumber);
-      } else {
+    // Écouter le changement du compte sélectionné
+    this.mobileMoneyForm
+      .get('compteSource')
+      ?.valueChanges.subscribe((accountNumber) => {
+        if (accountNumber) {
+          this.getAccountName(accountNumber);
+        } else {
+          this.soldeDebiteur = '';
+        }
+      });
+  }
+
+  soldeDebiteur: any;
+
+  getAccountName(accountNumber: string): void {
+    this.getAccount.getNomDebiteur(accountNumber).subscribe({
+      next: (res) => {
+        this.soldeDebiteur = res?.data?.soldeDisp;
+        console.log('this.soldeDebiteur: ', this.soldeDebiteur);
+      },
+      error: () => {
         this.soldeDebiteur = '';
-      }
-    }
-  );
-}
-
-soldeDebiteur: any;
-
-getAccountName(accountNumber: string): void {
-  this.getAccount.getNomDebiteur(accountNumber).subscribe({
-    next: (res) => {
-      this.soldeDebiteur = res?.data?.soldeDisp;
-      console.log('this.soldeDebiteur: ', this.soldeDebiteur);
-    },
-    error: () => {
-      this.soldeDebiteur = '';
-    },
-  });
-}
+      },
+    });
+  }
 
   loadingMobileMoney: boolean = false;
 
@@ -205,11 +238,15 @@ getAccountName(accountNumber: string): void {
     this.mobileMoneyService.payerMobileMoney(payload).subscribe({
       next: (res) => {
         // console.log('Paiement réussi :', res);
-        this.toastr.success(res.data.message,'',{ positionClass: 'toast-custom-center'});
+        this.toastr.success(res.data.message, '', {
+          positionClass: 'toast-custom-center',
+        });
         this.loadingMobileMoney = false;
       },
       error: (err) => {
-        this.toastr.error("Une erreur est survenu lors de l'ajout",'',{ positionClass: 'toast-custom-center'});
+        this.toastr.error("Une erreur est survenu lors de l'ajout", '', {
+          positionClass: 'toast-custom-center',
+        });
         this.loadingMobileMoney = false;
         console.error('Erreur paiement :', err);
         // toast erreur ic

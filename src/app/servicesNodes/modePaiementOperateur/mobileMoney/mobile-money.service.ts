@@ -15,4 +15,8 @@ private baseUrl = environment.apiUrlNode;
   payerMobileMoney(payload: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/api/mobilemoney/paye`, payload);
   }
+
+  listeMobileOperators(): Observable<any>{
+  return this.http.get(`${this.baseUrl}/api/mobileOperators`);
+  }
 }

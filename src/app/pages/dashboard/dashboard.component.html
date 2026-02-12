@@ -90,7 +90,7 @@
                   instructions="Veuillez charger le fichier des virements du mois en cours."
                   previewTitle="Récapitulatif des virements"
                   [duplicateCheckFields]="['numeroCompte', 'bic', 'montant']"
-                  validateButtonText="Confirmer l'envoi à la banque"
+                  [validateButtonText]="loadingValidation ? 'Validation en cours...' : 'Valider'"
                   (importDataCompleted)="onImportedData($event)"
                   (modalClosed)="openModal = false"
                 >
@@ -283,6 +283,13 @@
                 <a routerLink="/transfertUnique" class="custom-icon-container"
                   ><i class="icon ion-ios-people custom-icon-size"></i>
                   <p class="custom-icon-text">Transfert unique</p>
+                </a>
+              </div>
+              <div class="col-6 col-md-4 mb-4">
+                <a routerLink="/typePaiement" class="custom-icon-container"
+                  ><i class="icon ion-ios-paper custom-icon-size"></i>
+                  <i class="icon ion-ios-globe custom-icon-size"></i>
+                  <p class="custom-icon-text">Tranfert international</p>
                 </a>
               </div>
               <div class="col-6 col-md-4 mb-4">

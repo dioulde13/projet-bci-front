@@ -7,7 +7,7 @@
           class="d-sm-flex justify-content-between align-items-center page-title-box mt-4"
         >
           <div>
-            <h4 class="fw-bold mb-sm-0 font-size-18">Mode de paiement</h4>
+            <h4 class="fw-bold mb-sm-0 font-size-18">Liste des operateur</h4>
           </div>
         </div>
       </div>
@@ -17,38 +17,33 @@
         <div class="card">
           <div class="card-body">
             <div class="row">
-              <div class="col-sm-6 col-xl-3">
-                <a [routerLink]="['/modePaiment', 'ORANGE MONEY']">
-                  <div class="card text-center h-100 d-flex flex-column">
+              <div
+                class="col-sm-6 col-xl-3"
+                *ngFor="let facturier of listeOperateur"
+              >
+                <button
+                  type="button"
+                  class="p-0 border-0 bg-transparent w-100 text-start"
+                  (click)="nextPages(facturier.FacturierName)"
+                >
+                  <div
+                    class="card card-custom text-center"
+                    style="height: 14rem"
+                  >
                     <img
-                      class="img-fluid card-img-top w-100 d-block"
-                      src="assets/img/orange1.png"
-                      alt="Card image cap"
+                      style="height: 10rem"
+                      src="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking%20-%202-W-2.svg?h=c746ea9e25952b9505731b7d644e74e9"
+                      [alt]="facturier.FacturierName"
                     />
                     <div class="card-body">
                       <h5 class="fw-semibold font-size-16 mb-1">
-                       Orange money
+                        <span class="text-body">{{
+                          facturier.FacturierName
+                        }}</span>
                       </h5>
                     </div>
                   </div>
-                </a>
-              </div>
-
-              <div class="col-sm-6 col-xl-3">
-                <a [routerLink]="['/modePaiment', 'MOBILE MONEY']">
-                  <div class="card text-center h-100 d-flex flex-column">
-                    <img
-                      class="img-fluid card-img-top w-100 d-block"
-                      src="assets/img/mobile.jpg"
-                      alt="Card image cap"
-                    />
-                    <div class="card-body">
-                      <h5 class="fw-semibold font-size-16 mb-1">
-                        Mobile money
-                      </h5>
-                    </div>
-                  </div>
-                </a>
+                </button>
               </div>
             </div>
           </div>

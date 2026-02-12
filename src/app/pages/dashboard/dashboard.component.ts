@@ -4,32 +4,33 @@ import {
   HostListener,
   OnInit,
 } from '@angular/core';
-import Papa from 'papaparse';
+// import Papa from 'papaparse';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard/dashboard.service';
 import { TransactionService } from '../../servicesNodes/transactionService/transaction.service';
 import { FormsModule } from '@angular/forms';
 import { BalanceService } from '../../servicesNodes/balance/balance.service';
-import * as XLSX from 'xlsx';
-import { SaveFichierCSVService } from '../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
+// import * as XLSX from 'xlsx';
+// import { SaveFichierCSVService } from '../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
 import { BciLoaderService } from '../../servicesNodes/bciLoader/bci-loader.service';
+import { SaveFichierCSVService } from '../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
 import { ToastrService } from 'ngx-toastr';
 
 // import { GnfFormatPipe } from '../gnfFormat/gnf-format.pipe';
-export interface BeneficiaireExcel {
-  prenom: string;
-  nom: string;
-  typeBeneficiaire: string;
-  numeroCompte: string;
-  bic: string;
-  montant: number;
-  devise: string;
-  modePaiement: string;
-  nomBanque: string;
-  adresseBanque: string;
-  objetPaiement: string;
-}
+// export interface BeneficiaireExcel {
+//   prenom: string;
+//   nom: string;
+//   typeBeneficiaire: string;
+//   numeroCompte: string;
+//   bic: string;
+//   montant: number;
+//   devise: string;
+//   modePaiement: string;
+//   nomBanque: string;
+//   adresseBanque: string;
+//   objetPaiement: string;
+// }
 
 @Component({
   selector: 'app-dashboard',
@@ -45,84 +46,84 @@ export interface BeneficiaireExcel {
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DashboardComponent implements OnInit {
-  beneficiaires: BeneficiaireExcel[] = [];
-  columns: string[] = [];
+  // beneficiaires: BeneficiaireExcel[] = [];
+  // columns: string[] = [];
 
-  onFileChange(event: any) {
-    const file = event.target.files[0];
-    if (!file) return;
+  // onFileChange(event: any) {
+  //   const file = event.target.files[0];
+  //   if (!file) return;
 
-    const reader = new FileReader();
+  //   const reader = new FileReader();
 
-    reader.onload = (e: any) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
+  //   reader.onload = (e: any) => {
+  //     const data = new Uint8Array(e.target.result);
+  //     const workbook = XLSX.read(data, { type: 'array' });
 
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
+  //     const sheetName = workbook.SheetNames[0];
+  //     const worksheet = workbook.Sheets[sheetName];
 
-      const rows: any[] = XLSX.utils.sheet_to_json(worksheet, {
-        defval: '',
-      });
+  //     const rows: any[] = XLSX.utils.sheet_to_json(worksheet, {
+  //       defval: '',
+  //     });
 
-      this.beneficiaires = rows.map((row) => ({
-        prenom: row['Prénom'],
-        nom: row['Nom'],
-        typeBeneficiaire: row['Type de bénéficiaire'],
-        numeroCompte: row['Numéro de compte'],
-        bic: row['BIC'],
-        montant: Number(row['Montant']),
-        devise: row['Devise'],
-        modePaiement: row['Mode paiement'],
-        nomBanque: row['Nom de la banque du bénéficiaire'],
-        adresseBanque: row['Adresse de la banque du bénéficiaire'],
-        objetPaiement: row['Objet du paiement'],
-      }));
+  //     this.beneficiaires = rows.map((row) => ({
+  //       prenom: row['Prénom'],
+  //       nom: row['Nom'],
+  //       typeBeneficiaire: row['Type de bénéficiaire'],
+  //       numeroCompte: row['Numéro de compte'],
+  //       bic: row['BIC'],
+  //       montant: Number(row['Montant']),
+  //       devise: row['Devise'],
+  //       modePaiement: row['Mode paiement'],
+  //       nomBanque: row['Nom de la banque du bénéficiaire'],
+  //       adresseBanque: row['Adresse de la banque du bénéficiaire'],
+  //       objetPaiement: row['Objet du paiement'],
+  //     }));
 
-      this.columns = Object.keys(this.beneficiaires[0] || {});
-    };
+  //     this.columns = Object.keys(this.beneficiaires[0] || {});
+  //   };
 
-    reader.readAsArrayBuffer(file);
-  }
+  //   reader.readAsArrayBuffer(file);
+  // }
 
-  csvData: any[] = [];
-  headers: string[] = [];
-  selectedFile: File | null = null;
+  // csvData: any[] = [];
+  // headers: string[] = [];
+  // selectedFile: File | null = null;
   listeCompteClient: any[] = [];
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-    }
-  }
+  // onFileSelected(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files && input.files.length > 0) {
+  //     this.selectedFile = input.files[0];
+  //   }
+  // }
 
-  onFormSubmit(event: Event): void {
-    event.preventDefault();
-    if (this.selectedFile) {
-      this.parseCSV(this.selectedFile);
-    } else {
-      alert('Veuillez sélectionner un fichier CSV avant de charger.');
-    }
-  }
+  // onFormSubmit(event: Event): void {
+  //   event.preventDefault();
+  //   if (this.selectedFile) {
+  //     this.parseCSV(this.selectedFile);
+  //   } else {
+  //     alert('Veuillez sélectionner un fichier CSV avant de charger.');
+  //   }
+  // }
 
-  parseCSV(file: File): void {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const csv = reader.result as string;
-      Papa.parse(csv, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (result) => {
-          this.csvData = result.data;
-          if (this.csvData.length > 0) {
-            this.headers = Object.keys(this.csvData[0]);
-          }
-        },
-      });
-    };
-    reader.readAsText(file);
-  }
+  // parseCSV(file: File): void {
+  //   const reader = new FileReader();
+  //   reader.onload = () => {
+  //     const csv = reader.result as string;
+  //     Papa.parse(csv, {
+  //       header: true,
+  //       skipEmptyLines: true,
+  //       complete: (result) => {
+  //         this.csvData = result.data;
+  //         if (this.csvData.length > 0) {
+  //           this.headers = Object.keys(this.csvData[0]);
+  //         }
+  //       },
+  //     });
+  //   };
+  //   reader.readAsText(file);
+  // }
 
   constructor(
     private listeCompteCLientService: DashboardService,
@@ -419,6 +420,9 @@ export class DashboardComponent implements OnInit {
     this.bciLoaderService.load();
   }
 
+
+  
+
   iOrganisationID!: number;
   infosUser: any;
 
@@ -472,56 +476,61 @@ export class DashboardComponent implements OnInit {
     { key: 'objetPaiement', label: 'Objet du paiement' },
   ];
 
-  mapToBackendFormat(item: any) {
-    return {
-      vcFullName: `${item.prenom} ${item.nom}`,
-      vcFirstName: item.prenom,
-      vcLastName: item.nom,
-      vcAccountNumber: item['numeroCompte'],
-      vcBeneficiaryType: item['typeBeneficiaire'],
-      mAmount: item.montant,
-      vcCurrency: item.devise,
-      vcBIC: item.bic,
-      vcPaymentMode: item['modePaiement'],
-      vcBeneficiaryBankName: item['nomBanque'],
-      vcBeneficiaryBankFullAddress: item['adresseBanque'],
-      vcDescription: item['objetPaiement'],
-      iEnterpriseID: 1, // ou dynamique
-      iOrganisationID: 53, // ou dynamique
-    };
-  }
+  loadingValidation: boolean = false;
 
   onImportedData(event: any) {
-    const tableData = event.detail || event;
+    console.log('event:', event);
+    this.loadingValidation= true;
 
-    console.log('Données du tableau :', tableData);
+    // Vérifie si c’est un CustomEvent
+    const file: File = event?.detail?.file;
 
-    const payload = tableData.map((item: any) => this.mapToBackendFormat(item));
+    if (!(file instanceof File)) {
+      console.error('Le fichier CSV est invalide ou non trouvé');
+      return;
+    }
 
-    console.log('Payload envoyé au backend :', payload);
+    console.log('Fichier reçu :', file);
 
-    // const confirmDemande = confirm(
-    //   'Voulez-vous vraiment valider ces données ?',
-    // );
-
-    // if (confirmDemande) {
-    this.saveFichierCSVService.saveFichierCSVTransaction(payload).subscribe({
+    // Maintenant tu peux l’envoyer au backend
+    this.saveFichierCSVService.saveFichierCSVTransaction(file, 1, this.iOrganisationID).subscribe({
       next: (res) => {
-        console.log('response:', res);
-        this.toastr.success('Données envoyées avec succès', '', {
+        this.toastr.success(res.message, '', {
           positionClass: 'toast-custom-center',
         });
-        // alert('Données envoyées avec succès !');
+        this.openModal = false;
+        this.loadingValidation = false;
+        console.log('Import réussi', res);
       },
-      error: (error: any) => {
-        this.toastr.error("Erreur lors de l'envoie des données ", '', {
-          positionClass: 'toast-custom-center',
-        });
-        // alert('Erreur lors de l’envoi des données.');
+      error: (err) => {
+        console.error('Erreur import', err);
       },
     });
-    // } else {
-    //   console.log('Validation annulée par l’utilisateur.');
-    // }
   }
+
+  // onImportedData(event: any) {
+  //   const tableData = event.detail || event;
+
+  //   console.log('Données du tableau :', tableData);
+
+  //   // if (confirmDemande) {
+  //   // this.saveFichierCSVService.saveFichierCSVTransaction(payload).subscribe({
+  //   //   next: (res) => {
+  //   //     console.log('response:', res);
+  //   //     this.toastr.success('Données envoyées avec succès', '', {
+  //   //       positionClass: 'toast-custom-center',
+  //   //     });
+  //   //     // alert('Données envoyées avec succès !');
+  //   //   },
+  //   //   error: (error: any) => {
+  //   //     this.toastr.error("Erreur lors de l'envoie des données ", '', {
+  //   //       positionClass: 'toast-custom-center',
+  //   //     });
+  //   //     // alert('Erreur lors de l’envoi des données.');
+  //   //   },
+  //   // });
+  //   // } else {
+  //   //   console.log('Validation annulée par l’utilisateur.');
+  //   // }
+  // }
 }

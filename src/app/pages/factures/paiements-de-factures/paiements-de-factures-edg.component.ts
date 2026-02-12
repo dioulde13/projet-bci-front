@@ -60,7 +60,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       ? decodeURIComponent(rawNomFacture).trim().toUpperCase()
       : null;
 
-    console.log('this.nomFacture: ', this.nomFacture);
+    // console.log('this.nomFacture: ', this.nomFacture);
 
     this.initForm();
     this.initialPrepayerEDG();
@@ -530,6 +530,22 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       btFeesIncluded: feesIncluded ? 1 : 0,
       vcNotes: 'Recharment PostPayer',
     };
+
+    if (this.btFeesIncluded) {
+      if (fraisBank <= 0) {
+        this.toastr.error('Le frais de banque doit être supérieur à 0', '', {
+          positionClass: 'toast-custom-center',
+        });
+      }
+    } else {
+      if (fraisBank <= 0 && fraisEcash <= 0) {
+        this.toastr.error(
+          "Les frais de la banque et d'Ecash doivent être supérieurs à 0",
+          '',
+          { positionClass: 'toast-custom-center' },
+        );
+      }
+    }
 
     console.log('PAYLOAD ENVOYÉ 👉', payload);
 

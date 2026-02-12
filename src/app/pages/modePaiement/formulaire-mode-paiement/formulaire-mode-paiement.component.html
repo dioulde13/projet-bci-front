@@ -16,7 +16,7 @@
         <div class="card">
           <div class="card-body">
             <form
-              *ngIf="typeOperateur === 'ORANGE MONEY'"
+              *ngIf="typeOperateur?.trim() === 'Orange Money'"
               [formGroup]="orangeMoneyForm"
               (ngSubmit)="submitOrangeMoney()"
               novalidate
@@ -80,7 +80,7 @@
             </form>
 
             <form
-              *ngIf="typeOperateur === 'MOBILE MONEY'"
+            *ngIf="typeOperateur?.trim() === 'Areeba Guinée'"
               [formGroup]="mobileMoneyForm"
               (ngSubmit)="submitMobileMoney()"
               novalidate
@@ -166,8 +166,9 @@
               <!-- MONTANT -->
               <div class="mb-3">
                 <input
-                  type="number"
+                  type="text"
                   class="form-control"
+                  gnfNumberFormat
                   formControlName="montant"
                   placeholder="Montant"
                 />
