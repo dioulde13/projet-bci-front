@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 // import { BeneficiaireService } from '../../../services/beneficiaire/beneficiaire.service';
 import { DashboardService } from '../../../services/dashboard/dashboard.service';
 import { MobileMoneyService } from '../../../servicesNodes/modePaiementOperateur/mobileMoney/mobile-money.service';
@@ -23,6 +23,7 @@ import { GnfNumberFormatDirective } from '../../../directives/gnf-number-format.
     ReactiveFormsModule,
     FormsModule,
     GnfNumberFormatDirective,
+    RouterLink,
   ],
   templateUrl: './formulaire-mode-paiement.component.html',
   styleUrl: './formulaire-mode-paiement.component.css',
@@ -57,22 +58,67 @@ export class FormulaireModePaiementComponent implements OnInit {
     }
   }
 
-  listeOperateur:any[] = [];
+  listeOperateur: any[] = [];
   operateur: any;
 
-  recupererListeOperateur(){
+  objetRecuperer: any;
+
+  frais: any;
+  btFeesUsePercent: boolean = false;
+  btFeesIncluded: boolean = false;
+
+  fraisLabel: string = '';
+  montantTotal: number = 0;
+  fraisCalcul: number = 0;
+
+  recupererListeOperateur() {
     this.mobileMoneyService.listeMobileOperators().subscribe({
-       next: (response: any) => {
-        this.listeOperateur = (response?.data ?? []).filter(
-          (f: any) => f.btEnabled === true
+      next: (response: any) => {
+        const operateur = (response?.data ?? []).find(
+          (f: any) => f.FacturierName === this.typeOperateur,
         );
-        this.operateur = (response?.data ?? []).filter(
-          (f: any) => f.FacturierName === this.typeOperateur
-        );
-        console.log('operateur: ', this.operateur);
+
+        if (!operateur) return;
+
+        this.frais = operateur?.nFees;
+        this.btFeesUsePercent = operateur?.btFeesUsePercent;
+        this.btFeesIncluded = operateur?.btFeesIncluded;
+
+        // 🔥 Construction label frais
+        if (this.btFeesIncluded) {
+          this.fraisLabel = 'Frais inclus';
+          this.fraisCalcul = 0;
+        } else {
+          if (this.btFeesUsePercent) {
+            this.fraisLabel = `${this.frais} %`;
+            this.fraisCalcul = this.frais / 100;
+          } else {
+            this.fraisLabel = `${this.frais} ${this.devise}`;
+            this.fraisCalcul = this.frais;
+          }
+        }
       },
-      error: (err) => console.error(err),
-    })
+    });
+  }
+
+  // 🔥 Calcul automatique du total
+  calculerTotal() {
+    const montant = Number(this.mobileMoneyForm.get('montant')?.value || 0);
+
+    if (!montant) {
+      this.montantTotal = 0;
+      return;
+    }
+
+    if (this.btFeesIncluded) {
+      this.montantTotal = montant;
+    } else {
+      if (this.btFeesUsePercent) {
+        this.montantTotal = montant + (montant * this.frais) / 100;
+      } else {
+        this.montantTotal = montant + Number(this.frais);
+      }
+    }
   }
 
   typeOperateur: string | null = null;
@@ -138,6 +184,10 @@ export class FormulaireModePaiementComponent implements OnInit {
     if (input.value.length >= this.phoneMaxLength) {
       event.preventDefault();
     }
+
+    this.mobileMoneyForm.get('montant')?.valueChanges.subscribe(() => {
+      this.calculerTotal();
+    });
   }
 
   // Bloquer le collage invalide
@@ -189,11 +239,14 @@ export class FormulaireModePaiementComponent implements OnInit {
   }
 
   soldeDebiteur: any;
+  devise: any;
 
   getAccountName(accountNumber: string): void {
     this.getAccount.getNomDebiteur(accountNumber).subscribe({
       next: (res) => {
+        console.log('res: ', res);
         this.soldeDebiteur = res?.data?.soldeDisp;
+        this.devise = res?.data?.devise;
         console.log('this.soldeDebiteur: ', this.soldeDebiteur);
       },
       error: () => {
@@ -202,7 +255,7 @@ export class FormulaireModePaiementComponent implements OnInit {
     });
   }
 
-  loadingMobileMoney: boolean = false;
+  // loadingMobileMoney: boolean = false;
 
   // 🔥 SUBMIT MOBILE
   submitMobileMoney(): void {
@@ -211,7 +264,7 @@ export class FormulaireModePaiementComponent implements OnInit {
       return;
     }
 
-    this.loadingMobileMoney = true;
+    // this.loadingMobileMoney = true;
 
     const formValue = this.mobileMoneyForm.value;
 
@@ -228,30 +281,38 @@ export class FormulaireModePaiementComponent implements OnInit {
 
       mAmount: Number(formValue.montant),
       vcOperatorAccount: this.typeOperateur,
-      mFees: 200,
+      mFees: this.btFeesIncluded ? this.fraisCalcul : this.fraisCalcul,
       vcNotes: formValue.description,
       vcOperationType: formValue.typeTransactionMM,
     };
 
-    // console.log('Payload Mobile Money :', payload);
+    console.log('Payload Mobile Money :', payload);
 
-    this.mobileMoneyService.payerMobileMoney(payload).subscribe({
-      next: (res) => {
-        // console.log('Paiement réussi :', res);
-        this.toastr.success(res.data.message, '', {
-          positionClass: 'toast-custom-center',
-        });
-        this.loadingMobileMoney = false;
-      },
-      error: (err) => {
-        this.toastr.error("Une erreur est survenu lors de l'ajout", '', {
-          positionClass: 'toast-custom-center',
-        });
-        this.loadingMobileMoney = false;
-        console.error('Erreur paiement :', err);
-        // toast erreur ic
-      },
-    });
+    localStorage.setItem(
+      'InfosFormulaireModePaiement',
+      JSON.stringify({
+        payload,
+        soldeDebiteur: this.soldeDebiteur,
+        devise: this.devise,
+      }),
+    );
+    // this.mobileMoneyService.payerMobileMoney(payload).subscribe({
+    //   next: (res) => {
+    //     // console.log('Paiement réussi :', res);
+    //     this.toastr.success(res.data.message, '', {
+    //       positionClass: 'toast-custom-center',
+    //     });
+    //     this.loadingMobileMoney = false;
+    //   },
+    //   error: (err) => {
+    //     this.toastr.error(err.error.message, '', {
+    //       positionClass: 'toast-custom-center',
+    //     });
+    //     this.loadingMobileMoney = false;
+    //     console.error('Erreur paiement :', err);
+    //     // toast erreur ic
+    //   },
+    // });
   }
 
   listeCompteClient: any[] = [];

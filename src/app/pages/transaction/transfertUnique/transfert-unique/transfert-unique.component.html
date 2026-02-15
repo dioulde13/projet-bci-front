@@ -175,30 +175,47 @@
                     >
                       Champ obligatoire
                     </small>
+                    <span class="d-block mt-2 text-danger" *ngIf="status">
+                      <strong>{{ messageErreur }}</strong>
+                    </span>
+                    <div *ngIf="!status">
+                      <span class="d-block mt-2">
+                        <strong>Nom débiteur :</strong>
+                        <span style="margin-left: 10px">{{ nomDebiteur }}</span>
+                      </span>
 
-                    <span class="d-block mt-2"
-                      >Nom débiteur : <b>{{ nomDebiteur }}</b></span
-                    >
-                    <span class="d-block mt-2"
-                      >Solde :
-                      <b>{{ soldeDebiteur | number: "1.2-2" }}</b></span
-                    >
+                      <span class="d-block mt-2">
+                        <strong>Solde :</strong>
+                        <span style="margin-left: 10px"
+                          >{{ soldeDebiteur | number: "1.2-2" }}
+                          {{ devise }}</span
+                        >
+                      </span>
+                    </div>
                   </div>
                 </div>
 
                 <!-- Montant -->
                 <div class="row mb-3">
                   <div class="col-md-6">
-                    <label class="form-label fw-bold text-body required"
-                      >Montant</label
-                    >
-                    <input
-                      class="form-control"
-                      type="text"
-                      placeholder="Entrez le montant"
-                      gnfNumberFormat
-                      formControlName="mAmount"
-                    />
+                    <div class="mb-3">
+                      <label class="form-label fw-bold required">
+                        Montant
+                      </label>
+
+                      <div class="input-group input-group-lg">
+                        <input
+                          type="text"
+                          class="form-control"
+                          gnfNumberFormat
+                          formControlName="mAmount"
+                          placeholder="Entrer le montant"
+                        />
+                        <span class="input-group-text fw-bold">
+                          {{ devise }}
+                        </span>
+                      </div>
+                    </div>
                     <small
                       class="text-danger"
                       *ngIf="
@@ -245,17 +262,10 @@
 
               <!-- Boutons -->
               <div class="d-flex gap-2">
-                <button
-                  class="btn btn-primary"
-                  [disabled]="loadingPayementInterneExterne"
-                  type="submit"
-                >
-                  {{
-                    loadingPayementInterneExterne
-                      ? "Paiement en cours..."
-                      : "Payer"
-                  }}
-                </button>
+                <button class="btn btn-primary"
+                routerLink="/recap"
+                 [disabled]="transferFormPaiementInterneExterne.invalid" 
+                 type="submit">Suivant</button>
                 <button class="btn btn-outline-primary" type="reset">
                   Annuler
                 </button>

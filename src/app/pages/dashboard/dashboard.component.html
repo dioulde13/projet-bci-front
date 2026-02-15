@@ -70,7 +70,9 @@
           <div class="card-body finance-chart-container">
             <div class="row text-center justify-content-center">
               <div class="col-6 col-md-4 mb-4">
-                <a routerLink="/preparationPaie" class="custom-icon-container"
+                <a
+                  (click)="notificationEnCoursDeveloppement()"
+                  class="custom-icon-container"
                   ><i class="icon ion-social-buffer custom-icon-size"></i>
                   <p class="custom-icon-text">Transferts multiples</p>
                 </a>
@@ -90,19 +92,21 @@
                   instructions="Veuillez charger le fichier des virements du mois en cours."
                   previewTitle="Récapitulatif des virements"
                   [duplicateCheckFields]="['numeroCompte', 'bic', 'montant']"
-                  [validateButtonText]="loadingValidation ? 'Validation en cours...' : 'Valider'"
+                  [validateButtonText]="
+                    loadingValidation ? 'Validation en cours...' : 'Valider'
+                  "
                   (importDataCompleted)="onImportedData($event)"
                   (modalClosed)="openModal = false"
                 >
                 </bci-generic-file-import>
-
-                <button
+                <!-- (click)="openModal = true" -->
+                <a
                   class="custom-icon-container"
-                  (click)="openModal = true"
+                  (click)="notificationEnCoursDeveloppement()"
                 >
                   <i class="icon ion-upload custom-icon-size"></i>
                   <p class="custom-icon-text">Chargement de fichier</p>
-                </button>
+                </a>
                 <!-- <div
                   class="modal fade"
                   role="dialog"
@@ -285,13 +289,7 @@
                   <p class="custom-icon-text">Transfert unique</p>
                 </a>
               </div>
-              <div class="col-6 col-md-4 mb-4">
-                <a routerLink="/typePaiement" class="custom-icon-container"
-                  ><i class="icon ion-ios-paper custom-icon-size"></i>
-                  <i class="icon ion-ios-globe custom-icon-size"></i>
-                  <p class="custom-icon-text">Tranfert international</p>
-                </a>
-              </div>
+
               <div class="col-6 col-md-4 mb-4">
                 <a routerLink="/typePaiement" class="custom-icon-container"
                   ><i class="icon ion-ios-paper custom-icon-size"></i>
@@ -308,6 +306,16 @@
                 <a routerLink="/listeBeneficiaire" class="custom-icon-container"
                   ><i class="icon ion-ios-cog custom-icon-size"></i>
                   <p class="custom-icon-text">Gérer les bénéficiaires</p>
+                </a>
+              </div>
+
+              <div class="col-6 col-md-4 mb-4">
+                <a
+                  (click)="notificationEnCoursDeveloppement()"
+                  class="custom-icon-container"
+                  ><i class="icon ion-ios-paper custom-icon-size"></i>
+                  <i class="icon ion-ios-globe custom-icon-size"></i>
+                  <p class="custom-icon-text">Tranfert international</p>
                 </a>
               </div>
             </div>

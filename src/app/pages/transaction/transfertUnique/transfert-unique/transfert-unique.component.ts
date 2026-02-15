@@ -12,13 +12,14 @@ import { GetAccountNameService } from '../../../../servicesNodes/verifierNomDebi
 import { BeneficiaireNodeService } from '../../../../servicesNodes/beneficiaireNode/beneficiaire-node.service';
 import { BanqueNameVerifierService } from '../../../../servicesNodes/verifierBanqueName/banque-name-verifier.service';
 import { PaiementInterneExterneService } from '../../../../servicesNodes/paiementInterneExterne/paiement-interne-externe.service';
-import { ToastrService } from 'ngx-toastr';
+// import { ToastrService } from 'ngx-toastr';
 import { GnfNumberFormatDirective } from '../../../../directives/gnf-number-format.directive';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-transfert-unique',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, GnfNumberFormatDirective],
+  imports: [CommonModule, ReactiveFormsModule, GnfNumberFormatDirective, RouterLink],
   templateUrl: './transfert-unique.component.html',
   styleUrls: ['./transfert-unique.component.css'],
 })
@@ -48,6 +49,7 @@ export class TransfertUniqueComponent implements OnInit {
 
   nomDebiteur = '';
   soldeDebiteur: any = '';
+  devise: any = '';
   nomBanque = '';
   typesCompte = '';
 
@@ -59,7 +61,7 @@ export class TransfertUniqueComponent implements OnInit {
     private beneficiaireNodeService: BeneficiaireNodeService,
     private banqueNameVerifierService: BanqueNameVerifierService,
     private paiementInterneExterneService: PaiementInterneExterneService,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -125,13 +127,49 @@ export class TransfertUniqueComponent implements OnInit {
     });
   }
 
+  decodeMessage(encoded: string): string {
+    if (!encoded) return encoded;
+
+    return (
+      encoded
+        // replacement des séquences courantes
+        .replace(/\+á/g, 'à')
+        .replace(/\+é/g, 'é')
+        .replace(/\+è/g, 'è')
+        .replace(/\+®/g, 'é')
+        .replace(/\+ç/g, 'ç')
+        .replace(/\+ô/g, 'ô')
+        .replace(/\+°/g, 'ô')
+        .replace(/\+ù/g, 'ù')
+        .replace(/\+/g, ' ') // transformer les + restants en espaces
+        .trim()
+    );
+  }
+
+  messageErreur: any;
+  statusMessageErreur: any;
+  status: boolean = false;
+  infosCompteDebiteur: any;
+
   getAccountName(accountNumber: string): void {
     this.getAccount.getNomDebiteur(accountNumber).subscribe({
       next: (res) => {
+        console.log('res: ', res);
+        this.infosCompteDebiteur = res?.data;
         this.nomDebiteur = res?.data?.name;
         this.soldeDebiteur = res?.data?.soldeDisp;
+        this.devise = res?.data?.devise;
+        this.status = false;
       },
-      error: () => {
+      error: (err: any) => {
+        if (err.error.status === 404) {
+          // décoder le message avant de l’affecter
+          this.messageErreur = this.decodeMessage(err.error.message);
+          this.status = true;
+        } else {
+          this.status = false;
+        }
+
         this.nomDebiteur = '';
         this.soldeDebiteur = '';
       },
@@ -248,31 +286,19 @@ export class TransfertUniqueComponent implements OnInit {
 
   initFormPaiementInterneExterne(): void {
     this.transferFormPaiementInterneExterne = this.fb.group({
-      vcPayerName: ['', Validators.required],
       dtPaymentDate: ['', Validators.required],
-      vcPaymentReference: ['', Validators.required],
       vcPayerAccount: ['', Validators.required],
       beneficiaryCategory: ['', Validators.required],
       mAmount: ['', Validators.required],
-      vcCorrespBicCode: ['', Validators.required],
     });
   }
 
-  loadingPayementInterneExterne: boolean = false;
 
   submitAttempt = false;
 
-submitFormPayementInterneExterne(): void {
-  // Marquer tous les champs comme touchés
+  submitFormPayementInterneExterne(): void {
   this.submitAttempt = true;
   this.transferFormPaiementInterneExterne.markAllAsTouched();
-
-  // if (this.transferFormPaiementInterneExterne.invalid || !this.selectedBeneficiaire) {
-  //   this.toastr.error('Veuillez remplir tous les champs obligatoires', '', {
-  //     positionClass: 'toast-custom-center',
-  //   });
-  //   return;
-  // }
 
   const formValue = this.transferFormPaiementInterneExterne.value;
 
@@ -289,74 +315,13 @@ submitFormPayementInterneExterne(): void {
     vcBenefCurrency: this.selectedBeneficiaire.vcCurrency,
   };
 
+  console.log('selectedBeneficiaire :', this.selectedBeneficiaire);
   console.log('Payload Mobile Money :', payload);
 
-  this.loadingPayementInterneExterne = true;
-
-  this.paiementInterneExterneService.payementInterneExterne(payload)
-    .subscribe({
-      next: (res) => {
-        console.log('Paiement réussi :', res);
-        this.toastr.success(res.data.message, '', {
-          positionClass: 'toast-custom-center',
-        });
-        this.loadingPayementInterneExterne = false;
-      },
-      error: (err) => {
-        console.error('Erreur paiement :', err);
-        this.toastr.error(err.error?.message || 'Erreur lors du paiement', '', {
-          positionClass: 'toast-custom-center',
-        });
-        this.loadingPayementInterneExterne = false;
-      }
-    });
+  // Enregistrer dans le localStorage
+  
+  localStorage.setItem('InfosSaisirDansFormulaire', JSON.stringify(payload));
+  localStorage.setItem('selectedBeneficiaire', JSON.stringify(this.selectedBeneficiaire));
+  localStorage.setItem('infosCompteDebiteur', JSON.stringify(this.infosCompteDebiteur));
 }
-
-  // submitFormPayementInterneExterne(): void {
-  //   if (!this.selectedBeneficiaire) {
-  //     this.toastr.error('Veuillez sélectionner un bénéficiaire', '', {
-  //       positionClass: 'toast-custom-center',
-  //     });
-  //     return;
-  //   }
-
-  //   const formValue = this.transferFormPaiementInterneExterne.value;
-
-  //   const payload = {
-  //     vcPayerName: this.nomDebiteur,
-  //     dtPaymentDate: formValue.dtPaymentDate,
-  //     vcPaymentReference: 'REF123',
-  //     vcPayerAccount: formValue.vcPayerAccount,
-  //     vcBenefName: this.selectedBeneficiaireName,
-  //     mAmount: formValue.mAmount,
-  //     vcBenefAccount: this.selectedBeneficiaire.vcAccountNumber,
-  //     vcBenefBicCode: this.selectedBeneficiaire.vcBIC,
-  //     vcCorrespBicCode: '',
-  //     vcBenefCurrency: this.selectedBeneficiaire.vcCurrency,
-  //   };
-
-  //   console.log('Payload Mobile Money :', payload);
-
-  //   this.loadingPayementInterneExterne = true;
-
-  //   this.paiementInterneExterneService.payementInterneExterne(payload)
-  //     .subscribe({
-  //       next: (res) => {
-  //         console.log('Paiement réussi :', res);
-  //         this.toastr.success(res.data.message, '', {
-  //           positionClass: 'toast-custom-center',
-  //         });
-  //         this.loadingPayementInterneExterne = false;
-  //       },
-  //       error: (err) => {
-  //         console.error('Erreur paiement :', err);
-  //         this.toastr.error(err.error?.message || 'Erreur lors du paiement', '', {
-  //           positionClass: 'toast-custom-center',
-  //         });
-  //         this.loadingPayementInterneExterne = false;
-  //       }
-  //     });
-
-  //   // console.log('✅ DONNÉES FORMULAIRE :', formValue);
-  // }
 }

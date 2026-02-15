@@ -116,7 +116,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
           // afficher notification seulement si service indisponible
           this.showNetworkNotification =
             this.statusCoreBanking?.available === true;
-        } else{
+        } else {
           this.showNetworkNotification =
             this.statusCoreBanking?.available === false;
         }
@@ -126,6 +126,16 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         this.showNetworkNotification = false;
       },
     });
+  }
+
+  notificationEnCoursDeveloppement() {
+    this.toastr.error(
+      'Cette fonctionnalité est en cours de développement.',
+      '',
+      {
+        positionClass: 'toast-custom-center',
+      },
+    );
   }
 
   ngOnInit(): void {

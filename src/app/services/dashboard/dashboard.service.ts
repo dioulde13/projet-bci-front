@@ -20,17 +20,7 @@ export class DashboardService {
 
   // Récupère la liste des comptes clients pour une organisation
   getListeCompteClient(idOrganisation: number): Observable<any> {
-    // const token = this.getToken();
-
-    // if (!token) {
-    //   return throwError(() => new Error('Token non trouvé. Veuillez vous connecter.'));
-    // }
-
-    // const headers = new HttpHeaders({
-    //   Authorization: `Bearer ${token}`,
-    //   'Content-Type': 'application/json',
-    // });
-
+  
     const params = new HttpParams().set(
       'idOrganisation',
       idOrganisation.toString(),

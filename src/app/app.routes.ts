@@ -202,6 +202,13 @@ export const routes: Routes = [
           import('./pages/details-du-compte/details-du-compte.component')
             .then(m => m.DetailsDuCompteComponent),
         canActivate: [AuthGuard],
+      }, 
+       {
+        path: 'historiqueTransactions',
+        loadComponent: () =>
+          import('./pages/transaction/historique-transaction/historique-transaction.component')
+            .then(m => m.HistoriqueTransactionComponent),
+        canActivate: [AuthGuard],
       },
       {
         path: 'transactions',

@@ -1,4 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { MarchandService } from '../../../servicesNodes/paiementsMarchandEGD/marchand.service';
 import { DashboardService } from '../../../services/dashboard/dashboard.service';
 import {
@@ -11,7 +17,10 @@ import {
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { GnfNumberFormatDirective } from '../../../directives/gnf-number-format.directive';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TransactionsBillPendingService } from '../../../services/transactionsBillPendingServices/transactions-bill-pending.service';
+import { TranfertUniqueService } from '../../../services/transfertUniqueService/tranfert-unique.service';
+import { OtpLoginServiceService } from '../../../services/otpLogin/otp-login-service.service';
 
 declare var bootstrap: any;
 
@@ -32,8 +41,12 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     private fb: FormBuilder,
     private marchandService: MarchandService,
     private listeCompteCLientService: DashboardService,
+    private transactionsBillPendingService: TransactionsBillPendingService,
     private toastr: ToastrService,
     private route: ActivatedRoute,
+    private tranfertUniqueService: TranfertUniqueService,
+    private router: Router,
+    private otpService: OtpLoginServiceService,
   ) {}
 
   paymentForm!: FormGroup;
@@ -52,8 +65,10 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
   listeCompteClient: any[] = [];
 
   nomFacture: string | null = null;
+  loginEmail: string | null = '';
 
   ngOnInit(): void {
+    this.loginEmail = localStorage.getItem('loginEmail');
     const rawNomFacture = this.route.snapshot.paramMap.get('nomFacture');
 
     this.nomFacture = rawNomFacture
@@ -79,6 +94,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
     if (this.infosUser?.iOrganisationID) {
       this.iOrganisationID = this.infosUser.iOrganisationID;
+      this.vcPhoneNumber = this.infosUser.vcPhoneNumber;
       this.getListeCompteClient();
     } else {
       console.warn('iOrganisationID non défini');
@@ -99,6 +115,13 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
   activeTab: string = 'tab1';
 
+  selectedTab: string = 'prepaid'; // valeur par défaut
+
+  onTabChange(tab: string) {
+    this.selectedTab = tab;
+    console.log('Onglet sélectionné:', this.selectedTab);
+  }
+
   paymentFormPostpayerEDG!: FormGroup;
 
   afficherInfosPostpayer = false;
@@ -106,7 +129,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
   compteurValidePostpayer = false;
 
   infosCompteurPostpayer: any = null;
-  facturesCompteur: any[] = []; // pour stocker toutes les factures
+  facturesCompteur: any; // pour stocker toutes les factures
 
   initPostpayerForm(): void {
     this.paymentFormPostpayerEDG = this.fb.group({
@@ -128,7 +151,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       'numeroCompteurPostpayer',
     )?.value;
 
-    console.log('compteur:', compteur);
+    // console.log('compteur:', compteur);
 
     // Reset UI
     this.afficherInfosPostpayer = false;
@@ -169,7 +192,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
           return;
         }
 
-        console.log('APIResponse parsée:', parsed);
+        // console.log('APIResponse parsée:', parsed);
 
         // ✅ SUCCESS = returnId === 0
         if (parsed.returnId === 0) {
@@ -178,6 +201,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
           if (Array.isArray(parsed.content)) {
             this.facturesCompteur = parsed.content;
+           console.log('this.facturesCompteur: ', this.facturesCompteur);
           }
         } else {
           this.compteurValidePostpayer = false;
@@ -320,7 +344,86 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     console.log(accountNumber);
   }
 
+  // reference: any;
+  transaction_id: any;
+
   loadingPrepayerEDG: boolean = false;
+
+  submitPayementPrepayerEDGBillPending() {
+    // if (this.paymentFormPrepayerEDG.invalid) {
+    //   this.paymentFormPrepayerEDG.markAllAsTouched();
+    //   return;
+    // }
+    console.log('this.selectedTab: ',this.selectedTab)
+
+    this.loadingPrepayerEDG = true;
+
+    // console.log('this.ligneSelectionner: ', this.ligneSelectionner);
+
+    const v = this.paymentFormPrepayerEDG.value;
+    const post = this.postpayModalForm.value;
+
+    console.log('post: ', post);
+
+    // Détermine si les frais sont inclus
+    const feesIncluded = this.btFeesIncluded;
+
+    // Calcul des frais
+    const feesEcash = feesIncluded ? 0 : Number(this.fraisNFeesBankEDG);
+
+    // Si nFeesBank est un pourcentage (ex: 0.025 pour 2.5%)
+    const feesBCI = this.fraisNFeesBankEDG;
+
+    // Total envoyé dans l’API
+    const payload = {
+      payer_account: this.selectedTab === 'prepaid'? v.debitAccountEDG : post.modalDebitAccountPost,
+      benef_name: this.nomFacture ?? '',
+      benef_account: 'BeneficiaireGN98-7654-3210-9876', 
+      amount: this.selectedTab === 'prepaid'? this.montantTotalEDG: post.modalMontantPost,  
+      fees_ecash: feesEcash,
+      fees_bci: feesBCI,
+      fees_included: feesIncluded ? 1 : 0,
+      notes: 'Recharment prepayer',
+      organisation_id: this.iOrganisationID,
+      user_id: this.infosUser.id,
+    };
+// infosCompteurPostpayer
+    // console.log('PAYLOAD ENVOYÉ 👉', payload);
+
+    this.transactionsBillPendingService
+      .transactionsBillPending(payload)
+      .subscribe({
+        next: (response: any) => {
+          if (
+            response.status === 200 &&
+            response.data.reference &&
+            response.data.transaction_id
+          ) {
+            this.transaction_id = response.data.transaction_id;
+            if (this.selectedTab === 'prepaid') {
+              console.log('prepaid');
+              this.submitPayementPrepayerEDG();
+              
+            } else if (this.selectedTab === 'postpaid') {
+              console.log('postpaid');
+              this.submitPostpayPayment();
+            }
+            this.loadingPrepayerEDG = false;
+            this.paymentForm.reset();
+            //  this.reference = response.data.reference;
+          }
+        },
+        error: (err) => {
+          this.toastr.error(err.error.message, '', {
+            positionClass: 'toast-custom-center',
+          });
+          this.loadingPrepayerEDG = false;
+          console.error('Erreur API 👉', err);
+        },
+      });
+  }
+
+  // loadingPrepayerEDG: boolean = false;
 
   submitPayementPrepayerEDG() {
     if (this.paymentFormPrepayerEDG.invalid) {
@@ -328,9 +431,9 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       return;
     }
 
-    this.loadingPrepayerEDG = true;
+    // this.loadingPrepayerEDG = true;
 
-    console.log('this.ligneSelectionner: ', this.ligneSelectionner);
+    // console.log('this.ligneSelectionner: ', this.ligneSelectionner);
 
     const v = this.paymentFormPrepayerEDG.value;
 
@@ -353,40 +456,45 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       mFeesBCI: feesBCI,
       btFeesIncluded: feesIncluded ? 1 : 0,
       vcNotes: 'Recharment prepayer',
+      iTransactionID: this.transaction_id,
     };
 
     console.log('PAYLOAD ENVOYÉ 👉', payload);
 
-    // this.marchandService
-    //   .postPaiementMarchant(
-    //     payload.vcPayerAccount,
-    //     payload.vcBenefName,
-    //     payload.vcBenefAccount,
-    //     payload.mAmount,
-    //     payload.mFeesEcash,
-    //     payload.mFeesBCI,
-    //     payload.vcNotes,
-    //     payload.btFeesIncluded,
-    //   )
-    //   .subscribe({
-    //     next: (response: any) => {
-    //       console.log('Réponse API 👉', response);
-    //       if (response.status === 200) {
-    //         this.toastr.success('Le paiement a été effectué avec succès', '', {
-    //           positionClass: 'toast-custom-center',
-    //         });
-    //         this.loadingPrepayerEDG = false;
-    //         this.paymentForm.reset();
-    //       }
-    //     },
-    //     error: (err) => {
-    //       this.toastr.error(err.error.message, '', {
-    //         positionClass: 'toast-custom-center',
-    //       });
-    //       this.loadingPrepayerEDG = false;
-    //       console.error('Erreur API 👉', err);
-    //     },
-    //   });
+    this.marchandService
+      .postPaiementMarchant(
+        payload.vcPayerAccount,
+        payload.vcBenefName,
+        payload.vcBenefAccount,
+        payload.mAmount,
+        payload.mFeesEcash,
+        payload.mFeesBCI,
+        payload.vcNotes,
+        payload.btFeesIncluded,
+        payload.iTransactionID,
+      )
+      .subscribe({
+        next: (response: any) => {
+          console.log('Réponse API 👉', response);
+          // if (response.status === 200) {
+          this.toastr.success('Le paiement a été effectué avec succès', '', {
+            positionClass: 'toast-custom-center',
+          });
+          this.isLoading = false;
+          this.modalOtp = false;
+          this.router.navigate(['/historiqueTransactions']);
+          // this.loadingPrepayerEDG = false;
+          this.paymentForm.reset();
+          // }
+        },
+        error: (err) => {
+          this.toastr.error(err.error.message, '', {
+            positionClass: 'toast-custom-center',
+          });
+          // this.loadingPrepayerEDG = false;
+          console.error('Erreur API 👉', err);
+        },
+      });
   }
 
   // 🔒 chiffres uniquement
@@ -469,12 +577,15 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     modal.show();
   }
 
-  submitPostpayPayment() {
+  loadingVerificationMontant: boolean = false;
+
+  verificationMontant() {
     if (this.postpayModalForm.invalid) return;
-    console.log(
-      ' facture: this.selectedPostpayFacture: ',
-      this.selectedPostpayFacture,
-    );
+    this.loadingVerificationMontant = true;
+    // console.log(
+    //   ' facture: this.selectedPostpayFacture: ',
+    //   this.selectedPostpayFacture,
+    // );
 
     // Détermine si les frais sont inclus
     const feesIncluded = this.btFeesIncluded;
@@ -529,6 +640,122 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       mFeesBCI: feesBCI,
       btFeesIncluded: feesIncluded ? 1 : 0,
       vcNotes: 'Recharment PostPayer',
+      iTransactionID: this.transaction_id,
+    };
+
+    if (this.btFeesIncluded) {
+      if (fraisBank <= 0) {
+        this.loadingVerificationMontant = false;
+        this.toastr.error('Le frais de banque doit être supérieur à 0', '', {
+          positionClass: 'toast-custom-center',
+        });
+      }
+    } else {
+      if (fraisBank <= 0 && fraisEcash <= 0) {
+        this.loadingVerificationMontant = false;
+        this.toastr.error(
+          "Les frais de la banque et d'Ecash doivent être supérieurs à 0",
+          '',
+          { positionClass: 'toast-custom-center' },
+        );
+      }
+    }
+
+    console.log('PAYLOAD ENVOYÉ 👉', payload);
+
+    if (montantTotalPostPayerEDG > this.selectedPostpayFacture.balance) {
+      this.loadingVerificationMontant = false;
+      this.toastr.error(
+        'Le montant payer plus frais ne doit pas depasser le solde restant',
+        '',
+        {
+          positionClass: 'toast-custom-center',
+        },
+      );
+      console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
+      console.log(
+        'this.selectedPostpayFacture.balance: ',
+        this.selectedPostpayFacture.balance,
+      );
+    } else {
+      console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
+      console.log(
+        'this.selectedPostpayFacture.balance: ',
+        this.selectedPostpayFacture.balance,
+      );
+      this.loadingVerificationMontant = false;
+
+      if (this.loadingVerificationMontant === false) {
+        const modalEl = document.getElementById('postpayModal');
+        const modal = bootstrap.Modal.getInstance(modalEl!);
+        modal?.hide();
+        this.modalOtp = true;
+        this.openModalOtp();
+      }
+    }
+  }
+
+  submitPostpayPayment() {
+    if (this.postpayModalForm.invalid) return;
+    // console.log(
+    //   ' facture: this.selectedPostpayFacture: ',
+    //   this.selectedPostpayFacture,
+    // );
+
+    // Détermine si les frais sont inclus
+    const feesIncluded = this.btFeesIncluded;
+
+    // Calcul des frais
+    const feesEcash = feesIncluded ? 0 : Number(this.fraisNFeesBankEDG);
+
+    // Si nFeesBank est un pourcentage (ex: 0.025 pour 2.5%)
+    const feesBCI = this.fraisNFeesBankEDG;
+
+    let fraisEcash = 0;
+    let fraisBank = 0;
+    let montantTotalPostPayerEDG = 0;
+
+    if (this.btFeesIncluded) {
+      // Ecash inclus → 0
+      fraisEcash = 0;
+
+      // Bank
+      fraisBank = this.btFeesBankUsePercent
+        ? (this.postpayModalForm.value.modalMontantPost *
+            Number(this.fraisNFeesBankEDG)) /
+          100
+        : Number(this.fraisNFeesBankEDG);
+    } else {
+      // Ecash
+      fraisEcash = this.btFeesUsePercent
+        ? this.postpayModalForm.value.modalMontantPost *
+          Number(this.fraisNFeesEDG / 100)
+        : Number(this.fraisNFeesEDG);
+
+      // Bank
+      fraisBank = this.btFeesBankUsePercent
+        ? this.postpayModalForm.value.modalMontantPost *
+          Number(this.fraisNFeesBankEDG / 100)
+        : Number(this.fraisNFeesBankEDG);
+    }
+    if (this.btFeesIncluded) {
+      montantTotalPostPayerEDG = this.postpayModalForm.value.modalMontantPost;
+    } else {
+      montantTotalPostPayerEDG =
+        this.postpayModalForm.value.modalMontantPost + fraisEcash + fraisBank;
+    }
+
+    // Total envoyé dans l’API
+    const payload = {
+      vcPayerAccount: this.postpayModalForm.value.modalDebitAccountPost,
+      vcBenefName: this.nomFacture ?? '',
+      vcBenefAccount: '',
+      mAmount: montantTotalPostPayerEDG,
+      mFeesEcash: feesEcash,
+      mFeesBCI: feesBCI,
+      btFeesIncluded: feesIncluded ? 1 : 0,
+      vcNotes: 'Recharment PostPayer',
+      iTransactionID: this.transaction_id,
     };
 
     if (this.btFeesIncluded) {
@@ -550,6 +777,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     console.log('PAYLOAD ENVOYÉ 👉', payload);
 
     if (montantTotalPostPayerEDG > this.selectedPostpayFacture.balance) {
+      this.loadingVerificationMontant = false;
       this.toastr.error(
         'Le montant payer plus frais ne doit pas depasser le solde restant',
         '',
@@ -568,6 +796,9 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         'this.selectedPostpayFacture.balance: ',
         this.selectedPostpayFacture.balance,
       );
+
+      // Fermer le modal
+
       this.marchandService
         .postPaiementMarchant(
           payload.vcPayerAccount,
@@ -578,22 +809,22 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
           payload.mFeesBCI,
           payload.vcNotes,
           payload.btFeesIncluded,
+          payload.iTransactionID,
         )
         .subscribe({
           next: (response: any) => {
             console.log('Réponse API 👉', response);
-            if (response.status === 200) {
-              this.toastr.success(
-                'Le paiement a été effectué avec succès',
-                '',
-                {
-                  positionClass: 'toast-custom-center',
-                },
-              );
-              this.onCompteurBlurPostpayer();
-              // this.loadingPrepayerEDG = false;
-              this.postpayModalForm.reset();
-            }
+            // if (response.status === 200) {
+            this.toastr.success('Le paiement a été effectué avec succès', '', {
+              positionClass: 'toast-custom-center',
+            });
+            this.isLoading = false;
+            this.modalOtp = false;
+            this.router.navigate(['/historiqueTransactions']);
+            this.onCompteurBlurPostpayer();
+            // this.loadingPrepayerEDG = false;
+            this.postpayModalForm.reset();
+            // }
           },
           error: (err) => {
             this.toastr.error(err.error.message, '', {
@@ -604,11 +835,6 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
           },
         });
     }
-
-    // Fermer le modal
-    const modalEl = document.getElementById('postpayModal');
-    const modal = bootstrap.Modal.getInstance(modalEl!);
-    modal?.hide();
   }
 
   formatDateOper(dateOper: string): string {
@@ -676,6 +902,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       mFeesBCI: feesBCI,
       btFeesIncluded: feesIncluded ? 1 : 0,
       vcNotes: v.notes ?? '',
+      iTransactionID: this.transaction_id,
     };
 
     console.log('PAYLOAD ENVOYÉ 👉', payload);
@@ -690,6 +917,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         payload.mFeesBCI,
         payload.vcNotes,
         payload.btFeesIncluded,
+        payload.iTransactionID,
       )
       .subscribe({
         next: (response: any) => {
@@ -754,5 +982,179 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
           this.loading = false;
         },
       });
+  }
+
+  userInfo: any;
+
+  /* =====================================================
+     SECTION 2 — MODAL OTP
+  ===================================================== */
+  modalOtp = false;
+  otpValues: string[] = ['', '', '', ''];
+  @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef>;
+
+  /* =====================================================
+     SECTION 3 — TIMER & RENVOI OTP
+  ===================================================== */
+  countdown = 60;
+  canResend = false;
+  private timer: any;
+  isLoading = false;
+  isLoadingRenvoyez = false;
+
+  vcPhoneNumber: any;
+
+  /* =====================================================
+     OUVERTURE / FERMETURE MODAL
+  ===================================================== */
+  loadiongConfirmeOtp: boolean = false;
+  openModalOtp(): void {
+    this.loadiongConfirmeOtp = true;
+    this.startCountdown();
+
+    // Envoi OTP via service
+    this.tranfertUniqueService
+      .sendOtpTransaction(this.vcPhoneNumber)
+      .subscribe({
+        next: (response: any) => {
+          if (response.status === 200) {
+            this.loadiongConfirmeOtp = false;
+            this.modalOtp = true;
+            this.toastr.success('OTP envoyé avec succès', '', {
+              positionClass: 'toast-custom-center',
+            });
+          } else {
+            this.toastr.error(response.message, '', {
+              positionClass: 'toast-custom-center',
+            });
+          }
+        },
+        error: (err) => {
+          this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
+            positionClass: 'toast-custom-center',
+          });
+          console.error(err);
+        },
+      });
+
+    // Focus sur le premier input OTP
+    setTimeout(() => {
+      this.otpInputs.first?.nativeElement.focus();
+    }, 100);
+  }
+
+  verifyOtp(): void {
+    this.isLoading = true;
+    const otpCode = this.otpValues.join('');
+
+    if (otpCode.length !== 4) {
+      this.errorMessage = 'Code OTP incomplet.';
+      return;
+    }
+
+    // Envoi OTP via service
+    this.tranfertUniqueService
+      .verifyOTPConfirmmeTransaction(otpCode, this.vcPhoneNumber)
+      .subscribe({
+        next: (response: any) => {
+          console.log('this.selectedTab hors: ',this.selectedTab)
+          if (response.status === 200) {
+            console.log('dedans this.selectedTab: ',this.selectedTab)
+            // this.toastr.success('OTP envoyé avec succès', '', {
+            //   positionClass: 'toast-custom-center',
+            // });
+            this.submitPayementPrepayerEDGBillPending();
+          } else {
+            this.isLoading = false;
+            this.toastr.error(response.message, '', {
+              positionClass: 'toast-custom-center',
+            });
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
+            positionClass: 'toast-custom-center',
+          });
+          console.error(err);
+        },
+      });
+
+    // this.isLoading = true;
+    // this.errorMessage = '';
+  }
+
+  closeModalOtp(): void {
+    this.modalOtp = false;
+    this.resetOtp();
+    clearInterval(this.timer);
+  }
+
+  private resetOtp(): void {
+    this.otpValues = ['', '', '', ''];
+  }
+
+  /* =====================================================
+     GESTION SAISIE OTP
+  ===================================================== */
+  moveToNext(event: any, index: number): void {
+    const value = event.target.value;
+
+    if (value.length === 1 && index < this.otpInputs.length - 1) {
+      this.otpInputs.toArray()[index + 1].nativeElement.focus();
+    }
+
+    if (value.length === 0 && index > 0) {
+      this.otpInputs.toArray()[index - 1].nativeElement.focus();
+    }
+  }
+
+  isOtpComplete(): boolean {
+    return this.otpValues.every((v) => v.trim() !== '');
+  }
+
+  /* =====================================================
+     COUNTDOWN & RENVOI OTP
+  ===================================================== */
+  startCountdown(): void {
+    this.canResend = false;
+    this.countdown = 60;
+
+    this.timer = setInterval(() => {
+      this.countdown--;
+
+      if (this.countdown <= 0) {
+        clearInterval(this.timer);
+        this.canResend = true;
+      }
+    }, 1000);
+  }
+
+
+   reEnvoiOtp(): void {
+     this.isLoadingRenvoyez = true;
+    // if (!this.canResend) return;
+    this.otpService.reenvoiOtp(this.loginEmail).subscribe({
+      next: (response) => {
+        this.isLoadingRenvoyez = false;
+        this.otpValues = ['', '', '', ''];
+        if (response.status === 200) {
+          this.toastr.success(response.message, '', {
+            positionClass: 'toast-custom-center',
+          });
+        }else{
+          this.toastr.error(response.message, '', {
+            positionClass: 'toast-custom-center',
+          });
+          // console.log(response);
+        }
+      },
+      error: (err) => {
+        this.isLoadingRenvoyez = false;
+        this.toastr.error(err.error.message, '', {
+          positionClass: 'toast-custom-center',
+        });
+      },
+    });
   }
 }

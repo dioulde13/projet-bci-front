@@ -24,7 +24,7 @@ export class OtpAfterChangeInfoService {
   ): Observable<any> {
     // const email = this.getVerifierOtpEmail();
     const body = { otp, appName, email };
-    console.log('Debug OTP Org : ', body);
+    // console.log('Debug OTP Org : ', body);
 
     return this.http
       .post<any>(`${this.baseUrl}/api/validePhone`, body)

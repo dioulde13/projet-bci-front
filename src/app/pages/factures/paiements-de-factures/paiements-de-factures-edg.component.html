@@ -61,6 +61,7 @@
             >
               <li class="nav-item" role="presentation">
                 <button
+                  #tabBtn
                   class="nav-link active"
                   id="prepaid-tab"
                   data-bs-toggle="tab"
@@ -69,6 +70,7 @@
                   role="tab"
                   aria-controls="prepaid"
                   aria-selected="true"
+                  (shown.bs.tab)="onTabChange('prepaid')"
                 >
                   Prepayé
                 </button>
@@ -76,6 +78,7 @@
 
               <li class="nav-item" role="presentation">
                 <button
+                  #tabBtn
                   class="nav-link"
                   id="postpaid-tab"
                   data-bs-toggle="tab"
@@ -84,6 +87,7 @@
                   role="tab"
                   aria-controls="postpaid"
                   aria-selected="false"
+                  (shown.bs.tab)="onTabChange('postpaid')"
                 >
                   Postpayé
                 </button>
@@ -105,7 +109,6 @@
                 <form
                   *ngIf="paymentFormPrepayerEDG"
                   [formGroup]="paymentFormPrepayerEDG"
-                  (ngSubmit)="submitPayementPrepayerEDG()"
                   novalidate
                 >
                   <!-- numéro de compteur -->
@@ -183,7 +186,10 @@
                       />
 
                       <!-- compte débiteur -->
-                      <div class="mb-3">
+                      <div
+                        class="mb-3"
+                        *ngIf="compteurValidePrepayer && infosCompteurPrepayer"
+                      >
                         <label class="form-label fw-bold text-body required">
                           Compte débiteur
                         </label>
@@ -202,7 +208,10 @@
                       </div>
 
                       <!-- montant -->
-                      <div class="row mb-3">
+                      <div
+                        class="row mb-3"
+                        *ngIf="compteurValidePrepayer && infosCompteurPrepayer"
+                      >
                         <div class="col-md-12 mb-3">
                           <label class="form-label fw-bold required"
                             >Montant</label
@@ -216,21 +225,27 @@
                         </div>
                       </div>
 
-                      <hr class="bg-light" />
+                      <hr
+                        class="bg-light"
+                        *ngIf="compteurValidePrepayer && infosCompteurPrepayer"
+                      />
 
                       <!-- boutons -->
-                      <div class="d-flex flex-wrap gap-2">
+                      <div
+                        class="d-flex flex-wrap gap-2"
+                        *ngIf="compteurValidePrepayer && infosCompteurPrepayer"
+                      >
                         <button
                           class="btn btn-primary"
-                          type="submit"
+                          (click)="openModalOtp()"
                           [disabled]="
                             paymentFormPrepayerEDG.invalid || loadingPrepayerEDG
                           "
                         >
                           {{
-                            loadingPrepayerEDG
-                              ? "Paiement en cours..."
-                              : "Payer"
+                            loadiongConfirmeOtp
+                              ? "Confirmation en cours..."
+                              : "Confirmer"
                           }}
                         </button>
 
@@ -245,6 +260,95 @@
                     </div>
                   </div>
                 </form>
+              </div>
+
+              <!-- MODAL OTP -->
+              <div class="modal-backdrop-custom" *ngIf="modalOtp">
+                <div class="modal-content-custom shadow-lg">
+                  <h4 class="mb-3 text-center">Validation OTP</h4>
+                  <p class="text-center text-muted">
+                    Veuillez entrer le code à 4 chiffres
+                  </p>
+
+                  <div class="otp-container">
+                    <div class="alert alert-info" role="alert">
+                      <span
+                        >Un code de vérification (OTP) a été envoyé à votre
+                        adresse email.</span
+                      >
+                    </div>
+
+                    <label class="form-label text-center w-100"
+                      >Entrez votre code OTP</label
+                    >
+                    <div class="otp-inputs d-flex justify-content-center gap-2">
+                      <ng-container
+                        *ngFor="let item of [0, 1, 2, 3]; let i = index"
+                      >
+                        <input
+                          class="form-control otp-input"
+                          type="text"
+                          maxlength="1"
+                          pattern="[0-9]"
+                          required
+                          (input)="moveToNext($event, i)"
+                          #otpInput
+                          [(ngModel)]="otpValues[i]"
+                          name="otp{{ i }}"
+                        />
+                      </ng-container>
+                    </div>
+
+                    <div class="text-center">
+                      <small class="text-muted">Exemple : 1234</small>
+                    </div>
+
+                    <div class="alert alert-light" role="alert">
+                      <div
+                        class="d-flex justify-content-between align-items-center"
+                      >
+                        <span>Vous n'avez pas reçu le code ?</span>
+                        <button
+                          (click)="reEnvoiOtp()"
+                          class="btn btn-primary btn-sm"
+                          type="button"
+                          [disabled]="isLoadingRenvoyez"
+                        >
+                          <span
+                            *ngIf="isLoadingRenvoyez"
+                            class="spinner-border spinner-border-sm me-2"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
+                          {{ isLoadingRenvoyez ? "En cours..." : "Renvoyer" }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="flex justify-between mt-4 d-flex justify-content-between"
+                  >
+                    <button
+                      class="btn btn-outline-danger"
+                      (click)="closeModalOtp()"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="submit"
+                      class="btn btn-primary"
+                      [disabled]="!isOtpComplete() || isLoading"
+                      (click)="verifyOtp()"
+                    >
+                      <span
+                        *ngIf="isLoading"
+                        class="spinner-border spinner-border-sm me-2"
+                      ></span>
+                      {{ isLoading ? "Vérification..." : "Valider le Code" }}
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <!-- ========== POSTPAYÉ ========== -->
@@ -361,7 +465,7 @@
                               <div class="modal-body">
                                 <form
                                   [formGroup]="postpayModalForm"
-                                  (ngSubmit)="submitPostpayPayment()"
+                                  (ngSubmit)="verificationMontant()"
                                 >
                                   <!-- Compte débiteur -->
                                   <div class="mb-3">
@@ -400,7 +504,11 @@
                                     class="btn btn-primary w-100"
                                     [disabled]="postpayModalForm.invalid"
                                   >
-                                    Confirmer le paiement
+                                    {{
+                                      loadingVerificationMontant
+                                        ? "Confimation en cours"
+                                        : "Confirmer"
+                                    }}
                                   </button>
                                 </form>
                               </div>

@@ -26,6 +26,7 @@ export class MarchandService {
     mFeesBCI: number,
     vcNotes: string,
     btFeesIncluded: number,
+    iTransactionID: number
   ): Observable<any> {
     const body = {
       vcPayerAccount: vcPayerAccount,
@@ -36,6 +37,7 @@ export class MarchandService {
       mFeesBCI: mFeesBCI,
       vcNotes: vcNotes,
       btFeesIncluded: btFeesIncluded,
+      iTransactionID: iTransactionID
     };
 
     console.log('body:', body);

@@ -420,9 +420,6 @@ export class DashboardComponent implements OnInit {
     this.bciLoaderService.load();
   }
 
-
-  
-
   iOrganisationID!: number;
   infosUser: any;
 
@@ -480,7 +477,7 @@ export class DashboardComponent implements OnInit {
 
   onImportedData(event: any) {
     console.log('event:', event);
-    this.loadingValidation= true;
+    this.loadingValidation = true;
 
     // Vérifie si c’est un CustomEvent
     const file: File = event?.detail?.file;
@@ -493,19 +490,31 @@ export class DashboardComponent implements OnInit {
     console.log('Fichier reçu :', file);
 
     // Maintenant tu peux l’envoyer au backend
-    this.saveFichierCSVService.saveFichierCSVTransaction(file, 1, this.iOrganisationID).subscribe({
-      next: (res) => {
-        this.toastr.success(res.message, '', {
-          positionClass: 'toast-custom-center',
-        });
-        this.openModal = false;
-        this.loadingValidation = false;
-        console.log('Import réussi', res);
+    this.saveFichierCSVService
+      .saveFichierCSVTransaction(file, 1, this.iOrganisationID)
+      .subscribe({
+        next: (res) => {
+          this.toastr.success(res.message, '', {
+            positionClass: 'toast-custom-center',
+          });
+          this.openModal = false;
+          this.loadingValidation = false;
+          console.log('Import réussi', res);
+        },
+        error: (err) => {
+          console.error('Erreur import', err);
+        },
+      });
+  }
+
+  notificationEnCoursDeveloppement() {
+    this.toastr.error(
+      'Cette fonctionnalité est en cours de développement.',
+      '',
+      {
+        positionClass: 'toast-custom-center',
       },
-      error: (err) => {
-        console.error('Erreur import', err);
-      },
-    });
+    );
   }
 
   // onImportedData(event: any) {

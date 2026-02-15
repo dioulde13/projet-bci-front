@@ -53,7 +53,7 @@ export class OtpLoginServiceService {
   // 🔁 Réenvoi de l’OTP
   reenvoiOtp( email: string | null, appName: string = 'Banking web site'): Observable<any> {
     const body = {email, appName };
-    console.log('📤 Réenvoi OTP:', body);
+    // console.log('📤 Réenvoi OTP:', body);
 
     return this.http
       .post<any>(`${this.baseUrl}/api/RenvoiOTP`, body)

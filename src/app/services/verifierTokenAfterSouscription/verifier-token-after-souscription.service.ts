@@ -27,7 +27,7 @@ export class VerifierTokenAfterSouscriptionService {
       .set('email', email)
       .set('lienSiteClient', lienSiteClient);
 
-    console.log(params);
+    // console.log(params);
 
     return this.http
       .post<any>(`${this.baseUrl}/api/verifyTokenAfterSouscript`, body, { params })

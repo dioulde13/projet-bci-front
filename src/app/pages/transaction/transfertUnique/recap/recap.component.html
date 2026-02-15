@@ -1,88 +1,173 @@
-  <!-- Start: Page -->
-            <div class="page-content">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12 border-bottom mb-2">
-                            <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
-                                <div>
-                                    <h4 class="fw-bold mb-sm-0 font-size-18">Transfert unique</h4>
-                                </div>
-                                <div class="page-title-right">
-                                    <ol class="breadcrumb m-0">
-                                        <li class="breadcrumb-item"><a><span>Transactions</span></a></li>
-                                        <li class="breadcrumb-item active"><span>Transfert unique</span></li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row justify-content-center">
-                        <div class="col-lg-8 col-xl-9">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4 class="fw-bold flex-grow-1 card-title">Récapitulatif du Transfert</h4>
-                                    <div class="alert alert-warning alert-dismissible alert-label-icon label-arrow fade show" role="alert"><i class="icon ion-information-circled label-icon"></i><strong>Vérifier</strong><span> - Vous avez lancé une demande de paiement ad hoc. Veuillez vérifier les détails avant de confirmer</span><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button></div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div>
-                                                <div>
-                                                    <h5 class="text-muted font-size-14 mb-0">Type de paiement</h5>
-                                                    <p class="font-size-16 recap-payment-type"></p>
-                                                </div><!-- Start: Afficher uniquement pour le transfert domestique -->
-                                                <div class="mt-4 recap-bank-container" style="display: none;">
-                                                    <h5 class="text-muted font-size-14 mb-0">Coordonnées bancaire</h5>
-                                                    <p class="font-size-16 mb-1">Informations sur le code BIC/Swift</p>
-                                                    <p class="font-size-16 mb-1 recap-bank"></p>
-                                                    <p class="font-size-16 mb-1">Immeuble Sonoco</p>
-                                                    <p class="font-size-16">Conakry</p>
-                                                </div><!-- End: Afficher uniquement pour le transfert domestique -->
-                                                <!-- Start: Afficher uniquement pour le transfert Mobile Money -->
-                                                <div class="mt-4 recap-mobile-provider-container" style="display: none;">
-                                                    <h5 class="text-muted font-size-14 mb-0">Fournisseur Mobile</h5>
-                                                    <p class="font-size-16 recap-mobile-provider"></p>
-                                                </div><!-- End: Afficher uniquement pour le transfert Mobile Money -->
-                                                <div class="mt-4">
-                                                    <h5 class="text-muted font-size-14 mb-0">Numéro de compte</h5>
-                                                    <p class="font-size-16 recap-account-number"></p>
-                                                </div>
-                                                <div class="mt-4">
-                                                    <h5 class="text-muted font-size-14 mb-0">Nom du compte</h5>
-                                                    <p class="font-size-16 recap-account-name"></p>
-                                                </div>
-                                                <div class="mt-4">
-                                                    <h5 class="text-muted font-size-14 mb-0">Adresse e-mail du bénéficiaire</h5>
-                                                    <p class="font-size-16 recap-beneficiary-email"></p>
-                                                </div><!-- Start: Afficher uniquement pour le transfert domestique -->
-                                                <div class="mt-4 recap-transfer-mode-container" style="display: none;">
-                                                    <h5 class="text-muted font-size-14 mb-0">Réseau</h5>
-                                                    <p class="font-size-16 recap-transfer-mode"></p>
-                                                </div><!-- End: Afficher uniquement pour le transfert domestique -->
-                                                <div class="mt-4">
-                                                    <h5 class="text-muted font-size-14 mb-0">Montant</h5>
-                                                    <p class="font-size-16 recap-amount"><span class="ms-2 recap-currency"></span></p>
-                                                </div>
-                                                <div class="mt-4">
-                                                    <h5 class="text-muted font-size-14 mb-0">Date du transfert</h5>
-                                                    <p class="font-size-16 recap-transfer-time"></p>
-                                                </div>
-                                                <div class="mt-4">
-                                                    <h5 class="text-muted font-size-14 mb-0">Transfert depuis</h5>
-                                                    <p class="font-size-16 recap-source-account"></p>
-                                                </div>
-                                                <div class="mt-4">
-                                                    <h5 class="text-muted font-size-14 mb-0">Note</h5>
-                                                    <p class="font-size-16 recap-transfer-object"></p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr class="bg-light mt-5">
-                                    <div class="d-flex flex-wrap gap-2"><button class="btn btn-primary waves-effect waves-light" data-bs-toggle="tooltip" data-bss-tooltip="" type="button" title="Confirmer la Transaction" routerLink="/otpVerificationTransfertUnique"> Confirmer </button><a class="btn btn-outline-primary waves-effect waves-light" role="button" data-bs-toggle="tooltip" data-bss-tooltip="" title="" routerLink="/dashboard"> Annuler </a><a class="btn btn-outline-primary align-self-center waves-effect waves-light border-0" role="button" data-bs-toggle="tooltip" data-bss-tooltip="" title="Retourner à la page précédente." routerLink="/recap">Retour</a></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div><!-- End: Page -->
+<div class="container mt-3">
+  <div class="card shadow-sm border-0 rounded-4" style="max-height: 90vh; overflow-y: auto;">
+    <div class="card-header bg-dark text-white rounded-top-4 py-2">
+      <h5 class="mb-0">Récapitulatif du Transfert</h5>
+    </div>
+
+    <div class="card-body p-3">
+      <!-- TYPE DE PAIEMENT -->
+      <div class="row mb-2">
+        <div class="col-12">
+          <h6 class="text-muted mb-1">Type de paiement</h6>
+          <h6 class="fw-bold text-primary">
+            {{ selectedBeneficiaire?.typaiementPaiement }}
+          </h6>
+        </div>
+      </div>
+
+      <hr class="my-2" />
+
+      <!-- BÉNÉFICIAIRE -->
+      <div class="row g-2">
+        <div class="col-md-6">
+          <small class="text-muted">Nom bénéficiaire</small>
+          <div class="fw-bold">
+            {{ selectedBeneficiaire?.vcFirstName }} {{ selectedBeneficiaire?.vcLastName }}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Type bénéficiaire</small>
+          <div class="fw-bold">{{ selectedBeneficiaire?.typeBeneficiaire }}</div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Compte bénéficiaire</small>
+          <div class="fw-bold">{{ infosFormulaire?.vcBenefAccount }}</div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Devise</small>
+          <div class="fw-bold">{{ infosFormulaire?.vcBenefCurrency }}</div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Banque</small>
+          <div class="fw-bold">{{ selectedBeneficiaire?.vcName }}</div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">BIC / SWIFT</small>
+          <div class="fw-bold">{{ infosFormulaire?.vcBenefBicCode }}</div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Ville</small>
+          <div class="fw-bold">{{ selectedBeneficiaire?.vcCity }}</div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Pays</small>
+          <div class="fw-bold">{{ selectedBeneficiaire?.vcCountry }}</div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Email</small>
+          <div class="fw-bold">{{ selectedBeneficiaire?.vcEmail }}</div>
+        </div>
+      </div>
+
+      <hr class="my-2" />
+
+      <!-- PAIEMENT -->
+      <div class="row g-2">
+        <div class="col-md-6">
+          <small class="text-muted">Compte débiteur</small>
+          <div class="fw-bold">{{ infosFormulaire?.vcPayerAccount }}</div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Nom débiteur</small>
+          <div class="fw-bold">{{ infosFormulaire?.vcPayerName }}</div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Solde disponible</small>
+          <div class="fw-bold text-success">
+            {{ infosCompteDebiteur?.soldeDisp | number: "1.2-2" }} {{ infosCompteDebiteur?.devise }}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Montant à transférer</small>
+          <div class="fw-bold fs-5 text-danger">
+            {{ infosFormulaire?.mAmount | number: "1.2-2" }} {{ infosFormulaire?.vcBenefCurrency }}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Date transfert</small>
+          <div class="fw-bold">{{ infosFormulaire?.dtPaymentDate | date: "medium" }}</div>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Référence</small>
+          <div class="fw-bold">{{ infosFormulaire?.vcPaymentReference }}</div>
+        </div>
+      </div>
+
+      <hr class="my-2" />
+
+      <!-- ACTION -->
+      <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-success px-3" (click)="openModalOtp()">{{loadiongConfirmeOtp?"Confirmation en cours...":"Confirmer"}}</button>
+        <button (click)="retour()" class="btn btn-outline-secondary px-3">Retour</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL OTP -->
+<div class="modal-backdrop-custom" *ngIf="modalOtp">
+  <div class="modal-content-custom shadow-lg">
+    <h4 class="mb-3 text-center">Validation OTP</h4>
+    <p class="text-center text-muted">Veuillez entrer le code à 4 chiffres</p>
+
+    <div class="otp-container">
+      <div class="alert alert-info" role="alert">
+        <span>Un code de vérification (OTP) a été envoyé à votre adresse email.</span>
+      </div>
+
+      <label class="form-label text-center w-100">Entrez votre code OTP</label>
+      <div class="otp-inputs d-flex justify-content-center gap-2">
+        <ng-container *ngFor="let item of [0,1,2,3]; let i = index">
+          <input
+            class="form-control otp-input"
+            type="text"
+            maxlength="1"
+            pattern="[0-9]"
+            required
+            (input)="moveToNext($event, i)"
+            #otpInput
+            [(ngModel)]="otpValues[i]"
+            name="otp{{ i }}"
+          />
+        </ng-container>
+      </div>
+
+      <div class="text-center">
+        <small class="text-muted">Exemple : 1234</small>
+      </div>
+
+      <div class="alert alert-light" role="alert">
+        <div class="d-flex justify-content-between align-items-center">
+          <span>Vous n'avez pas reçu le code ?</span>
+          <button
+            (click)="reEnvoiOtp()"
+            class="btn btn-primary btn-sm"
+            type="button"
+            [disabled]="isLoadingRenvoyez"
+          >
+            <span
+              *ngIf="isLoadingRenvoyez"
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            {{ isLoadingRenvoyez ? "En cours..." : "Renvoyer" }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-between mt-4 d-flex justify-content-between">
+      <button class="btn btn-outline-danger" (click)="closeModalOtp()">Annuler</button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!isOtpComplete() || isLoading"
+        (click)="verifyOtp()"
+      >
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        {{ isLoading ? "Vérification..." : "Valider le Code" }}
+      </button>
+    </div>
+  </div>
+</div>

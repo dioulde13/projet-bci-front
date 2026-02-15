@@ -53,7 +53,7 @@ export class ValiderOtpAfterLoginComponent implements AfterViewInit, OnInit {
     private otpService: OtpLoginServiceService,
     private router: Router,
     private authService: AuthService,
-    private authServiceNode: AuthServicesNodes,
+    // private authServiceNode: AuthServicesNodes,
     private toastr: ToastrService
   ) {}
 

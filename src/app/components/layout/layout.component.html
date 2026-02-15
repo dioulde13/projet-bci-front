@@ -535,7 +535,7 @@
                     >
                   </li>
                   <li>
-                    <a routerLink="/visualiserReleveCompteCourant"
+                    <a (click)="notificationEnCoursDeveloppement()"
                       ><span>Relevé bancaire</span></a
                     >
                   </li>
@@ -549,24 +549,31 @@
               ><span data-key="t-apps">Transactions</span></a
             >
             <ul class="sub-menu mm-collapse" aria-expanded="false">
-              <li>
-                <a routerLink="/preparationPaie"
-                  ><span>Transferts multiples</span></a
+               <li>
+                <a class="text-truncate" routerLink="/historiqueTransactions"
+                  ><span data-key="t-chat">Historiques de transactions</span></a
                 >
               </li>
-              <li>
+                <li>
                 <a class="text-truncate" routerLink="/transfertUnique"
                   ><span data-key="t-chat">Transfert Unique</span></a
                 >
               </li>
               <li>
+                <a (click)="notificationEnCoursDeveloppement()"
+                  ><span>Transferts multiples</span></a
+                >
+              </li> 
+              
+            
+              <!-- <li>
                 <a
                   href="transferts.multiples/chargementDeFichier.html"
                   data-bs-target="#chargementDeFichier"
                   data-bs-toggle="modal"
                   ><span>Chargement de fichier</span></a
                 >
-              </li>
+              </li> -->
               <li>
                 <a routerLink="/paiementFacture"
                   ><span>Paiements de factures</span></a

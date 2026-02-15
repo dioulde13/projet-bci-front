@@ -80,12 +80,15 @@
             </form>
 
             <form
-            *ngIf="typeOperateur?.trim() === 'Areeba Guinée'"
+              *ngIf="typeOperateur?.trim() === 'Areeba Guinée'"
               [formGroup]="mobileMoneyForm"
               (ngSubmit)="submitMobileMoney()"
               novalidate
+              class="card shadow-lg border-0 p-4"
             >
-              <h4 class="fw-bold mb-3">Paiement Mobile Money</h4>
+              <h4 class="fw-bold mb-4 text-center text-primary">
+                💳 Paiement Mobile Money
+              </h4>
 
               <!-- TYPE TRANSACTION -->
               <div class="mb-3">
@@ -93,29 +96,24 @@
                   Type de transaction
                 </label>
 
-                <select class="form-select" formControlName="typeTransactionMM">
+                <select
+                  class="form-select form-select-lg"
+                  formControlName="typeTransactionMM"
+                >
                   <option value="" disabled>-- Choisir --</option>
                   <option value="B2W">Banque → Mobile Money</option>
                   <option value="W2B">Mobile Money → Banque</option>
                 </select>
-
-                <small
-                  class="text-danger"
-                  *ngIf="
-                    mobileMoneyForm.get('typeTransactionMM')?.touched &&
-                    mobileMoneyForm.get('typeTransactionMM')?.invalid
-                  "
-                >
-                  Champ obligatoire
-                </small>
-                
               </div>
 
               <!-- COMPTE -->
               <div class="mb-3">
                 <label class="form-label fw-bold required">Compte</label>
 
-                <select class="form-select" formControlName="compteSource">
+                <select
+                  class="form-select form-select-lg"
+                  formControlName="compteSource"
+                >
                   <option value="" disabled>-- Choisir un compte --</option>
                   <option
                     *ngFor="let c of listeCompteClient"
@@ -125,111 +123,110 @@
                   </option>
                 </select>
 
-                <small
-                  class="text-danger"
+                <div
+                  class="mt-2 p-2 bg-light rounded"
                   *ngIf="
-                    mobileMoneyForm.get('compteSource')?.touched &&
-                    mobileMoneyForm.get('compteSource')?.invalid
+                    mobileMoneyForm.get('typeTransactionMM')?.value === 'B2W'
                   "
                 >
-                  Champ obligatoire
-                </small>
-                 <span class="d-block mt-2" *ngIf="mobileMoneyForm.get('typeTransactionMM')?.value === 'B2W'">
-                      Solde : <b>{{ soldeDebiteur | number: "1.2-2" }}</b>
-                    </span>
-                
+                  <small style="font-size: 15px;">
+                    Solde disponible :
+                    <b class="text-success">
+                      {{ soldeDebiteur | number: "1.2-2" }} {{ devise }}
+                    </b>
+                  </small>
+                </div>
               </div>
 
               <!-- TELEPHONE -->
               <div class="mb-3">
+                <label class="form-label fw-bold required">
+                  Numéro Mobile
+                </label>
+
                 <input
                   type="text"
-                  class="form-control"
+                  class="form-control form-control-lg"
                   formControlName="telephone"
-                  placeholder="Numéro de téléphone"
+                  placeholder="Ex: 620000000"
                   maxlength="9"
                   (keydown)="onlyDigits($event)"
                   (paste)="onPaste($event)"
                 />
-
-                <small
-                  class="text-danger"
-                  *ngIf="
-                    mobileMoneyForm.get('telephone')?.touched &&
-                    mobileMoneyForm.get('telephone')?.invalid
-                  "
-                >
-                  Numéro obligatoire et valide
-                </small>
               </div>
 
               <!-- MONTANT -->
               <div class="mb-3">
-                <input
-                  type="text"
-                  class="form-control"
-                  gnfNumberFormat
-                  formControlName="montant"
-                  placeholder="Montant"
-                />
+                <label class="form-label fw-bold required"> Montant </label>
 
-                <small
-                  class="text-danger"
-                  *ngIf="
-                    mobileMoneyForm.get('montant')?.touched &&
-                    mobileMoneyForm.get('montant')?.invalid
-                  "
-                >
-                  Montant obligatoire (> 0)
-                </small>
+                <div class="input-group input-group-lg">
+                  <input
+                    type="text"
+                    class="form-control"
+                    gnfNumberFormat
+                    formControlName="montant"
+                    placeholder="Entrer le montant"
+                  />
+                  <span class="input-group-text fw-bold">
+                    {{ devise }}
+                  </span>
+                </div>
               </div>
 
-              <!-- FRAIS -->
-              <!-- <div class="mb-3">
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="frais"
-                  placeholder="Frais"
-                />
+              <!-- FRAIS INFO -->
+              <div class="mb-3" *ngIf="fraisLabel">
+                <div class="p-3 border rounded bg-light">
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <span class="fw-bold">Frais de transaction</span>
 
-                <small
-                  class="text-danger"
-                  *ngIf="
-                    mobileMoneyForm.get('frais')?.touched &&
-                    mobileMoneyForm.get('frais')?.invalid
-                  "
-                >
-                  Frais obligatoires
-                </small>
+                    <span
+                      [ngClass]="
+                        btFeesIncluded
+                          ? 'text-success fw-bold'
+                          : 'text-primary fw-bold'
+                      "
+                    >
+                      {{ fraisLabel }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TOTAL -->
+              <!-- <div
+                class="mb-4 p-3 rounded text-white"
+                style="background: linear-gradient(45deg, #0d6efd, #0dcaf0)"
+                *ngIf="montantTotal > 0"
+              >
+                <div class="d-flex justify-content-between">
+                  <span class="fw-bold">Montant total</span>
+                  <span class="fw-bold fs-5">
+                    {{ montantTotal | number: "1.2-2" }} {{ devise }}
+                  </span>
+                </div>
               </div> -->
 
               <!-- DESCRIPTION -->
-              <div class="mb-3">
+              <div class="mb-4">
+                <label class="form-label fw-bold required"> Description </label>
+
                 <input
                   type="text"
-                  class="form-control"
+                  class="form-control form-control-lg"
                   formControlName="description"
-                  placeholder="Description"
+                  placeholder="Motif du paiement"
                 />
-
-                <small
-                  class="text-danger"
-                  *ngIf="
-                    mobileMoneyForm.get('description')?.touched &&
-                    mobileMoneyForm.get('description')?.invalid
-                  "
-                >
-                  Description obligatoire
-                </small>
               </div>
 
+              <!-- BUTTON -->
               <button
-                class="btn btn-primary"
+              routerLink="/recapModePaiement"
+                 class="btn btn-primary"
                 type="submit"
-                [disabled]="loadingMobileMoney"
               >
-                {{ loadingMobileMoney ? "Paiement en cours..." : "Payer" }}
+               Suivant
               </button>
             </form>
           </div>
