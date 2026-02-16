@@ -105,8 +105,8 @@
                     </th>
                     <th class="text-nowrap" (click)="sort('UserFullName')">
                       Prenom et nom
-                    </th> 
-                     <th class="text-nowrap" (click)="sort('PaymentModeName')">
+                    </th>
+                    <th class="text-nowrap" (click)="sort('PaymentModeName')">
                       Nom organisation
                     </th>
                     <th class="text-nowrap" (click)="sort('BenefName')">
@@ -115,7 +115,10 @@
                     <th class="text-nowrap" (click)="sort('PaymentModeName')">
                       Mode de paiement
                     </th>
-                    <th class="text-nowrap text-center" (click)="sort('Amount')">
+                    <th
+                      class="text-nowrap text-center"
+                      (click)="sort('Amount')"
+                    >
                       Montant
                     </th>
                     <th class="text-center">Description</th>
@@ -134,11 +137,11 @@
                     </td>
                     <td>
                       {{ liste.UserFullName }}
-                    </td> 
+                    </td>
                     <td>
                       {{ liste.OrganisationName }}
                     </td>
-                     <td>
+                    <td>
                       {{ liste.BenefName }}
                     </td>
                     <td>
@@ -150,11 +153,24 @@
                     <td class="text-center">
                       {{ liste.Notes }}
                     </td>
-                    <td class="text-center">
+                    <td
+                      class="text-center fw-semibold"
+                      [ngClass]="{
+                        'text-warning': liste.Status === 'PENDING',
+                        'text-success': liste.Status === 'success',
+                        'text-danger': liste.Status === 'Failed',
+                        'text-muted':
+                          liste.Status !== 'PENDING' &&
+                          liste.Status !== 'success' &&
+                          liste.Status !== 'Failed',
+                      }"
+                    >
                       {{ liste.Status }}
                     </td>
-                    <td class="text-center">
+                    <td class="text-center" [ngSwitch]="liste.Status">
+                      <!-- SUCCESS -->
                       <button
+                        *ngSwitchCase="'success'"
                         class="btn btn-sm btn-outline-danger"
                         (click)="openCancelModal(liste)"
                         data-bs-toggle="modal"

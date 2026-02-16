@@ -21,6 +21,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TransactionsBillPendingService } from '../../../services/transactionsBillPendingServices/transactions-bill-pending.service';
 import { TranfertUniqueService } from '../../../services/transfertUniqueService/tranfert-unique.service';
 import { OtpLoginServiceService } from '../../../services/otpLogin/otp-login-service.service';
+import { GetAccountNameService } from '../../../servicesNodes/verifierNomDebiteur/get-account-name.service';
 
 declare var bootstrap: any;
 
@@ -47,6 +48,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     private tranfertUniqueService: TranfertUniqueService,
     private router: Router,
     private otpService: OtpLoginServiceService,
+    private getAccount: GetAccountNameService,
   ) {}
 
   paymentForm!: FormGroup;
@@ -201,7 +203,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
           if (Array.isArray(parsed.content)) {
             this.facturesCompteur = parsed.content;
-           console.log('this.facturesCompteur: ', this.facturesCompteur);
+            console.log('this.facturesCompteur: ', this.facturesCompteur);
           }
         } else {
           this.compteurValidePostpayer = false;
@@ -342,6 +344,24 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
   onDebitAccountChangeEDG(accountNumber: string): void {
     console.log(accountNumber);
+    this.getAccountName(accountNumber);
+  }
+
+  soldeDebiteur: any;
+  devise: any;
+
+  getAccountName(accountNumber: string): void {
+    this.getAccount.getNomDebiteur(accountNumber).subscribe({
+      next: (res) => {
+        console.log('res: ', res);
+        this.soldeDebiteur = res?.data?.soldeDisp;
+        this.devise = res?.data?.devise;
+        console.log('this.soldeDebiteur: ', this.soldeDebiteur);
+      },
+      error: () => {
+        this.soldeDebiteur = '';
+      },
+    });
   }
 
   // reference: any;
@@ -354,7 +374,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     //   this.paymentFormPrepayerEDG.markAllAsTouched();
     //   return;
     // }
-    console.log('this.selectedTab: ',this.selectedTab)
+    console.log('this.selectedTab: ', this.selectedTab);
 
     this.loadingPrepayerEDG = true;
 
@@ -376,10 +396,16 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
     // Total envoyé dans l’API
     const payload = {
-      payer_account: this.selectedTab === 'prepaid'? v.debitAccountEDG : post.modalDebitAccountPost,
+      payer_account:
+        this.selectedTab === 'prepaid'
+          ? v.debitAccountEDG
+          : post.modalDebitAccountPost,
       benef_name: this.nomFacture ?? '',
-      benef_account: 'BeneficiaireGN98-7654-3210-9876', 
-      amount: this.selectedTab === 'prepaid'? this.montantTotalEDG: post.modalMontantPost,  
+      benef_account: 'BeneficiaireGN98-7654-3210-9876',
+      amount:
+        this.selectedTab === 'prepaid'
+          ? this.montantTotalEDG
+          : post.modalMontantPost,
       fees_ecash: feesEcash,
       fees_bci: feesBCI,
       fees_included: feesIncluded ? 1 : 0,
@@ -387,7 +413,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       organisation_id: this.iOrganisationID,
       user_id: this.infosUser.id,
     };
-// infosCompteurPostpayer
+    // infosCompteurPostpayer
     // console.log('PAYLOAD ENVOYÉ 👉', payload);
 
     this.transactionsBillPendingService
@@ -403,7 +429,6 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
             if (this.selectedTab === 'prepaid') {
               console.log('prepaid');
               this.submitPayementPrepayerEDG();
-              
             } else if (this.selectedTab === 'postpaid') {
               console.log('postpaid');
               this.submitPostpayPayment();
@@ -1011,36 +1036,48 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
   openModalOtp(): void {
     this.loadiongConfirmeOtp = true;
     this.startCountdown();
+    console.log('this.montantEDG: ', this.montantEDG);
 
-    // Envoi OTP via service
-    this.tranfertUniqueService
-      .sendOtpTransaction(this.vcPhoneNumber)
-      .subscribe({
-        next: (response: any) => {
-          if (response.status === 200) {
-            this.loadiongConfirmeOtp = false;
-            this.modalOtp = true;
-            this.toastr.success('OTP envoyé avec succès', '', {
+    if (this.montantEDG > this.soldeDebiteur) {
+      this.loadiongConfirmeOtp = false;
+      this.toastr.error(
+        'Le montant saisi doit être inférieur ou égal au solde.',
+        '',
+        {
+          positionClass: 'toast-custom-center',
+        },
+      );
+    } else {
+      // Envoi OTP via service
+      this.tranfertUniqueService
+        .sendOtpTransaction(this.vcPhoneNumber)
+        .subscribe({
+          next: (response: any) => {
+            if (response.status === 200) {
+              this.loadiongConfirmeOtp = false;
+              this.modalOtp = true;
+              this.toastr.success('OTP envoyé avec succès', '', {
+                positionClass: 'toast-custom-center',
+              });
+            } else {
+              this.toastr.error(response.message, '', {
+                positionClass: 'toast-custom-center',
+              });
+            }
+          },
+          error: (err) => {
+            this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
               positionClass: 'toast-custom-center',
             });
-          } else {
-            this.toastr.error(response.message, '', {
-              positionClass: 'toast-custom-center',
-            });
-          }
-        },
-        error: (err) => {
-          this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
-            positionClass: 'toast-custom-center',
-          });
-          console.error(err);
-        },
-      });
+            console.error(err);
+          },
+        });
 
-    // Focus sur le premier input OTP
-    setTimeout(() => {
-      this.otpInputs.first?.nativeElement.focus();
-    }, 100);
+      // Focus sur le premier input OTP
+      setTimeout(() => {
+        this.otpInputs.first?.nativeElement.focus();
+      }, 100);
+    }
   }
 
   verifyOtp(): void {
@@ -1057,9 +1094,9 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       .verifyOTPConfirmmeTransaction(otpCode, this.vcPhoneNumber)
       .subscribe({
         next: (response: any) => {
-          console.log('this.selectedTab hors: ',this.selectedTab)
+          console.log('this.selectedTab hors: ', this.selectedTab);
           if (response.status === 200) {
-            console.log('dedans this.selectedTab: ',this.selectedTab)
+            console.log('dedans this.selectedTab: ', this.selectedTab);
             // this.toastr.success('OTP envoyé avec succès', '', {
             //   positionClass: 'toast-custom-center',
             // });
@@ -1130,9 +1167,8 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     }, 1000);
   }
 
-
-   reEnvoiOtp(): void {
-     this.isLoadingRenvoyez = true;
+  reEnvoiOtp(): void {
+    this.isLoadingRenvoyez = true;
     // if (!this.canResend) return;
     this.otpService.reenvoiOtp(this.loginEmail).subscribe({
       next: (response) => {
@@ -1142,7 +1178,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
           this.toastr.success(response.message, '', {
             positionClass: 'toast-custom-center',
           });
-        }else{
+        } else {
           this.toastr.error(response.message, '', {
             positionClass: 'toast-custom-center',
           });

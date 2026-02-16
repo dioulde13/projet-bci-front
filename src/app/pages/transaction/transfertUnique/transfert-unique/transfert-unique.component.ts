@@ -14,12 +14,17 @@ import { BanqueNameVerifierService } from '../../../../servicesNodes/verifierBan
 import { PaiementInterneExterneService } from '../../../../servicesNodes/paiementInterneExterne/paiement-interne-externe.service';
 // import { ToastrService } from 'ngx-toastr';
 import { GnfNumberFormatDirective } from '../../../../directives/gnf-number-format.directive';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-transfert-unique',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, GnfNumberFormatDirective, RouterLink],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    GnfNumberFormatDirective,
+  ],
   templateUrl: './transfert-unique.component.html',
   styleUrls: ['./transfert-unique.component.css'],
 })
@@ -61,6 +66,8 @@ export class TransfertUniqueComponent implements OnInit {
     private beneficiaireNodeService: BeneficiaireNodeService,
     private banqueNameVerifierService: BanqueNameVerifierService,
     private paiementInterneExterneService: PaiementInterneExterneService,
+    private toastr: ToastrService,
+    private router: Router,
     // private toastr: ToastrService,
   ) {}
 
@@ -293,35 +300,53 @@ export class TransfertUniqueComponent implements OnInit {
     });
   }
 
-
   submitAttempt = false;
 
   submitFormPayementInterneExterne(): void {
-  this.submitAttempt = true;
-  this.transferFormPaiementInterneExterne.markAllAsTouched();
+    this.submitAttempt = true;
+    this.transferFormPaiementInterneExterne.markAllAsTouched();
 
-  const formValue = this.transferFormPaiementInterneExterne.value;
+    const formValue = this.transferFormPaiementInterneExterne.value;
+    if (formValue.mAmount > this.soldeDebiteur) {
+      this.toastr.error(
+        'Le montant saisi doit être inférieur ou égal au solde.',
+        '',
+        {
+          positionClass: 'toast-custom-center',
+        },
+      );
+    } else {
+      const payload = {
+        vcPayerName: this.nomDebiteur,
+        dtPaymentDate: formValue.dtPaymentDate,
+        vcPaymentReference: 'REF123',
+        vcPayerAccount: formValue.vcPayerAccount,
+        vcBenefName: this.selectedBeneficiaireName,
+        mAmount: formValue.mAmount,
+        vcBenefAccount: this.selectedBeneficiaire.vcAccountNumber,
+        vcBenefBicCode: this.selectedBeneficiaire.vcBIC,
+        vcCorrespBicCode: '',
+        vcBenefCurrency: this.selectedBeneficiaire.vcCurrency,
+      };
 
-  const payload = {
-    vcPayerName: this.nomDebiteur,
-    dtPaymentDate: formValue.dtPaymentDate,
-    vcPaymentReference: 'REF123',
-    vcPayerAccount: formValue.vcPayerAccount,
-    vcBenefName: this.selectedBeneficiaireName,
-    mAmount: formValue.mAmount,
-    vcBenefAccount: this.selectedBeneficiaire.vcAccountNumber,
-    vcBenefBicCode: this.selectedBeneficiaire.vcBIC,
-    vcCorrespBicCode: '',
-    vcBenefCurrency: this.selectedBeneficiaire.vcCurrency,
-  };
+      // console.log('selectedBeneficiaire :', this.selectedBeneficiaire);
+      // console.log('Payload Mobile Money :', payload);
 
-  console.log('selectedBeneficiaire :', this.selectedBeneficiaire);
-  console.log('Payload Mobile Money :', payload);
+      // Enregistrer dans le localStorage
 
-  // Enregistrer dans le localStorage
-  
-  localStorage.setItem('InfosSaisirDansFormulaire', JSON.stringify(payload));
-  localStorage.setItem('selectedBeneficiaire', JSON.stringify(this.selectedBeneficiaire));
-  localStorage.setItem('infosCompteDebiteur', JSON.stringify(this.infosCompteDebiteur));
-}
+      localStorage.setItem(
+        'InfosSaisirDansFormulaire',
+        JSON.stringify(payload),
+      );
+      localStorage.setItem(
+        'selectedBeneficiaire',
+        JSON.stringify(this.selectedBeneficiaire),
+      );
+      localStorage.setItem(
+        'infosCompteDebiteur',
+        JSON.stringify(this.infosCompteDebiteur),
+      );
+      this.router.navigate(['/recap']);
+    }
+  }
 }

@@ -167,7 +167,7 @@ export class RecapComponent implements OnInit {
           this.modalOtp = false;
           // console.error('Erreur paiement :', err);
           this.toastr.error(
-            'Erreur lors du paiement',
+            'Une erreur interne est survenu',
             '',
             {
               positionClass: 'toast-custom-center',

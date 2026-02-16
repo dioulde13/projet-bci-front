@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 // import { BeneficiaireService } from '../../../services/beneficiaire/beneficiaire.service';
 import { DashboardService } from '../../../services/dashboard/dashboard.service';
 import { MobileMoneyService } from '../../../servicesNodes/modePaiementOperateur/mobileMoney/mobile-money.service';
@@ -23,7 +23,6 @@ import { GnfNumberFormatDirective } from '../../../directives/gnf-number-format.
     ReactiveFormsModule,
     FormsModule,
     GnfNumberFormatDirective,
-    RouterLink,
   ],
   templateUrl: './formulaire-mode-paiement.component.html',
   styleUrl: './formulaire-mode-paiement.component.css',
@@ -44,6 +43,7 @@ export class FormulaireModePaiementComponent implements OnInit {
     private mobileMoneyService: MobileMoneyService,
     private toastr: ToastrService,
     private getAccount: GetAccountNameService,
+    private router: Router,
   ) {}
 
   mobileMoneyForm!: FormGroup;
@@ -264,38 +264,50 @@ export class FormulaireModePaiementComponent implements OnInit {
       return;
     }
 
-    // this.loadingMobileMoney = true;
-
     const formValue = this.mobileMoneyForm.value;
 
-    const payload = {
-      vcPayerAccount:
-        formValue.typeTransactionMM === 'B2W'
-          ? formValue.compteSource
-          : formValue.telephone,
+    if (
+      formValue.typeTransactionMM === 'B2W' &&
+      Number(formValue.montant) > this.soldeDebiteur
+    ) {
+      this.toastr.error(
+        'Le montant saisi doit être inférieur ou égal au solde.',
+        '',
+        {
+          positionClass: 'toast-custom-center',
+        },
+      );
+    } else {
+      const payload = {
+        vcPayerAccount:
+          formValue.typeTransactionMM === 'B2W'
+            ? formValue.compteSource
+            : formValue.telephone,
 
-      vcBenefAccount:
-        formValue.typeTransactionMM === 'B2W'
-          ? formValue.telephone
-          : formValue.compteSource,
+        vcBenefAccount:
+          formValue.typeTransactionMM === 'B2W'
+            ? formValue.telephone
+            : formValue.compteSource,
 
-      mAmount: Number(formValue.montant),
-      vcOperatorAccount: this.typeOperateur,
-      mFees: this.btFeesIncluded ? this.fraisCalcul : this.fraisCalcul,
-      vcNotes: formValue.description,
-      vcOperationType: formValue.typeTransactionMM,
-    };
+        mAmount: Number(formValue.montant),
+        vcOperatorAccount: this.typeOperateur,
+        mFees: this.btFeesIncluded ? this.fraisCalcul : this.fraisCalcul,
+        vcNotes: formValue.description,
+        vcOperationType: formValue.typeTransactionMM,
+      };
 
-    console.log('Payload Mobile Money :', payload);
+      // console.log('Payload Mobile Money :', payload);
 
-    localStorage.setItem(
-      'InfosFormulaireModePaiement',
-      JSON.stringify({
-        payload,
-        soldeDebiteur: this.soldeDebiteur,
-        devise: this.devise,
-      }),
-    );
+      localStorage.setItem(
+        'InfosFormulaireModePaiement',
+        JSON.stringify({
+          payload,
+          soldeDebiteur: this.soldeDebiteur,
+          devise: this.devise,
+        }),
+      );
+       this.router.navigate(['/recapModePaiement']);
+    }
     // this.mobileMoneyService.payerMobileMoney(payload).subscribe({
     //   next: (res) => {
     //     // console.log('Paiement réussi :', res);

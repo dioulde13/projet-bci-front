@@ -1,6 +1,6 @@
 <div class="container mt-3">
   <div class="card shadow-sm border-0 rounded-4" style="max-height: 90vh; overflow-y: auto;">
-    <div class="card-header bg-dark text-white rounded-top-4 py-2">
+    <div class="card-header text-white rounded-top-4 py-2">
       <h5 class="mb-0">Récapitulatif du Transfert</h5>
     </div>
 
@@ -35,7 +35,7 @@
         </div>
         <div class="col-md-6">
           <small class="text-muted">Devise</small>
-          <div class="fw-bold">{{ infosFormulaire?.vcBenefCurrency }}</div>
+          <div class="fw-bold"> {{ infosCompteDebiteur?.devise }} </div>
         </div>
         <div class="col-md-6">
           <small class="text-muted">Banque</small>
@@ -80,7 +80,7 @@
         <div class="col-md-6">
           <small class="text-muted">Montant à transférer</small>
           <div class="fw-bold fs-5 text-danger">
-            {{ infosFormulaire?.mAmount | number: "1.2-2" }} {{ infosFormulaire?.vcBenefCurrency }}
+            {{ infosFormulaire?.mAmount | number: "1.2-2" }} {{ infosCompteDebiteur?.devise }}
           </div>
         </div>
         <div class="col-md-6">

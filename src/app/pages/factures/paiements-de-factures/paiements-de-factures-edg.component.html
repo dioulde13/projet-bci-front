@@ -194,7 +194,7 @@
                           Compte débiteur
                         </label>
                         <select
-                          class="form-select-sm form-select w-100"
+                          class="form-select-sm form-select w-100 mb-2"
                           formControlName="debitAccountEDG"
                           (change)="onDebitAccountSelectEDG($event)"
                         >
@@ -205,6 +205,12 @@
                             {{ c.vcAccountNumber }}
                           </option>
                         </select>
+                        <small style="font-size: 15px; margin-top: 20px">
+                          Solde disponible :
+                          <b class="text-success">
+                            {{ soldeDebiteur | number: "1.2-2" }} {{ devise }}
+                          </b>
+                        </small>
                       </div>
 
                       <!-- montant -->
@@ -473,7 +479,7 @@
                                       Compte débiteur
                                     </label>
                                     <select
-                                      class="form-select"
+                                      class="form-select mb-2"
                                       formControlName="modalDebitAccountPost"
                                     >
                                       <option
@@ -483,6 +489,15 @@
                                         {{ c.vcAccountNumber }}
                                       </option>
                                     </select>
+                                    <small
+                                      style="font-size: 15px"
+                                    >
+                                      Solde disponible :
+                                      <b class="text-success">
+                                        {{ soldeDebiteur | number: "1.2-2" }}
+                                        {{ devise }}
+                                      </b>
+                                    </small>
                                   </div>
 
                                   <!-- Montant -->

@@ -224,6 +224,7 @@ export class DashboardComponent implements OnInit {
   loading = true;
   errorMessage = '';
   typesCompte: string = '';
+  countNombreComptes: any;
 
   getListeCompteClient(): void {
     if (!this.iOrganisationID) {
@@ -239,8 +240,8 @@ export class DashboardComponent implements OnInit {
         next: (response) => {
           this.listeCompteClient = response.data?.[0]?.comptes ?? [];
           this.loading = false;
-
-          console.log('Liste des comptes client :', this.listeCompteClient);
+          this.countNombreComptes = this.listeCompteClient.length;
+          // console.log('Liste des comptes client :', this.listeCompteClient);
 
           // Extraire les types
           const types = [
@@ -274,6 +275,7 @@ export class DashboardComponent implements OnInit {
   }
 
   soldeDebiteur: any = '';
+  deviseDebiteur: any = '';
 
   onDebitAccountChange(accountNumber: string): void {
     this.getBalance(accountNumber);
@@ -284,8 +286,10 @@ export class DashboardComponent implements OnInit {
       next: (res) => {
         if (res && res.data) {
           this.soldeDebiteur = this.formatSolde(res?.data?.soldeDisp);
+          this.deviseDebiteur = res?.data?.devise;
         } else {
           this.soldeDebiteur = 0;
+          this.deviseDebiteur = '';
         }
       },
       error: (error) => {

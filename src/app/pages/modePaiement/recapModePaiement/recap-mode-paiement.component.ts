@@ -124,7 +124,7 @@ export class RecapModePaiementComponent implements OnInit {
         localStorage.removeItem('InfosFormulaireModePaiement');
       },
       error: (err) => {
-        this.toastr.error(err.error.message, '', {
+        this.toastr.error('Une erreur interne est survenu', '', {
           positionClass: 'toast-custom-center',
         });
         console.error('Erreur paiement :', err);
@@ -147,7 +147,7 @@ export class RecapModePaiementComponent implements OnInit {
       user_id: this.userInfo.id,
     };
 
-    console.log('Payload Mobile Money :', payload);
+    // console.log('Payload Mobile Money :', payload);
 
     this.modePaiementService.addMobileMoneyTransaction(payload).subscribe({
       next: (res) => {
@@ -166,7 +166,7 @@ export class RecapModePaiementComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.toastr.error(err.error.message, '', {
+        this.toastr.error('Une erreur interne est survenu', '', {
           positionClass: 'toast-custom-center',
         });
         console.error('Erreur paiement :', err);
@@ -197,7 +197,6 @@ export class RecapModePaiementComponent implements OnInit {
     this.loadiongConfirmeOtp = true;
     this.startCountdown();
 
-    // Envoi OTP via service
     this.tranfertUniqueService
       .sendOtpTransaction(this.vcPhoneNumber)
       .subscribe({
@@ -221,6 +220,8 @@ export class RecapModePaiementComponent implements OnInit {
           console.error(err);
         },
       });
+
+      
 
     // Focus sur le premier input OTP
     setTimeout(() => {

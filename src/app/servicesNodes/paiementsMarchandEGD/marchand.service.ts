@@ -51,7 +51,7 @@ export class MarchandService {
       email: 'bci.banking@ecash-guinee.com',
       password: '7BNXjFMaGkXDvt',
     };
-    return this.http.post('/api/login', body);
+    return this.http.post('https://dev-bcibank-api-js.ecash-guinee.com/api/login', body);
   }
 
   verifierCompteurPrepayer(compteur: string, msisdn: string): Observable<any> {
@@ -68,7 +68,7 @@ export class MarchandService {
       compteur: compteur,
       msisdn: msisdn,
     };
-    return this.http.post('/api/verify-equipment', body, { headers });
+    return this.http.post('https://dev-bcibank-api-js.ecash-guinee.com/api/verify-equipment', body, { headers });
   }
 
   verifierCompteurPostpayer(compteur: string, msisdn: string): Observable<any> {
@@ -86,7 +86,7 @@ export class MarchandService {
       msisdn: msisdn,
     };
     console.log('body: ', body);
-    return this.http.post('/api/get-invoices', body, { headers });
+    return this.http.post('https://dev-bcibank-api-js.ecash-guinee.com/api/get-invoices', body, { headers });
   }
 
   // Sauvegarder le token dans le stockage local

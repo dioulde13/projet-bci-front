@@ -40,8 +40,14 @@
                 <div class="mt-4 mt-sm-0">
                   <p class="mb-1">Montant total</p>
                   <h4 class="text-light mb-4 fs-4">
-                    {{ soldeDebiteur | number: "1.2-2" }}
+                    {{ soldeDebiteur | number: "1.2-2" }} {{ deviseDebiteur }}
                   </h4>
+                  <p>
+                    <small class="text-white" style="font-size: 15px;"
+                      >{{ countNombreComptes }} Total des comptes</small
+                    >
+                  </p>
+
                   <!-- <ul class="text-light finance-color-list">
                     <li>
                       <i
@@ -476,7 +482,7 @@
     </div>
     <div class="row">
       <div class="col-xl-8">
-        <div class="card-deck-wrapper">
+        <!-- <div class="card-deck-wrapper">
           <div class="card-group">
             <div class="card text-white bg-primary mb-4">
               <div class="card-header bg-transparent">
@@ -484,7 +490,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="card">
           <div class="card-header">
             <div class="d-flex align-items-center flex-wrap">
@@ -494,6 +500,7 @@
               <div class="ms-auto"></div>
             </div>
           </div>
+
           <div class="card-body p-0">
             <div class="table-responsive">
               <div *ngIf="loading" class="text-center p-3">
