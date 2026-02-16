@@ -49,12 +49,16 @@ export class PaiementsDeFacturesComponent implements OnInit {
   //   this.router.navigate(['/paiementFactureEDG', nomFacture]);
   // }
 
+  loadingFacturier: boolean = false;
+
   getAllFacturiers(): void {
+    this.loadingFacturier = true;
     this.marchandService.getAllFacturiers().subscribe({
       next: (response: any) => {
         this.listeFacturier = (response?.data ?? []).filter(
           (f: any) => f.btEnabled === true
         );
+        this.loadingFacturier = false;
       },
       error: (err) => console.error(err),
     });

@@ -337,6 +337,11 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     });
   }
 
+  onDebitAccountSelectEDGPost(event: Event): void {
+    const value = (event.target as HTMLSelectElement)?.value;
+    if (value) this.getAccountName(value);
+  }
+
   onDebitAccountSelectEDG(event: Event): void {
     const value = (event.target as HTMLSelectElement)?.value;
     if (value) this.onDebitAccountChangeEDG(value);
@@ -439,7 +444,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
           }
         },
         error: (err) => {
-          this.toastr.error(err.error.message, '', {
+          this.toastr.error('Une erreur interne est survenue.', '', {
             positionClass: 'toast-custom-center',
           });
           this.loadingPrepayerEDG = false;
@@ -501,19 +506,23 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       .subscribe({
         next: (response: any) => {
           console.log('Réponse API 👉', response);
-          // if (response.status === 200) {
-          this.toastr.success('Le paiement a été effectué avec succès', '', {
-            positionClass: 'toast-custom-center',
-          });
-          this.isLoading = false;
-          this.modalOtp = false;
-          this.router.navigate(['/historiqueTransactions']);
-          // this.loadingPrepayerEDG = false;
-          this.paymentForm.reset();
-          // }
+          if (response.status === 200) {
+            this.toastr.success(response.message, '', {
+              positionClass: 'toast-custom-center',
+            });
+            this.isLoading = false;
+            this.modalOtp = false;
+            this.router.navigate(['/historiqueTransactions']);
+            // this.loadingPrepayerEDG = false;
+            this.paymentForm.reset();
+          } else {
+            this.toastr.error(response.message, '', {
+              positionClass: 'toast-custom-center',
+            });
+          }
         },
         error: (err) => {
-          this.toastr.error(err.error.message, '', {
+          this.toastr.error('Une erreur interne est survenue.', '', {
             positionClass: 'toast-custom-center',
           });
           // this.loadingPrepayerEDG = false;
@@ -686,7 +695,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       }
     }
 
-    console.log('PAYLOAD ENVOYÉ 👉', payload);
+    // console.log('PAYLOAD ENVOYÉ 👉', payload);
 
     if (montantTotalPostPayerEDG > this.selectedPostpayFacture.balance) {
       this.loadingVerificationMontant = false;
@@ -697,10 +706,22 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
           positionClass: 'toast-custom-center',
         },
       );
-      console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
-      console.log(
-        'this.selectedPostpayFacture.balance: ',
-        this.selectedPostpayFacture.balance,
+      // console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
+      // console.log(
+      //   'this.selectedPostpayFacture.balance: ',
+      //   this.selectedPostpayFacture.balance,
+      // );
+    } else if (
+      this.postpayModalForm.value.modalMontantPost > this.soldeDebiteur
+    ) {
+      this.loadingVerificationMontant = false;
+
+      this.toastr.error(
+        'Le montant saisi doit être inférieur ou égal au solde.',
+        '',
+        {
+          positionClass: 'toast-custom-center',
+        },
       );
     } else {
       console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
@@ -852,7 +873,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
             // }
           },
           error: (err) => {
-            this.toastr.error(err.error.message, '', {
+            this.toastr.error('Une erreur interne est survenue.', '', {
               positionClass: 'toast-custom-center',
             });
             // this.loadingPrepayerEDG = false;
@@ -956,7 +977,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
           }
         },
         error: (err) => {
-          this.toastr.error(err.error.message, '', {
+          this.toastr.error('Une erreur interne est survenue.', '', {
             positionClass: 'toast-custom-center',
           });
           this.loadingEdg = false;
@@ -1187,7 +1208,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       },
       error: (err) => {
         this.isLoadingRenvoyez = false;
-        this.toastr.error(err.error.message, '', {
+        this.toastr.error('Une erreur interne est survenue.', '', {
           positionClass: 'toast-custom-center',
         });
       },

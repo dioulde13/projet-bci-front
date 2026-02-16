@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
     "angular-datatables": "^19.0.0",
+    "bootstrap-icons": "^1.13.1",
     "datatables.net": "^2.3.5",
     "datatables.net-dt": "^2.3.5",
     "file-saver": "^2.0.5",

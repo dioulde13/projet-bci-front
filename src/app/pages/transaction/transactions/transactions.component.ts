@@ -7,7 +7,6 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-
 @Component({
   selector: 'app-transactions',
   imports: [FormsModule, CommonModule],
@@ -57,7 +56,9 @@ export class TransactionsComponent implements OnInit {
     this.getListeCompteClient();
   }
 
-  nombreCompte:any;
+  nombreCompte: any;
+
+  infosCompteSelectionner: any;
 
   getListeCompteClient(): void {
     this.listeCompteCLientService
@@ -65,18 +66,17 @@ export class TransactionsComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.listeCompteClient = response.data?.[0]?.comptes ?? [];
+          console.log('this.listeCompteClient: ', this.listeCompteClient);
 
           this.nombreCompte = response.data?.[0]?.comptes.length;
 
           if (this.listeCompteClient.length > 0) {
             this.selectedAccountNumber =
               this.listeCompteClient[0].vcAccountNumber;
-
             console.log(
               'Compte sélectionné par défaut :',
               this.selectedAccountNumber,
             );
-
             this.historiqueTransactionsListe();
           }
 
@@ -91,13 +91,23 @@ export class TransactionsComponent implements OnInit {
   }
 
   isLoadingUser: boolean = false;
+  NomCompte: any;
+  dateCompte: any;
 
   historiqueTransactionsListe(): void {
-    if (!this.selectedAccountNumber) return;
+    if (!this.selectedAccountNumber) return; 
+
+    this.infosCompteSelectionner = this.listeCompteClient.filter(
+      (l: any) => l.vcAccountNumber === this.selectedAccountNumber,
+    );
+
+    console.log('this.infosCompte: ', this.infosCompteSelectionner[0]);
+    this.NomCompte = this.infosCompteSelectionner[0].vcAccountName;
+    this.dateCompte = this.infosCompteSelectionner[0].dtCreated;
+
 
     console.log(this.dateDebut);
     console.log(this.dateFin);
-
 
     this.isLoadingUser = true;
 
@@ -107,7 +117,7 @@ export class TransactionsComponent implements OnInit {
       this.dateFin,
     ).subscribe({
       next: (response) => {
-        this.listeHistoriqueTransactions = response.data.statement;
+        this.listeHistoriqueTransactions = response.data.statement || [];
         this.isLoadingUser = false;
         console.log(this.listeHistoriqueTransactions);
       },
@@ -225,10 +235,10 @@ export class TransactionsComponent implements OnInit {
 
     // Créer une copie des données et renommer les colonnes pour Excel
     const dataForExcel = this.filteredData.map((d) => ({
-      Date: new Date(d.dateOper).toLocaleString(), 
+      Date: new Date(d.dateOper).toLocaleString(),
       Reference: d.bankReference,
       Signe: d.sigOper,
-      Description: d.libelleOper
+      Description: d.libelleOper,
       // Montant: d.AmountOper
     }));
 
@@ -243,44 +253,42 @@ export class TransactionsComponent implements OnInit {
     XLSX.writeFile(wb, 'beneficiaires.xlsx');
   }
 
-
   exportPdf() {
-  if (this.filteredData.length === 0) return;
+    if (this.filteredData.length === 0) return;
 
-  const doc = new jsPDF('l', 'mm', 'a4'); // paysage
+    const doc = new jsPDF('l', 'mm', 'a4'); // paysage
 
-  doc.setFontSize(14);
-  doc.text('Liste des transactions', 14, 15);
+    doc.setFontSize(14);
+    doc.text('Liste des transactions', 14, 15);
 
-  // Colonnes du tableau
-  const columns = [
-    { header: 'Date', dataKey: 'date' },
-    { header: 'Référence', dataKey: 'reference' },
-    { header: 'Signe', dataKey: 'signe' },
-    { header: 'Description', dataKey: 'description' },
-  ];
+    // Colonnes du tableau
+    const columns = [
+      { header: 'Date', dataKey: 'date' },
+      { header: 'Référence', dataKey: 'reference' },
+      { header: 'Signe', dataKey: 'signe' },
+      { header: 'Description', dataKey: 'description' },
+    ];
 
-  // Données
-  const rows = this.filteredData.map(d => ({
-    date: new Date(d.dateOper).toLocaleString(),
-    reference: d.bankReference,
-    signe: d.sigOper,
-    description: d.libelleOper,
-  }));
+    // Données
+    const rows = this.filteredData.map((d) => ({
+      date: new Date(d.dateOper).toLocaleString(),
+      reference: d.bankReference,
+      signe: d.sigOper,
+      description: d.libelleOper,
+    }));
 
-  autoTable(doc, {
-    startY: 25,
-    headStyles: { fillColor: [22, 160, 133] }, // vert stylé 😎
-    columns: columns,
-    body: rows,
-    styles: {
-      fontSize: 9,
-    },
-  });
+    autoTable(doc, {
+      startY: 25,
+      headStyles: { fillColor: [22, 160, 133] }, // vert stylé 😎
+      columns: columns,
+      body: rows,
+      styles: {
+        fontSize: 9,
+      },
+    });
 
-  doc.save('beneficiaires.pdf');
-}
-
+    doc.save('beneficiaires.pdf');
+  }
 
   onPageClick(page: number | string) {
     if (typeof page === 'number') this.goToPage(page);

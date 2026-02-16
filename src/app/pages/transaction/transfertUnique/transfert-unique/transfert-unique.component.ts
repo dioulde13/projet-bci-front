@@ -20,11 +20,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-transfert-unique',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    GnfNumberFormatDirective,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, GnfNumberFormatDirective],
   templateUrl: './transfert-unique.component.html',
   styleUrls: ['./transfert-unique.component.css'],
 })
@@ -266,7 +262,10 @@ export class TransfertUniqueComponent implements OnInit {
       .getListeBeneficiaireByCategorie(this.selectedBeneficiaireId)
       .subscribe({
         next: (response: any) => {
-          this.listeBeneficiaires = response?.data || [];
+          this.listeBeneficiaires = response?.data.filter(
+            (l: any) => l.btEnabled === '1',
+          );
+          console.log('this.listeBeneficiaires: ', this.listeBeneficiaires);
         },
         error: () => {
           this.listeBeneficiaires = [];

@@ -414,7 +414,6 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       this.f['banqueBeneficiaire'].setValidators([Validators.required]);
       this.f['numeroCompte'].setValidators([
         Validators.required,
-        Validators.pattern('^[0-9]+$'),
       ]);
       this.f['vcNomCompte'].setValidators([Validators.required]);
     }

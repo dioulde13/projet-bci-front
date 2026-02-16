@@ -8,7 +8,7 @@
         >
           <div>
             <h4 class="mb-sm-0 font-size-18 fw-bolder">
-              Liste des transactions
+              Historique des transactions
             </h4>
           </div>
         </div>
@@ -148,7 +148,7 @@
                       {{ liste.PaymentModeName }}
                     </td>
                     <td class="text-nowrap text-center fw-bold">
-                      {{ formatMontant(liste) }}
+                      {{ formatMontant(liste) }} {{liste.BenefCurrency}}
                     </td>
                     <td class="text-center">
                       {{ liste.Notes }}
@@ -170,13 +170,23 @@
                     <td class="text-center" [ngSwitch]="liste.Status">
                       <!-- SUCCESS -->
                       <button
-                        *ngSwitchCase="'success'"
+                        *ngSwitchCase="'Success'"
                         class="btn btn-sm btn-outline-danger"
                         (click)="openCancelModal(liste)"
                         data-bs-toggle="modal"
                         data-bs-target="#cancelModal"
                       >
                         Annuler
+                      </button>
+
+                       <button
+                        *ngSwitchCase="'PENDING'"
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="openCancelModal(liste)"
+                        data-bs-toggle="modal"
+                        data-bs-target="#cancelModal"
+                      >
+                        Verifier
                       </button>
                     </td>
                   </tr>

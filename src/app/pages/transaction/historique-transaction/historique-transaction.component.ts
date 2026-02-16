@@ -293,7 +293,7 @@ export class HistoriqueTransactionComponent implements OnInit {
     this.isCancelling = true;
 
     this.historiqueTransactionService
-      .cancelTransaction(this.selectedTransaction.TransactionID) // adapte si besoin
+      .cancelTransaction(this.selectedTransaction.iRequestID) // adapte si besoin
       .subscribe({
         next: (response: any) => {
           if (response.status === 200) {

@@ -39,27 +39,25 @@
               <div class="col-sm col-lg-6 align-self-center">
                 <div class="mt-4 mt-sm-0">
                   <p class="mb-1">Montant total</p>
-                  <h4 class="text-light mb-4 fs-4">
-                    {{ soldeDebiteur | number: "1.2-2" }} {{ deviseDebiteur }}
-                  </h4>
-                  <p>
-                    <small class="text-white" style="font-size: 15px;"
-                      >{{ countNombreComptes }} Total des comptes</small
-                    >
-                  </p>
 
-                  <!-- <ul class="text-light finance-color-list">
-                    <li>
-                      <i
-                        class="icon ion-stop color-box"
-                        style="color: #ffd700"
-                      ></i
-                      ><span
-                        class="text-nowrap text-truncate text-start font-size-13"
-                        >Compte Courant - Epargne</span
-                      >
-                    </li>
-                  </ul> -->
+                  <!-- SKELETON -->
+                  <ng-container *ngIf="isDashboardLoading; else balanceContent">
+                    <div class="skeleton skeleton-title mb-3"></div>
+                    <div class="skeleton skeleton-small"></div>
+                  </ng-container>
+
+                  <!-- CONTENU NORMAL -->
+                  <ng-template #balanceContent>
+                    <h4 class="text-light mb-4 fs-4">
+                      {{ soldeDebiteur | number: "1.2-2" }} {{ deviseDebiteur }}
+                    </h4>
+
+                    <p>
+                      <small class="text-white" style="font-size: 15px">
+                        {{ countNombreComptes }} Total des comptes
+                      </small>
+                    </p>
+                  </ng-template>
                 </div>
               </div>
             </div>
@@ -73,259 +71,136 @@
               <h5 class="card-title me-2">Liens rapides</h5>
             </div>
           </div>
+
+
+
           <div class="card-body finance-chart-container">
             <div class="row text-center justify-content-center">
-              <div class="col-6 col-md-4 mb-4">
-                <a
-                  (click)="notificationEnCoursDeveloppement()"
-                  class="custom-icon-container"
-                  ><i class="icon ion-social-buffer custom-icon-size"></i>
-                  <p class="custom-icon-text">Transferts multiples</p>
-                </a>
-              </div>
-              <div class="col-6 col-md-4 mb-4">
-                <!-- <button
-                  class="text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-xl"
-                  (click)="openModal = true"
+              <!-- ================= SKELETON ================= -->
+              <ng-container *ngIf="isDashboardLoading; else realContent">
+                <div
+                  class="col-6 col-md-4 mb-4"
+                  *ngFor="let item of [1, 2, 3, 4, 5, 6, 7]"
                 >
-                    Ouvrir le formulaire
-                </button> -->
-
-                <bci-generic-file-import
-                  [isOpenModal]="openModal"
-                  [fields]="fields"
-                  title="Importation des Salaires BCI"
-                  instructions="Veuillez charger le fichier des virements du mois en cours."
-                  previewTitle="Récapitulatif des virements"
-                  [duplicateCheckFields]="['numeroCompte', 'bic', 'montant']"
-                  [validateButtonText]="
-                    loadingValidation ? 'Validation en cours...' : 'Valider'
-                  "
-                  (importDataCompleted)="onImportedData($event)"
-                  (modalClosed)="openModal = false"
-                >
-                </bci-generic-file-import>
-                <!-- (click)="openModal = true" -->
-                <a
-                  class="custom-icon-container"
-                  (click)="notificationEnCoursDeveloppement()"
-                >
-                  <i class="icon ion-upload custom-icon-size"></i>
-                  <p class="custom-icon-text">Chargement de fichier</p>
-                </a>
-                <!-- <div
-                  class="modal fade"
-                  role="dialog"
-                  tabindex="-1"
-                  id="chargementDeFichier"
-                  aria-labelledby="AjouterUnBeneficiaire"
-                  aria-hidden="true"
-                >
-                  <div class="modal-dialog modal-xl" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Chargement de</h5>
-                        <button
-                          class="btn-close"
-                          aria-label="Close"
-                          data-bs-dismiss="modal"
-                          type="button"
-                        ></button>
-                      </div>
-                      <div class="modal-body">
-                        <div class="row">
-                          <div class="col-12">
-                            <div
-                              class="d-sm-flex justify-content-between align-items-center page-title-box mt-4"
-                            >
-                              <div>
-                                <p
-                                  class="fw-semibold text-body font-size-14 my-sm-2"
-                                >
-                                  Assurez-vous de charger le fichier et de
-                                  vérifier et d'approuver les données avant de
-                                  les ajouter et exécuter.
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-lg-12">
-                            <div class="card">
-                              <div class="card-body">
-                                <div class="row justify-content-center">
-                                  <div class="col-lg-12 col-xl-12">
-                                    <div class="card">
-                                      <div class="card-body border-0">
-                                        <div class="p-4">
-                                          <div>
-                                            <form
-                                              id="csvForm"
-                                              class="p-5"
-                                              style="
-                                                min-height: 230px;
-                                                border: 2px dashed
-                                                  var(--bs-border-color);
-                                                background: var(--bs-card-bg);
-                                                border-radius: 6px;
-                                              "
-                                              (submit)="onFormSubmit($event)"
-                                            >
-                                              <div class="mb-4">
-                                                <label
-                                                  for="csvFile"
-                                                  class="form-label font-size-17"
-                                                  >Sélectionnez un fichier
-                                                  CSV</label
-                                                >
-                                                <input
-                                                  type="file"
-                                                  id="csvFile"
-                                                  class="form-control"
-                                                  accept=".csv"
-                                                  (change)="
-                                                    onFileSelected($event)
-                                                  "
-                                                  required
-                                                />
-                                              </div>
-                                              <div class="mb-3">
-                                                <button
-                                                  class="btn btn-primary waves-effect waves-light"
-                                                  type="submit"
-                                                >
-                                                  Charger
-                                                </button>
-                                                <button
-                                                  class="btn btn-outline-dark waves-effect waves-light ms-2"
-                                                  data-bs-dismiss="modal"
-                                                  type="button"
-                                                >
-                                                  Annuler
-                                                </button>
-                                              </div>
-                                            </form>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="row justify-content-center">
-                                  <div class="col-lg-12 col-xl-12">
-                                    <div class="card">
-                                      <div class="card-header">
-                                        <h3
-                                          class="font-size-15 fw-semibold card-title"
-                                        >
-                                          Aperçu des Transactions
-                                        </h3>
-                                      </div>
-                                      <div class="card-body">
-                                        <div id="resultsSection">
-                                          <div class="table-responsive table">
-                                            <table
-                                              *ngIf="csvData.length > 0"
-                                              class="styled-table"
-                                            >
-                                              <thead>
-                                                <tr>
-                                                  <th
-                                                    *ngFor="
-                                                      let header of headers
-                                                    "
-                                                  >
-                                                    {{ header }}
-                                                  </th>
-                                                </tr>
-                                              </thead>
-                                              <tbody>
-                                                <tr *ngFor="let row of csvData">
-                                                  <td
-                                                    *ngFor="
-                                                      let header of headers
-                                                    "
-                                                  >
-                                                    {{ row[header] }}
-                                                  </td>
-                                                </tr>
-                                              </tbody>
-                                            </table>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="modal-footer">
-                        <button
-                          class="btn btn-primary my-3 confirm-button"
-                          type="button"
-                          onclick="proceedToValidation()"
-                          routerLink="/preparationPaie"
-                          data-message="La liste des bénéficiaires chargée et approuvée a été intégrée avec succès dans la liste de la préparation de paie."
-                        >
-                          <i
-                            class="icon ion-checkmark font-size-16 align-middle me-2"
-                          ></i
-                          >Valider les Transactions</button
-                        ><button class="btn btn-secondary" type="reset">
-                          Annuler</button
-                        ><button
-                          class="btn btn-link"
-                          type="button"
-                          data-bs-dismiss="modal"
-                        >
-                          Retour
-                        </button>
-                      </div>
-                    </div>
+                  <div class="custom-icon-container">
+                    <div class="skeleton skeleton-icon mb-3"></div>
+                    <div class="skeleton skeleton-text"></div>
                   </div>
-                </div> -->
-              </div>
-              <div class="col-6 col-md-4 mb-4">
-                <a routerLink="/transfertUnique" class="custom-icon-container"
-                  ><i class="icon ion-ios-people custom-icon-size"></i>
-                  <p class="custom-icon-text">Transfert unique</p>
-                </a>
-              </div>
+                </div>
+              </ng-container>
 
-              <div class="col-6 col-md-4 mb-4">
-                <a routerLink="/typePaiement" class="custom-icon-container"
-                  ><i class="icon ion-ios-paper custom-icon-size"></i>
-                  <p class="custom-icon-text">Tranfert mobile</p>
-                </a>
-              </div>
-              <div class="col-6 col-md-4 mb-4">
-                <a routerLink="/paiementFacture" class="custom-icon-container"
-                  ><i class="icon ion-ios-paper custom-icon-size"></i>
-                  <p class="custom-icon-text">Paiements de factures</p>
-                </a>
-              </div>
-              <div class="col-6 col-md-4 mb-4">
-                <a routerLink="/listeBeneficiaire" class="custom-icon-container"
-                  ><i class="icon ion-ios-cog custom-icon-size"></i>
-                  <p class="custom-icon-text">Gérer les bénéficiaires</p>
-                </a>
-              </div>
+              <!-- ================= CONTENU NORMAL ================= -->
+              <ng-template #realContent>
+                <div class="col-6 col-md-4 mb-4">
+                  <a
+                    (click)="notificationEnCoursDeveloppement()"
+                    class="custom-icon-container"
+                  >
+                    <i class="icon ion-social-buffer custom-icon-size"></i>
+                    <p class="custom-icon-text">Transferts multiples</p>
+                  </a>
+                </div>
 
-              <div class="col-6 col-md-4 mb-4">
-                <a
-                  (click)="notificationEnCoursDeveloppement()"
-                  class="custom-icon-container"
-                  ><i class="icon ion-ios-paper custom-icon-size"></i>
-                  <i class="icon ion-ios-globe custom-icon-size"></i>
-                  <p class="custom-icon-text">Tranfert international</p>
-                </a>
-              </div>
+                <div class="col-6 col-md-4 mb-4">
+                  <bci-generic-file-import
+                    [isOpenModal]="openModal"
+                    [fields]="fields"
+                    title="Importation des Salaires BCI"
+                    instructions="Veuillez charger le fichier des virements du mois en cours."
+                    previewTitle="Récapitulatif des virements"
+                    [duplicateCheckFields]="['numeroCompte', 'bic', 'montant']"
+                    [validateButtonText]="
+                      loadingValidation ? 'Validation en cours...' : 'Valider'
+                    "
+                    (importDataCompleted)="onImportedData($event)"
+                    (modalClosed)="openModal = false"
+                  >
+                  </bci-generic-file-import>
+
+                  <a
+                    class="custom-icon-container"
+                    (click)="notificationEnCoursDeveloppement()"
+                  >
+                    <i class="icon ion-upload custom-icon-size"></i>
+                    <p class="custom-icon-text">Chargement de fichier</p>
+                  </a>
+                </div>
+
+                <div class="col-6 col-md-4 mb-4">
+                  <a
+                    routerLink="/transfertUnique"
+                    class="custom-icon-container"
+                  >
+                    <i class="icon ion-ios-people custom-icon-size"></i>
+                    <p class="custom-icon-text">Transfert unique</p>
+                  </a>
+                </div>
+
+                <div class="col-6 col-md-4 mb-4">
+                  <a routerLink="/typePaiement" class="custom-icon-container">
+                    <i class="icon ion-ios-paper custom-icon-size"></i>
+                    <p class="custom-icon-text">Tranfert mobile</p>
+                  </a>
+                </div>
+
+                <div class="col-6 col-md-4 mb-4">
+                  <a
+                    routerLink="/paiementFacture"
+                    class="custom-icon-container"
+                  >
+                    <i class="icon ion-ios-paper custom-icon-size"></i>
+                    <p class="custom-icon-text">Paiements de factures</p>
+                  </a>
+                </div>
+
+                <div class="col-6 col-md-4 mb-4">
+                  <a
+                    routerLink="/listeBeneficiaire"
+                    class="custom-icon-container"
+                  >
+                    <i class="icon ion-ios-cog custom-icon-size"></i>
+                    <p class="custom-icon-text">Gérer les bénéficiaires</p>
+                  </a>
+                </div>
+
+                <div class="col-6 col-md-4 mb-4">
+                  <!-- <button
+                    (click)="openTransferModal()"
+                    class="group w-full flex items-center justify-center gap-3 px-4 py-4 bg-indigo-500 text-white font-bold rounded-xl transition-all duration-300 hover:bg-indigo-600 hover:shadow-[0_10px_20px_-10px_rgba(99,102,241,0.6)] active:scale-95"
+                  >
+                    <div
+                      class="p-1 bg-white/20 rounded-lg group-hover:rotate-12 transition-transform"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                    </div>
+                    <span>Nouveau Transfert</span>
+                  </button> -->
+                  <app-ordre-transfert-international
+                    [isOpenModal]="isModalOpen"
+                    (modalClosed)="closeTransferModal()"
+                    (importDataCompleted)="handleValidation($event)"
+                  >
+                  </app-ordre-transfert-international>
+                </div>
+              </ng-template>
             </div>
           </div>
+
+
+          
         </div>
       </div>
       <div class="col-xl-4">
@@ -491,6 +366,7 @@
             </div>
           </div>
         </div> -->
+
         <div class="card">
           <div class="card-header">
             <div class="d-flex align-items-center flex-wrap">
@@ -503,8 +379,26 @@
 
           <div class="card-body p-0">
             <div class="table-responsive">
-              <div *ngIf="loading" class="text-center p-3">
-                <strong>Chargement...</strong>
+              <div *ngIf="loading" class="p-3">
+                <table class="table table-hover table-striped">
+                  <thead class="table-primary">
+                    <tr>
+                      <th>Nom de la partie</th>
+                      <th>Numéro de compte</th>
+                      <th>Type de compte</th>
+                      <th>Solde net</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr *ngFor="let item of [1, 2, 3, 4, 5]">
+                      <td><div class="skeleton skeleton-text w-75"></div></td>
+                      <td><div class="skeleton skeleton-text w-50"></div></td>
+                      <td><div class="skeleton skeleton-text w-50"></div></td>
+                      <td><div class="skeleton skeleton-text w-25"></div></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
 
               <div *ngIf="errorMessage" class="alert alert-danger">
@@ -598,6 +492,7 @@
           </tr>
         </tbody>
       </table> -->
+
       <div class="col-xl-4">
         <div class="row">
           <div class="col-xl-12">
@@ -630,150 +525,84 @@
               </div>
 
               <div class="card-body finance-chart-container">
-                <div
-                  *ngIf="loadingDixPremiereTransactions"
-                  class="d-flex justify-content-center align-items-center py-4"
-                >
-                  <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Chargement...</span>
-                  </div>
-                </div>
-                <div
-                  class="table-responsive"
-                  *ngIf="!loadingDixPremiereTransactions"
-                >
-                  <table class="table custom-table">
-                    <thead class="table-light">
-                      <tr>
-                        <th>Date</th>
-                        <th class="text-end">Référence</th>
-                        <th class="text-end">Type</th>
-                        <th>Description</th>
-                        <th class="text-end">Montant</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      <tr *ngFor="let t of listeDixPremiereTransactions">
-                        <td>{{ formatDateOper(t.dateOper) }}</td>
-                        <td>{{ t.bankReference }}</td>
-                        <td>{{ t.sigOper }}</td>
-                        <td>{{ t.libelleOper }}</td>
-                        <td class="text-end">{{ formatMontant(t) }}</td>
-                      </tr>
-
-                      <!-- Spinner quand on charge plus -->
-                      <tr *ngIf="loadingMore">
-                        <td colspan="5" class="text-center py-3">
-                          <div
-                            class="spinner-border text-primary"
-                            role="status"
-                          >
-                            <span class="visually-hidden">Chargement...</span>
-                          </div>
-                        </td>
-                      </tr>
-
-                      <!-- Aucun résultat -->
-                      <tr
-                        *ngIf="
-                          !loadingDixPremiereTransactions &&
-                          listeDixPremiereTransactions.length === 0
-                        "
-                      >
-                        <td colspan="5" class="text-center text-muted">
-                          Aucune transaction trouvée
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <!-- <div class="card-body finance-chart-container">
-                <div
-                  *ngIf="loadingDixPremiereTransactions"
-                  class="d-flex justify-content-center align-items-center py-4"
-                >
-                  <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Chargement...</span>
-                  </div>
-                </div>
-
-                <div
-                  class="table-responsive"
-                  *ngIf="!loadingDixPremiereTransactions"
-                >
-                  <table class="table custom-table">
-                    <thead class="table-light">
-                      <tr>
-                        <th>Date</th>
-                        <th class="text-end">Référence</th>
-                        <th class="text-end">Type</th>
-                        <th>Description</th>
-                        <th class="text-end">Montant</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      <tr *ngFor="let t of listeDixPremiereTransactions">
-                        <td>{{ formatDateOper(t.dateOper) }}</td>
-                        <td>{{ t.bankReference }}</td>
-                        <td>{{ t.sigOper }}</td>
-                        <td>{{ t.libelleOper }}</td>
-                        <td class="text-end">{{ formatMontant(t) }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <tr
-                *ngIf="
-                  !loadingDixPremiereTransactions &&
-                  listeDixPremiereTransactions.length === 0
-                "
-              >
-                <td colspan="5" class="text-center text-muted">
-                  Aucune transaction trouvée
-                </td>
-              </tr> -->
-
-              <!-- <div class="card-body finance-chart-container">
                 <div class="table-responsive">
                   <table class="table custom-table">
                     <thead class="table-light">
                       <tr>
-                        <th class="text-nowrap">Date</th>
-                        <th class="text-end text-nowrap">Référence</th>
-                        <th class="text-end text-nowrap">Type</th>
+                        <th>Date</th>
+                        <th class="text-end">Référence</th>
+                        <th class="text-end">Type</th>
                         <th>Description</th>
-                        <th class="text-end text-nowrap">Montant</th>
+                        <th class="text-end">Montant</th>
                       </tr>
                     </thead>
 
                     <tbody>
-                      <tr *ngFor="let t of listeDixPremiereTransactions">
-                        <td class="text-nowrap">
-                          {{ formatDateOper(t.dateOper) }}
-                        </td>
-                        <td>
-                          {{ t.bankReference }}
-                        </td>
-                        <td>
-                          {{ t.sigOper }}
-                        </td>
-                        <td>
-                          {{ t.libelleOper }}
-                        </td>
-                        <td class="text-nowrap text-end">
-                          {{ formatMontant(t) }}
-                        </td>
-                      </tr>
+                      <!-- ================= SKELETON ================= -->
+                      <ng-container
+                        *ngIf="loadingDixPremiereTransactions; else realRows"
+                      >
+                        <tr *ngFor="let item of [1, 2, 3, 4, 5]">
+                          <td>
+                            <div class="skeleton skeleton-text w-75"></div>
+                          </td>
+                          <td>
+                            <div
+                              class="skeleton skeleton-text w-50 ms-auto"
+                            ></div>
+                          </td>
+                          <td>
+                            <div
+                              class="skeleton skeleton-text w-50 ms-auto"
+                            ></div>
+                          </td>
+                          <td>
+                            <div class="skeleton skeleton-text w-100"></div>
+                          </td>
+                          <td>
+                            <div
+                              class="skeleton skeleton-text w-50 ms-auto"
+                            ></div>
+                          </td>
+                        </tr>
+                      </ng-container>
+
+                      <!-- ================= CONTENU RÉEL ================= -->
+                      <ng-template #realRows>
+                        <tr *ngFor="let t of listeDixPremiereTransactions">
+                          <td>{{ formatDateOper(t.dateOper) }}</td>
+                          <td class="text-end">{{ t.bankReference }}</td>
+                          <td class="text-end">{{ t.sigOper }}</td>
+                          <td>{{ t.libelleOper }}</td>
+                          <td class="text-end">{{ formatMontant(t) }}</td>
+                        </tr>
+
+                        <!-- Spinner scroll -->
+                        <tr *ngIf="loadingMore">
+                          <td colspan="5" class="text-center py-3">
+                            <div
+                              class="spinner-border text-primary"
+                              role="status"
+                            ></div>
+                          </td>
+                        </tr>
+
+                        <!-- Aucun résultat -->
+                        <tr
+                          *ngIf="
+                            !loadingDixPremiereTransactions &&
+                            listeDixPremiereTransactions.length === 0
+                          "
+                        >
+                          <td colspan="5" class="text-center text-muted">
+                            Aucune transaction trouvée
+                          </td>
+                        </tr>
+                      </ng-template>
                     </tbody>
                   </table>
                 </div>
-              </div> -->
+              </div>
 
               <div class="d-grid p-2 border-top">
                 <a

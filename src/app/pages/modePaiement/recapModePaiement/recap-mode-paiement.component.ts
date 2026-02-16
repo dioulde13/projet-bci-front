@@ -116,12 +116,18 @@ export class RecapModePaiementComponent implements OnInit {
         // this.toastr.success(res.data.message, '', {
         //   positionClass: 'toast-custom-center',
         // });
-        this.toastr.success('Transaction reussi avec success', '', {
+        if(res.status === 200){
+        this.toastr.success(res.message, '', {
           positionClass: 'toast-custom-center',
         });
         this.isLoading = false;
         this.router.navigate(['/historiqueTransactions']);
         localStorage.removeItem('InfosFormulaireModePaiement');
+        } else{
+          this.toastr.success(res.message, '', {
+          positionClass: 'toast-custom-center',
+        });
+        }
       },
       error: (err) => {
         this.toastr.error('Une erreur interne est survenu', '', {
@@ -166,7 +172,7 @@ export class RecapModePaiementComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.toastr.error('Une erreur interne est survenu', '', {
+        this.toastr.error('Une erreur interne est survenue.', '', {
           positionClass: 'toast-custom-center',
         });
         console.error('Erreur paiement :', err);

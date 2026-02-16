@@ -27,73 +27,58 @@
         <div class="card">
           <div class="card-body">
             <div class="row">
-              <div
-                class="col-sm-6 col-xl-3"
-                *ngFor="let facturier of listeFacturier"
-              >
-              <button
-                  type="button"
-                  class="p-0 border-0 bg-transparent w-100 text-start"
-                  (click)="nextPages(facturier.FacturierName)"
+              <!-- ================= SKELETON ================= -->
+              <ng-container *ngIf="loadingFacturier; else realFacturiers">
+                <div
+                  class="col-sm-6 col-xl-3"
+                  *ngFor="let item of [1, 2, 3, 4, 5, 6, 7, 8]"
                 >
-                <div class="card card-custom text-center" style="height: 14rem;">
-                  <img 
-                  style="height: 10rem;"
-                   [src]="
-                        'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
-                        facturier.vcLogoPath
-                      "
-                      [alt]="facturier.FacturierName"
-                  />
-                  <div class="card-body">
-                     <h5 class="fw-semibold font-size-16 mb-1">
-                        <span class="text-body">{{
-                          facturier.FacturierName
-                        }}</span>
-                      </h5>
+                  <div
+                    class="card card-custom text-center skeleton-card"
+                    style="height: 14rem"
+                  >
+                    <div class="skeleton skeleton-image mb-2"></div>
+                    <div class="card-body">
+                      <div class="skeleton skeleton-text w-75 mx-auto"></div>
+                    </div>
                   </div>
                 </div>
-              </button>
+              </ng-container>
 
-                <!-- <button
-                  type="button"
-                  class="p-0 border-0 bg-transparent w-100 text-start"
-                  (click)="nextPages(facturier.FacturierName)"
+              <!-- ================= CONTENU RÉEL ================= -->
+              <ng-template #realFacturiers>
+                <div
+                  class="col-sm-6 col-xl-3"
+                  *ngFor="let facturier of listeFacturier"
                 >
-                  <div class="card" style="width: 18rem">
-                    <img 
-                    [src]="
-                        'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
-                        facturier.vcLogoPath
-                      "
-                      [alt]="facturier.FacturierName"
-                    />
-                    <div class="card-body">
-                      <p class="card-text">
-                        Some quick example text to build on the card title and
-                        make up the bulk of the card's content.
-                      </p>
+                  <button
+                    type="button"
+                    class="p-0 border-0 bg-transparent w-100 text-start"
+                    (click)="nextPages(facturier.FacturierName)"
+                  >
+                    <div
+                      class="card card-custom text-center"
+                      style="height: 14rem"
+                    >
+                      <img
+                        style="height: 10rem"
+                        [src]="
+                          'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
+                          facturier.vcLogoPath
+                        "
+                        [alt]="facturier.FacturierName"
+                      />
+                      <div class="card-body">
+                        <h5 class="fw-semibold font-size-16 mb-1">
+                          <span class="text-body">{{
+                            facturier.FacturierName
+                          }}</span>
+                        </h5>
+                      </div>
                     </div>
-                  </div> -->
-                <!-- <div class="card card-custom text-center">
-                    <img
-                      class="card-img-top"
-                      [src]="
-                        'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
-                        facturier.vcLogoPath
-                      "
-                      [alt]="facturier.FacturierName"
-                    />
-                    <div class="card-body">
-                      <h5 class="fw-semibold font-size-16 mb-1">
-                        <span class="text-body">{{
-                          facturier.FacturierName
-                        }}</span>
-                      </h5>
-                    </div>
-                  </div> -->
-                <!-- </button> -->
-              </div>
+                  </button>
+                </div>
+              </ng-template>
             </div>
           </div>
         </div>

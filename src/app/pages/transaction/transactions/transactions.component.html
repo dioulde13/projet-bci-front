@@ -39,7 +39,9 @@
                 ></path>
               </svg>
               <h3 class="text-white mb-1">
-                <span class="currencycounter" data-target="347200000">{{nombreCompte}}</span>
+                <span class="currencycounter" data-target="347200000">{{
+                  nombreCompte
+                }}</span>
               </h3>
               <p><small class="text-white">Total des comptes</small></p>
             </a>
@@ -164,14 +166,13 @@
                         <div class="flex-grow-1">
                           <div class="d-flex flex-column">
                             <h1 class="text-white mb-1 h2">
-                              Société Exemple SARL
+                              {{ NomCompte }}
                             </h1>
 
                             <div>
-                              <span class="text-white">NIF: 123456789 • </span>
-                              <span class="text-white"
-                                >Créée le 15/03/2022</span
-                              >
+                              <span class="text-white">
+                                {{ dateCompte | date: "dd/MM/yyyy HH:mm" }}
+                              </span>
                             </div>
                           </div>
                         </div>

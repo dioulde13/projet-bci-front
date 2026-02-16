@@ -36,13 +36,16 @@ export class TypePaiementComponent implements OnInit{
 }
 
   listeOperateur:any[] = [];
+  loadingOperateur: boolean = false;
 
   recupererListeOperateur(){
+    this.loadingOperateur = true;
     this.mobileMoneyService.listeMobileOperators().subscribe({
        next: (response: any) => {
         this.listeOperateur = (response?.data ?? []).filter(
           (f: any) => f.btEnabled === true
         );
+        this.loadingOperateur = false;
       },
       error: (err) => console.error(err),
     })

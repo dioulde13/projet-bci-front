@@ -5,7 +5,7 @@ import {
   OnInit,
 } from '@angular/core';
 // import Papa from 'papaparse';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard/dashboard.service';
 import { TransactionService } from '../../servicesNodes/transactionService/transaction.service';
@@ -16,6 +16,7 @@ import { BalanceService } from '../../servicesNodes/balance/balance.service';
 import { BciLoaderService } from '../../servicesNodes/bciLoader/bci-loader.service';
 import { SaveFichierCSVService } from '../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
 import { ToastrService } from 'ngx-toastr';
+import { OrdreTransfertInternationalComponent } from '../transfertInternationale/ordre-transfert-international/ordre-transfert-international.component';
 
 // import { GnfFormatPipe } from '../gnfFormat/gnf-format.pipe';
 // export interface BeneficiaireExcel {
@@ -39,6 +40,7 @@ import { ToastrService } from 'ngx-toastr';
     RouterLink,
     CommonModule,
     FormsModule,
+    OrdreTransfertInternationalComponent,
     // GnfFormatPipe
   ],
   templateUrl: './dashboard.component.html',
@@ -132,6 +134,7 @@ export class DashboardComponent implements OnInit {
     private saveFichierCSVService: SaveFichierCSVService,
     private bciLoaderService: BciLoaderService,
     private toastr: ToastrService,
+    private router: Router
   ) {}
 
   //   totalSolde: any;
@@ -225,8 +228,10 @@ export class DashboardComponent implements OnInit {
   errorMessage = '';
   typesCompte: string = '';
   countNombreComptes: any;
+  loadingListeCompteClient: boolean = false;
 
   getListeCompteClient(): void {
+    this.loadingListeCompteClient = true;
     if (!this.iOrganisationID) {
       console.warn(
         'Impossible de récupérer la liste : iOrganisationID non défini',
@@ -238,6 +243,7 @@ export class DashboardComponent implements OnInit {
       .getListeCompteClient(this.iOrganisationID)
       .subscribe({
         next: (response) => {
+          this.loadingListeCompteClient = false;
           this.listeCompteClient = response.data?.[0]?.comptes ?? [];
           this.loading = false;
           this.countNombreComptes = this.listeCompteClient.length;
@@ -262,6 +268,7 @@ export class DashboardComponent implements OnInit {
           }
         },
         error: (err: any) => {
+          this.loadingListeCompteClient = false;
           this.errorMessage = err.message;
           this.loading = false;
           console.error('Erreur getListeCompteClient', err);
@@ -281,18 +288,24 @@ export class DashboardComponent implements OnInit {
     this.getBalance(accountNumber);
   }
 
+  loadingGetBalance: boolean = false;
+
   getBalance(accountNumber: string): void {
+    this.loadingGetBalance = true;
     this.balanceService.getBalance(accountNumber).subscribe({
       next: (res) => {
         if (res && res.data) {
+          this.loadingGetBalance = false;
           this.soldeDebiteur = this.formatSolde(res?.data?.soldeDisp);
           this.deviseDebiteur = res?.data?.devise;
         } else {
+          this.loadingGetBalance = false;
           this.soldeDebiteur = 0;
           this.deviseDebiteur = '';
         }
       },
       error: (error) => {
+        this.loadingGetBalance = false;
         console.error('Erreur lors de la récupération du solde :', error);
         this.soldeDebiteur = 0;
       },
@@ -313,14 +326,13 @@ export class DashboardComponent implements OnInit {
     return 0;
   }
 
-  loadingDixPremiereTransactions: boolean = false;
-
   // états
   allTransactions: any[] = [];
   listeDixPremiereTransactions: any[] = [];
   page = 0;
   limit = 2; // combien d’éléments à afficher à chaque scroll
   loadingMore = false;
+  loadingDixPremiereTransactions: boolean = false;
 
   dixTransactionsRecentsListe() {
     this.loadingDixPremiereTransactions = true;
@@ -343,6 +355,26 @@ export class DashboardComponent implements OnInit {
         },
       });
   }
+
+  get isDashboardLoading(): boolean {
+    return (
+      this.loadingListeCompteClient ||
+      this.loadingGetBalance ||
+      this.loadingDixPremiereTransactions
+    );
+  }
+
+  loadingRedirection: boolean = false;
+
+  redirectWithLoader(url: string) {
+  this.loadingRedirection = true;
+
+  // Petite pause pour montrer le loader avant navigation
+  setTimeout(() => {
+    this.router.navigate([url]);
+    this.loadingRedirection = false;
+  }, 300); // 300ms suffisent pour l'UX
+}
 
   addItemsOnScroll() {
     if (this.loadingMore) return;
@@ -519,6 +551,22 @@ export class DashboardComponent implements OnInit {
         positionClass: 'toast-custom-center',
       },
     );
+  }
+
+  isModalOpen = false;
+
+  openTransferModal() {
+    this.isModalOpen = true;
+  }
+
+  closeTransferModal() {
+    this.isModalOpen = false;
+  }
+  // Récupère les données finales après validation
+  handleValidation(data: any) {
+    console.log('Données reçues du formulaire :', data);
+    // Ici, vous pouvez appeler votre service API pour enregistrer le transfert
+    this.isModalOpen = false;
   }
 
   // onImportedData(event: any) {

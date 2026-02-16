@@ -112,21 +112,31 @@
                   novalidate
                 >
                   <!-- numéro de compteur -->
-                  <div class="mb-3">
+                  <div class="mb-3 col-md-6">
+                    <!-- Réduit la largeur -->
                     <label class="form-label fw-bold required">
                       Entrer le numéro de compteur
                     </label>
 
-                    <input
-                      type="text"
-                      class="form-control"
-                      formControlName="numeroCompteurPrepayer"
-                      inputmode="numeric"
-                      maxlength="11"
-                      placeholder="Ex: 70006212859"
-                      (input)="onlyNumbersPrepayer($event)"
-                      (blur)="onCompteurBlurPrepayer()"
-                    />
+                    <div class="input-group">
+                      <input
+                        type="text"
+                        class="form-control"
+                        formControlName="numeroCompteurPrepayer"
+                        inputmode="numeric"
+                        maxlength="11"
+                        placeholder="Ex: 70006212859"
+                        (input)="onlyNumbersPrepayer($event)"
+                      />
+
+                      <button
+                         class="btn btn-primary"
+                        type="button"
+                        (click)="onCompteurBlurPrepayer()"
+                      >
+                        <i class="bi bi-search"></i>
+                      </button>
+                    </div>
                   </div>
 
                   <!-- infos compteur -->
@@ -481,6 +491,9 @@
                                     <select
                                       class="form-select mb-2"
                                       formControlName="modalDebitAccountPost"
+                                      (change)="
+                                        onDebitAccountSelectEDGPost($event)
+                                      "
                                     >
                                       <option
                                         *ngFor="let c of listeCompteClient"
@@ -490,7 +503,7 @@
                                       </option>
                                     </select>
                                     <small
-                                      style="font-size: 15px"
+                                      style="font-size: 15px; margin-top: 20px"
                                     >
                                       Solde disponible :
                                       <b class="text-success">

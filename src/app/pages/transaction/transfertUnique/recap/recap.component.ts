@@ -104,7 +104,7 @@ export class RecapComponent implements OnInit {
       payment_mode_id: this.selectedBeneficiaire.idTypePaiement,
     };
 
-    // console.log('payload: ', payload);
+    console.log('payload: ', payload);
 
     this.tranfertUniqueService.sendTransaction(payload).subscribe({
       next: (res) => {
@@ -117,12 +117,13 @@ export class RecapComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.toastr.error(err.message || 'Erreur lors de la transaction');
+        this.toastr.error('Une erreur interne est survenue.');
       },
     });
   }
 
   submitFormPayementInterneExterne(): void {
+    console.log('DIoulde: ', this.selectedBeneficiaire.vcCurrency);
     const payload = {
       vcPayerName: this.infosCompteDebiteur.name,
       dtPaymentDate: this.formaterDate(this.infosFormulaire.dtPaymentDate),
@@ -140,7 +141,7 @@ export class RecapComponent implements OnInit {
       iTransactionID: this.transaction_id,
     };
 
-    // console.log('Payload Mobile Money :', payload);
+    console.log('Payload Mobile Money :', payload);
 
     this.paiementInterneExterneService
       .payementInterneExterne(payload)
@@ -335,7 +336,7 @@ export class RecapComponent implements OnInit {
       },
       error: (err) => {
         this.isLoadingRenvoyez = false;
-        this.toastr.error(err.error.message, '', {
+        this.toastr.error("Une erreur interne est survenue.", '', {
           positionClass: 'toast-custom-center',
         });
       },
