@@ -414,7 +414,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       fees_ecash: feesEcash,
       fees_bci: feesBCI,
       fees_included: feesIncluded ? 1 : 0,
-      notes: 'Recharment prepayer',
+      notes: this.selectedTab === 'prepaid'?'Prépaiement':"Poste de paiement",
       organisation_id: this.iOrganisationID,
       user_id: this.infosUser.id,
     };
@@ -507,7 +507,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         next: (response: any) => {
           console.log('Réponse API 👉', response);
           if (response.status === 200) {
-            this.toastr.success(response.message, '', {
+            this.toastr.success("Transaction effectuée avec succès ✅", '', {
               positionClass: 'toast-custom-center',
             });
             this.isLoading = false;

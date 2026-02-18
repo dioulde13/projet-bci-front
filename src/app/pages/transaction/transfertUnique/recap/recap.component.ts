@@ -13,6 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 import { PaiementInterneExterneService } from '../../../../servicesNodes/paiementInterneExterne/paiement-interne-externe.service';
 import { Location } from '@angular/common';
 import { OtpLoginServiceService } from '../../../../services/otpLogin/otp-login-service.service';
+import { CurrencyRateService } from '../../../../servicesNodes/currencyRate/currency-rate.service';
 
 @Component({
   selector: 'app-recap',
@@ -29,6 +30,7 @@ export class RecapComponent implements OnInit {
     private paiementInterneExterneService: PaiementInterneExterneService,
     private location: Location,
     private otpService: OtpLoginServiceService,
+    private currencyRateService: CurrencyRateService,
   ) {}
 
   /* =====================================================
@@ -70,8 +72,72 @@ export class RecapComponent implements OnInit {
     this.infosCompteDebiteur = this.getFromStorage('infosCompteDebiteur');
     this.infosFormulaire = this.getFromStorage('InfosSaisirDansFormulaire');
     this.userInfo = this.getFromStorage('userInfo');
-    this.vcPhoneNumber = this.userInfo.vcPhoneNumber;
+    this.vcPhoneNumber = this.userInfo.vcPhoneNumber; 
     console.log('this.vcPhoneNumber: ', this.vcPhoneNumber);
+
+    this.getTauxEchange(); // On laisse juste ça ici
+  }
+
+  currencyRate!: any;
+
+  getTauxEchange(): void {
+    if (
+      !this.selectedBeneficiaire?.vcCurrency ||
+      !this.infosCompteDebiteur?.devise
+    ) {
+      return;
+    }
+
+    this.currencyRateService
+      .getCurrencyRate(
+        this.infosCompteDebiteur.devise,
+        this.selectedBeneficiaire.vcCurrency,
+      )
+      .subscribe({
+        next: (response: any) => {
+          this.currencyRate = response.data;
+          console.log('Objet taux:', this.currencyRate);
+
+          // ✅ ON FAIT LE CALCUL ICI
+          this.calculerConversion();
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
+  }
+  montantBenConverti: any;
+  tauxConversion: any;
+  calculerConversion() {
+    const deviseDeb = this.infosCompteDebiteur?.devise;
+    const deviseBen = this.selectedBeneficiaire?.vcCurrency;
+    const montantDeb = this.infosFormulaire?.mAmount;
+
+    if (!deviseDeb || !deviseBen || !montantDeb) return;
+
+    if (deviseDeb !== deviseBen) {
+      const taux = this.currencyRate?.nRate ?? 1;
+
+      console.log('taux utilisé:', taux);
+
+      this.tauxConversion = taux;
+
+      this.montantBenConverti = montantDeb * taux;
+
+      console.log('tauxConversion:', this.tauxConversion);
+      console.log('montantBenConverti:', this.montantBenConverti);
+    } else{
+       const taux = this.currencyRate?.nRate ?? 1;
+
+      console.log('taux utilisé:', taux);
+
+      this.tauxConversion = taux;
+
+      this.montantBenConverti = montantDeb * taux;
+
+      console.log('tauxConversion:', this.tauxConversion);
+      console.log('montantBenConverti:', this.montantBenConverti);
+    }
   }
 
   formaterDate(date: string | number): string {
@@ -102,6 +168,10 @@ export class RecapComponent implements OnInit {
       organisation_id: this.userInfo.iOrganisationID,
       user_id: this.userInfo.id,
       payment_mode_id: this.selectedBeneficiaire.idTypePaiement,
+      receiverBankName: this.selectedBeneficiaire?.vcName,
+      devise_debiteur: this.infosCompteDebiteur?.devise,
+      montant_converti: this.montantBenConverti,
+      rate: this.tauxConversion
     };
 
     console.log('payload: ', payload);
@@ -109,10 +179,14 @@ export class RecapComponent implements OnInit {
     this.tranfertUniqueService.sendTransaction(payload).subscribe({
       next: (res) => {
         // console.log('res: ', res);
+        if(res.status === 200){
         if (res.data.reference && res.data.transaction_id) {
           this.reference = res.data.reference;
           this.transaction_id = res.data.transaction_id;
           this.submitFormPayementInterneExterne();
+          } else{
+            this.isLoading = false;
+          }
           // this.toastr.success(res.data.message);
         }
       },
@@ -123,7 +197,7 @@ export class RecapComponent implements OnInit {
   }
 
   submitFormPayementInterneExterne(): void {
-    console.log('DIoulde: ', this.selectedBeneficiaire.vcCurrency);
+    // console.log('DIoulde: ', this.selectedBeneficiaire.vcCurrency);
     const payload = {
       vcPayerName: this.infosCompteDebiteur.name,
       dtPaymentDate: this.formaterDate(this.infosFormulaire.dtPaymentDate),
@@ -150,14 +224,20 @@ export class RecapComponent implements OnInit {
           // console.log('Paiement réussi :', res);
           if (res.status === 200) {
             this.modalOtp = false;
-            this.toastr.success(res.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.toastr.success(
+              'La transaction a été effectuée avec succès',
+              '',
+              {
+                positionClass: 'toast-custom-center',
+              },
+            );
+            this.isLoading = false;
             this.router.navigate(['/historiqueTransactions']);
             localStorage.removeItem('InfosSaisirDansFormulaire');
             localStorage.removeItem('selectedBeneficiaire');
             localStorage.removeItem('infosCompteDebiteur');
           } else {
+            this.isLoading = false;
             this.modalOtp = false;
             this.toastr.error(res.message, '', {
               positionClass: 'toast-custom-center',
@@ -167,13 +247,9 @@ export class RecapComponent implements OnInit {
         error: (err) => {
           this.modalOtp = false;
           // console.error('Erreur paiement :', err);
-          this.toastr.error(
-            'Une erreur interne est survenu',
-            '',
-            {
-              positionClass: 'toast-custom-center',
-            },
-          );
+          this.toastr.error('Une erreur interne est survenu', '', {
+            positionClass: 'toast-custom-center',
+          });
         },
       });
   }
@@ -243,18 +319,17 @@ export class RecapComponent implements OnInit {
       .subscribe({
         next: (response: any) => {
           if (response.status === 200) {
-            this.isLoading = false;
             // this.toastr.success('OTP envoyé avec succès', '', {
             //   positionClass: 'toast-custom-center',
             // });
-              this.otpValues = ['', '', '', ''];
+            // this.otpValues = ['', '', '', ''];
             this.envoyerTransaction();
           } else {
             this.isLoading = false;
             this.toastr.error(response.message, '', {
               positionClass: 'toast-custom-center',
             });
-             this.otpValues = ['', '', '', ''];
+            this.otpValues = ['', '', '', ''];
           }
         },
         error: (err) => {
@@ -316,8 +391,8 @@ export class RecapComponent implements OnInit {
     }, 1000);
   }
 
- reEnvoiOtp(): void {
-     this.isLoadingRenvoyez = true;
+  reEnvoiOtp(): void {
+    this.isLoadingRenvoyez = true;
     // if (!this.canResend) return;
     this.otpService.reenvoiOtp(this.loginEmail).subscribe({
       next: (response) => {
@@ -327,7 +402,7 @@ export class RecapComponent implements OnInit {
           this.toastr.success(response.message, '', {
             positionClass: 'toast-custom-center',
           });
-        }else{
+        } else {
           this.toastr.error(response.message, '', {
             positionClass: 'toast-custom-center',
           });
@@ -336,7 +411,7 @@ export class RecapComponent implements OnInit {
       },
       error: (err) => {
         this.isLoadingRenvoyez = false;
-        this.toastr.error("Une erreur interne est survenue.", '', {
+        this.toastr.error('Une erreur interne est survenue.', '', {
           positionClass: 'toast-custom-center',
         });
       },

@@ -74,6 +74,12 @@ export class BeneficiaireService {
     });
   }
 
+  getCuntryInternal(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/getCuntryInternal`, {
+      withCredentials: true,
+    });
+  }
+
   getListeTypePaiement(): Observable<any> {
     return this.http.get(`${this.baseUrl}/api/getListeTypePaiement`, {
       withCredentials: true,

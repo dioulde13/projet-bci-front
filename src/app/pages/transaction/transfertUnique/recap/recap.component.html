@@ -1,5 +1,8 @@
 <div class="container mt-3">
-  <div class="card shadow-sm border-0 rounded-4" style="max-height: 90vh; overflow-y: auto;">
+  <div
+    class="card shadow-sm border-0 rounded-4"
+    style="max-height: 90vh; overflow-y: auto"
+  >
     <div class="card-header text-white rounded-top-4 py-2">
       <h5 class="mb-0">Récapitulatif du Transfert</h5>
     </div>
@@ -8,7 +11,9 @@
       <!-- TYPE DE PAIEMENT -->
       <div class="row mb-2">
         <div class="col-12">
-          <h6 class="text-muted mb-1">Type de paiement</h6>
+          <h6 class="text-muted mb-1" style="font-size: 16px">
+            Type de paiement
+          </h6>
           <h6 class="fw-bold text-primary">
             {{ selectedBeneficiaire?.typaiementPaiement }}
           </h6>
@@ -20,85 +25,128 @@
       <!-- BÉNÉFICIAIRE -->
       <div class="row g-2">
         <div class="col-md-6">
-          <small class="text-muted">Nom bénéficiaire</small>
+          <small class="text-muted" style="font-size: 16px"
+            >Nom bénéficiaire</small
+          >
           <div class="fw-bold">
-            {{ selectedBeneficiaire?.vcFirstName }} {{ selectedBeneficiaire?.vcLastName }}
+            {{ selectedBeneficiaire?.vcFirstName }}
+            {{ selectedBeneficiaire?.vcLastName }}
           </div>
         </div>
         <div class="col-md-6">
-          <small class="text-muted">Type bénéficiaire</small>
-          <div class="fw-bold">{{ selectedBeneficiaire?.typeBeneficiaire }}</div>
+          <small class="text-muted" style="font-size: 16px"
+            >Type bénéficiaire</small
+          >
+          <div class="fw-bold">
+            {{ selectedBeneficiaire?.typeBeneficiaire }}
+          </div>
         </div>
         <div class="col-md-6">
-          <small class="text-muted">Compte bénéficiaire</small>
+          <small class="text-muted" style="font-size: 16px"
+            >Compte bénéficiaire</small
+          >
           <div class="fw-bold">{{ infosFormulaire?.vcBenefAccount }}</div>
         </div>
         <div class="col-md-6">
-          <small class="text-muted">Devise</small>
-          <div class="fw-bold"> {{ infosCompteDebiteur?.devise }} </div>
+          <small class="text-muted" style="font-size: 16px">Devise</small>
+          <div class="fw-bold">{{ selectedBeneficiaire?.vcCurrency }}</div>
         </div>
         <div class="col-md-6">
-          <small class="text-muted">Banque</small>
+          <small class="text-muted" style="font-size: 16px">Banque</small>
           <div class="fw-bold">{{ selectedBeneficiaire?.vcName }}</div>
         </div>
         <div class="col-md-6">
-          <small class="text-muted">BIC / SWIFT</small>
+          <small class="text-muted" style="font-size: 16px">BIC / SWIFT</small>
           <div class="fw-bold">{{ infosFormulaire?.vcBenefBicCode }}</div>
         </div>
         <div class="col-md-6">
-          <small class="text-muted">Ville</small>
+          <small class="text-muted" style="font-size: 16px">Ville</small>
           <div class="fw-bold">{{ selectedBeneficiaire?.vcCity }}</div>
         </div>
         <div class="col-md-6">
-          <small class="text-muted">Pays</small>
+          <small class="text-muted" style="font-size: 16px">Pays</small>
           <div class="fw-bold">{{ selectedBeneficiaire?.vcCountry }}</div>
         </div>
         <div class="col-md-6">
-          <small class="text-muted">Email</small>
+          <small class="text-muted" style="font-size: 16px">Email</small>
           <div class="fw-bold">{{ selectedBeneficiaire?.vcEmail }}</div>
         </div>
       </div>
 
       <hr class="my-2" />
 
-      <!-- PAIEMENT -->
-      <div class="row g-2">
-        <div class="col-md-6">
-          <small class="text-muted">Compte débiteur</small>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <small class="text-muted" style="font-size: 16px"
+            >Compte débiteur</small
+          >
           <div class="fw-bold">{{ infosFormulaire?.vcPayerAccount }}</div>
         </div>
-        <div class="col-md-6">
-          <small class="text-muted">Nom débiteur</small>
+
+        <div class="col-md-4">
+          <small class="text-muted" style="font-size: 16px">Nom débiteur</small>
           <div class="fw-bold">{{ infosFormulaire?.vcPayerName }}</div>
         </div>
-        <div class="col-md-6">
-          <small class="text-muted">Solde disponible</small>
-          <div class="fw-bold text-success">
-            {{ infosCompteDebiteur?.soldeDisp | number: "1.2-2" }} {{ infosCompteDebiteur?.devise }}
-          </div>
-        </div>
-        <div class="col-md-6">
-          <small class="text-muted">Montant à transférer</small>
-          <div class="fw-bold fs-5 text-danger">
-            {{ infosFormulaire?.mAmount | number: "1.2-2" }} {{ infosCompteDebiteur?.devise }}
-          </div>
-        </div>
-        <div class="col-md-6">
-          <small class="text-muted">Date transfert</small>
-          <div class="fw-bold">{{ infosFormulaire?.dtPaymentDate | date: "medium" }}</div>
-        </div>
-        <div class="col-md-6">
-          <small class="text-muted">Référence</small>
-          <div class="fw-bold">{{ infosFormulaire?.vcPaymentReference }}</div>
-        </div>
-      </div>
 
+        <div class="col-md-4">
+          <small class="text-muted" style="font-size: 16px"
+            >Solde disponible</small
+          >
+          <div class="fw-bold text-success">
+            {{ infosCompteDebiteur?.soldeDisp | number: "1.2-2" }} 
+            {{ infosCompteDebiteur?.devise }}
+            <span style="color: black;">({{infosFormulaire?.vcPayerAccount}})</span>
+          </div>
+          
+        </div>
+
+        <div class="col-md-4">
+          <small class="text-muted" style="font-size: 16px">Montant</small>
+          <div class="fw-bold fs-5 text-danger">
+            {{ infosFormulaire?.mAmount | number: "1.2-2" }}
+            {{ infosCompteDebiteur?.devise }}
+          </div>
+        </div>
+
+         <div class="col-md-4">
+          <small class="text-muted" style="font-size: 16px">Montant a transferer</small>
+          <div class="fw-bold fs-5 text-danger">
+            {{ montantBenConverti | number: "1.2-2" }}
+            {{ selectedBeneficiaire?.vcCurrency }}
+          </div>
+        </div> <div class="col-md-4">
+          <small class="text-muted" style="font-size: 16px">Taux d'echange</small>
+          <div class="fw-bold fs-5 text-danger">
+            {{ tauxConversion| number: "1.2-2" }}
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <small class="text-muted" style="font-size: 16px"
+            >Date transfert</small
+          >
+          <div class="fw-bold">
+            {{ infosFormulaire?.dtPaymentDate | date: "medium" }}
+          </div>
+        </div>
+
+        <!-- <div class="col-md-4">
+          <small class="text-muted" style="font-size: 16px">Référence</small>
+          <div class="fw-bold">
+            {{ infosFormulaire?.vcPaymentReference }}
+          </div>
+        </div> -->
+      </div>
       <hr class="my-2" />
 
       <!-- ACTION -->
       <div class="d-flex justify-content-end gap-2">
-        <button class="btn btn-success px-3" (click)="openModalOtp()">{{loadiongConfirmeOtp?"Confirmation en cours...":"Confirmer"}}</button>
-        <button (click)="retour()" class="btn btn-outline-secondary px-3">Retour</button>
+        <button class="btn btn-success px-3" (click)="openModalOtp()">
+          {{ loadiongConfirmeOtp ? "Confirmation en cours..." : "Confirmer" }}
+        </button>
+        <button (click)="retour()" class="btn btn-outline-secondary px-3">
+          Retour
+        </button>
       </div>
     </div>
   </div>
@@ -112,12 +160,15 @@
 
     <div class="otp-container">
       <div class="alert alert-info" role="alert">
-        <span>Un code de vérification (OTP) a été envoyé à votre adresse email.</span>
+        <span
+          >Un code de vérification (OTP) a été envoyé à votre adresse
+          email.</span
+        >
       </div>
 
       <label class="form-label text-center w-100">Entrez votre code OTP</label>
       <div class="otp-inputs d-flex justify-content-center gap-2">
-        <ng-container *ngFor="let item of [0,1,2,3]; let i = index">
+        <ng-container *ngFor="let item of [0, 1, 2, 3]; let i = index">
           <input
             class="form-control otp-input"
             type="text"
@@ -158,14 +209,19 @@
     </div>
 
     <div class="flex justify-between mt-4 d-flex justify-content-between">
-      <button class="btn btn-outline-danger" (click)="closeModalOtp()">Annuler</button>
+      <button class="btn btn-outline-danger" (click)="closeModalOtp()">
+        Annuler
+      </button>
       <button
         type="submit"
         class="btn btn-primary"
         [disabled]="!isOtpComplete() || isLoading"
         (click)="verifyOtp()"
       >
-        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        <span
+          *ngIf="isLoading"
+          class="spinner-border spinner-border-sm me-2"
+        ></span>
         {{ isLoading ? "Vérification..." : "Valider le Code" }}
       </button>
     </div>

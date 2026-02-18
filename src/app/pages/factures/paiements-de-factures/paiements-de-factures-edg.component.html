@@ -130,7 +130,7 @@
                       />
 
                       <button
-                         class="btn btn-primary"
+                        class="btn btn-primary"
                         type="button"
                         (click)="onCompteurBlurPrepayer()"
                       >
@@ -379,7 +379,32 @@
                   [formGroup]="paymentFormPostpayerEDG"
                   novalidate
                 >
-                  <div class="mb-3">
+                  <div class="mb-3 col-md-6">
+                     <label class="form-label fw-bold required">
+                      Entrer le numéro de compteur
+                    </label>
+                    <div class="input-group">
+                      <input
+                        type="text"
+                        class="form-control"
+                        formControlName="numeroCompteurPostpayer"
+                        inputmode="numeric"
+                        maxlength="11"
+                        placeholder="Ex: 70006212859"
+                        (input)="onlyNumbersPostpayer($event)"
+                      />
+
+                      <button
+                        class="btn btn-primary"
+                        type="button"
+                        (click)="onCompteurBlurPostpayer()"
+                      >
+                        <i class="bi bi-search"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- <div class="mb-3">
                     <label class="form-label fw-bold required">
                       Entrer le numéro de compteur
                     </label>
@@ -394,7 +419,7 @@
                       (input)="onlyNumbersPostpayer($event)"
                       (blur)="onCompteurBlurPostpayer()"
                     />
-                  </div>
+                  </div> -->
 
                   <div class="row mb-3" *ngIf="afficherInfosPostpayer">
                     <div class="col-md-12">
@@ -483,7 +508,6 @@
                                   [formGroup]="postpayModalForm"
                                   (ngSubmit)="verificationMontant()"
                                 >
-                                  <!-- Compte débiteur -->
                                   <div class="mb-3">
                                     <label class="form-label fw-bold required">
                                       Compte débiteur

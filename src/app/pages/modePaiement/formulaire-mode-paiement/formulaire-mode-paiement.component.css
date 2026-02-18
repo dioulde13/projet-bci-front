@@ -97,3 +97,17 @@ h2 {
 .btn-secondary:hover {
   background-color: #5a6268;
 }
+
+
+ /* Container bouton aligné à droite */
+  .form-actions {
+    display: flex;
+    justify-content: flex-end; /* aligne à droite */
+    margin-top: 1rem;
+  }
+
+  .btn-suivant {
+    background-color: #362a7a;
+    color: white;
+    width: 120px; /* largeur du bouton */
+  }

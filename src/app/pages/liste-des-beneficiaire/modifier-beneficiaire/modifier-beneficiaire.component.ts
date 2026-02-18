@@ -220,6 +220,7 @@ export class ModifierBeneficiaireComponent implements OnInit {
       iOrganisationID: this.iOrganisationID,
       ...this.modifyForm.value,
     };
+    console.log("payload: ", payload);
 
     this.beneficiaireService.modifierBeneficiaire(payload).subscribe({
       next: (res: any) => {

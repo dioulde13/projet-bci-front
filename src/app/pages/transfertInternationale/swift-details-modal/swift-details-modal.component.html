@@ -1,65 +1,134 @@
-<div class="fixed inset-0 z-100 flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px] p-4 transition-all" (click)="onClose.emit()">
+<!-- Backdrop -->
+<div
+  class="modal-backdrop fade show"
+  style="display: block"
+  (click)="onClose.emit()"
+></div>
 
-  <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden relative animate-in fade-in zoom-in duration-200" (click)="$event.stopPropagation()">
-    
-    <div [class]="errorMessage ? 'bg-red-500' : 'bg-[#3b3b7a]'" class="h-1.5 w-full"></div>
+<!-- Modal centré -->
+<div class="modal d-block" tabindex="-1" role="dialog" (click)="onClose.emit()">
+  <div
+    class="modal-dialog modal-dialog-centered"
+    role="document"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-content rounded-3 shadow-lg overflow-hidden">
+      <!-- Barre supérieure colorée -->
+      <div
+        [ngStyle]="{ 'background-color': errorMessage ? '#dc3545' : '#3b3b7a' }"
+        style="height: 6px; width: 100%"
+      ></div>
 
-    <div class="p-6">
-      <div class="flex items-center gap-3 mb-6">
-        <div [class]="errorMessage ? 'text-red-500 bg-red-50' : 'text-[#3b3b7a] bg-indigo-50'" class="p-2.5 rounded-lg">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path *ngIf="errorMessage" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            <path *ngIf="!errorMessage" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>
+      <div class="modal-body p-4">
+        <!-- Header avec icône et titre -->
+        <div class="d-flex align-items-center mb-4">
+          <div
+            [ngStyle]="{
+              color: errorMessage ? '#dc3545' : '#3b3b7a',
+              'background-color': errorMessage
+                ? 'rgba(220,53,69,.1)'
+                : 'rgba(59,59,122,.1)',
+            }"
+            class="p-2 rounded"
+          >
+            <svg
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                *ngIf="errorMessage"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+              <path
+                *ngIf="!errorMessage"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+              />
+            </svg>
+          </div>
+          <div class="ms-3">
+            <h6 class="text-uppercase text-muted mb-0" style="font-size: 10px">
+              {{ title }}
+            </h6>
+            <p class="mb-0 fw-bold">
+              {{ data?.vcBIC || data?.swiftCode || "---" }}
+            </p>
+          </div>
         </div>
-        <div>
-          <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">{{ title }}</h3>
-          <p class="text-base font-mono font-bold text-slate-800 tracking-tight">{{ data?.vcBIC || data?.swiftCode || '---' }}</p>
-        </div>
-      </div>
 
-      <div *ngIf="errorMessage" class="mb-2 p-3 bg-red-50 rounded-lg border border-red-100 text-red-600 text-[11px] leading-relaxed font-medium italic">
-        ⚠️ {{ errorMessage }}
-      </div>
-
-      <div *ngIf="!errorMessage" class="space-y-3">
-        
-        <div class="grid grid-cols-3 gap-2 py-1">
-          <span class="text-slate-400 text-[11px] font-medium uppercase tracking-tighter">Nom Banque</span>
-          <span class="col-span-2 font-bold text-slate-800 text-[12px] leading-tight uppercase">{{ data?.vcName || data?.bankName }}</span>
+        <!-- Message d'erreur -->
+        <div *ngIf="errorMessage" class="alert alert-danger p-2 small mb-3">
+          ⚠️ {{ errorMessage }}
         </div>
 
-        <div class="grid grid-cols-3 gap-2 border-t border-slate-50 pt-3">
-          <span class="text-slate-400 text-[11px] font-medium uppercase tracking-tighter">Adresse</span>
-          <span class="col-span-2 font-semibold text-slate-700 text-[11px] uppercase italic leading-tight">
-            {{ data?.vcAddress || data?.address || 'Adresse non renseignée' }}
-          </span>
+        <!-- Contenu si pas d'erreur -->
+        <div *ngIf="!errorMessage">
+          <div class="row mb-2">
+            <div class="col-4 text-muted small text-uppercase">Nom Banque</div>
+            <div class="col-8 fw-bold text-uppercase">
+              {{ data?.vcName || data?.bankName }}
+            </div>
+          </div>
+
+          <div class="row mb-2 border-top pt-2">
+            <div class="col-4 text-muted small text-uppercase">Swift code</div>
+            <div class="col-8 fst-italic text-uppercase">
+              {{ data?.vcBIC || "Swift non renseignée" }}
+            </div>
+          </div>
+
+          <div class="row mb-2 border-top pt-2">
+            <div class="col-4 text-muted small text-uppercase">Adresse</div>
+            <div class="col-8 fst-italic text-uppercase">
+              {{ data?.vcAddress || "Adresse non renseignée" }}
+            </div>
+          </div>
+
+          <div class="row mb-2 border-top pt-2">
+            <div class="col-4 text-muted small text-uppercase">Ville</div>
+            <div class="col-8 fw-bold text-uppercase">
+              {{ data?.vcCity || "Ville non renseignée" }}
+            </div>
+          </div>
+
+          <div class="row mb-2 border-top pt-2">
+            <div class="col-4 text-muted small text-uppercase">Pays</div>
+            <div class="col-8 fw-bold text-uppercase">
+              {{ data?.vcCountry || "Pays non renseignée" }}
+            </div>
+          </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2 border-t border-slate-50 pt-3">
-          <span class="text-slate-400 text-[11px] font-medium uppercase tracking-tighter">Ville / Pays</span>
-          <span class="col-span-2 font-bold text-slate-800 text-[12px] uppercase">
-            {{ data?.vcCity || data?.city || 'CONAKRY' }} / {{ data?.vcCountry || data?.country || 'GUINÉE' }}
-          </span>
+        <!-- Footer avec boutons -->
+        <div class="mt-4 d-flex justify-content-end gap-2">
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm text-uppercase"
+            (click)="onClose.emit()"
+          >
+            Fermer
+          </button>
+          <button
+            *ngIf="!errorMessage"
+            type="button"
+            class="btn btn-sm text-white"
+            [ngStyle]="{
+              'background-color': '#3b3b7a',
+              'border-color': '#3b3b7a',
+            }"
+            (click)="onConfirm.emit()"
+          >
+            Utiliser cette banque
+          </button>
         </div>
-
-      </div>
-
-      <div class="mt-8 flex justify-end gap-2">
-        <button
-          type="button"
-          (click)="onClose.emit()"
-          class="px-4 py-1.5 text-[10px] font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-wider">
-          Fermer
-        </button>
-
-        <button
-          *ngIf="!errorMessage"
-          type="button"
-          (click)="onConfirm.emit()"
-          class="px-5 py-1.5 text-[10px] font-bold text-white bg-[#3b3b7a] hover:bg-[#2e2e60] rounded shadow-sm transition-all uppercase tracking-wider">
-          Utiliser cette banque
-        </button>
       </div>
     </div>
   </div>

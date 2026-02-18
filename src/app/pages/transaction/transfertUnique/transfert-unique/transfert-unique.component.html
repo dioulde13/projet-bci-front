@@ -35,7 +35,6 @@
               novalidate
             >
               <div class="pb-3">
-                <!-- Catégorie bénéficiaire -->
                 <div class="row mb-3">
                   <div class="col-md-6">
                     <label class="form-label fw-bold text-body required"
@@ -70,10 +69,6 @@
                       Champ obligatoire
                     </small>
                   </div>
-                </div>
-
-                <!-- Bénéficiaire -->
-                <div class="row mb-3">
                   <div class="col-md-6">
                     <label class="form-label fw-bold required"
                       >Bénéficiaire :</label
@@ -101,41 +96,49 @@
                   </div>
                 </div>
 
-                <!-- Infos bénéficiaire -->
                 <div class="row mb-3" *ngIf="selectedBeneficiaire">
-                  <div class="col-md-6">
+                  <div class="col-md-3">
                     <div id="beneficiary-info" class="info-grid">
-                      <span class="label">Numéro de compte :</span>
+                      <span class="label">Numéro </span>
                       <span class="value">{{
                         selectedBeneficiaire?.vcAccountNumber
                       }}</span>
 
-                      <span class="label">Type de bénéficiaire :</span>
+                      <span class="label">Type de bénéficiaire</span>
                       <span class="value">{{
                         selectedBeneficiaire?.typeBeneficiaire || "-"
                       }}</span>
-
-                      <span class="label">Nom :</span>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div id="beneficiary-info" class="info-grid">
+                      <span class="label">Nom </span>
                       <span class="value">{{
                         selectedBeneficiaire?.vcLastName
                       }}</span>
 
-                      <span class="label">Prénom :</span>
+                      <span class="label">Prénom </span>
                       <span class="value">{{
                         selectedBeneficiaire?.vcFirstName
                       }}</span>
-
-                      <span class="label">Email :</span>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div id="beneficiary-info" class="info-grid">
+                      <span class="label">Email </span>
                       <span class="value">{{
                         selectedBeneficiaire?.vcEmail
                       }}</span>
 
-                      <span class="label">Nom de la banque :</span>
+                      <span class="label">Nom de la banque </span>
                       <span class="value">{{
                         selectedBeneficiaire?.vcName || "-"
                       }}</span>
-
-                      <span class="label">BIC :</span>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div id="beneficiary-info" class="info-grid">
+                      <span class="label">BIC </span>
                       <span class="value">{{
                         selectedBeneficiaire?.vcBIC || "-"
                       }}</span>
@@ -143,7 +146,6 @@
                   </div>
                 </div>
 
-                <!-- Compte débiteur -->
                 <div class="row mb-3">
                   <div class="col-md-6">
                     <label class="form-label fw-bold text-body required"
@@ -193,10 +195,6 @@
                       </span>
                     </div>
                   </div>
-                </div>
-
-                <!-- Montant -->
-                <div class="row mb-3">
                   <div class="col-md-6">
                     <div class="mb-3">
                       <label class="form-label fw-bold required">
@@ -233,9 +231,9 @@
 
                 <!-- Date -->
                 <div class="row mb-3">
-                  <div class="col-md-6">
+                  <div class="col-md-12">
                     <label class="form-label fw-bold text-body required"
-                      >Transférer quand</label
+                      >Date</label
                     >
                     <input
                       class="form-control mt-2"
@@ -261,15 +259,35 @@
               <hr />
 
               <!-- Boutons -->
-              <div class="d-flex gap-2">
-                <button class="btn btn-primary"
-                 [disabled]="transferFormPaiementInterneExterne.invalid" 
-                 type="submit">Suivant</button>
-                <button class="btn btn-outline-primary" type="reset">
-                  Annuler
+
+              <div class="form-actions">
+                <button
+                  class="btn btn-suivant"
+                  type="submit"
+                  [disabled]="
+                    transferFormPaiementInterneExterne.invalid ||
+                    loadingPaiementInterneExterne
+                  "
+                >
+                  <span *ngIf="!loadingPaiementInterneExterne"> Suivant </span>
+
+                  <span *ngIf="loadingPaiementInterneExterne">
+                    <span class="spinner-border spinner-border-sm me-1"></span>
+                    Redirection en cours...
+                  </span>
                 </button>
-                <a class="btn btn-outline-primary border-0">Retour</a>
               </div>
+
+              <!-- <div class="d-flex gap-2">
+                <button
+                  class="btn btn-primary"
+                  [disabled]="transferFormPaiementInterneExterne.invalid"
+                  type="submit"
+                >
+                  Suivant
+                </button>
+             
+              </div> -->
             </form>
           </div>
         </div>

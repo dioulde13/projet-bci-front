@@ -70,16 +70,21 @@ export class FormulaireModePaiementComponent implements OnInit {
   fraisLabel: string = '';
   montantTotal: number = 0;
   fraisCalcul: number = 0;
+  vcAccountName: any;
 
   recupererListeOperateur() {
     this.mobileMoneyService.listeMobileOperators().subscribe({
       next: (response: any) => {
+        console.log("response: ", response);
         const operateur = (response?.data ?? []).find(
           (f: any) => f.FacturierName === this.typeOperateur,
         );
+        console.log("operateur: ", operateur);
 
         if (!operateur) return;
-
+       
+        this.vcAccountName = operateur?.vcAccountName;
+        console.log("this.vcAccountName: ", this.vcAccountName);
         this.frais = operateur?.nFees;
         this.btFeesUsePercent = operateur?.btFeesUsePercent;
         this.btFeesIncluded = operateur?.btFeesIncluded;
@@ -121,6 +126,9 @@ export class FormulaireModePaiementComponent implements OnInit {
     }
   }
 
+
+  
+
   typeOperateur: string | null = null;
 
   ngOnInit(): void {
@@ -155,7 +163,7 @@ export class FormulaireModePaiementComponent implements OnInit {
     this.initOrangeMoneyForm();
     this.initMobileMoneyForm();
 
-    console.log('Type opérateur :', this.typeOperateur);
+    // console.log('Type opérateur :', this.typeOperateur);
   }
 
   phoneMaxLength = 9;
@@ -209,7 +217,6 @@ export class FormulaireModePaiementComponent implements OnInit {
   }
 
   // 🔷 MOBILE MONEY
-  // 🔷 MOBILE MONEY
   initMobileMoneyForm(): void {
     this.mobileMoneyForm = this.fb.group({
       compteSource: ['', Validators.required],
@@ -240,13 +247,16 @@ export class FormulaireModePaiementComponent implements OnInit {
 
   soldeDebiteur: any;
   devise: any;
+  loadingGetBalance: boolean = false;
 
   getAccountName(accountNumber: string): void {
+    this.loadingGetBalance = true;
     this.getAccount.getNomDebiteur(accountNumber).subscribe({
       next: (res) => {
-        console.log('res: ', res);
+        // console.log('res: ', res);
         this.soldeDebiteur = res?.data?.soldeDisp;
         this.devise = res?.data?.devise;
+        this.loadingGetBalance = false;
         console.log('this.soldeDebiteur: ', this.soldeDebiteur);
       },
       error: () => {
@@ -255,7 +265,7 @@ export class FormulaireModePaiementComponent implements OnInit {
     });
   }
 
-  // loadingMobileMoney: boolean = false;
+  loadingMobileMoney: boolean = false;
 
   // 🔥 SUBMIT MOBILE
   submitMobileMoney(): void {
@@ -264,12 +274,16 @@ export class FormulaireModePaiementComponent implements OnInit {
       return;
     }
 
+    this.loadingMobileMoney = true; // 🔥 METS LE ICI
+
     const formValue = this.mobileMoneyForm.value;
 
     if (
       formValue.typeTransactionMM === 'B2W' &&
       Number(formValue.montant) > this.soldeDebiteur
     ) {
+      this.loadingMobileMoney = false;
+
       this.toastr.error(
         'Le montant saisi doit être inférieur ou égal au solde.',
         '',
@@ -277,6 +291,8 @@ export class FormulaireModePaiementComponent implements OnInit {
           positionClass: 'toast-custom-center',
         },
       );
+
+      return; // IMPORTANT
     } else {
       const payload = {
         vcPayerAccount:
@@ -290,13 +306,11 @@ export class FormulaireModePaiementComponent implements OnInit {
             : formValue.compteSource,
 
         mAmount: Number(formValue.montant),
-        vcOperatorAccount: this.typeOperateur,
+        vcOperatorAccount: this.vcAccountName,
         mFees: this.btFeesIncluded ? this.fraisCalcul : this.fraisCalcul,
         vcNotes: formValue.description,
         vcOperationType: formValue.typeTransactionMM,
       };
-
-      // console.log('Payload Mobile Money :', payload);
 
       localStorage.setItem(
         'InfosFormulaireModePaiement',
@@ -306,25 +320,11 @@ export class FormulaireModePaiementComponent implements OnInit {
           devise: this.devise,
         }),
       );
-       this.router.navigate(['/recapModePaiement']);
+      // Simuler un petit délai pour voir le loading
+      setTimeout(() => {
+        this.router.navigate(['/recapModePaiement']);
+      }, 1000);
     }
-    // this.mobileMoneyService.payerMobileMoney(payload).subscribe({
-    //   next: (res) => {
-    //     // console.log('Paiement réussi :', res);
-    //     this.toastr.success(res.data.message, '', {
-    //       positionClass: 'toast-custom-center',
-    //     });
-    //     this.loadingMobileMoney = false;
-    //   },
-    //   error: (err) => {
-    //     this.toastr.error(err.error.message, '', {
-    //       positionClass: 'toast-custom-center',
-    //     });
-    //     this.loadingMobileMoney = false;
-    //     console.error('Erreur paiement :', err);
-    //     // toast erreur ic
-    //   },
-    // });
   }
 
   listeCompteClient: any[] = [];

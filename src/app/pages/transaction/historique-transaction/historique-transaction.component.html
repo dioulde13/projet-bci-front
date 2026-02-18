@@ -92,9 +92,7 @@
               </div>
 
               <!-- TABLE -->
-              <table
-                class="table mb-0 align-middle table-hover dt-responsive nowrap"
-              >
+              <table class="table mb-0 align-middle dt-responsive nowrap">
                 <thead class="table-light">
                   <tr>
                     <th class="text-nowrap" (click)="sort('dtCreated')">
@@ -121,6 +119,18 @@
                     >
                       Montant
                     </th>
+                    <th
+                      class="text-nowrap text-center"
+                      (click)="sort('Amount')"
+                    >
+                      Montant converti
+                    </th>
+                    <th
+                      class="text-nowrap text-center"
+                      (click)="sort('Amount')"
+                    >
+                      Taux de change
+                    </th>
                     <th class="text-center">Description</th>
                     <th class="text-center">Status</th>
                     <th class="text-center">Action</th>
@@ -132,62 +142,72 @@
                     <td class="text-nowrap">
                       {{ liste.dtCreated | date: "dd/MM/yyyy HH:mm" }}
                     </td>
-                    <td>
-                      {{ liste.Reference }}
-                    </td>
-                    <td>
-                      {{ liste.UserFullName }}
-                    </td>
-                    <td>
-                      {{ liste.OrganisationName }}
-                    </td>
-                    <td>
-                      {{ liste.BenefName }}
-                    </td>
-                    <td>
-                      {{ liste.PaymentModeName }}
-                    </td>
+
+                    <td>{{ liste.Reference }}</td>
+
+                    <td>{{ liste.UserFullName }}</td>
+
+                    <td>{{ liste.OrganisationName }}</td>
+
+                    <td>{{ liste.BenefName }}</td>
+
+                    <td>{{ liste.PaymentModeName }}</td>
+
                     <td class="text-nowrap text-center fw-bold">
-                      {{ formatMontant(liste) }} {{liste.BenefCurrency}}
+                      {{ formatMontant(liste.Amount) }}
+                      {{ liste.debiteurCurrency }}
                     </td>
+
+                    <td class="text-nowrap text-center fw-bold">
+                      {{ formatMontant(liste.mAmountConverted) }}
+                      {{ liste.BenefCurrency }}
+                    </td>
+
+                    <td class="text-nowrap text-center fw-bold">
+                      {{ formatMontant(liste.nRate) }}
+                    </td>
+
                     <td class="text-center">
                       {{ liste.Notes }}
                     </td>
-                    <td
-                      class="text-center fw-semibold"
-                      [ngClass]="{
-                        'text-warning': liste.Status === 'PENDING',
-                        'text-success': liste.Status === 'success',
-                        'text-danger': liste.Status === 'Failed',
-                        'text-muted':
-                          liste.Status !== 'PENDING' &&
-                          liste.Status !== 'success' &&
-                          liste.Status !== 'Failed',
-                      }"
-                    >
-                      {{ liste.Status }}
-                    </td>
-                    <td class="text-center" [ngSwitch]="liste.Status">
-                      <!-- SUCCESS -->
-                      <button
-                        *ngSwitchCase="'Success'"
-                        class="btn btn-sm btn-outline-danger"
-                        (click)="openCancelModal(liste)"
-                        data-bs-toggle="modal"
-                        data-bs-target="#cancelModal"
-                      >
-                        Annuler
-                      </button>
 
-                       <button
-                        *ngSwitchCase="'PENDING'"
-                        class="btn btn-sm btn-outline-danger"
-                        (click)="openCancelModal(liste)"
-                        data-bs-toggle="modal"
-                        data-bs-target="#cancelModal"
+                    <!-- STATUS -->
+                    <td class="text-center align-middle">
+                      <span
+                        class="badge px-3 py-2"
+                        [ngClass]="{
+                          'bg-success':
+                            liste.Status?.toLowerCase() === 'success',
+                          'bg-danger':
+                            liste.Status?.toLowerCase() === 'cancelled' ||
+                            liste.Status?.toLowerCase() === 'failed',
+                          'bg-warning text-dark':
+                            liste.Status?.toLowerCase() === 'pending',
+                        }"
                       >
-                        Verifier
-                      </button>
+                        {{ getStatusLabel(liste.Status!) }}
+                      </span>
+                    </td>
+
+                    <!-- ACTION -->
+                    <td class="text-center align-middle">
+                      <div class="d-flex justify-content-center">
+                        <button
+                          *ngIf="liste.Status?.toLowerCase() === 'pending'"
+                          class="btn btn-outline-info btn-sm px-3"
+                          (click)="openVerifierModal(liste)"
+                        >
+                          <i class="fas fa-sync-alt"></i>
+                        </button>
+
+                        <button
+                          *ngIf="liste.Status?.toLowerCase() === 'success'"
+                          class="btn btn-outline-danger btn-sm px-3"
+                          (click)="openCancelModal(liste)"
+                        >
+                          <i class="fas fa-times-circle"></i>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
@@ -236,7 +256,6 @@
               </div>
             </div>
 
-            <!-- ================= CANCEL MODAL ================= -->
             <div
               class="modal fade"
               id="cancelModal"
@@ -252,8 +271,7 @@
                     <button
                       type="button"
                       class="btn-close"
-                      data-bs-dismiss="modal"
-                      (click)="closeModal()"
+                      (click)="closeCancelModal()"
                     ></button>
                   </div>
 
@@ -261,7 +279,6 @@
                     <p class="fw-bold">
                       Êtes-vous sûr de vouloir annuler cette transaction ?
                     </p>
-
                     <div *ngIf="selectedTransaction" class="mt-3">
                       <p class="mb-1">
                         <strong>Référence :</strong>
@@ -269,7 +286,7 @@
                       </p>
                       <p class="mb-1">
                         <strong>Montant :</strong>
-                        {{ formatMontant(selectedTransaction) }}
+                        {{ formatMontant(selectedTransaction.Amount) }}
                       </p>
                     </div>
                   </div>
@@ -277,22 +294,77 @@
                   <div class="modal-footer justify-content-center">
                     <button
                       class="btn btn-secondary"
-                      data-bs-dismiss="modal"
-                      (click)="closeModal()"
+                      (click)="closeCancelModal()"
                     >
                       Non
                     </button>
-
                     <button
                       class="btn btn-danger"
                       [disabled]="isCancelling"
                       (click)="confirmCancel()"
-                      data-bs-dismiss="modal"
                     >
                       <span *ngIf="!isCancelling">Oui, annuler</span>
                       <span *ngIf="isCancelling">
                         <span class="spinner-border spinner-border-sm"></span>
                         Annulation...
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="modal fade"
+              id="verifierModal"
+              tabindex="-1"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title text-primary">
+                      Vérification de transaction
+                    </h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      (click)="closeVerifierModal()"
+                    ></button>
+                  </div>
+
+                  <div class="modal-body text-center">
+                    <p class="fw-bold">
+                      Voulez-vous vérifier cette transaction ?
+                    </p>
+                    <!-- <div *ngIf="selectedTransaction" class="mt-3">
+                      <p class="mb-1">
+                        <strong>Référence :</strong>
+                        {{ selectedTransaction.Reference }}
+                      </p>
+                      <p class="mb-1">
+                        <strong>Montant :</strong>
+                        {{ formatMontant(selectedTransaction.Amount) }}
+                      </p>
+                    </div> -->
+                  </div>
+
+                  <div class="modal-footer justify-content-center">
+                    <button
+                      class="btn btn-secondary"
+                      (click)="closeVerifierModal()"
+                    >
+                      Non
+                    </button>
+                    <button
+                      class="btn btn-primary"
+                      [disabled]="isVerifying"
+                      (click)="confirmVerifier()"
+                    >
+                      <span *ngIf="!isVerifying">Oui, vérifier</span>
+                      <span *ngIf="isVerifying">
+                        <span class="spinner-border spinner-border-sm"></span>
+                        Vérification...
                       </span>
                     </button>
                   </div>

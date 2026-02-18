@@ -14,7 +14,7 @@ import { BanqueNameVerifierService } from '../../../../servicesNodes/verifierBan
 import { PaiementInterneExterneService } from '../../../../servicesNodes/paiementInterneExterne/paiement-interne-externe.service';
 // import { ToastrService } from 'ngx-toastr';
 import { GnfNumberFormatDirective } from '../../../../directives/gnf-number-format.directive';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -91,6 +91,7 @@ export class TransfertUniqueComponent implements OnInit {
     this.getListeBanques();
     this.initFormPaiementInterneExterne();
   }
+
 
   getListeCompteClient(): void {
     if (!this.iOrganisationID) return;
@@ -300,13 +301,17 @@ export class TransfertUniqueComponent implements OnInit {
   }
 
   submitAttempt = false;
+  loadingPaiementInterneExterne: boolean = false;
 
   submitFormPayementInterneExterne(): void {
     this.submitAttempt = true;
     this.transferFormPaiementInterneExterne.markAllAsTouched();
 
+    this.loadingPaiementInterneExterne = true;
+
     const formValue = this.transferFormPaiementInterneExterne.value;
     if (formValue.mAmount > this.soldeDebiteur) {
+      this.loadingPaiementInterneExterne = false;
       this.toastr.error(
         'Le montant saisi doit être inférieur ou égal au solde.',
         '',
@@ -314,6 +319,7 @@ export class TransfertUniqueComponent implements OnInit {
           positionClass: 'toast-custom-center',
         },
       );
+      return;
     } else {
       const payload = {
         vcPayerName: this.nomDebiteur,
@@ -345,7 +351,10 @@ export class TransfertUniqueComponent implements OnInit {
         'infosCompteDebiteur',
         JSON.stringify(this.infosCompteDebiteur),
       );
-      this.router.navigate(['/recap']);
+      // Simuler un petit délai pour voir le loading
+      setTimeout(() => {
+        this.router.navigate(['/recap']);
+      }, 1000);
     }
   }
 }

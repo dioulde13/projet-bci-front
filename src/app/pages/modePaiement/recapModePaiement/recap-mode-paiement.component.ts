@@ -90,6 +90,26 @@ export class RecapModePaiementComponent implements OnInit {
     return `${year}-${month}-${day}`; // format ISO pour ton API
   }
 
+  decodeMessage(encoded: string): string {
+    if (!encoded) return encoded;
+
+    return (
+      encoded
+        // replacement des séquences courantes
+        .replace(/\+á/g, 'à')
+        .replace(/\+é/g, 'é')
+        .replace(/\+è/g, 'è')
+        .replace(/\+®/g, 'é')
+        .replace(/\+ç/g, 'ç')
+        .replace(/\+ô/g, 'ô')
+        .replace(/\+°/g, 'ô')
+        .replace(/\+ù/g, 'ù')
+        .replace(/\+/g, ' ') // transformer les + restants en espaces
+        .trim()
+    );
+  }
+
+
   reference: any;
   transaction_id: any;
 
@@ -108,23 +128,20 @@ export class RecapModePaiementComponent implements OnInit {
       iTransactionID: this.transaction_id,
     };
 
-    console.log('Payload Mobile Money :', payload);
+    console.log('Payload Mobile Money sow :', payload);
 
     this.mobileMoneyService.payerMobileMoney(payload).subscribe({
       next: (res) => {
-        // console.log('Paiement réussi :', res);
-        // this.toastr.success(res.data.message, '', {
-        //   positionClass: 'toast-custom-center',
-        // });
         if(res.status === 200){
-        this.toastr.success(res.message, '', {
+        this.toastr.success("Transaction effectuée avec succès ✅", '', {
           positionClass: 'toast-custom-center',
         });
         this.isLoading = false;
         this.router.navigate(['/historiqueTransactions']);
         localStorage.removeItem('InfosFormulaireModePaiement');
         } else{
-          this.toastr.success(res.message, '', {
+          this.isLoading = false;
+          this.toastr.success(this.decodeMessage(res.message), '', {
           positionClass: 'toast-custom-center',
         });
         }
@@ -169,9 +186,12 @@ export class RecapModePaiementComponent implements OnInit {
           this.reference = res.data.reference;
           this.transaction_id = res.data.transaction_id;
           this.addMobileMoneyTransaction();
+        } else{
+          this.isLoading = false;
         }
       },
       error: (err) => {
+        this.isLoading = false;
         this.toastr.error('Une erreur interne est survenue.', '', {
           positionClass: 'toast-custom-center',
         });

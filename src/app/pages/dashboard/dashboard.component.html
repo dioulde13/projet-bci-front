@@ -72,8 +72,6 @@
             </div>
           </div>
 
-
-
           <div class="card-body finance-chart-container">
             <div class="row text-center justify-content-center">
               <!-- ================= SKELETON ================= -->
@@ -162,45 +160,62 @@
                     <p class="custom-icon-text">Gérer les bénéficiaires</p>
                   </a>
                 </div>
-
+ <!-- (click)="openTransferModal()" -->
                 <div class="col-6 col-md-4 mb-4">
-                  <!-- <button
-                    (click)="openTransferModal()"
-                    class="group w-full flex items-center justify-center gap-3 px-4 py-4 bg-indigo-500 text-white font-bold rounded-xl transition-all duration-300 hover:bg-indigo-600 hover:shadow-[0_10px_20px_-10px_rgba(99,102,241,0.6)] active:scale-95"
+                  <a
+                  (click)="notificationEnCoursDeveloppement()"
+                   
+                    class="custom-icon-container"
                   >
-                    <div
-                      class="p-1 bg-white/20 rounded-lg group-hover:rotate-12 transition-transform"
+                    <i class="bi bi-currency-exchange custom-icon-size"></i>
+                    <p class="custom-icon-text">Transfert international</p>
+                  </a>
+                </div>
+
+                <app-ordre-transfert-international
+                  [isOpenModal]="isModalOpen"
+                  (modalClosed)="closeTransferModal()"
+                  (importDataCompleted)="handleValidation($event)"
+                >
+                </app-ordre-transfert-international>
+                <!-- <div class="col-6 ">
+                  <div class="px-4 py-4">
+                    <button
+                      (click)="openTransferModal()"
+                      class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 fw-bold rounded shadow"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="w-5 h-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                      <span
+                        class="d-flex align-items-center justify-content-center bg-white bg-opacity-25 rounded p-1"
                       >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 4v16m8-8H4"
-                        />
-                      </svg>
-                    </div>
-                    <span>Nouveau Transfert</span>
-                  </button> -->
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                      </span>
+                      <span>Transfert international</span>
+                    </button>
+                  </div>
                   <app-ordre-transfert-international
                     [isOpenModal]="isModalOpen"
                     (modalClosed)="closeTransferModal()"
                     (importDataCompleted)="handleValidation($event)"
                   >
                   </app-ordre-transfert-international>
-                </div>
+                </div> -->
               </ng-template>
             </div>
           </div>
-
-
-          
         </div>
       </div>
       <div class="col-xl-4">

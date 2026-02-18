@@ -1,5 +1,8 @@
 <div class="container mt-3">
-  <div class="card shadow-sm border-0 rounded-4" style="max-height: 90vh; overflow-y: auto;">
+  <div
+    class="card shadow-sm border-0 rounded-4"
+    style="max-height: 90vh; overflow-y: auto"
+  >
     <div class="card-header text-white rounded-top-4 py-2">
       <h5 class="mb-0">Récapitulatif du mode de paiement</h5>
     </div>
@@ -20,32 +23,50 @@
       <!-- BÉNÉFICIAIRE -->
       <div class="row g-2">
         <div class="col-md-6">
-          <small class="text-muted">Type operateur</small>
-          <div class="fw-bold">{{ InfosFormulaireModePaiement?.payload?.vcOperatorAccount }}</div>
+          <small class="text-muted">Nom operateur</small>
+          <div class="fw-bold">
+            {{ InfosFormulaireModePaiement?.payload?.vcOperatorAccount }}
+          </div>
         </div>
         <div class="col-md-6">
           <small class="text-muted">Compte / numero bénéficiaire</small>
-          <div class="fw-bold">{{ InfosFormulaireModePaiement?.payload?.vcBenefAccount }}</div>
+          <div class="fw-bold">
+            {{ InfosFormulaireModePaiement?.payload?.vcBenefAccount }}
+          </div>
         </div>
         <div class="col-md-6">
           <small class="text-muted">Compte debiteur</small>
-          <div class="fw-bold">{{ InfosFormulaireModePaiement?.payload?.vcPayerAccount }}</div>
+          <div class="fw-bold">
+            {{ InfosFormulaireModePaiement?.payload?.vcPayerAccount }}
+          </div>
         </div>
         <div class="col-md-6">
           <small class="text-muted">Montant</small>
-          <div class="fw-bold">{{ InfosFormulaireModePaiement?.payload?.mAmount }}</div>
+          <div class="fw-bold">
+            {{
+              InfosFormulaireModePaiement?.payload?.mAmount | number: "1.2-2"
+            }}
+            {{ InfosFormulaireModePaiement.devise }}
+          </div>
         </div>
         <div class="col-md-6">
           <small class="text-muted">Description</small>
-          <div class="fw-bold">{{ InfosFormulaireModePaiement?.payload?.vcNotes }}</div>
+          <div class="fw-bold">
+            {{ InfosFormulaireModePaiement?.payload?.vcNotes }}
+          </div>
         </div>
         <div class="col-md-6">
           <small class="text-muted">Frais</small>
-          <div class="fw-bold">{{ InfosFormulaireModePaiement?.payload?.mFees }}</div>
+          <div class="fw-bold">
+            {{ InfosFormulaireModePaiement?.payload?.mFees }}
+          </div>
         </div>
         <div class="col-md-6">
           <small class="text-muted">Solde débiteur</small>
-          <div class="fw-bold">{{ InfosFormulaireModePaiement.soldeDebiteur  }}  {{InfosFormulaireModePaiement.devise}}</div>
+          <div class="fw-bold">
+            {{ InfosFormulaireModePaiement.soldeDebiteur | number: "1.2-2" }}
+            {{ InfosFormulaireModePaiement.devise }}
+          </div>
         </div>
       </div>
 
@@ -53,8 +74,12 @@
 
       <!-- ACTION -->
       <div class="d-flex justify-content-end gap-2">
-        <button class="btn btn-success px-3" (click)="openModalOtp()">{{loadiongConfirmeOtp?"Confirmation en cours...":"Confirmer"}}</button>
-        <button (click)="retour()" class="btn btn-outline-secondary px-3">Retour</button>
+        <button class="btn btn-success px-3" (click)="openModalOtp()">
+          {{ loadiongConfirmeOtp ? "Confirmation en cours..." : "Confirmer" }}
+        </button>
+        <button (click)="retour()" class="btn btn-outline-secondary px-3">
+          Retour
+        </button>
       </div>
     </div>
   </div>
@@ -68,12 +93,15 @@
 
     <div class="otp-container">
       <div class="alert alert-info" role="alert">
-        <span>Un code de vérification (OTP) a été envoyé à votre adresse email.</span>
+        <span
+          >Un code de vérification (OTP) a été envoyé à votre adresse
+          email.</span
+        >
       </div>
 
       <label class="form-label text-center w-100">Entrez votre code OTP</label>
       <div class="otp-inputs d-flex justify-content-center gap-2">
-        <ng-container *ngFor="let item of [0,1,2,3]; let i = index">
+        <ng-container *ngFor="let item of [0, 1, 2, 3]; let i = index">
           <input
             class="form-control otp-input"
             type="text"
@@ -114,14 +142,19 @@
     </div>
 
     <div class="flex justify-between mt-4 d-flex justify-content-between">
-      <button class="btn btn-outline-danger" (click)="closeModalOtp()">Annuler</button>
+      <button class="btn btn-outline-danger" (click)="closeModalOtp()">
+        Annuler
+      </button>
       <button
         type="submit"
         class="btn btn-primary"
         [disabled]="!isOtpComplete() || isLoading"
         (click)="verifyOtp()"
       >
-        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        <span
+          *ngIf="isLoading"
+          class="spinner-border spinner-border-sm me-2"
+        ></span>
         {{ isLoading ? "Vérification..." : "Valider le Code" }}
       </button>
     </div>

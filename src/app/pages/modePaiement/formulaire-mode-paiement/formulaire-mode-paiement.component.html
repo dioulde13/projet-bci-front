@@ -78,9 +78,8 @@
 
               <button class="btn btn-primary" type="submit">Payer</button>
             </form>
-
+<!-- *ngIf="typeOperateur?.trim() === 'Areeba Guinée'" -->
             <form
-              *ngIf="typeOperateur?.trim() === 'Areeba Guinée'"
               [formGroup]="mobileMoneyForm"
               (ngSubmit)="submitMobileMoney()"
               novalidate
@@ -90,90 +89,136 @@
                 💳 Paiement Mobile Money
               </h4>
 
-              <!-- TYPE TRANSACTION -->
-              <div class="mb-3">
-                <label class="form-label fw-bold required">
-                  Type de transaction
-                </label>
+              <!-- LIGNE 1 -->
+              <div class="row">
+                <!-- TYPE TRANSACTION -->
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-bold required">
+                    Type de transaction
+                  </label>
 
-                <select
-                  class="form-select form-select-lg"
-                  formControlName="typeTransactionMM"
-                >
-                  <option value="" disabled>-- Choisir --</option>
-                  <option value="B2W">Banque → Mobile Money</option>
-                  <option value="W2B">Mobile Money → Banque</option>
-                </select>
-              </div>
-
-              <!-- COMPTE -->
-              <div class="mb-3">
-                <label class="form-label fw-bold required">Compte</label>
-
-                <select
-                  class="form-select form-select-lg"
-                  formControlName="compteSource"
-                >
-                  <option value="" disabled>-- Choisir un compte --</option>
-                  <option
-                    *ngFor="let c of listeCompteClient"
-                    [value]="c.vcAccountNumber"
+                  <select
+                    class="form-select form-select-lg"
+                    formControlName="typeTransactionMM"
                   >
-                    {{ c.vcAccountNumber }}
-                  </option>
-                </select>
-
-                <div
-                  class="mt-2 p-2 bg-light rounded"
-                  *ngIf="
-                    mobileMoneyForm.get('typeTransactionMM')?.value === 'B2W'
-                  "
-                >
-                  <small style="font-size: 15px;">
-                    Solde disponible :
-                    <b class="text-success">
-                      {{ soldeDebiteur | number: "1.2-2" }} {{ devise }}
-                    </b>
-                  </small>
+                    <option value="" disabled>-- Choisir --</option>
+                    <option value="B2W">Banque → Mobile Money</option>
+                    <option value="W2B">Mobile Money → Banque</option>
+                  </select>
                 </div>
+
+                <!-- COMPTE -->
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-bold required">Compte</label>
+
+                  <select
+                    class="form-select form-select-lg"
+                    formControlName="compteSource"
+                  >
+                    <option value="" disabled>-- Choisir un compte --</option>
+                    <option
+                      *ngFor="let c of listeCompteClient"
+                      [value]="c.vcAccountNumber"
+                    >
+                      {{ c.vcAccountNumber }}
+                    </option>
+                  </select>
+
+                  <div
+                    class="mt-2 p-2 rounded"
+                    *ngIf="
+                      mobileMoneyForm.get('typeTransactionMM')?.value === 'B2W'
+                    "
+                  >
+                    <small style="font-size: 15px">
+                      Solde disponible :
+                      <b class="text-success">
+                        <ng-container
+                          *ngIf="!loadingGetBalance; else loadingSolde"
+                        >
+                          {{ soldeDebiteur | number: "1.2-2" }} {{ devise }}
+                        </ng-container>
+
+                        <ng-template #loadingSolde>
+                          <span class="text-muted"
+                            >En cours de chargement...</span
+                          >
+                        </ng-template>
+                      </b>
+                    </small>
+                  </div>
+                </div>
+                <!-- <div class="col-md-6 mb-3">
+                  <label class="form-label fw-bold required">Compte</label>
+
+                  <select
+                    class="form-select form-select-lg"
+                    formControlName="compteSource"
+                  >
+                    <option value="" disabled>-- Choisir un compte --</option>
+                    <option
+                      *ngFor="let c of listeCompteClient"
+                      [value]="c.vcAccountNumber"
+                    >
+                      {{ c.vcAccountNumber }}
+                    </option>
+                  </select>
+
+                  <div
+                    class="mt-2 p-2 rounded"
+                    *ngIf="
+                      mobileMoneyForm.get('typeTransactionMM')?.value === 'B2W'
+                    "
+                  >
+                    <small style="font-size: 15px">
+                      Solde disponible :
+                      <b class="text-success">
+                        {{ soldeDebiteur | number: "1.2-2" }} {{ devise }}
+                      </b>
+                    </small>
+                  </div>
+                </div> -->
               </div>
 
-              <!-- TELEPHONE -->
-              <div class="mb-3">
-                <label class="form-label fw-bold required">
-                  Numéro Mobile
-                </label>
+              <!-- LIGNE 2 -->
+              <div class="row">
+                <!-- TELEPHONE -->
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-bold required">
+                    Numéro Mobile
+                  </label>
 
-                <input
-                  type="text"
-                  class="form-control form-control-lg"
-                  formControlName="telephone"
-                  placeholder="Ex: 620000000"
-                  maxlength="9"
-                  (keydown)="onlyDigits($event)"
-                  (paste)="onPaste($event)"
-                />
-              </div>
-
-              <!-- MONTANT -->
-              <div class="mb-3">
-                <label class="form-label fw-bold required"> Montant </label>
-
-                <div class="input-group input-group-lg">
                   <input
                     type="text"
-                    class="form-control"
-                    gnfNumberFormat
-                    formControlName="montant"
-                    placeholder="Entrer le montant"
+                    class="form-control form-control-lg"
+                    formControlName="telephone"
+                    placeholder="Ex: 620000000"
+                    maxlength="9"
+                    (keydown)="onlyDigits($event)"
+                    (paste)="onPaste($event)"
                   />
-                  <span class="input-group-text fw-bold">
-                    {{ devise }}
-                  </span>
+                </div>
+
+                <!-- MONTANT -->
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-bold required"> Montant </label>
+
+                  <div class="input-group input-group-lg">
+                    <input
+                      type="text"
+                      class="form-control"
+                      gnfNumberFormat
+                      formControlName="montant"
+                      placeholder="Entrer le montant"
+                    />
+                    <span class="input-group-text fw-bold">
+                      {{ devise }}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <!-- FRAIS INFO -->
+              <!-- FRAIS (pleine largeur automatique) -->
               <div class="mb-3" *ngIf="fraisLabel">
                 <div class="p-3 border rounded bg-light">
                   <div
@@ -194,21 +239,7 @@
                 </div>
               </div>
 
-              <!-- TOTAL -->
-              <!-- <div
-                class="mb-4 p-3 rounded text-white"
-                style="background: linear-gradient(45deg, #0d6efd, #0dcaf0)"
-                *ngIf="montantTotal > 0"
-              >
-                <div class="d-flex justify-content-between">
-                  <span class="fw-bold">Montant total</span>
-                  <span class="fw-bold fs-5">
-                    {{ montantTotal | number: "1.2-2" }} {{ devise }}
-                  </span>
-                </div>
-              </div> -->
-
-              <!-- DESCRIPTION -->
+              <!-- DESCRIPTION (pleine largeur comme demandé) -->
               <div class="mb-4">
                 <label class="form-label fw-bold required"> Description </label>
 
@@ -220,13 +251,20 @@
                 />
               </div>
 
-              <!-- BUTTON -->
-              <button
-                 class="btn btn-primary"
-                type="submit"
-              >
-               Suivant
-              </button>
+              <div class="form-actions">
+                <button
+                  class="btn btn-suivant"
+                  type="submit"
+                  [disabled]="mobileMoneyForm.invalid || loadingMobileMoney"
+                >
+                  <span *ngIf="!loadingMobileMoney"> Suivant </span>
+
+                  <span *ngIf="loadingMobileMoney">
+                    <span class="spinner-border spinner-border-sm me-1"></span>
+                    Redirection en cours...
+                  </span>
+                </button>
+              </div>
             </form>
           </div>
         </div>

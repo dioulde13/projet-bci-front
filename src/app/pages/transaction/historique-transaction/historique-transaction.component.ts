@@ -6,6 +6,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { HistoriqueTransactionService } from '../../../services/historiques/historique-transaction.service';
 import { ToastrService } from 'ngx-toastr';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-historique-transaction',
@@ -206,12 +207,29 @@ export class HistoriqueTransactionComponent implements OnInit {
   }
 
   formatMontant(t: any): string {
-    const montant = Number(t.Amount ?? 0);
+    const montant = Number(t);
 
     return montant.toLocaleString('fr-FR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
+  }
+
+  getStatusLabel(status: string): string {
+    if (!status) return 'Inconnu';
+
+    switch (status.toLowerCase()) {
+      case 'success':
+        return 'Succès';
+      case 'cancelled':
+        return 'Annulé';
+      case 'failed':
+        return 'Échoué';
+      case 'pending':
+        return 'En attente';
+      default:
+        return status;
+    }
   }
 
   // ========================
@@ -261,9 +279,76 @@ export class HistoriqueTransactionComponent implements OnInit {
 
   selectedTransaction: any = null;
   isCancelling: boolean = false;
+  isVerifying: boolean = false;
 
+  cancelModalInstance: any;
+  verifierModalInstance: any;
+
+  // Annulation
   openCancelModal(transaction: any) {
     this.selectedTransaction = transaction;
+    const modalEl: any = document.getElementById('cancelModal');
+    this.cancelModalInstance = new bootstrap.Modal(modalEl);
+    this.cancelModalInstance.show();
+  }
+
+  closeCancelModal() {
+    if (this.cancelModalInstance) this.cancelModalInstance.hide();
+    this.selectedTransaction = null;
+  }
+
+  // Vérification
+  openVerifierModal(transaction: any) {
+    this.selectedTransaction = transaction;
+
+    console.log('this.selectedTransaction: ', this.selectedTransaction);
+    const modalEl: any = document.getElementById('verifierModal');
+    this.verifierModalInstance = new bootstrap.Modal(modalEl);
+    this.verifierModalInstance.show();
+  }
+
+  closeVerifierModal() {
+    if (this.verifierModalInstance) this.verifierModalInstance.hide();
+    this.selectedTransaction = null;
+  }
+
+  confirmVerifier() {
+    console.log(this.selectedTransaction.iRequestID);
+    this.isVerifying = true;
+
+    this.historiqueTransactionService
+      .getAllTransactions(this.selectedTransaction.iRequestID) // adapte si besoin
+      .subscribe({
+        next: (response: any) => {
+          if (response.status === 200) {
+            console.log('response: ', response);
+            this.toastr.success('Transaction annuler avec success', '', {
+              positionClass: 'toast-custom-center',
+            });
+            if (this.verifierModalInstance) this.verifierModalInstance.hide();
+            this.selectedTransaction = null;
+          } else {
+            if (this.verifierModalInstance) this.verifierModalInstance.hide();
+            this.selectedTransaction = null;
+            this.toastr.error(this.decodeMessage(response.message), '', {
+              positionClass: 'toast-custom-center',
+            });
+          }
+
+          this.historiqueTransactionsListe();
+          this.selectedTransaction = null;
+
+          this.isVerifying = false;
+        },
+        error: () => {
+          this.isVerifying = false;
+        },
+      });
+    // ⚡ Simule API call
+    setTimeout(() => {
+      this.isVerifying = false;
+      this.closeVerifierModal();
+    }, 2000);
   }
 
   decodeMessage(encoded: string): string {
@@ -289,7 +374,6 @@ export class HistoriqueTransactionComponent implements OnInit {
     if (!this.selectedTransaction) return;
 
     // console.log('this.selectedTransaction: ', this.selectedTransaction);
-
     this.isCancelling = true;
 
     this.historiqueTransactionService
@@ -297,10 +381,14 @@ export class HistoriqueTransactionComponent implements OnInit {
       .subscribe({
         next: (response: any) => {
           if (response.status === 200) {
-            this.toastr.success(response.message, '', {
+            this.toastr.success('Transaction annuler avec success', '', {
               positionClass: 'toast-custom-center',
             });
+            if (this.cancelModalInstance) this.cancelModalInstance.hide();
+            this.selectedTransaction = null;
           } else {
+            if (this.cancelModalInstance) this.cancelModalInstance.hide();
+            this.selectedTransaction = null;
             this.toastr.error(this.decodeMessage(response.message), '', {
               positionClass: 'toast-custom-center',
             });
@@ -312,6 +400,7 @@ export class HistoriqueTransactionComponent implements OnInit {
           //   );
           this.historiqueTransactionsListe();
           this.selectedTransaction = null;
+
           this.isCancelling = false;
         },
         error: () => {
