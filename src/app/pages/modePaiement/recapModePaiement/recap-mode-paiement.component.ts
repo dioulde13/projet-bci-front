@@ -132,6 +132,7 @@ export class RecapModePaiementComponent implements OnInit {
 
     this.mobileMoneyService.payerMobileMoney(payload).subscribe({
       next: (res) => {
+        console.log("res: ", res);
         if(res.status === 200){
         this.toastr.success("Transaction effectuée avec succès ✅", '', {
           positionClass: 'toast-custom-center',

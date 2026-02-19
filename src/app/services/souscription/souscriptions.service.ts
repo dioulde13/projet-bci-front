@@ -12,9 +12,10 @@ export class SouscriptionsService {
 
   baseUrl = environment.apiUrl;
 
-  verifierNumeroDeCompte(clientID: number): Observable<any> {
+  verifierNumeroDeCompte(clientID: number, modeEnvoiSms: string): Observable<any> {
     const body = {
       clientID: clientID,
+      modeEnvoiSms: modeEnvoiSms
     };
     console.log(body);
     return this.http.post(`${this.baseUrl}/api/getInfoCompteClient`, body);

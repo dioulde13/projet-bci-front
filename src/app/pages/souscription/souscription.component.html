@@ -51,8 +51,9 @@
                   </div>
                   <form #registrationForm="ngForm" novalidate>
                     <div class="mb-3">
-                      <label class="form-label" for="bankAccount"
-                        >6 premiers chiffres du numéro de compte *</label
+                      <label class="form-label" for="bankAccount">
+                        Numéro de client ID (6 premiers chiffres du numéro de
+                        compte)*</label
                       >
                       <input
                         class="form-control"
@@ -70,7 +71,7 @@
                             bankAccountModel.invalid &&
                             bankAccountModel.touched,
                           'is-valid':
-                            bankAccountModel.valid && bankAccountModel.touched
+                            bankAccountModel.valid && bankAccountModel.touched,
                         }"
                       />
 
@@ -80,7 +81,7 @@
                           bankAccountModel.invalid && bankAccountModel.touched
                         "
                       >
-                        Numéro de compte invalide (6 chiffres requis).
+                        Numéro de client ID invalide (6 chiffres requis).
                       </div>
                     </div>
 
@@ -102,7 +103,7 @@
                         "
                         (click)="verifierNumeroCompte()"
                       >
-                        {{ loading ? "Vérification en cours..." : "Continuer" }}
+                         Vérifier 
                       </button>
                     </div>
                   </form>
@@ -144,46 +145,92 @@
 </div>
 
 <div
-  class="modal"
+  class="modal fade"
   [ngClass]="{ 'show d-block': showModal }"
   tabindex="-1"
-  role="dialog"
   *ngIf="showModal"
 >
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-white bg-success">
-        <h5 class="modal-title">Validation réussie !</h5>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow border-0 rounded-4">
+      <!-- HEADER -->
+      <div class="modal-header bg-success text-white rounded-top-4">
+        <h5 class="modal-title fw-bold">Méthode de réception OTP</h5>
         <button
           type="button"
-          class="btn-close"
-          aria-label="Close"
+          class="btn-close btn-close-white"
           (click)="closeModal()"
         ></button>
       </div>
-      <div class="modal-body">
-        <p class="fw-semibold">
-          Vos informations ont été validées avec succès.
-        </p>
-        <p class="fw-semibold">
-          Un code de vérification a été envoyé à
-          {{ "********" + telephone.toString().slice(-2) }}.
-        </p>
-        <p class="fw-semibold" id="otpSentMessage"></p>
-      </div>
-      <div class="modal-footer">
-        <button
-          class="btn btn-success"
-          id="proceedToOTP"
-          data-bs-dismiss="modal"
-          type="button"
-          [routerLink]="'/otpValidation'"
+
+      <!-- BODY -->
+      <div class="modal-body text-center p-4">
+        <p class="text-muted mb-4">Choisissez comment recevoir votre code :</p>
+
+        <!-- ✅ ALIGNEMENT HORIZONTAL -->
+        <div
+          class="d-flex justify-content-center align-items-center gap-4 flex-wrap"
         >
-          OK
+          <div class="form-check d-flex align-items-center gap-2">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="otpMethod"
+              id="sms"
+              value="SMS"
+              [(ngModel)]="selectedMethod"
+            />
+            <label class="form-check-label fw-semibold" for="sms">
+              📩 SMS
+            </label>
+          </div>
+
+          <div class="form-check d-flex align-items-center gap-2">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="otpMethod"
+              id="email"
+              value="EMAIL"
+              [(ngModel)]="selectedMethod"
+            />
+            <label class="form-check-label fw-semibold" for="email">
+              📧 EMAIL
+            </label>
+          </div>
+
+          <div class="form-check d-flex align-items-center gap-2">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="otpMethod"
+              id="both"
+              value="SMSEMAIL"
+              [(ngModel)]="selectedMethod"
+            />
+            <label class="form-check-label fw-semibold" for="both">
+              📲 SMS + 📧 EMAIL
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer border-0 justify-content-center pb-4">
+        <button
+          class="btn btn-outline-danger px-4 rounded-pill"
+          (click)="closeModal()"
+        >
+          Annuler
+        </button>
+
+        <button
+          class="btn btn-success px-4 rounded-pill"
+          [disabled]="!selectedMethod || registrationForm.invalid || loading"
+          (click)="confirmMethod()"
+        >
+          {{ loading ? "Confirmation en cours ..." : "Confirmer" }}
         </button>
       </div>
     </div>
   </div>
 </div>
-
-

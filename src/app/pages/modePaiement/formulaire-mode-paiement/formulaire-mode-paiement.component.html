@@ -78,7 +78,7 @@
 
               <button class="btn btn-primary" type="submit">Payer</button>
             </form>
-<!-- *ngIf="typeOperateur?.trim() === 'Areeba Guinée'" -->
+            <!-- *ngIf="typeOperateur?.trim() === 'Areeba Guinée'" -->
             <form
               [formGroup]="mobileMoneyForm"
               (ngSubmit)="submitMobileMoney()"
@@ -86,7 +86,7 @@
               class="card shadow-lg border-0 p-4"
             >
               <h4 class="fw-bold mb-4 text-center text-primary">
-                💳 Paiement Mobile Money
+                💳 Paiement {{ typeOperateur }}
               </h4>
 
               <!-- LIGNE 1 -->
@@ -136,7 +136,15 @@
                         <ng-container
                           *ngIf="!loadingGetBalance; else loadingSolde"
                         >
-                          {{ soldeDebiteur | number: "1.2-2" }} {{ devise }}
+                          <span
+                            *ngIf="soldeDebiteur === null; else soldeDisponible"
+                            class="text-danger"
+                          >
+                            Solde indisponible
+                          </span>
+                          <ng-template #soldeDisponible>
+                            {{ soldeDebiteur | number: "1.2-2" }} {{ devise }}
+                          </ng-template>
                         </ng-container>
 
                         <ng-template #loadingSolde>

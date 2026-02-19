@@ -32,20 +32,19 @@
                 <div class="card">
                   <div class="row g-0 align-items-center">
                     <div class="col-sm-6 col-md-4">
-                      <img
-                        class="img-fluid card-img"
-                        [src]="
+                       <!-- [src]="
                           'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
                           photoRecuperer
                         "
-                        [alt]="nomFacture"
+                        [alt]="nomFacture" -->
+                      <img
+                        class="img-fluid card-img"
+                        src="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking%20-%202-W-2.svg?h=c746ea9e25952b9505731b7d644e74e9"
                       />
                     </div>
                     <div class="col-sm-6 col-md-8">
                       <div class="card-body">
-                        <h5 class="fw-bold card-title">
-                          {{ nomFacture }}
-                        </h5>
+                        <h5 class="fw-bold card-title">EDG</h5>
                       </div>
                     </div>
                   </div>
@@ -53,59 +52,11 @@
               </div>
             </div>
 
-            <ul
-              class="nav nav-tabs"
-              id="myTab"
-              role="tablist"
-              *ngIf="nomFacture?.trim() === 'EDG'"
-            >
-              <li class="nav-item" role="presentation">
-                <button
-                  #tabBtn
-                  class="nav-link active"
-                  id="prepaid-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#prepaid"
-                  type="button"
-                  role="tab"
-                  aria-controls="prepaid"
-                  aria-selected="true"
-                  (shown.bs.tab)="onTabChange('prepaid')"
-                >
-                  Prepayé
-                </button>
-              </li>
-
-              <li class="nav-item" role="presentation">
-                <button
-                  #tabBtn
-                  class="nav-link"
-                  id="postpaid-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#postpaid"
-                  type="button"
-                  role="tab"
-                  aria-controls="postpaid"
-                  aria-selected="false"
-                  (shown.bs.tab)="onTabChange('postpaid')"
-                >
-                  Postpayé
-                </button>
-              </li>
-            </ul>
-
             <div
-              class="tab-content"
-              id="myTabContent"
-              *ngIf="nomFacture?.trim() === 'EDG'"
+              *ngIf="vcAccountType?.trim() === 'PREPAID'"
             >
               <!-- ========== PREPAYÉ ========== -->
-              <div
-                class="tab-pane fade show active"
-                id="prepaid"
-                role="tabpanel"
-                aria-labelledby="prepaid-tab"
-              >
+              <div>
                 <form
                   *ngIf="paymentFormPrepayerEDG"
                   [formGroup]="paymentFormPrepayerEDG"
@@ -142,7 +93,7 @@
                   <!-- infos compteur -->
                   <div class="row mb-3" *ngIf="afficherInfosPrepayer">
                     <div class="col-md-6">
-                      <div *ngIf="loadingEDGPrepayer" class="alert alert-info">
+                      <div *ngIf="loadingPrepayer" class="alert alert-info">
                         Vérification en cours...
                       </div>
 
@@ -277,8 +228,9 @@
                   </div>
                 </form>
               </div>
+            </div>
 
-              <!-- MODAL OTP -->
+                          <!-- MODAL OTP -->
               <div class="modal-backdrop-custom" *ngIf="modalOtp">
                 <div class="modal-content-custom shadow-lg">
                   <h4 class="mb-3 text-center">Validation OTP</h4>
@@ -367,12 +319,9 @@
                 </div>
               </div>
 
-              <!-- ========== POSTPAYÉ ========== -->
+                          <!-- ========== POSTPAYÉ ========== -->
               <div
-                class="tab-pane fade"
-                id="postpaid"
-                role="tabpanel"
-                aria-labelledby="postpaid-tab"
+                 *ngIf="vcAccountType?.trim() === 'POSTPAID'"
               >
                 <form
                   *ngIf="paymentFormPostpayerEDG"
@@ -380,7 +329,7 @@
                   novalidate
                 >
                   <div class="mb-3 col-md-6">
-                     <label class="form-label fw-bold required">
+                    <label class="form-label fw-bold required">
                       Entrer le numéro de compteur
                     </label>
                     <div class="input-group">
@@ -423,7 +372,7 @@
 
                   <div class="row mb-3" *ngIf="afficherInfosPostpayer">
                     <div class="col-md-12">
-                      <div *ngIf="loadingEDGPostpayer" class="alert alert-info">
+                      <div *ngIf="loadingPostpayer" class="alert alert-info">
                         Vérification en cours...
                       </div>
 
@@ -572,9 +521,8 @@
                   </div>
                 </form>
               </div>
-            </div>
 
-            <div
+            <!-- <div
               class="tab-content"
               id="myTabContent"
               *ngIf="nomFacture?.trim() === 'EDG COLLECTES'"
@@ -652,7 +600,6 @@
                   />
                 </div>
 
-                <!-- NOTES -->
                 <div class="mb-3">
                   <label class="form-label fw-bold required"> Notes </label>
                   <input
@@ -685,7 +632,7 @@
                   </a>
                 </div>
               </form>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

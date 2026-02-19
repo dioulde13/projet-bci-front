@@ -3,7 +3,15 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   HostListener,
   OnInit,
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
 } from '@angular/core';
+
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
+
 // import Papa from 'papaparse';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -17,6 +25,7 @@ import { BciLoaderService } from '../../servicesNodes/bciLoader/bci-loader.servi
 import { SaveFichierCSVService } from '../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
 import { ToastrService } from 'ngx-toastr';
 import { OrdreTransfertInternationalComponent } from '../transfertInternationale/ordre-transfert-international/ordre-transfert-international.component';
+import { BeneficiaireEnAttenteService } from '../../servicesNodes/beneficiaireEnAttente/beneficiaire-en-attente.service';
 
 // import { GnfFormatPipe } from '../gnfFormat/gnf-format.pipe';
 // export interface BeneficiaireExcel {
@@ -47,7 +56,42 @@ import { OrdreTransfertInternationalComponent } from '../transfertInternationale
   styleUrls: ['./dashboard.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
+  dateDuJour: string = '';
+
+  @ViewChild('financialChart', { static: false })
+  financialChart!: ElementRef<HTMLCanvasElement>;
+
+  ngAfterViewInit(): void {
+    this.createChart();
+  }
+
+  createChart() {
+    if (!this.financialChart) return;
+
+    new Chart(this.financialChart.nativeElement, {
+      type: 'doughnut',
+      data: {
+        labels: ['Compte Courant', 'Epargne', 'Autres'],
+        datasets: [
+          {
+            data: [45, 35, 20],
+            backgroundColor: ['#ffd700', '#1abc9c', '#ff5733'],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+      },
+    });
+  }
+
   // beneficiaires: BeneficiaireExcel[] = [];
   // columns: string[] = [];
 
@@ -134,8 +178,48 @@ export class DashboardComponent implements OnInit {
     private saveFichierCSVService: SaveFichierCSVService,
     private bciLoaderService: BciLoaderService,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,
+    private beneficiaireEnAttente: BeneficiaireEnAttenteService,
   ) {}
+
+  iOrganisationID!: number;
+  infosUser: any;
+
+  ngOnInit(): void {
+    const today = new Date();
+
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    };
+
+    this.dateDuJour = `À la date du ${today.toLocaleDateString('fr-FR', options)}`;
+
+    this.getBciLoader();
+    const userJson = localStorage.getItem('userInfo');
+
+    if (userJson) {
+      try {
+        this.infosUser = JSON.parse(userJson);
+      } catch {
+        this.infosUser = null;
+      }
+    }
+
+    if (this.infosUser?.iOrganisationID) {
+      this.iOrganisationID = this.infosUser.iOrganisationID;
+      this.getListeCompteClient();
+      this.loadeDemandeSouscriptions();
+    } else {
+      console.warn('iOrganisationID non défini');
+      this.loading = false;
+    }
+
+    // this.dixTransactionsRecentsListe();
+    // this.processAccounts();
+  }
+
 
   //   totalSolde: any;
 
@@ -367,14 +451,14 @@ export class DashboardComponent implements OnInit {
   loadingRedirection: boolean = false;
 
   redirectWithLoader(url: string) {
-  this.loadingRedirection = true;
+    this.loadingRedirection = true;
 
-  // Petite pause pour montrer le loader avant navigation
-  setTimeout(() => {
-    this.router.navigate([url]);
-    this.loadingRedirection = false;
-  }, 300); // 300ms suffisent pour l'UX
-}
+    // Petite pause pour montrer le loader avant navigation
+    setTimeout(() => {
+      this.router.navigate([url]);
+      this.loadingRedirection = false;
+    }, 300); // 300ms suffisent pour l'UX
+  }
 
   addItemsOnScroll() {
     if (this.loadingMore) return;
@@ -456,32 +540,78 @@ export class DashboardComponent implements OnInit {
     this.bciLoaderService.load();
   }
 
-  iOrganisationID!: number;
-  infosUser: any;
+  
+   userInfo: any;
+  idOrganisation!: number;
 
-  ngOnInit(): void {
-    this.getBciLoader();
-    const userJson = localStorage.getItem('userInfo');
+   isLoadingDemandes: boolean = false;
+  demandes: any[] = [];
+  traitedDemandes: any[] = [];
+  rejectedDemandes: any[] = [];
 
-    if (userJson) {
-      try {
-        this.infosUser = JSON.parse(userJson);
-      } catch {
-        this.infosUser = null;
-      }
-    }
 
-    if (this.infosUser?.iOrganisationID) {
-      this.iOrganisationID = this.infosUser.iOrganisationID;
-      this.getListeCompteClient();
-    } else {
-      console.warn('iOrganisationID non défini');
-      this.loading = false;
-    }
+  // Chargement de demandes de souscriptions
+  private loadeDemandeSouscriptions(): void {
+    console.log('📥 Début du chargement des demandes de souscription');
+    this.isLoadingDemandes = true;
 
-    // this.dixTransactionsRecentsListe();
-    // this.processAccounts();
+    console.log('Number(this.idOrganisation)', this.iOrganisationID);
+
+    this.beneficiaireEnAttente
+      .getListeBeneficiaireEnAttente(this.iOrganisationID)
+      .subscribe({
+        next: (res) => {
+          // console.log('✅ Réponse reçue du serveur :', res);
+
+          if (res?.status === 200) {
+            this.demandes = res?.data.filter(
+              (d: any) => d.vcStatus === 'En traitement'
+            );
+            this.traitedDemandes = res?.data.filter(
+              (d: any) => d.vcStatus === 'Valide'
+            );
+            this.rejectedDemandes = res?.data.filter(
+              (d: any) => d.vcStatus === 'Rejete'
+            );
+
+            console.log('demandes: ', this.demandes);
+
+            console.log(
+              `📊 Total demandes en traitement : ${this.demandes.length}`
+            );
+            console.log(
+              `✅ Total demandes validées : ${this.traitedDemandes.length}`
+            );
+            console.log(
+              `❌ Total demandes rejetées : ${this.rejectedDemandes.length}`
+            );
+
+          } else {
+            console.warn('⚠️ Réponse serveur avec status non 200 :', res);
+
+            if (res?.error?.message === 'Unauthenticated.') {
+              console.error('🚨 Session expirée, redirection vers login');
+              this.toastr.error('Votre session a expirée', '', {
+                positionClass: 'toast-custom-center',
+              });
+              this.router.navigate(['/login']);
+            }
+          }
+
+          this.isLoadingDemandes = false;
+          console.log('📌 isLoadingDemandes =', this.isLoadingDemandes);
+        },
+
+        error: (err) => {
+          console.error('❌ Erreur lors du chargement des demandes :', err);
+          this.toastr.error('Une erreur interne est survenue.', '', {
+            positionClass: 'toast-custom-center',
+          });
+          this.isLoadingDemandes = false;
+        },
+      });
   }
+
 
   // title = 'generic file import';
   openModal = false;

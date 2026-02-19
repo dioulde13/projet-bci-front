@@ -1,7 +1,7 @@
 <div class="page-content">
   <div class="container-fluid">
     <div class="row mt-3">
-      <div class="col-xl-4">
+      <!-- <div class="col-xl-4">
         <div
           class="card card-h-100"
           style="
@@ -36,34 +36,93 @@
                   data-colors='["#fd625e", "#2ab57d", "#4ba6ef", "#ffbf53", "#5156be"]'
                 ></div>
               </div>
-              <div class="col-sm col-lg-6 align-self-center">
-                <div class="mt-4 mt-sm-0">
-                  <p class="mb-1">Montant total</p>
 
-                  <!-- SKELETON -->
-                  <ng-container *ngIf="isDashboardLoading; else balanceContent">
-                    <div class="skeleton skeleton-title mb-3"></div>
-                    <div class="skeleton skeleton-small"></div>
-                  </ng-container>
+              <div class="row align-items-center">
+                <div class="col-md-6 text-center">
+                  <div style="height: 250px; width: 250px; margin: auto">
+                    <canvas #financialChart></canvas>
+                  </div>
+                </div>
 
-                  <!-- CONTENU NORMAL -->
-                  <ng-template #balanceContent>
-                    <h4 class="text-light mb-4 fs-4">
-                      {{ soldeDebiteur | number: "1.2-2" }} {{ deviseDebiteur }}
-                    </h4>
+                <div class="col-md-6 align-self-center">
+                  <div class="mt-4 mt-sm-0">
+                    <p class="mb-1 text-white">Montant total</p>
 
-                    <p>
-                      <small class="text-white" style="font-size: 15px">
-                        {{ countNombreComptes }} Total des comptes
-                      </small>
-                    </p>
-                  </ng-template>
+                    <ng-container
+                      *ngIf="isDashboardLoading; else balanceContent"
+                    >
+                      <div class="skeleton skeleton-title mb-3"></div>
+                      <div class="skeleton skeleton-small"></div>
+                    </ng-container>
+
+                    <ng-template #balanceContent>
+                      <h4 class="text-light mb-4 fs-4">
+                        {{ soldeDebiteur | number: "1.2-2" }}
+                        {{ deviseDebiteur }}
+                      </h4>
+
+                      <p>
+                        <small class="text-white" style="font-size: 15px">
+                          {{ countNombreComptes }} Total des comptes
+                        </small>
+                      </p>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="col-xl-4">
+        <div
+          class="card card-h-100"
+          style="
+            background: url(&quot;assets/img/images-bci/bg-chart-BCI-Internet_Banking-3.jpg&quot;)
+              right / cover;
+          "
+        >
+          <!-- HEADER -->
+          <div class="card-header text-light bg-transparent">
+            <h5 class="card-title mb-0">Vue d'ensemble financière</h5>
+          </div>
+
+          <!-- BODY -->
+          <div class="card-body text-light">
+            <div class="row">
+              <!-- ✅ TEXTE EN BAS -->
+              <div class="col-12 text-center">
+                <p class="mb-1">Valeur nette</p>
+                <ng-container *ngIf="isDashboardLoading; else balanceContent">
+                  <div class="skeleton skeleton-title mb-3"></div>
+                  <div class="skeleton skeleton-small"></div>
+                </ng-container>
+
+                <ng-template #balanceContent>
+                  <h4 class="text-light mb-4 fs-4">
+                    {{ soldeDebiteur | number: "1.2-2" }}
+                    {{ deviseDebiteur }}
+                  </h4>
+
+                  <p>
+                    <small class="text-white" style="font-size: 15px">
+                      {{ countNombreComptes }} Total des comptes
+                    </small>
+                  </p>
+                </ng-template>
+              </div>
+              <!-- ✅ CHART EN HAUT -->
+              <div class="col-12 d-flex justify-content-center mb-4">
+                <div style="height: 200px; width: 250px">
+                  <canvas #financialChart></canvas>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <div class="col-xl-4">
         <div class="card bg-light card-h-100">
           <div class="card-header bg-transparent border-bottom border-white">
@@ -160,12 +219,11 @@
                     <p class="custom-icon-text">Gérer les bénéficiaires</p>
                   </a>
                 </div>
- <!-- (click)="openTransferModal()" -->
+                <!-- (click)="openTransferModal()" -->
                 <div class="col-6 col-md-4 mb-4">
                   <a
-                  (click)="notificationEnCoursDeveloppement()"
-                   
                     class="custom-icon-container"
+                    (click)="openTransferModal()"
                   >
                     <i class="bi bi-currency-exchange custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert international</p>
@@ -228,13 +286,13 @@
           <div class="card-body finance-chart-container">
             <div class="row">
               <div class="col-lg">
-                <p class="font-size-13">A la date du 23 juin 2025</p>
+                <p class="font-size-13">{{ dateDuJour }}</p>
               </div>
-              <div class="col-lg-4">
+              <!-- <div class="col-lg-4">
                 <h3 class="text-end text-white mb-1">
                   <span class="counter-value" data-target="90">0</span>&nbsp;%
                 </h3>
-              </div>
+              </div> -->
             </div>
             <div class="px-3 pt-1" data-simplebar="" style="max-height: 266px">
               <ul class="list-unstyled activity-wid mb-0">
@@ -249,7 +307,9 @@
                     <div class="d-flex">
                       <div class="flex-grow-1 overflow-hidden me-4">
                         <h5 class="text-white font-size-14 mb-2">Traité</h5>
-                        <h5 class="text-light font-size-18 mb-2">3</h5>
+                        <h5 class="text-light font-size-18 mb-2">
+                          {{ traitedDemandes.length }}
+                        </h5>
                         <div class="progress mb-0 animated-progess">
                           <div
                             class="bg-success progress-bar progress-bar-striped"
@@ -273,7 +333,11 @@
                             <i class="icon ion-android-more-vertical"></i>
                           </button>
                           <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" href="#">Voir détails</a>
+                            <a
+                              class="dropdown-item"
+                              routerLink="/beneficiaireEnAttente"
+                              >Voir détails</a
+                            >
                           </div>
                         </div>
                       </div>
@@ -291,12 +355,14 @@
                     <div class="d-flex">
                       <div class="flex-grow-1 overflow-hidden me-4">
                         <h5 class="text-white font-size-14 mb-2">En cours</h5>
-                        <h5 class="text-light font-size-18 mb-2">1</h5>
+                        <h5 class="text-light font-size-18 mb-2">
+                          {{ demandes.length }}
+                        </h5>
                         <div class="progress mb-0 animated-progess">
                           <div
                             class="bg-warning progress-bar progress-bar-striped"
                             role="progressbar"
-                            style="width: 50%"
+                            style="width: 100%"
                             aria-valuenow="50"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -315,7 +381,11 @@
                             <i class="icon ion-android-more-vertical"></i>
                           </button>
                           <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" href="#">Voir détails</a>
+                            <a
+                              class="dropdown-item"
+                              routerLink="/beneficiaireEnAttente"
+                              >Voir détails</a
+                            >
                           </div>
                         </div>
                       </div>
@@ -333,7 +403,9 @@
                     <div class="d-flex">
                       <div class="flex-grow-1 overflow-hidden me-4">
                         <h5 class="text-white font-size-14 mb-2">Rejeté</h5>
-                        <h5 class="text-light font-size-18 mb-2">0</h5>
+                        <h5 class="text-light font-size-18 mb-2">
+                          {{ rejectedDemandes.length }}
+                        </h5>
                         <div class="progress mb-0 animated-progess">
                           <div
                             class="bg-danger progress-bar progress-bar-striped"
@@ -357,7 +429,11 @@
                             <i class="icon ion-android-more-vertical"></i>
                           </button>
                           <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" href="#">Voir détails</a>
+                            <a
+                              class="dropdown-item"
+                              routerLink="/beneficiaireEnAttente"
+                              >Voir détails</a
+                            >
                           </div>
                         </div>
                       </div>

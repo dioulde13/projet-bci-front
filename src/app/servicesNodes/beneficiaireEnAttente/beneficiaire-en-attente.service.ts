@@ -68,7 +68,7 @@ export class BeneficiaireEnAttenteService {
       iValidatorID: iValidatorID,
     };
 
-    return this.http.post(`${this.baseUrl}/api/beneficiaire/valider `, body, {
+    return this.http.post(`${this.baseUrl}/api/beneficiaire/valider`, body, {
       withCredentials: true,
     });
   }

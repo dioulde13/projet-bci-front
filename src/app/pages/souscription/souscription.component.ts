@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SouscriptionsService } from '../../services/souscription/souscriptions.service';
@@ -25,62 +25,157 @@ export class SouscriptionComponent {
 
   constructor(
     private sousCription: SouscriptionsService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private router: Router,
   ) {}
+
+  selectedMethod: string = '';
+
+  confirmMethod() {
+    this.loading = true;
+    // console.log('Méthode sélectionnée :', this.selectedMethod);
+    this.sousCription
+      .verifierNumeroDeCompte(Number(this.clientId), this.selectedMethod)
+      .subscribe({
+        next: (res) => {
+          if (res.status === 200) {
+            this.resultat = res;
+            console.log(this.resultat);
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!this.resultat.clientDetails.mail) {
+              this.toastr.error('KYC incomplet !', '', {
+                positionClass: 'toast-custom-center',
+              });
+              this.loading = false;
+            } else
+               if (!emailRegex.test(this.resultat.clientDetails.mail)) {
+              this.toastr.error('KYC incomplet !', '', {
+                positionClass: 'toast-custom-center',
+              });
+              this.loading = false;
+            } else if (!this.resultat.clientDetails.mobileNbr) {
+              this.toastr.error(
+                'KYC incomplet !',
+                '',
+                {
+                  positionClass: 'toast-custom-center',
+                },
+              );
+              this.loading = false;
+            } else if (!this.resultat.clientDetails.phoneNbr) {
+              this.toastr.error(
+                'KYC incomplet !',
+                '',
+                {
+                  positionClass: 'toast-custom-center',
+                },
+              );
+              this.loading = false;
+            } else {
+              this.loading = false;
+
+              if (this.selectedMethod) {
+                localStorage.setItem(
+                  'modeEnvoiOtp',
+                  JSON.stringify(this.selectedMethod),
+                );
+              }
+
+              if (res) {
+                localStorage.setItem('vcJSONFullDetails', JSON.stringify(res));
+              }
+              // ✅ Stocker les comptes dans localStorage
+              if (res.comptes) {
+                localStorage.setItem('comptes', JSON.stringify(res.comptes));
+              }
+
+              // Tu peux aussi stocker les détails du client si besoin
+              if (res.clientDetails) {
+                localStorage.setItem(
+                  'clientDetails',
+                  JSON.stringify(res.clientDetails),
+                );
+                this.telephone = res.clientDetails.phoneNbr;
+                localStorage.setItem(
+                  'msisdn',
+                  JSON.stringify(res.clientDetails.phoneNbr),
+                );
+              }
+
+              this.router.navigate(['/otpValidation']);
+              this.closeModal();
+            }
+
+            // Affiche le modal
+            // this.showModal = true;
+          } else {
+            this.loading = false;
+            this.toastr.error(res.message, '', {
+              positionClass: 'toast-custom-center',
+            });
+          }
+        },
+        error: () => {
+          this.erreur = 'Erreur : Impossible de récupérer les informations.';
+          this.loading = false;
+        },
+      });
+  }
 
   verifierNumeroCompte() {
     this.erreur = null;
     this.resultat = null;
-
+    // this.loading = true;
     if (!this.clientId) {
       this.erreur = 'Veuillez entrer un ID client.';
       return;
     }
 
-    this.loading = true;
+    this.showModal = true;
 
-    this.sousCription.verifierNumeroDeCompte(Number(this.clientId)).subscribe({
-      next: (res) => {
-        if (res.status === 200) {
-          this.resultat = res;
-          console.log(this.resultat);
-          this.loading = false;
+    // this.sousCription.verifierNumeroDeCompte(Number(this.clientId)).subscribe({
+    //   next: (res) => {
+    //     if (res.status === 200) {
+    //       this.resultat = res;
+    //       console.log(this.resultat);
+    //       this.loading = false;
 
-          if (res) {
-            localStorage.setItem('vcJSONFullDetails', JSON.stringify(res));
-          }
-          // ✅ Stocker les comptes dans localStorage
-          if (res.comptes) {
-            localStorage.setItem('comptes', JSON.stringify(res.comptes));
-          }
+    //       if (res) {
+    //         localStorage.setItem('vcJSONFullDetails', JSON.stringify(res));
+    //       }
+    //       // ✅ Stocker les comptes dans localStorage
+    //       if (res.comptes) {
+    //         localStorage.setItem('comptes', JSON.stringify(res.comptes));
+    //       }
 
-          // Tu peux aussi stocker les détails du client si besoin
-          if (res.clientDetails) {
-            localStorage.setItem(
-              'clientDetails',
-              JSON.stringify(res.clientDetails)
-            );
-            this.telephone = res.clientDetails.phoneNbr;
-            localStorage.setItem(
-              'msisdn',
-              JSON.stringify(res.clientDetails.phoneNbr)
-            );
-          }
+    //       // Tu peux aussi stocker les détails du client si besoin
+    //       if (res.clientDetails) {
+    //         localStorage.setItem(
+    //           'clientDetails',
+    //           JSON.stringify(res.clientDetails)
+    //         );
+    //         this.telephone = res.clientDetails.phoneNbr;
+    //         localStorage.setItem(
+    //           'msisdn',
+    //           JSON.stringify(res.clientDetails.phoneNbr)
+    //         );
+    //       }
 
-          // Affiche le modal
-          this.showModal = true;
-        } else {
-        this.loading = false;
-          this.toastr.error(res.message, '', {
-            positionClass: 'toast-custom-center',
-          });
-        }
-      },
-      error: () => {
-        this.erreur = 'Erreur : Impossible de récupérer les informations.';
-        this.loading = false;
-      },
-    });
+    //       // Affiche le modal
+    //       this.showModal = true;
+    //     } else {
+    //     this.loading = false;
+    //       this.toastr.error(res.message, '', {
+    //         positionClass: 'toast-custom-center',
+    //       });
+    //     }
+    //   },
+    //   error: () => {
+    //     this.erreur = 'Erreur : Impossible de récupérer les informations.';
+    //     this.loading = false;
+    //   },
+    // });
   }
 
   // Fermer le modal

@@ -325,7 +325,7 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
 
   transfererBeneficiaire(benefice: any): void {
     console.log('Transférer :', benefice);
-    // ouvrir modal de transfert ou déclencher l’action
+    // ouvrir modal de transfert ou déclencher l'action
   }
 
   ngAfterViewInit() {
@@ -359,18 +359,18 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       banqueBeneficiaire: [''],
       numeroCompte: [''],
       vcNomCompte: [''],
+      bicCode: [''],
+
+      banqueBeneficiaireInternational: [''],
+      numeroCompteInternational: [''],
+      vcNomCompteInternational: [''],
+      bicCodeInternational: [''],
 
       numeroMobile: [''],
       vcNomCompteMobile: [''],
 
       vcNomCompteOtp: [''],
-      bicCode: [''],
-
-      otp: this.fb.array(
-        Array(18)
-          .fill('')
-          .map(() => this.fb.control('')),
-      ),
+      vcNumeroCompteOtp: [''],
     });
   }
 
@@ -388,6 +388,7 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       // Exemple : remplir automatiquement le champ bicCode
       this.formBeneficiaire.patchValue({
         bicCode: banqueSelectionnee.vcBIC,
+        bicCodeInternational: banqueSelectionnee.vcBIC,
       });
     }
   }
@@ -399,29 +400,26 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     this.clearPaymentValidators();
 
     if (value === '1') {
-      this.f['vcNomCompteOtp'].setValidators([Validators.required]);
+      this.f['vcNumeroCompteOtp'].setValidators([Validators.required]);
 
-      this.otp.controls.forEach((ctrl) => {
-        ctrl.setValidators([
-          Validators.required,
-          Validators.pattern('^[0-9]$'),
-        ]);
-        ctrl.updateValueAndValidity({ emitEvent: false });
-      });
+      this.f['vcNomCompteOtp'].setValidators([Validators.required]);
     }
 
     if (value === '2') {
       this.f['banqueBeneficiaire'].setValidators([Validators.required]);
-      this.f['numeroCompte'].setValidators([
-        Validators.required,
-      ]);
+      this.f['numeroCompte'].setValidators([Validators.required]);
       this.f['vcNomCompte'].setValidators([Validators.required]);
+    }
+
+    if (value === '4') {
+      this.f['banqueBeneficiaireInternational'].setValidators([Validators.required]);
+      this.f['numeroCompteInternational'].setValidators([Validators.required]);
+      this.f['vcNomCompteInternational'].setValidators([Validators.required]);
     }
 
     if (value === '3') {
       this.f['numeroMobile'].setValidators([
         Validators.required,
-        Validators.pattern('^[0-9]{8,15}$'),
       ]);
       this.f['vcNomCompteMobile'].setValidators([Validators.required]);
     }
@@ -434,9 +432,11 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
   private clearPaymentValidators(): void {
     [
       'banqueBeneficiaire',
+      'banqueBeneficiaireInternational',
       'numeroCompte',
       'vcNomCompte',
       'vcNomCompteOtp',
+      'vcNumeroCompteOtp',
       'numeroMobile',
       'vcNomCompteMobile',
     ].forEach((field) => {
@@ -444,20 +444,6 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       this.f[field].setValue('');
       this.f[field].updateValueAndValidity({ emitEvent: false });
     });
-
-    this.otp.controls.forEach((ctrl) => {
-      ctrl.clearValidators();
-      ctrl.setValue('');
-      ctrl.updateValueAndValidity({ emitEvent: false });
-    });
-  }
-
-  get otp(): FormArray {
-    return this.formBeneficiaire.get('otp') as FormArray;
-  }
-
-  get otpControls(): FormControl[] {
-    return this.otp.controls as FormControl[];
   }
 
   get f() {
@@ -472,37 +458,6 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     this.formBeneficiaire
       .get('telephone')
       ?.setValue(input.value, { emitEvent: false });
-  }
-
-  // 🔹 Saisie normale
-  onInput(event: Event, index: number) {
-    const input = event.target as HTMLInputElement;
-    const value = input.value.replace(/[^0-9]/g, '');
-
-    input.value = value;
-    this.otp.at(index).setValue(value);
-
-    if (value && index < this.otp.length - 1) {
-      this.otpInputs.toArray()[index + 1].nativeElement.focus();
-    }
-  }
-
-  // 🔹 Gestion Backspace
-  onKeyDown(event: KeyboardEvent, index: number) {
-    const input = event.target as HTMLInputElement;
-
-    if (event.key === 'Backspace') {
-      if (!input.value && index > 0) {
-        const prev = this.otpInputs.toArray()[index - 1].nativeElement;
-        this.otp.at(index - 1).setValue('');
-        prev.focus();
-      }
-
-      // Nettoyer les champs suivants
-      for (let i = index; i < this.otp.length; i++) {
-        this.otp.at(i).setValue('');
-      }
-    }
   }
 
   showAjoutBeneficiaireModal: boolean = false;
@@ -527,13 +482,6 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     // Reset complet du formulaire
     this.formBeneficiaire.reset();
 
-    // Clear le form array OTP
-    this.otp.controls.forEach((ctrl) => {
-      ctrl.setValue('');
-      ctrl.clearValidators();
-      ctrl.updateValueAndValidity({ emitEvent: false });
-    });
-
     // On retire aussi les validators de paiement
     this.clearPaymentValidators();
 
@@ -549,30 +497,105 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     this.isLoading = true;
     this.submitted = true;
 
-    if (this.formBeneficiaire.invalid) {
-      this.toastr.error('⚠️ Formulaire invalide', '', {
-        positionClass: 'toast-custom-center',
-      });
-      console.warn('⚠️ Formulaire invalide');
+    // ─── 1. Validation des champs de base obligatoires ───────────────────────
+    const champsBase = [
+      'nom', 'prenom', 'telephone', 'email', 'date',
+      'ville', 'pays', 'adresse', 'vcTypePaiement',
+      'typeBeneficiaire', 'vcCurrency',
+    ];
 
-      Object.keys(this.formBeneficiaire.controls).forEach((key) => {
-        const control = this.formBeneficiaire.get(key);
-        if (control?.invalid) {
-          console.log(`- ${key}:`, control.errors);
-        }
-      });
+    const champsBaseInvalides = champsBase.some((key) => this.f[key]?.invalid);
 
-      this.otp.controls.forEach((ctrl, index) => {
-        if (ctrl.invalid) {
-          console.log(`- otp[${index}]:`, ctrl.errors);
-        }
-      });
-
+    if (champsBaseInvalides) {
+      // this.toastr.error('⚠️ Veuillez remplir tous les champs personnels obligatoires', '', {
+      //   positionClass: 'toast-custom-center',
+      // });
       this.formBeneficiaire.markAllAsTouched();
       this.isLoading = false;
       return;
     }
 
+    // ─── 2. Un type de paiement doit être sélectionné ────────────────────────
+    if (!this.selectedTypePaiementId) {
+      this.toastr.error('⚠️ Veuillez sélectionner un type de paiement', '', {
+        positionClass: 'toast-custom-center',
+      });
+      this.isLoading = false;
+      return;
+    }
+
+    // ─── 3. Validation des champs selon le type de paiement ──────────────────
+
+    // Type 1 : OTP (BCI)
+    if (this.selectedTypePaiementId === '1') {
+      const champsOtp = ['vcNumeroCompteOtp', 'vcNomCompteOtp'];
+      const invalide = champsOtp.some((key) => !this.f[key]?.value?.toString().trim());
+      if (invalide) {
+        // this.toastr.error('⚠️ Veuillez renseigner le numéro et le nom du compte OTP', '', {
+        //   positionClass: 'toast-custom-center',
+        // });
+        this.formBeneficiaire.markAllAsTouched();
+        this.isLoading = false;
+        return;
+      }
+    }
+
+    // Type 2 : Banque locale
+    if (this.selectedTypePaiementId === '2') {
+      const champsBanque = ['banqueBeneficiaire', 'numeroCompte', 'vcNomCompte'];
+      const invalide = champsBanque.some((key) => !this.f[key]?.value?.toString().trim());
+      if (invalide) {
+        // this.toastr.error('⚠️ Veuillez renseigner la banque, le numéro et le nom du compte', '', {
+        //   positionClass: 'toast-custom-center',
+        // });
+        this.formBeneficiaire.markAllAsTouched();
+        this.isLoading = false;
+        return;
+      }
+    }
+
+    // Type 3 : Mobile Money
+    if (this.selectedTypePaiementId === '3') {
+      const champsMobile = ['numeroMobile', 'vcNomCompteMobile'];
+      const invalide = champsMobile.some((key) => !this.f[key]?.value?.toString().trim());
+      if (invalide) {
+        // this.toastr.error('⚠️ Veuillez renseigner le numéro mobile et sélectionner l\'opérateur', '', {
+        //   positionClass: 'toast-custom-center',
+        // });
+        this.formBeneficiaire.markAllAsTouched();
+        this.isLoading = false;
+        return;
+      }
+    }
+
+    // Type 4 : Banque internationale
+    if (this.selectedTypePaiementId === '4') {
+      const champsInternational = [
+        'banqueBeneficiaireInternational',
+        'numeroCompteInternational',
+        'vcNomCompteInternational',
+      ];
+      const invalide = champsInternational.some((key) => !this.f[key]?.value?.toString().trim());
+      if (invalide) {
+        // this.toastr.error('⚠️ Veuillez renseigner la banque, le numéro et le nom du compte international', '', {
+        //   positionClass: 'toast-custom-center',
+        // });
+        this.formBeneficiaire.markAllAsTouched();
+        this.isLoading = false;
+        return;
+      }
+    }
+
+    // ─── 4. Photo obligatoire ─────────────────────────────────────────────────
+    if (!this.selectedFile) {
+      this.toastr.error('📷 Aucune photo sélectionnée', '', {
+        positionClass: 'toast-custom-center',
+      });
+      this.isLoading = false;
+      return;
+    }
+
+    // ─── 5. Construction du FormData ─────────────────────────────────────────
     const formValue = this.formBeneficiaire.value;
     const formData = new FormData();
 
@@ -592,22 +615,8 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
 
       // Type de paiement
       if (this.selectedTypePaiementId === '1') {
-        console.log('💳 Paiement Type 1 (OTP)');
-        console.log('OTP Array:', formValue.otp);
-
-        // Vérifie OTP avant de joindre
-        const invalidOtp = formValue.otp.some(
-          (val: string) => !val.match(/^[0-9]$/),
-        );
-        if (invalidOtp) {
-          this.isLoading = false;
-
-          console.warn('⚠️ OTP incomplet ou invalide');
-        }
-
         formData.append('vcNomCompte', formValue.vcNomCompteOtp);
-        formData.append('vcAccountNumber', formValue.otp.join(''));
-
+        formData.append('vcAccountNumber', formValue.vcNumeroCompteOtp);
         formData.append('vcBanque', 'BCI');
         formData.append('bicCode', 'COLIGNGNXXX');
       } else if (this.selectedTypePaiementId === '2') {
@@ -621,84 +630,55 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
         formData.append('vcAccountNumber', formValue.numeroMobile);
         formData.append('vcNomCompte', formValue.vcNomCompteMobile);
         formData.append('vcBanque', formValue.vcNomCompteMobile);
-      } else {
-        this.isLoading = false;
-
-        console.warn(
-          '⚠️ Aucun type de paiement sélectionné ou non géré',
-          this.selectedTypePaiementId,
-        );
+      } else if (this.selectedTypePaiementId === '4') {
+        console.log('🌍 Paiement Type 4 (International)');
+        formData.append('vcBanque', String(formValue.banqueBeneficiaireInternational));
+        formData.append('vcAccountNumber', formValue.numeroCompteInternational);
+        formData.append('vcNomCompte', formValue.vcNomCompteInternational);
+        formData.append('bicCode', formValue.bicCodeInternational);
       }
 
-      if (this.selectedFile) {
-        console.log('📷 Fichier sélectionné', this.selectedFile.name);
-        formData.append('vcPhoto', this.selectedFile, this.selectedFile.name);
-      } else {
-        this.isLoading = false;
-        this.toastr.error('📷 Aucune photo sélectionnée', '', {
-          positionClass: 'toast-custom-center',
-        });
-        return;
-      }
+      formData.append('vcPhoto', this.selectedFile, this.selectedFile.name);
 
-      // console.log('--- DONNÉES PRÊTES À L’ENVOI ---');
       formData.forEach((value, key) => console.log(key, value));
     } catch (e) {
       this.isLoading = false;
       console.error('Erreur lors de la préparation des données', e);
       return;
     }
-    if (this.selectedFile) {
-      // Appel API
-      this.beneficiaireService.ajouterBeneficiaire(formData).subscribe({
-        next: (res: any) => {
-          this.isLoading = false;
-          if (res.status === 200) {
-            this.toastr.success(res.message, '', {
-              positionClass: 'toast-custom-center',
-            });
 
-            this.resetFormulaire();
+    // ─── 6. Appel API ─────────────────────────────────────────────────────────
+    this.beneficiaireService.ajouterBeneficiaire(formData).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        if (res.status === 200) {
+          this.toastr.success(res.message, '', {
+            positionClass: 'toast-custom-center',
+          });
 
-            // Reset complet du formulaire
-            // this.formBeneficiaire.reset();
-            // this.selectedTypePaiementId = null;
-            // Après que l'ajout est réussi
-            this.selectedFile = null;
-            this.photoPreview = null; // 🔹 important pour que l'image disparaisse
+          this.resetFormulaire();
 
-            // Réinitialiser l'input fichier dans le DOM
-            if (this.fileInput) {
-              this.fileInput.nativeElement.value = '';
-            }
+          this.selectedFile = null;
+          this.photoPreview = null;
 
-            // Réinitialiser l'input fichier dans le DOM
-            if (this.fileInput) {
-              this.fileInput.nativeElement.value = '';
-            }
-
-            // Réinitialiser l'OTP sans supprimer les inputs
-            this.otp.controls.forEach((ctrl) => {
-              ctrl.setValue('');
-              ctrl.markAsPristine();
-              ctrl.markAsUntouched();
-            });
-
-            this.getListeBeneficiaire();
-            this.showAjoutBeneficiaireModal = false;
-          } else {
-            this.toastr.error(res.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+          if (this.fileInput) {
+            this.fileInput.nativeElement.value = '';
           }
-        },
 
-        error: (err) => {
-          this.isLoading = false;
-          console.error('Erreur ❌ API', err);
-        },
-      });
-    }
+          this.getListeBeneficiaire();
+          this.showAjoutBeneficiaireModal = false;
+        } else {
+          this.toastr.error(res.message, '', {
+            positionClass: 'toast-custom-center',
+          });
+        }
+      },
+
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Erreur ❌ API', err);
+      },
+    });
   }
 
   /** Récupération infos utilisateur */

@@ -77,7 +77,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       ? decodeURIComponent(rawNomFacture).trim().toUpperCase()
       : null;
 
-    // console.log('this.nomFacture: ', this.nomFacture);
+    console.log('this.nomFacture: ', this.nomFacture);
 
     this.initForm();
     this.initialPrepayerEDG();
@@ -128,6 +128,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
   afficherInfosPostpayer = false;
   loadingEDGPostpayer = false;
+  loadingPostpayer = false;
   compteurValidePostpayer = false;
 
   infosCompteurPostpayer: any = null;
@@ -168,6 +169,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
     this.afficherInfosPostpayer = true;
     this.loadingEDGPostpayer = true;
+    this.loadingPostpayer = true;
 
     const msisdn = '666421034';
 
@@ -181,6 +183,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         if (!apiData?.APIResponse) {
           this.compteurValidePostpayer = false;
           this.loadingEDGPostpayer = false;
+          this.loadingPostpayer = false;
           return;
         }
 
@@ -191,6 +194,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
           console.error('Erreur JSON.parse', e);
           this.compteurValidePostpayer = false;
           this.loadingEDGPostpayer = false;
+          this.loadingPostpayer = false;
           return;
         }
 
@@ -210,12 +214,21 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         }
 
         this.loadingEDGPostpayer = false;
+        this.loadingPostpayer = false;
       },
 
-      error: (err) => {
-        console.error('Erreur API:', err);
-        this.compteurValidePostpayer = false;
-        this.loadingEDGPostpayer = false;
+      error: (error: any) => {
+        console.error('Erreur API:', error);
+        // this.compteurValidePostpayer = false;
+        // this.loadingEDGPostpayer = false;
+        console.log('error: ', error);
+        this.toastr.error(error.error.message, '', {
+          positionClass: 'toast-custom-center',
+          timeOut: 12000, // 12 secondes
+          extendedTimeOut: 3000, // optionnel
+          closeButton: true, // optionnel
+        });
+        this.loadingPostpayer = false;
       },
     });
   }
@@ -225,6 +238,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
   afficherInfosPrepayer = false;
   loadingEDGPrepayer = false;
+  loadingPrepayer = false;
   compteurValidePrepayer = false;
 
   infosCompteurPrepayer: any = null;
@@ -308,6 +322,8 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
   btFeesBankUsePercent: boolean = false;
   btFeesIncluded: boolean = false;
   photoRecuperer: any;
+  vcAccountName: any;
+  vcAccountType: any;
 
   getAllFacturiers(): void {
     this.marchandService.getAllFacturiers().subscribe({
@@ -322,6 +338,9 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         });
 
         console.log('this.ligneSelectionner: ', this.ligneSelectionner[0]);
+        this.vcAccountType = this.ligneSelectionner[0].vcAccountType;
+        console.log('this.vcAccountType: ', this.vcAccountType);
+        this.vcAccountName = this.ligneSelectionner[0].vcAccountName;
         this.photoRecuperer = this.ligneSelectionner[0].vcLogoPath;
         this.fraisNFeesEDG = this.ligneSelectionner[0].nFees;
         this.fraisNFeesBankEDG = this.ligneSelectionner[0].nFeesBank;
@@ -402,24 +421,25 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     // Total envoyé dans l’API
     const payload = {
       payer_account:
-        this.selectedTab === 'prepaid'
+        this.vcAccountType === 'PREPAID'
           ? v.debitAccountEDG
           : post.modalDebitAccountPost,
-      benef_name: this.nomFacture ?? '',
+      benef_name: this.vcAccountName ?? '',
       benef_account: 'BeneficiaireGN98-7654-3210-9876',
       amount:
-        this.selectedTab === 'prepaid'
+        this.vcAccountType === 'PREPAID'
           ? this.montantTotalEDG
           : post.modalMontantPost,
       fees_ecash: feesEcash,
       fees_bci: feesBCI,
       fees_included: feesIncluded ? 1 : 0,
-      notes: this.selectedTab === 'prepaid'?'Prépaiement':"Poste de paiement",
+      notes:
+        this.vcAccountType === 'PREPAID' ? 'Prépaiement' : 'Poste de paiement',
       organisation_id: this.iOrganisationID,
       user_id: this.infosUser.id,
     };
     // infosCompteurPostpayer
-    // console.log('PAYLOAD ENVOYÉ 👉', payload);
+    console.log('PAYLOAD ENVOYÉ 👉', payload);
 
     this.transactionsBillPendingService
       .transactionsBillPending(payload)
@@ -431,10 +451,10 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
             response.data.transaction_id
           ) {
             this.transaction_id = response.data.transaction_id;
-            if (this.selectedTab === 'prepaid') {
+            if (this.vcAccountType === 'PREPAID') {
               console.log('prepaid');
               this.submitPayementPrepayerEDG();
-            } else if (this.selectedTab === 'postpaid') {
+            } else if (this.vcAccountType === 'POSTPAID') {
               console.log('postpaid');
               this.submitPostpayPayment();
             }
@@ -444,6 +464,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
           }
         },
         error: (err) => {
+          this.isLoading = false;
           this.toastr.error('Une erreur interne est survenue.', '', {
             positionClass: 'toast-custom-center',
           });
@@ -479,7 +500,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     // Total envoyé dans l’API
     const payload = {
       vcPayerAccount: v.debitAccountEDG,
-      vcBenefName: this.nomFacture ?? '',
+      vcBenefName: this.vcAccountName ?? '',
       vcBenefAccount: '',
       mAmount: this.montantTotalEDG,
       mFeesEcash: feesEcash,
@@ -507,7 +528,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         next: (response: any) => {
           console.log('Réponse API 👉', response);
           if (response.status === 200) {
-            this.toastr.success("Transaction effectuée avec succès ✅", '', {
+            this.toastr.success('Transaction effectuée avec succès ✅', '', {
               positionClass: 'toast-custom-center',
             });
             this.isLoading = false;
@@ -522,6 +543,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
           }
         },
         error: (err) => {
+          this.isLoading = false;
           this.toastr.error('Une erreur interne est survenue.', '', {
             positionClass: 'toast-custom-center',
           });
@@ -552,6 +574,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
     this.afficherInfosPrepayer = true;
     this.loadingEDGPrepayer = true;
+    this.loadingPrepayer = true;
     this.compteurValidePrepayer = false;
     this.infosCompteurPrepayer = null;
 
@@ -560,6 +583,8 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     this.marchandService.verifierCompteurPrepayer(compteur, msisdn).subscribe({
       next: (res) => {
         const apiData = res?.data?.[0];
+
+        console.log('apiData: ', apiData);
 
         if (apiData?.APIResponse) {
           const parsed = JSON.parse(apiData.APIResponse);
@@ -573,12 +598,17 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         } else {
           this.compteurValidePrepayer = false;
         }
-
+        this.loadingPrepayer = false;
         this.loadingEDGPrepayer = false;
       },
-      error: () => {
-        this.compteurValidePrepayer = false;
-        this.loadingEDGPrepayer = false;
+      error: (error: any) => {
+        console.log('error: ', error);
+        this.toastr.error(error.error.message, '', {
+          positionClass: 'toast-custom-center',
+        });
+        this.loadingPrepayer = false;
+        // this.compteurValidePrepayer = false;
+        // this.loadingEDGPrepayer = false;
       },
     });
   }
@@ -667,7 +697,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     // Total envoyé dans l’API
     const payload = {
       vcPayerAccount: this.postpayModalForm.value.modalDebitAccountPost,
-      vcBenefName: this.nomFacture ?? '',
+      vcBenefName: this.vcAccountName ?? '',
       vcBenefAccount: '',
       mAmount: montantTotalPostPayerEDG,
       mFeesEcash: feesEcash,
@@ -794,7 +824,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     // Total envoyé dans l’API
     const payload = {
       vcPayerAccount: this.postpayModalForm.value.modalDebitAccountPost,
-      vcBenefName: this.nomFacture ?? '',
+      vcBenefName: this.vcAccountName ?? '',
       vcBenefAccount: '',
       mAmount: montantTotalPostPayerEDG,
       mFeesEcash: feesEcash,
@@ -873,6 +903,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
             // }
           },
           error: (err) => {
+            this.isLoading = false;
             this.toastr.error('Une erreur interne est survenue.', '', {
               positionClass: 'toast-custom-center',
             });

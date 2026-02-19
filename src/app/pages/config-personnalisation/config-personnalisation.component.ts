@@ -1,9 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -100,7 +96,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     private fb: FormBuilder,
     private configurationPer: ConfigPersonnalitionService,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,
   ) {
     this.niveauForm = this.fb.group({
       id: [null],
@@ -111,12 +107,12 @@ export class ConfigPersonnalisationComponent implements OnInit {
     });
   }
 
-  getRoleOrganisationListe() { 
+  getRoleOrganisationListe() {
     this.configurationPer.getRoleOrganisation().subscribe({
       next: (response) => {
         console.log(response.data);
         this.listeRoleNiveau = response.data.filter(
-          (f: any) => f.vcRoleName !== "DAF"
+          (f: any) => f.vcRoleName !== 'DAF',
         );
         console.log(this.listeRoleNiveau);
         // console.log(this.listeRoleNiveau);
@@ -163,19 +159,19 @@ export class ConfigPersonnalisationComponent implements OnInit {
     switch (securite.option) {
       case 'Questions de sécurité':
         modal = document.getElementById(
-          'modifierSecuriteModal'
+          'modifierSecuriteModal',
         ) as HTMLDialogElement;
         formToUse = this.securiteForm;
         break;
       case 'Récupération d’accès':
         modal = document.getElementById(
-          'modifierSecuriteModalRecupererAcces'
+          'modifierSecuriteModalRecupererAcces',
         ) as HTMLDialogElement;
         formToUse = this.securiteFormRecuperation;
         break;
       case 'Code pin(transaction)':
         modal = document.getElementById(
-          'modifierSecuriteModalCode'
+          'modifierSecuriteModalCode',
         ) as HTMLDialogElement;
         formToUse = this.securiteFormCode;
         break;
@@ -211,7 +207,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
 
   closeModalSecuriteRecu() {
     const modal: any = document.getElementById(
-      'modifierSecuriteModalRecupererAcces'
+      'modifierSecuriteModalRecupererAcces',
     );
     if (modal) modal.close();
   }
@@ -235,7 +231,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     const code = this.securiteFormCode.value.codePin;
 
     const index = this.securites.findIndex(
-      (s) => s.option === 'Code pin(transaction)'
+      (s) => s.option === 'Code pin(transaction)',
     );
     if (index !== -1) {
       this.securites[index] = {
@@ -256,7 +252,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     const email = this.securiteFormRecuperation.value.email;
 
     const index = this.securites.findIndex(
-      (s) => s.option === 'Récupération d’accès'
+      (s) => s.option === 'Récupération d’accès',
     );
     if (index !== -1) {
       this.securites[index] = {
@@ -293,7 +289,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     const affichage = Object.values(reponses).join(' | ');
 
     const index = this.securites.findIndex(
-      (s) => s.option === this.selectedOption
+      (s) => s.option === this.selectedOption,
     );
     if (index !== -1) {
       this.securites[index] = { ...this.securites[index], statut: affichage };
@@ -307,7 +303,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     this.configurationPer.getListeSecuriteQuestion().subscribe({
       next: (response: any) => {
         this.listesQuestions = response.data.filter(
-          (q: any) => q.btEnabled === '1'
+          (q: any) => q.btEnabled === '1',
         );
 
         const group: any = {};
@@ -376,7 +372,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
 
     localStorage.setItem(
       'userSecurityOptions',
-      JSON.stringify(userSecurityOptions)
+      JSON.stringify(userSecurityOptions),
     );
   }
 
@@ -399,6 +395,8 @@ export class ConfigPersonnalisationComponent implements OnInit {
     this.lienSaisi = this.lienSaisi.replace(/\s+/g, '').toLowerCase();
   }
 
+  modeEnvoiOtp: any;
+
   ngOnInit() {
     this.getListeSecuriteQuestion();
     this.securiteFormCode = this.fb.group({
@@ -412,6 +410,13 @@ export class ConfigPersonnalisationComponent implements OnInit {
     this.getRoleOrganisationListe();
 
     // Récupération des comptes depuis le localStorage
+    const modeEnvoiOtp = localStorage.getItem('modeEnvoiOtp');
+
+    this.modeEnvoiOtp = modeEnvoiOtp ? JSON.parse(modeEnvoiOtp) : null;
+
+    console.log('this.modeEnvoiOtp:', this.modeEnvoiOtp);
+
+    // Récupération des comptes depuis le localStorage
     const comptesStockes = localStorage.getItem('comptes');
     this.comptes = comptesStockes ? JSON.parse(comptesStockes) : [];
 
@@ -423,7 +428,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
 
       this.comptes.forEach((compte) => {
         compte.isChecked = comptesSelectionnes.some(
-          (c: any) => c.compte === compte.compte
+          (c: any) => c.compte === compte.compte,
         );
       });
     }
@@ -477,7 +482,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     const existeDeja = this.categories.some(
       (c) =>
         c.categorie.trim().toLowerCase() === nom.toLowerCase() &&
-        (!this.selectedCategorie || c.id !== this.selectedCategorie.id)
+        (!this.selectedCategorie || c.id !== this.selectedCategorie.id),
     );
 
     if (existeDeja) {
@@ -497,7 +502,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
               description,
               approbation: approbationValue,
             }
-          : c
+          : c,
       );
     } else {
       // ➕ Ajout
@@ -527,7 +532,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
   deleteCategorie(categorie: Categorie) {
     if (
       confirm(
-        `Voulez-vous vraiment supprimer la catégorie "${categorie.categorie}" ?`
+        `Voulez-vous vraiment supprimer la catégorie "${categorie.categorie}" ?`,
       )
     ) {
       this.categories = this.categories.filter((c) => c.id !== categorie.id);
@@ -565,7 +570,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
 
     const regles = categorie.approbation.split(',').map((r) => r.trim());
     const checkboxes = document.querySelectorAll<HTMLInputElement>(
-      'input[name="regleCatAdd[]"]'
+      'input[name="regleCatAdd[]"]',
     );
     checkboxes.forEach((cb) => {
       if (regles.includes(cb.value)) cb.checked = true;
@@ -574,7 +579,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
 
   private resetReglesCheckboxes() {
     const checkboxes = document.querySelectorAll<HTMLInputElement>(
-      'input[name="regleCatAdd[]"]'
+      'input[name="regleCatAdd[]"]',
     );
     checkboxes.forEach((cb) => (cb.checked = false));
   }
@@ -586,7 +591,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
   private getCheckedRegles(): string[] {
     const regles: string[] = [];
     const checkboxes = document.querySelectorAll<HTMLInputElement>(
-      'input[name="regleCatAdd[]"]:checked'
+      'input[name="regleCatAdd[]"]:checked',
     );
     checkboxes.forEach((cb) => regles.push(cb.value));
     return regles;
@@ -626,7 +631,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     // Enregistrer dans localStorage
     localStorage.setItem(
       'listecomptesSelectioner',
-      JSON.stringify(comptesSelectionnes)
+      JSON.stringify(comptesSelectionnes),
     );
 
     // Mettre à jour le résumé si nécessaire
@@ -642,7 +647,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
 
     // Le décocher
     const index = this.comptes.findIndex(
-      (c) => c.compte === compteARetirer.compte
+      (c) => c.compte === compteARetirer.compte,
     );
 
     if (index !== -1) {
@@ -653,7 +658,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     const comptesSelectionnes = this.comptes.filter((c) => c.isChecked);
     localStorage.setItem(
       'listecomptesSelectioner',
-      JSON.stringify(comptesSelectionnes)
+      JSON.stringify(comptesSelectionnes),
     );
 
     this.updateResumer();
@@ -778,7 +783,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
       this.toastr.error(
         'Veuillez configurer la validation multi-niveaux.',
         '',
-        { positionClass: 'toast-custom-center' }
+        { positionClass: 'toast-custom-center' },
       );
       return;
     }
@@ -835,7 +840,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     this.niveaux.sort(
       (a, b) =>
         this.HIERARCHIE_ROLES.indexOf(a.vcRoleName) -
-        this.HIERARCHIE_ROLES.indexOf(b.vcRoleName)
+        this.HIERARCHIE_ROLES.indexOf(b.vcRoleName),
     );
 
     // Recalcul automatique des niveaux (1 à 5)
@@ -864,7 +869,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     this.isEditMode = true;
 
     const role = this.listeRoleNiveau.find(
-      (r) => r.vcRoleName === niveau.vcRoleName
+      (r) => r.vcRoleName === niveau.vcRoleName,
     );
 
     this.niveauForm.patchValue({
@@ -890,13 +895,13 @@ export class ConfigPersonnalisationComponent implements OnInit {
       this.toastr.error(
         'La valeur max ne doit pas être inférieure à la valeur min.',
         '',
-        { positionClass: 'toast-custom-center' }
+        { positionClass: 'toast-custom-center' },
       );
       return;
     }
 
     const selectedRole = this.listeRoleNiveau.find(
-      (r) => r.id === formValue.vcRoleName
+      (r) => r.id === formValue.vcRoleName,
     );
 
     if (!selectedRole) {
@@ -909,7 +914,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
 
     // 🔥 Anti-doublon rôle
     const duplicateRole = this.niveaux.some(
-      (n) => n.id !== formValue.id && n.vcRoleName === formValue.vcRoleName
+      (n) => n.id !== formValue.id && n.vcRoleName === formValue.vcRoleName,
     );
 
     if (duplicateRole) {
@@ -956,7 +961,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     if (!this.niveauASupprimer) return;
 
     this.niveaux = this.niveaux.filter(
-      (n) => n.id !== this.niveauASupprimer!.id
+      (n) => n.id !== this.niveauASupprimer!.id,
     );
 
     this.trierNiveauxParHierarchie();
@@ -983,7 +988,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     if (!this.categorieRetirerSupprimer) return;
 
     this.categories = this.categories.filter(
-      (n) => n.id !== this.categorieRetirerSupprimer.id
+      (n) => n.id !== this.categorieRetirerSupprimer.id,
     );
 
     localStorage.setItem('categories', JSON.stringify(this.categories));
@@ -1034,19 +1039,19 @@ export class ConfigPersonnalisationComponent implements OnInit {
     this.loadingFinal = true;
     // 1️⃣ Récupération depuis localStorage
     const vcJSONFullDetails = JSON.parse(
-      localStorage.getItem('vcJSONFullDetails') || '{}'
+      localStorage.getItem('vcJSONFullDetails') || '{}',
     );
     const accounts = JSON.parse(
-      localStorage.getItem('listecomptesSelectioner') || '[]'
+      localStorage.getItem('listecomptesSelectioner') || '[]',
     );
     const validationLevels = JSON.parse(
-      localStorage.getItem('niveaux') || '[]'
+      localStorage.getItem('niveaux') || '[]',
     );
     const userSecurityOptions = JSON.parse(
-      localStorage.getItem('userSecurityOptions') || '[]'
+      localStorage.getItem('userSecurityOptions') || '[]',
     );
     const paymentCategories = JSON.parse(
-      localStorage.getItem('categories') || '[]'
+      localStorage.getItem('categories') || '[]',
     );
 
     // 2️⃣ Transformation des tableaux
@@ -1091,15 +1096,15 @@ export class ConfigPersonnalisationComponent implements OnInit {
     };
 
     // 4️⃣ Log général avant envoi
-    const payload = {
-      client,
-      accounts: formattedAccounts,
-      validationLevels: formattedValidationLevels,
-      paymentCategories: formattedPaymentCategories,
-      userSecurityOptions,
-      lien: this.validationConfiguredLien ? true : false,
-      lienValue: this.validationConfiguredLien ? '' : this.lienSaisi,
-    };
+    // const payload = {
+    //   client,
+    //   accounts: formattedAccounts,
+    //   validationLevels: formattedValidationLevels,
+    //   paymentCategories: formattedPaymentCategories,
+    //   userSecurityOptions,
+    //   lien: this.validationConfiguredLien ? true : false,
+    //   lienValue: this.validationConfiguredLien ? '' : this.lienSaisi,
+    // };
 
     // console.log('💡 Payload complet pour addSouscription:', payload);
 
@@ -1112,7 +1117,8 @@ export class ConfigPersonnalisationComponent implements OnInit {
         formattedPaymentCategories,
         userSecurityOptions,
         this.validationConfiguredLien ? 1 : 0,
-        this.validationConfiguredLien ? this.lienSaisi : '0'
+        this.validationConfiguredLien ? this.lienSaisi : '0',
+        this.modeEnvoiOtp,
       )
       .subscribe({
         next: (res) => {

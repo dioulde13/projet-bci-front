@@ -158,6 +158,13 @@
                                                             )
                                                           "
                                                         />
+                                                        <!-- AJOUT : erreur photo -->
+                                                        <small
+                                                          class="text-danger d-block mt-1"
+                                                          *ngIf="submitted && !selectedFile"
+                                                        >
+                                                          La photo est obligatoire
+                                                        </small>
                                                       </div>
                                                     </div>
                                                     <div class="col-xl">
@@ -450,20 +457,13 @@
                                                                 </option>
                                                               </select>
 
-                                                              <div
-                                                                class="text-danger mt-1"
-                                                                *ngIf="
-                                                                  formBeneficiaire.get(
-                                                                    'typeBeneficiaire'
-                                                                  )?.touched &&
-                                                                  formBeneficiaire.get(
-                                                                    'typeBeneficiaire'
-                                                                  )?.invalid
-                                                                "
+                                                              <!-- AJOUT : erreur type bénéficiaire -->
+                                                              <small
+                                                                class="text-danger"
+                                                                *ngIf="submitted && f['typeBeneficiaire']?.invalid"
                                                               >
-                                                                Champ
-                                                                obligatoire
-                                                              </div>
+                                                                Type bénéficiaire obligatoire
+                                                              </small>
                                                             </div>
                                                           </div>
 
@@ -503,20 +503,13 @@
                                                                 </option>
                                                               </select>
 
-                                                              <div
-                                                                class="text-danger mt-1"
-                                                                *ngIf="
-                                                                  formBeneficiaire.get(
-                                                                    'vcCurrency'
-                                                                  )?.touched &&
-                                                                  formBeneficiaire.get(
-                                                                    'vcCurrency'
-                                                                  )?.invalid
-                                                                "
+                                                              <!-- AJOUT : erreur devise -->
+                                                              <small
+                                                                class="text-danger"
+                                                                *ngIf="submitted && f['vcCurrency']?.invalid"
                                                               >
-                                                                Champ
-                                                                obligatoire
-                                                              </div>
+                                                                Devise obligatoire
+                                                              </small>
                                                             </div>
                                                           </div>
                                                         </div>
@@ -606,6 +599,8 @@
                                                             </div>
                                                           </div>
                                                         </div>
+
+                                                        <!-- TYPE 1 : OTP -->
                                                         <div
                                                           *ngIf="
                                                             selectedTypePaiementId ===
@@ -617,54 +612,24 @@
                                                             <div
                                                               class="col-md-12"
                                                             >
-                                                              <div class="mb-1">
+                                                              <div class="mb-3">
                                                                 <label
                                                                   class="form-label required"
-                                                                  >Numéro de
+                                                                  >Numero du
                                                                   compte</label
                                                                 >
-                                                                <div
-                                                                  class="otp-groups"
+                                                                <input
+                                                                  class="form-control item account-name"
+                                                                  type="text"
+                                                                  formControlName="vcNumeroCompteOtp"
+                                                                />
+                                                                <!-- AJOUT : erreur numéro compte OTP -->
+                                                                <small
+                                                                  class="text-danger"
+                                                                  *ngIf="submitted && f['vcNumeroCompteOtp']?.invalid"
                                                                 >
-                                                                  <div
-                                                                    class="otp-container"
-                                                                  >
-                                                                    <div
-                                                                      class="otp-box"
-                                                                      *ngFor="
-                                                                        let ctrl of otpControls;
-                                                                        let i = index
-                                                                      "
-                                                                    >
-                                                                      <input
-                                                                        type="text"
-                                                                        maxlength="1"
-                                                                        class="form-control otp-input"
-                                                                        [formControl]="
-                                                                          ctrl
-                                                                        "
-                                                                        (input)="
-                                                                          onInput(
-                                                                            $event,
-                                                                            i
-                                                                          )
-                                                                        "
-                                                                        (keydown)="
-                                                                          onKeyDown(
-                                                                            $event,
-                                                                            i
-                                                                          )
-                                                                        "
-                                                                        [ngClass]="{
-                                                                          'is-invalid':
-                                                                            submitted &&
-                                                                            ctrl.invalid,
-                                                                        }"
-                                                                        #otpInput
-                                                                      />
-                                                                    </div>
-                                                                  </div>
-                                                                </div>
+                                                                  Numéro du compte obligatoire
+                                                                </small>
                                                               </div>
                                                             </div>
                                                           </div>
@@ -683,11 +648,19 @@
                                                                   type="text"
                                                                   formControlName="vcNomCompteOtp"
                                                                 />
+                                                                <!-- AJOUT : erreur nom compte OTP -->
+                                                                <small
+                                                                  class="text-danger"
+                                                                  *ngIf="submitted && f['vcNomCompteOtp']?.invalid"
+                                                                >
+                                                                  Nom du compte obligatoire
+                                                                </small>
                                                               </div>
                                                             </div>
                                                           </div>
                                                         </div>
 
+                                                        <!-- TYPE 2 : BANQUE LOCALE -->
                                                         <div
                                                           *ngIf="
                                                             selectedTypePaiementId ===
@@ -699,6 +672,7 @@
                                                             <div
                                                               class="col-md-12"
                                                             >
+
                                                               <div class="mb-3">
                                                                 <label
                                                                   class="form-label fw-bold text-body required"
@@ -815,6 +789,136 @@
                                                           </div>
                                                         </div>
 
+                                                        <!-- TYPE 4 : BANQUE INTERNATIONALE -->
+                                                        <div
+                                                          *ngIf="
+                                                            selectedTypePaiementId ===
+                                                            '4'
+                                                          "
+                                                          class="payment-fields mb-3"
+                                                        >
+                                                          <div class="row mb-3">
+                                                            <div
+                                                              class="col-md-12"
+                                                            >
+
+                                                              <div class="mb-3">
+                                                                <label
+                                                                  class="form-label fw-bold text-body required"
+                                                                  for="banque-du-Beneficiaire"
+                                                                >
+                                                                  Banque du
+                                                                  Bénéficiaire
+                                                                </label>
+                                                                <select
+                                                                  class="form-select bank"
+                                                                  formControlName="banqueBeneficiaireInternational"
+                                                                  (change)="
+                                                                    onBanqueChange(
+                                                                      $event
+                                                                    )
+                                                                  "
+                                                                >
+                                                                  <option
+                                                                    value=""
+                                                                  >
+                                                                    Veuillez
+                                                                    sélectionner
+                                                                    la banque
+                                                                  </option>
+
+                                                                  <option
+                                                                    *ngFor="
+                                                                      let banque of listeBanques
+                                                                    "
+                                                                    [value]="
+                                                                      banque.vcName
+                                                                    "
+                                                                  >
+                                                                    {{
+                                                                      banque.vcName
+                                                                    }}
+                                                                  </option>
+                                                                </select>
+                                                                <small
+                                                                  class="text-danger"
+                                                                  *ngIf="
+                                                                    submitted &&
+                                                                    f[
+                                                                      'banqueBeneficiaireInternational'
+                                                                    ]?.invalid
+                                                                  "
+                                                                >
+                                                                  La banque est
+                                                                  obligatoire
+                                                                </small>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                          <div class="row mb-3">
+                                                            <div
+                                                              class="col-md-6"
+                                                            >
+                                                              <div class="mb-3">
+                                                                <label
+                                                                  class="form-label fw-bold text-body required"
+                                                                  for="numero-de-compte"
+                                                                  >Numéro de
+                                                                  compte</label
+                                                                >
+                                                                <input
+                                                                  class="form-control item numero_compte font-size-15 fw-semibold account-number"
+                                                                  type="text"
+                                                                  formControlName="numeroCompteInternational"
+                                                                />
+                                                                <small
+                                                                  class="text-danger"
+                                                                  *ngIf="
+                                                                    submitted &&
+                                                                    f[
+                                                                      'numeroCompteInternational'
+                                                                    ]?.invalid
+                                                                  "
+                                                                >
+                                                                  Le numero de
+                                                                  compte est
+                                                                  obligatoire
+                                                                </small>
+                                                              </div>
+                                                            </div>
+                                                            <div
+                                                              class="col-md-6"
+                                                            >
+                                                              <div class="mb-3">
+                                                                <label
+                                                                  class="form-label fw-bold text-body required"
+                                                                  for="nom-du-compte"
+                                                                  >Nom du
+                                                                  compte</label
+                                                                ><input
+                                                                  class="form-control item account-name"
+                                                                  type="text"
+                                                                  formControlName="vcNomCompteInternational"
+                                                                />
+                                                                <small
+                                                                  class="text-danger"
+                                                                  *ngIf="
+                                                                    submitted &&
+                                                                    f[
+                                                                      'vcNomCompteInternational'
+                                                                    ]?.invalid
+                                                                   "
+                                                                >
+                                                                  Le nom du
+                                                                  compte est
+                                                                  obligatoire
+                                                                </small>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+
+                                                        <!-- TYPE 3 : MOBILE MONEY -->
                                                         <div
                                                           *ngIf="
                                                             selectedTypePaiementId ===
@@ -831,8 +935,16 @@
                                                               type="text"
                                                               class="form-control"
                                                               formControlName="numeroMobile"
-                                                              onlyNumbers
                                                             />
+                                                          
+                                                            <!-- AJOUT : erreur numéro mobile -->
+                                                            <small
+                                                              class="text-danger"
+                                                              *ngIf="submitted && f['numeroMobile']?.invalid"
+                                                            >
+                                                              Numéro mobile obligatoire
+                                                            </small>
+                                                            
                                                           </div>
                                                           <div class="mb-3">
                                                             <label
@@ -857,6 +969,13 @@
                                                                 ORANGE
                                                               </option>
                                                             </select>
+                                                            <!-- AJOUT : erreur opérateur -->
+                                                            <small
+                                                              class="text-danger"
+                                                              *ngIf="submitted && f['vcNomCompteMobile']?.invalid"
+                                                            >
+                                                              Opérateur obligatoire
+                                                            </small>
                                                           </div>
                                                         </div>
                                                       </div>
@@ -1028,7 +1147,6 @@
                                       )
                                     "
                                   >
-                                    <!-- <i class="mdi mdi-pencil"></i>  -->
                                     Detail
                                   </button>
 
@@ -1083,81 +1201,6 @@
                               </button>
                             </div>
                           </div>
-
-                          <!-- <table
-                            class="table table-bordered table-hover mb-0 datatable align-middle dt-responsive table-check nowrap display"
-                          >
-                            <thead class="table-primary">
-                              <tr>
-                                <th>Date</th>
-                                <th>Nom</th>
-                                <th>Prénom</th>
-                                <th>Email</th>
-                                <th>Type</th>
-                                <th>N° Compte</th>
-                                <th>Statut</th>
-                                <th class="text-center">Action</th>
-                              </tr>
-                            </thead>
-
-                            <tbody>
-                              <tr *ngFor="let benefice of listeBeneficiaire">
-                                <td>
-                                  {{
-                                    benefice.BeneficiaryCreatedDate
-                                      | date : "dd/MM/yyyy HH:mm"
-                                  }}
-                                </td>
-                                <td>{{ benefice.vcLastName }}</td>
-                                <td>{{ benefice.vcFirstName }}</td>
-                                <td>{{ benefice.vcEmail }}</td>
-                                <td>{{ benefice.BeneficiaryTypeName }}</td>
-                                <td>{{ benefice.vcAccountNumber }}</td>
-                                <td>
-                                  <span
-                                    class="badge bg-warning text-dark"
-                                    *ngIf="
-                                      benefice.vcStatus === 'En traitement'
-                                    "
-                                  >
-                                    {{ benefice.vcStatus }}
-                                  </span>
-                                  <span
-                                    class="badge bg-success"
-                                    *ngIf="
-                                      benefice.vcStatus !== 'En traitement'
-                                    "
-                                  >
-                                    {{ benefice.vcStatus }}
-                                  </span>
-                                </td>
-
-                                <td class="text-center">
-                                 
-
-                                  <button
-                                    type="button"
-                                    class="btn btn-sm btn-outline-primary me-2"
-                                    (click)="
-                                      modifierBeneficiaire(
-                                        benefice.vcAccountNumber
-                                      )
-                                    "
-                                  >
-                                    <i class="mdi mdi-pencil"></i> Modifier
-                                  </button>
-
-                                  <button
-                                    class="btn btn-sm btn-outline-success"
-                                    (click)="transfererBeneficiaire(benefice)"
-                                  >
-                                    <i class="mdi mdi-swap-horizontal"></i>
-                                    Transférer
-                                  </button>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table> -->
                         </div>
                       </div>
                       <div

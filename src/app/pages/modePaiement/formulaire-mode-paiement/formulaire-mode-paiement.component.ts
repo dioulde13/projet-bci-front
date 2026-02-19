@@ -98,7 +98,7 @@ export class FormulaireModePaiementComponent implements OnInit {
             this.fraisLabel = `${this.frais} %`;
             this.fraisCalcul = this.frais / 100;
           } else {
-            this.fraisLabel = `${this.frais} ${this.devise}`;
+            this.fraisLabel = `${this.frais}`;
             this.fraisCalcul = this.frais;
           }
         }
@@ -245,25 +245,28 @@ export class FormulaireModePaiementComponent implements OnInit {
       });
   }
 
-  soldeDebiteur: any;
-  devise: any;
-  loadingGetBalance: boolean = false;
+  soldeDebiteur: any = null;
+devise: any = null;
+loadingGetBalance: boolean = false;
 
-  getAccountName(accountNumber: string): void {
-    this.loadingGetBalance = true;
-    this.getAccount.getNomDebiteur(accountNumber).subscribe({
-      next: (res) => {
-        // console.log('res: ', res);
-        this.soldeDebiteur = res?.data?.soldeDisp;
-        this.devise = res?.data?.devise;
-        this.loadingGetBalance = false;
-        console.log('this.soldeDebiteur: ', this.soldeDebiteur);
-      },
-      error: () => {
-        this.soldeDebiteur = '';
-      },
-    });
-  }
+getAccountName(accountNumber: string): void {
+  this.loadingGetBalance = true;
+
+  this.getAccount.getNomDebiteur(accountNumber).subscribe({
+    next: (res) => {
+      this.soldeDebiteur = res?.data?.soldeDisp ?? null;
+      this.devise = res?.data?.devise ?? null;
+      this.loadingGetBalance = false;
+
+      console.log('this.soldeDebiteur: ', this.soldeDebiteur);
+    },
+    error: () => {
+      this.soldeDebiteur = null;
+      this.devise = null;
+      this.loadingGetBalance = false;
+    },
+  });
+}
 
   loadingMobileMoney: boolean = false;
 

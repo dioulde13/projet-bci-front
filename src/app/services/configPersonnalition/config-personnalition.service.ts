@@ -33,7 +33,8 @@ export class ConfigPersonnalitionService {
     paymentCategories: any[],
     userSecurityOptions: any[],
     liaisonClientAndOrganisation: number,
-    cliLienGenerere: string = ''
+    cliLienGenerere: string = '',
+    modeEnvoiSms: string
   ): Observable<any> {
     // Si vcJSONFullDetails est une string -> parser
     if (typeof client.vcJSONFullDetails === 'string') {
@@ -48,6 +49,7 @@ export class ConfigPersonnalitionService {
       userSecurityOptions,
       liaisonClientAndOrganisation,
       cliLienGenerere,
+      modeEnvoiSms
     };
 
     // 🔹 Log complet du body avant envoi
