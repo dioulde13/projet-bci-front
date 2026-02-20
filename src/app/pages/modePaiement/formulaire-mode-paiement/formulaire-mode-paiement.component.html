@@ -139,8 +139,9 @@
                           <span
                             *ngIf="soldeDebiteur === null; else soldeDisponible"
                             class="text-danger"
+                            style="font-size: 12px;"
                           >
-                            Solde indisponible
+                            0
                           </span>
                           <ng-template #soldeDisponible>
                             {{ soldeDebiteur | number: "1.2-2" }} {{ devise }}

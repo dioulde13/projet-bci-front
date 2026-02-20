@@ -28,6 +28,7 @@ import { BeneficiaireNodeService } from '../../servicesNodes/beneficiaireNode/be
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { OnlyNumbersDirective } from '../onlyNumbers/only-numbers.pipe';
+import { NotificationService } from '../../services/notification/notification.service';
 
 @Component({
   selector: 'app-liste-des-beneficiaire',
@@ -68,8 +69,9 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     private fb: FormBuilder,
     private beneficiaireService: BeneficiaireService,
     private beneficiaireNodeService: BeneficiaireNodeService,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
     private router: Router,
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -517,9 +519,10 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
 
     // ─── 2. Un type de paiement doit être sélectionné ────────────────────────
     if (!this.selectedTypePaiementId) {
-      this.toastr.error('⚠️ Veuillez sélectionner un type de paiement', '', {
-        positionClass: 'toast-custom-center',
-      });
+       this.notification.error('⚠️ Veuillez sélectionner un type de paiement');
+      // this.toastr.error('⚠️ Veuillez sélectionner un type de paiement', '', {
+      //   positionClass: 'toast-custom-center',
+      // });
       this.isLoading = false;
       return;
     }
@@ -588,9 +591,10 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
 
     // ─── 4. Photo obligatoire ─────────────────────────────────────────────────
     if (!this.selectedFile) {
-      this.toastr.error('📷 Aucune photo sélectionnée', '', {
-        positionClass: 'toast-custom-center',
-      });
+      this.notification.error('📷 Aucune photo sélectionnée');
+      // this.toastr.error('📷 Aucune photo sélectionnée', '', {
+      //   positionClass: 'toast-custom-center',
+      // });
       this.isLoading = false;
       return;
     }
@@ -652,10 +656,10 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       next: (res: any) => {
         this.isLoading = false;
         if (res.status === 200) {
-          this.toastr.success(res.message, '', {
-            positionClass: 'toast-custom-center',
-          });
-
+           this.notification.success(res.message);
+          // this.toastr.success(res.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           this.resetFormulaire();
 
           this.selectedFile = null;
@@ -668,9 +672,10 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
           this.getListeBeneficiaire();
           this.showAjoutBeneficiaireModal = false;
         } else {
-          this.toastr.error(res.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.error(res.message);
+          // this.toastr.error(res.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
         }
       },
 

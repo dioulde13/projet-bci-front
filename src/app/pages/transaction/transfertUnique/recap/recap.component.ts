@@ -256,9 +256,9 @@ export class RecapComponent implements OnInit {
 
   retour() {
     this.location.back();
-    localStorage.removeItem('InfosSaisirDansFormulaire');
-    localStorage.removeItem('selectedBeneficiaire');
-    localStorage.removeItem('infosCompteDebiteur');
+    // localStorage.removeItem('InfosSaisirDansFormulaire');
+    // localStorage.removeItem('selectedBeneficiaire');
+    // localStorage.removeItem('infosCompteDebiteur');
   }
 
   private getFromStorage(key: string) {

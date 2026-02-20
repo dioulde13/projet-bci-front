@@ -15,6 +15,7 @@ import { AuthService } from '../../../services/authServices/auth.service';
 
 import { ToastrService } from 'ngx-toastr';
 import { AuthServicesNodes } from '../../../servicesNodes/authServices/auth.service';
+import { NotificationService } from '../../../services/notification/notification.service';
 
 @Component({
   selector: 'app-valider-otp-after-login',
@@ -54,7 +55,8 @@ export class ValiderOtpAfterLoginComponent implements AfterViewInit, OnInit {
     private router: Router,
     private authService: AuthService,
     // private authServiceNode: AuthServicesNodes,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private notification: NotificationService
   ) {}
 
   moveToNext(event: any, index: number) {
@@ -145,21 +147,24 @@ export class ValiderOtpAfterLoginComponent implements AfterViewInit, OnInit {
         this.isLoadingReEnvoi = false;
         this.otpValues = ['', '', '', ''];
         if (response.status === 200) {
-          this.toastr.success(response.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.success(response.message);
+          // this.toastr.success(response.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
         }else{
-          this.toastr.error(response.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.error(response.message);
+          // this.toastr.error(response.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           console.log(response);
         }
       },
       error: (err) => {
         this.isLoadingReEnvoi = false;
-        this.toastr.error(err.error.message, '', {
-          positionClass: 'toast-custom-center',
-        });
+        this.notification.error("Une erreur interne est survenue.");
+        // this.toastr.error(err.error.message, '', {
+        //   positionClass: 'toast-custom-center',
+        // });
       },
     });
   }

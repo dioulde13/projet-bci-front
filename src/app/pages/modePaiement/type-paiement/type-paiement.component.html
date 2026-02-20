@@ -39,17 +39,17 @@
         <button
           type="button"
           class="p-0 border-0 bg-transparent w-100 text-start"
-          (click)="nextPages(operateur.FacturierName)"
+          (click)="nextPages(operateur.vcAccountName)"
         >
           <div class="card card-custom text-center" style="height: 14rem;">
             <img
               style="height: 10rem"
               src="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking%20-%202-W-2.svg?h=c746ea9e25952b9505731b7d644e74e9"
-              [alt]="operateur.FacturierName"
+              [alt]="operateur.vcAccountName"
             />
             <div class="card-body">
               <h5 class="fw-semibold font-size-16 mb-1">
-                <span class="text-body">{{ operateur.FacturierName }}</span>
+                <span class="text-body">{{ operateur.vcAccountName }}</span>
               </h5>
             </div>
           </div>

@@ -32,7 +32,7 @@
                 <div class="card">
                   <div class="row g-0 align-items-center">
                     <div class="col-sm-6 col-md-4">
-                       <!-- [src]="
+                      <!-- [src]="
                           'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
                           photoRecuperer
                         "
@@ -52,9 +52,7 @@
               </div>
             </div>
 
-            <div
-              *ngIf="vcAccountType?.trim() === 'PREPAID'"
-            >
+            <div *ngIf="vcAccountType?.trim() === 'PREPAID'">
               <!-- ========== PREPAYÉ ========== -->
               <div>
                 <form
@@ -166,12 +164,42 @@
                             {{ c.vcAccountNumber }}
                           </option>
                         </select>
-                        <small style="font-size: 15px; margin-top: 20px">
+
+                        <small style="font-size: 15px">
+                          Solde disponible :
+                          <b class="text-success">
+                            <ng-container
+                              *ngIf="!loadingGetBalance; else loadingSolde"
+                            >
+                              <span
+                                *ngIf="
+                                  soldeDebiteur === null;
+                                  else soldeDisponible
+                                "
+                                class="text-danger"
+                                style="font-size: 12px"
+                              >
+                                Solde indisponible
+                              </span>
+                              <ng-template #soldeDisponible>
+                                {{ soldeDebiteur | number: "1.2-2" }}
+                                {{ devise }}
+                              </ng-template>
+                            </ng-container>
+
+                            <ng-template #loadingSolde>
+                              <span class="text-muted"
+                                >En cours de chargement...</span
+                              >
+                            </ng-template>
+                          </b>
+                        </small>
+                        <!-- <small style="font-size: 15px; margin-top: 20px">
                           Solde disponible :
                           <b class="text-success">
                             {{ soldeDebiteur | number: "1.2-2" }} {{ devise }}
                           </b>
-                        </small>
+                        </small> -->
                       </div>
 
                       <!-- montant -->
@@ -230,130 +258,128 @@
               </div>
             </div>
 
-                          <!-- MODAL OTP -->
-              <div class="modal-backdrop-custom" *ngIf="modalOtp">
-                <div class="modal-content-custom shadow-lg">
-                  <h4 class="mb-3 text-center">Validation OTP</h4>
-                  <p class="text-center text-muted">
-                    Veuillez entrer le code à 4 chiffres
-                  </p>
+            <!-- MODAL OTP -->
+            <div class="modal-backdrop-custom" *ngIf="modalOtp">
+              <div class="modal-content-custom shadow-lg">
+                <h4 class="mb-3 text-center">Validation OTP</h4>
+                <p class="text-center text-muted">
+                  Veuillez entrer le code à 4 chiffres
+                </p>
 
-                  <div class="otp-container">
-                    <div class="alert alert-info" role="alert">
-                      <span
-                        >Un code de vérification (OTP) a été envoyé à votre
-                        adresse email.</span
-                      >
-                    </div>
-
-                    <label class="form-label text-center w-100"
-                      >Entrez votre code OTP</label
+                <div class="otp-container">
+                  <div class="alert alert-info" role="alert">
+                    <span
+                      >Un code de vérification (OTP) a été envoyé à votre
+                      adresse email.</span
                     >
-                    <div class="otp-inputs d-flex justify-content-center gap-2">
-                      <ng-container
-                        *ngFor="let item of [0, 1, 2, 3]; let i = index"
-                      >
-                        <input
-                          class="form-control otp-input"
-                          type="text"
-                          maxlength="1"
-                          pattern="[0-9]"
-                          required
-                          (input)="moveToNext($event, i)"
-                          #otpInput
-                          [(ngModel)]="otpValues[i]"
-                          name="otp{{ i }}"
-                        />
-                      </ng-container>
-                    </div>
-
-                    <div class="text-center">
-                      <small class="text-muted">Exemple : 1234</small>
-                    </div>
-
-                    <div class="alert alert-light" role="alert">
-                      <div
-                        class="d-flex justify-content-between align-items-center"
-                      >
-                        <span>Vous n'avez pas reçu le code ?</span>
-                        <button
-                          (click)="reEnvoiOtp()"
-                          class="btn btn-primary btn-sm"
-                          type="button"
-                          [disabled]="isLoadingRenvoyez"
-                        >
-                          <span
-                            *ngIf="isLoadingRenvoyez"
-                            class="spinner-border spinner-border-sm me-2"
-                            role="status"
-                            aria-hidden="true"
-                          ></span>
-                          {{ isLoadingRenvoyez ? "En cours..." : "Renvoyer" }}
-                        </button>
-                      </div>
-                    </div>
                   </div>
 
-                  <div
-                    class="flex justify-between mt-4 d-flex justify-content-between"
+                  <label class="form-label text-center w-100"
+                    >Entrez votre code OTP</label
                   >
-                    <button
-                      class="btn btn-outline-danger"
-                      (click)="closeModalOtp()"
+                  <div class="otp-inputs d-flex justify-content-center gap-2">
+                    <ng-container
+                      *ngFor="let item of [0, 1, 2, 3]; let i = index"
                     >
-                      Annuler
-                    </button>
-                    <button
-                      type="submit"
-                      class="btn btn-primary"
-                      [disabled]="!isOtpComplete() || isLoading"
-                      (click)="verifyOtp()"
-                    >
-                      <span
-                        *ngIf="isLoading"
-                        class="spinner-border spinner-border-sm me-2"
-                      ></span>
-                      {{ isLoading ? "Vérification..." : "Valider le Code" }}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-                          <!-- ========== POSTPAYÉ ========== -->
-              <div
-                 *ngIf="vcAccountType?.trim() === 'POSTPAID'"
-              >
-                <form
-                  *ngIf="paymentFormPostpayerEDG"
-                  [formGroup]="paymentFormPostpayerEDG"
-                  novalidate
-                >
-                  <div class="mb-3 col-md-6">
-                    <label class="form-label fw-bold required">
-                      Entrer le numéro de compteur
-                    </label>
-                    <div class="input-group">
                       <input
+                        class="form-control otp-input"
                         type="text"
-                        class="form-control"
-                        formControlName="numeroCompteurPostpayer"
-                        inputmode="numeric"
-                        maxlength="11"
-                        placeholder="Ex: 70006212859"
-                        (input)="onlyNumbersPostpayer($event)"
+                        maxlength="1"
+                        pattern="[0-9]"
+                        required
+                        (input)="moveToNext($event, i)"
+                        #otpInput
+                        [(ngModel)]="otpValues[i]"
+                        name="otp{{ i }}"
                       />
+                    </ng-container>
+                  </div>
 
+                  <div class="text-center">
+                    <small class="text-muted">Exemple : 1234</small>
+                  </div>
+
+                  <div class="alert alert-light" role="alert">
+                    <div
+                      class="d-flex justify-content-between align-items-center"
+                    >
+                      <span>Vous n'avez pas reçu le code ?</span>
                       <button
-                        class="btn btn-primary"
+                        (click)="reEnvoiOtp()"
+                        class="btn btn-primary btn-sm"
                         type="button"
-                        (click)="onCompteurBlurPostpayer()"
+                        [disabled]="isLoadingRenvoyez"
                       >
-                        <i class="bi bi-search"></i>
+                        <span
+                          *ngIf="isLoadingRenvoyez"
+                          class="spinner-border spinner-border-sm me-2"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        {{ isLoadingRenvoyez ? "En cours..." : "Renvoyer" }}
                       </button>
                     </div>
                   </div>
+                </div>
 
-                  <!-- <div class="mb-3">
+                <div
+                  class="flex justify-between mt-4 d-flex justify-content-between"
+                >
+                  <button
+                    class="btn btn-outline-danger"
+                    (click)="closeModalOtp()"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                    [disabled]="!isOtpComplete() || isLoading"
+                    (click)="verifyOtp()"
+                  >
+                    <span
+                      *ngIf="isLoading"
+                      class="spinner-border spinner-border-sm me-2"
+                    ></span>
+                    {{ isLoading ? "Vérification..." : "Valider le Code" }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ========== POSTPAYÉ ========== -->
+            <div *ngIf="vcAccountType?.trim() === 'POSTPAID'">
+              <form
+                *ngIf="paymentFormPostpayerEDG"
+                [formGroup]="paymentFormPostpayerEDG"
+                novalidate
+              >
+                <div class="mb-3 col-md-6">
+                  <label class="form-label fw-bold required">
+                    Entrer le numéro de compteur
+                  </label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="numeroCompteurPostpayer"
+                      inputmode="numeric"
+                      maxlength="11"
+                      placeholder="Ex: 70006212859"
+                      (input)="onlyNumbersPostpayer($event)"
+                    />
+
+                    <button
+                      class="btn btn-primary"
+                      type="button"
+                      (click)="onCompteurBlurPostpayer()"
+                    >
+                      <i class="bi bi-search"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- <div class="mb-3">
                     <label class="form-label fw-bold required">
                       Entrer le numéro de compteur
                     </label>
@@ -370,157 +396,180 @@
                     />
                   </div> -->
 
-                  <div class="row mb-3" *ngIf="afficherInfosPostpayer">
-                    <div class="col-md-12">
-                      <div *ngIf="loadingPostpayer" class="alert alert-info">
-                        Vérification en cours...
-                      </div>
+                <div class="row mb-3" *ngIf="afficherInfosPostpayer">
+                  <div class="col-md-12">
+                    <div *ngIf="loadingPostpayer" class="alert alert-info">
+                      Vérification en cours...
+                    </div>
 
+                    <div
+                      *ngIf="!loadingEDGPostpayer && !compteurValidePostpayer"
+                      class="alert alert-danger"
+                    >
+                      Compteur invalide ❌
+                    </div>
+
+                    <div
+                      *ngIf="!loadingEDGPostpayer && compteurValidePostpayer"
+                      class="alert alert-success"
+                    >
+                      Compteur valide ✅
+                    </div>
+
+                    <div *ngIf="facturesCompteur.length > 0">
+                      <h5>Factures :</h5>
+                      <table class="table table-bordered table-striped">
+                        <thead>
+                          <tr>
+                            <th>Code facture</th>
+                            <th>Date</th>
+                            <th>Période</th>
+                            <th>Nom client</th>
+                            <th>Montant</th>
+                            <th>Reste a payer</th>
+                            <th>Nombre de paiements</th>
+                            <th>Date limite</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let facture of facturesCompteur">
+                            <td>{{ facture.code }}</td>
+                            <td>{{ facture.date }}</td>
+                            <td>{{ formatDateOper(facture.period) }}</td>
+                            <td>{{ facture.name }}</td>
+                            <td>{{ facture.amt | number: "1.0-0" }}</td>
+                            <td>{{ facture.balance | number: "1.0-0" }}</td>
+                            <td>{{ facture.pay_times }}</td>
+                            <td>{{ facture.date_limit }}</td>
+                            <td>{{ facture.status }}</td>
+                            <td>
+                              <button
+                                class="btn btn-sm btn-primary"
+                                (click)="openPostpayModal(facture)"
+                              >
+                                Payer
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+
+                      <!-- Modal Paiement Facture Postpayé -->
                       <div
-                        *ngIf="!loadingEDGPostpayer && !compteurValidePostpayer"
-                        class="alert alert-danger"
+                        class="modal fade"
+                        id="postpayModal"
+                        tabindex="-1"
+                        aria-labelledby="postpayModalLabel"
+                        aria-hidden="true"
                       >
-                        Compteur invalide ❌
-                      </div>
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="postpayModalLabel">
+                                Paiement facture EDG Postpayé
+                              </h5>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
 
-                      <div
-                        *ngIf="!loadingEDGPostpayer && compteurValidePostpayer"
-                        class="alert alert-success"
-                      >
-                        Compteur valide ✅
-                      </div>
-
-                      <div *ngIf="facturesCompteur.length > 0">
-                        <h5>Factures :</h5>
-                        <table class="table table-bordered table-striped">
-                          <thead>
-                            <tr>
-                              <th>Code facture</th>
-                              <th>Date</th>
-                              <th>Période</th>
-                              <th>Nom client</th>
-                              <th>Montant</th>
-                              <th>Reste a payer</th>
-                              <th>Nombre de paiements</th>
-                              <th>Date limite</th>
-                              <th>Status</th>
-                              <th>Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr *ngFor="let facture of facturesCompteur">
-                              <td>{{ facture.code }}</td>
-                              <td>{{ facture.date }}</td>
-                              <td>{{ formatDateOper(facture.period) }}</td>
-                              <td>{{ facture.name }}</td>
-                              <td>{{ facture.amt | number: "1.0-0" }}</td>
-                              <td>{{ facture.balance | number: "1.0-0" }}</td>
-                              <td>{{ facture.pay_times }}</td>
-                              <td>{{ facture.date_limit }}</td>
-                              <td>{{ facture.status }}</td>
-                              <td>
-                                <button
-                                  class="btn btn-sm btn-primary"
-                                  (click)="openPostpayModal(facture)"
-                                >
-                                  Payer
-                                </button>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-
-                        <!-- Modal Paiement Facture Postpayé -->
-                        <div
-                          class="modal fade"
-                          id="postpayModal"
-                          tabindex="-1"
-                          aria-labelledby="postpayModalLabel"
-                          aria-hidden="true"
-                        >
-                          <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="postpayModalLabel">
-                                  Paiement facture EDG Postpayé
-                                </h5>
-                                <button
-                                  type="button"
-                                  class="btn-close"
-                                  data-bs-dismiss="modal"
-                                  aria-label="Close"
-                                ></button>
-                              </div>
-
-                              <div class="modal-body">
-                                <form
-                                  [formGroup]="postpayModalForm"
-                                  (ngSubmit)="verificationMontant()"
-                                >
-                                  <div class="mb-3">
-                                    <label class="form-label fw-bold required">
-                                      Compte débiteur
-                                    </label>
-                                    <select
-                                      class="form-select mb-2"
-                                      formControlName="modalDebitAccountPost"
-                                      (change)="
-                                        onDebitAccountSelectEDGPost($event)
-                                      "
-                                    >
-                                      <option
-                                        *ngFor="let c of listeCompteClient"
-                                        [value]="c.vcAccountNumber"
-                                      >
-                                        {{ c.vcAccountNumber }}
-                                      </option>
-                                    </select>
-                                    <small
-                                      style="font-size: 15px; margin-top: 20px"
-                                    >
-                                      Solde disponible :
-                                      <b class="text-success">
-                                        {{ soldeDebiteur | number: "1.2-2" }}
-                                        {{ devise }}
-                                      </b>
-                                    </small>
-                                  </div>
-
-                                  <!-- Montant -->
-                                  <div class="mb-3">
-                                    <label class="form-label fw-bold required">
-                                      Montant à payer
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      formControlName="modalMontantPost"
-                                      gnfNumberFormat
-                                    />
-                                  </div>
-
-                                  <!-- Bouton Confirmer -->
-                                  <button
-                                    type="submit"
-                                    class="btn btn-primary w-100"
-                                    [disabled]="postpayModalForm.invalid"
+                            <div class="modal-body">
+                              <form
+                                [formGroup]="postpayModalForm"
+                                (ngSubmit)="verificationMontant()"
+                              >
+                                <div class="mb-3">
+                                  <label class="form-label fw-bold required">
+                                    Compte débiteur
+                                  </label>
+                                  <select
+                                    class="form-select mb-2"
+                                    formControlName="modalDebitAccountPost"
+                                    (change)="
+                                      onDebitAccountSelectEDGPost($event)
+                                    "
                                   >
-                                    {{
-                                      loadingVerificationMontant
-                                        ? "Confimation en cours"
-                                        : "Confirmer"
-                                    }}
-                                  </button>
-                                </form>
-                              </div>
+                                    <option
+                                      *ngFor="let c of listeCompteClient"
+                                      [value]="c.vcAccountNumber"
+                                    >
+                                      {{ c.vcAccountNumber }}
+                                    </option>
+                                  </select>
+                                  <small style="font-size: 15px">
+                                    Solde disponible :
+                                    <b class="text-success">
+                                      <ng-container
+                                        *ngIf="
+                                          !loadingGetBalance;
+                                          else loadingSolde
+                                        "
+                                      >
+                                        <span
+                                          *ngIf="
+                                            soldeDebiteur === null;
+                                            else soldeDisponible
+                                          "
+                                          class="text-danger"
+                                          style="font-size: 12px"
+                                        >
+                                          Solde indisponible
+                                        </span>
+                                        <ng-template #soldeDisponible>
+                                          {{ soldeDebiteur | number: "1.2-2" }}
+                                          {{ devise }}
+                                        </ng-template>
+                                      </ng-container>
+
+                                      <ng-template #loadingSolde>
+                                        <span class="text-muted"
+                                          >En cours de chargement...</span
+                                        >
+                                      </ng-template>
+                                    </b>
+                                  </small>
+                                </div>
+
+                                <!-- Montant -->
+                                <div class="mb-3">
+                                  <label class="form-label fw-bold required">
+                                    Montant à payer
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    formControlName="modalMontantPost"
+                                    gnfNumberFormat
+                                  />
+                                </div>
+
+                                <!-- Bouton Confirmer -->
+                                <button
+                                  type="submit"
+                                  class="btn btn-primary w-100"
+                                  [disabled]="postpayModalForm.invalid"
+                                >
+                                  {{
+                                    loadingVerificationMontant
+                                      ? "Confimation en cours"
+                                      : "Confirmer"
+                                  }}
+                                </button>
+                              </form>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </form>
-              </div>
+                </div>
+              </form>
+            </div>
 
             <!-- <div
               class="tab-content"

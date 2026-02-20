@@ -11,6 +11,7 @@ import { NgxCaptchaModule } from 'ngx-captcha';
 import { AuthService } from '../../services/authServices/auth.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../../services/notification/notification.service';
 // import { error } from 'jquery';
 
 @Component({
@@ -45,7 +46,8 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private notification: NotificationService
   ) {}
 
   ngOnInit() {
@@ -91,24 +93,19 @@ export class LoginComponent implements OnInit {
             next: (res) => {
               console.log("response:",res);
               if (res.status === 200) {
-                this.toastr.success('Otp envoyé avec succès', '', {
-                  positionClass: 'toast-custom-center',
-                });
+                this.notification.success('Otp envoyé avec succès');
                 localStorage.setItem('loginEmail', email);
                 this.router.navigate(['/validerOtpLogin']);
               } else {
                 // console.log("res:",res);
                 // console.log("message:",res.message);
-                this.toastr.error(res.message, '', {
-                  positionClass: 'toast-custom-center',
-                });
+                this.notification.error(res.message);
+               
               }
               this.loading = false;
             },
             error: (err) => {
-              this.toastr.error(err.error.message, '', {
-                positionClass: 'toast-custom-center',
-              });
+              this.notification.error("Une erreur interne est survenue.");
               this.loading = false;
             }
           });

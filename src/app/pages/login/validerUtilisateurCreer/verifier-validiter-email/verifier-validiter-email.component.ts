@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ValiderUtilisateurServiceService } from '../../../../services/validerUtilisateurService/valider-utilisateur-service.service';
+import { NotificationService } from '../../../../services/notification/notification.service';
 
 @Component({
   selector: 'app-verifier-validiter-email',
   imports: [],
   standalone: true,
   templateUrl: './verifier-validiter-email.component.html',
-  styleUrl: './verifier-validiter-email.component.css'
+  styleUrl: './verifier-validiter-email.component.css',
 })
 export class VerifierValiditerEmailComponent implements OnInit {
   token!: string;
@@ -18,7 +19,8 @@ export class VerifierValiditerEmailComponent implements OnInit {
     private validerTokeEmailService: ValiderUtilisateurServiceService,
     private route: ActivatedRoute,
     private router: Router,
-    private toastr: ToastrService
+    // private toastr: ToastrService,
+    private notification: NotificationService,
   ) {}
 
   ngOnInit() {
@@ -33,27 +35,30 @@ export class VerifierValiditerEmailComponent implements OnInit {
       localStorage.setItem('token_recu', this.token);
       localStorage.setItem('email_recu', this.email);
 
-      this.validerTokeEmailService.verifierTokenEtEmail(this.token, this.email).subscribe({
-        next: (response) => {
-          console.log(response);
-          if (response.status === 200) {
-            this.router.navigate(['/verifierOtpSiValide']);
-          } else {
-            // this.router.navigate(['/reunitialiserMotPasse']);
-            this.toastr.error(response.message, '', {
-              positionClass: 'toast-custom-center',
-            });
-          }
-        },
-        error: (err) => {
-          console.log(err);
-          this.toastr.error(err.message, '', {
-              positionClass: 'toast-custom-center',
-            });
-        },
-      });
+      this.validerTokeEmailService
+        .verifierTokenEtEmail(this.token, this.email)
+        .subscribe({
+          next: (response) => {
+            console.log(response);
+            if (response.status === 200) {
+              this.router.navigate(['/verifierOtpSiValide']);
+            } else {
+              // this.router.navigate(['/reunitialiserMotPasse']);
+              this.notification.error(response.message);
+              // this.toastr.error(response.message, '', {
+              //   positionClass: 'toast-custom-center',
+              // });
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notification.error('Une erreur interne est survenue.');
+            // this.toastr.error(err.message, '', {
+            //     positionClass: 'toast-custom-center',
+            //   });
+          },
+        });
       // }
     });
   }
 }
-

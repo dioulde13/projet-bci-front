@@ -371,22 +371,30 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     this.getAccountName(accountNumber);
   }
 
-  soldeDebiteur: any;
-  devise: any;
 
-  getAccountName(accountNumber: string): void {
-    this.getAccount.getNomDebiteur(accountNumber).subscribe({
-      next: (res) => {
-        console.log('res: ', res);
-        this.soldeDebiteur = res?.data?.soldeDisp;
-        this.devise = res?.data?.devise;
-        console.log('this.soldeDebiteur: ', this.soldeDebiteur);
-      },
-      error: () => {
-        this.soldeDebiteur = '';
-      },
-    });
-  }
+soldeDebiteur: any = null;
+devise: any = null;
+loadingGetBalance: boolean = false;
+
+getAccountName(accountNumber: string): void {
+  this.loadingGetBalance = true;
+
+  this.getAccount.getNomDebiteur(accountNumber).subscribe({
+    next: (res) => {
+      this.soldeDebiteur = res?.data?.soldeDisp ?? null;
+      this.devise = res?.data?.devise ?? null;
+      this.loadingGetBalance = false;
+
+      console.log('this.soldeDebiteur: ', this.soldeDebiteur);
+    },
+    error: () => {
+      this.soldeDebiteur = null;
+      this.devise = null;
+      this.loadingGetBalance = false;
+    },
+  });
+}
+
 
   // reference: any;
   transaction_id: any;

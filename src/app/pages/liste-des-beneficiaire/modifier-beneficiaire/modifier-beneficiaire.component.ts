@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgClass, NgForOf, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../../../services/notification/notification.service';
 
 declare const bootstrap: any; 
 
@@ -28,6 +29,7 @@ export class ModifierBeneficiaireComponent implements OnInit {
     private beneficiaireService: BeneficiaireService,
     private fb: FormBuilder,
     private toastr: ToastrService,
+    private notification: NotificationService
   ) {}
 
   userInfo: any;
@@ -209,9 +211,10 @@ export class ModifierBeneficiaireComponent implements OnInit {
         console.log('📷 Fichier sélectionné', this.selectedFile.name);
       } else {
         this.loadingModication = false;
-        this.toastr.error('📷 Aucune photo sélectionnée', '', {
-          positionClass: 'toast-custom-center',
-        });
+        this.notification.error('📷 Aucune photo sélectionnée');
+        // this.toastr.error('📷 Aucune photo sélectionnée', '', {
+        //   positionClass: 'toast-custom-center',
+        // });
         return;
       }
 

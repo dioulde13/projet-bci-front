@@ -148,9 +148,10 @@
 
                 <div class="row mb-3">
                   <div class="col-md-6">
-                    <label class="form-label fw-bold text-body required"
-                      >Compte débiteur</label
-                    >
+                    <label class="form-label fw-bold text-body required">
+                      Compte débiteur
+                    </label>
+
                     <select
                       class="form-select-sm form-select w-100"
                       formControlName="vcPayerAccount"
@@ -165,36 +166,46 @@
                       </option>
                     </select>
 
-                    <small
-                      class="text-danger"
-                      *ngIf="
-                        transferFormPaiementInterneExterne
-                          .get('vcPayerAccount')
-                          ?.hasError('required') &&
-                        transferFormPaiementInterneExterne.get('vcPayerAccount')
-                          ?.touched
-                      "
-                    >
-                      Champ obligatoire
-                    </small>
+                    <!-- Message erreur -->
                     <span class="d-block mt-2 text-danger" *ngIf="status">
                       <strong>{{ messageErreur }}</strong>
                     </span>
-                    <div *ngIf="!status">
-                      <span class="d-block mt-2">
-                        <strong>Nom débiteur :</strong>
-                        <span style="margin-left: 10px">{{ nomDebiteur }}</span>
-                      </span>
 
-                      <span class="d-block mt-2">
-                        <strong>Solde :</strong>
-                        <span style="margin-left: 10px"
-                          >{{ soldeDebiteur | number: "1.2-2" }}
-                          {{ devise }}</span
+                    <!-- Loading -->
+                    <div *ngIf="loadingGetBalance" class="text-muted mt-2">
+                      En cours de chargement...
+                    </div>
+
+                    <!-- Affichage infos -->
+                    <div *ngIf="!loadingGetBalance && !status" class="mt-2">
+                      <!-- Nom débiteur -->
+                      <div *ngIf="nomDebiteur">
+                        <strong>Nom débiteur :</strong>
+                        <span class="text-primary">{{ nomDebiteur }}</span>
+                      </div>
+
+                      <!-- Solde -->
+                      <div class="mt-1">
+                        <strong>Solde disponible :</strong>
+
+                        <span
+                          *ngIf="
+                            soldeDebiteur !== null &&
+                              soldeDebiteur !== undefined;
+                            else soldeIndisponible
+                          "
+                          class="text-success"
                         >
-                      </span>
+                          {{ soldeDebiteur | number: "1.2-2" }} {{ devise }}
+                        </span>
+
+                        <ng-template #soldeIndisponible>
+                          <span class="text-danger">0</span>
+                        </ng-template>
+                      </div>
                     </div>
                   </div>
+
                   <div class="col-md-6">
                     <div class="mb-3">
                       <label class="form-label fw-bold required">

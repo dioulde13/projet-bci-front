@@ -41,71 +41,71 @@ export class SouscriptionComponent {
           if (res.status === 200) {
             this.resultat = res;
             console.log(this.resultat);
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-            if (!this.resultat.clientDetails.mail) {
-              this.toastr.error('KYC incomplet !', '', {
-                positionClass: 'toast-custom-center',
-              });
-              this.loading = false;
-            } else
-               if (!emailRegex.test(this.resultat.clientDetails.mail)) {
-              this.toastr.error('KYC incomplet !', '', {
-                positionClass: 'toast-custom-center',
-              });
-              this.loading = false;
-            } else if (!this.resultat.clientDetails.mobileNbr) {
-              this.toastr.error(
-                'KYC incomplet !',
-                '',
-                {
-                  positionClass: 'toast-custom-center',
-                },
+            // if (!this.resultat.clientDetails.mail) {
+            //   this.toastr.error('KYC incomplet !', '', {
+            //     positionClass: 'toast-custom-center',
+            //   });
+            //   this.loading = false;
+            // } else
+            //    if (!emailRegex.test(this.resultat.clientDetails.mail)) {
+            //   this.toastr.error('KYC incomplet !', '', {
+            //     positionClass: 'toast-custom-center',
+            //   });
+            //   this.loading = false;
+            // } else if (!this.resultat.clientDetails.mobileNbr) {
+            //   this.toastr.error(
+            //     'KYC incomplet !',
+            //     '',
+            //     {
+            //       positionClass: 'toast-custom-center',
+            //     },
+            //   );
+            //   this.loading = false;
+            // } else if (!this.resultat.clientDetails.phoneNbr) {
+            //   this.toastr.error(
+            //     'KYC incomplet !',
+            //     '',
+            //     {
+            //       positionClass: 'toast-custom-center',
+            //     },
+            //   );
+            //   this.loading = false;
+            // }
+
+            this.loading = false;
+
+            if (this.selectedMethod) {
+              localStorage.setItem(
+                'modeEnvoiOtp',
+                JSON.stringify(this.selectedMethod),
               );
-              this.loading = false;
-            } else if (!this.resultat.clientDetails.phoneNbr) {
-              this.toastr.error(
-                'KYC incomplet !',
-                '',
-                {
-                  positionClass: 'toast-custom-center',
-                },
-              );
-              this.loading = false;
-            } else {
-              this.loading = false;
-
-              if (this.selectedMethod) {
-                localStorage.setItem(
-                  'modeEnvoiOtp',
-                  JSON.stringify(this.selectedMethod),
-                );
-              }
-
-              if (res) {
-                localStorage.setItem('vcJSONFullDetails', JSON.stringify(res));
-              }
-              // ✅ Stocker les comptes dans localStorage
-              if (res.comptes) {
-                localStorage.setItem('comptes', JSON.stringify(res.comptes));
-              }
-
-              // Tu peux aussi stocker les détails du client si besoin
-              if (res.clientDetails) {
-                localStorage.setItem(
-                  'clientDetails',
-                  JSON.stringify(res.clientDetails),
-                );
-                this.telephone = res.clientDetails.phoneNbr;
-                localStorage.setItem(
-                  'msisdn',
-                  JSON.stringify(res.clientDetails.phoneNbr),
-                );
-              }
-
-              this.router.navigate(['/otpValidation']);
-              this.closeModal();
             }
+
+            if (res) {
+              localStorage.setItem('vcJSONFullDetails', JSON.stringify(res));
+            }
+            // ✅ Stocker les comptes dans localStorage
+            if (res.comptes) {
+              localStorage.setItem('comptes', JSON.stringify(res.comptes));
+            }
+
+            // Tu peux aussi stocker les détails du client si besoin
+            if (res.clientDetails) {
+              localStorage.setItem(
+                'clientDetails',
+                JSON.stringify(res.clientDetails),
+              );
+              this.telephone = res.clientDetails.phoneNbr;
+              localStorage.setItem(
+                'msisdn',
+                JSON.stringify(res.clientDetails.phoneNbr),
+              );
+            }
+
+            this.router.navigate(['/otpValidation']);
+            this.closeModal();
 
             // Affiche le modal
             // this.showModal = true;

@@ -26,6 +26,7 @@ import { SaveFichierCSVService } from '../../servicesNodes/saveFichierCSVTransac
 import { ToastrService } from 'ngx-toastr';
 import { OrdreTransfertInternationalComponent } from '../transfertInternationale/ordre-transfert-international/ordre-transfert-international.component';
 import { BeneficiaireEnAttenteService } from '../../servicesNodes/beneficiaireEnAttente/beneficiaire-en-attente.service';
+import { NotificationService } from '../../services/notification/notification.service';
 
 // import { GnfFormatPipe } from '../gnfFormat/gnf-format.pipe';
 // export interface BeneficiaireExcel {
@@ -180,6 +181,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private toastr: ToastrService,
     private router: Router,
     private beneficiaireEnAttente: BeneficiaireEnAttenteService,
+     private notification: NotificationService
   ) {}
 
   iOrganisationID!: number;
@@ -591,9 +593,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
             if (res?.error?.message === 'Unauthenticated.') {
               console.error('🚨 Session expirée, redirection vers login');
-              this.toastr.error('Votre session a expirée', '', {
-                positionClass: 'toast-custom-center',
-              });
+              this.notification.error('Votre session a expirée');
+              // this.toastr.error('Votre session a expirée', '', {
+              //   positionClass: 'toast-custom-center',
+              // });
               this.router.navigate(['/login']);
             }
           }
@@ -604,9 +607,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
         error: (err) => {
           console.error('❌ Erreur lors du chargement des demandes :', err);
-          this.toastr.error('Une erreur interne est survenue.', '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.error('Une erreur interne est survenue.');
+          // this.toastr.error('Une erreur interne est survenue.', '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           this.isLoadingDemandes = false;
         },
       });
@@ -674,13 +678,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   notificationEnCoursDeveloppement() {
-    this.toastr.error(
-      'Cette fonctionnalité est en cours de développement.',
-      '',
-      {
-        positionClass: 'toast-custom-center',
-      },
-    );
+     this.notification.error('Cette fonctionnalité est en cours de développement.');
+    // this.toastr.error(
+    //   'Cette fonctionnalité est en cours de développement.',
+    //   '',
+    //   {
+    //     positionClass: 'toast-custom-center',
+    //   },
+    // );
   }
 
   isModalOpen = false;

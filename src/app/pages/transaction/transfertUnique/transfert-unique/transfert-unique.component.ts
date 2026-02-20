@@ -48,7 +48,7 @@ export class TransfertUniqueComponent implements OnInit {
   selectedDebitAccount = '';
   selectedBicCode = '';
 
-  nomDebiteur = '';
+  nomDebiteur: any = '';
   soldeDebiteur: any = '';
   devise: any = '';
   nomBanque = '';
@@ -66,6 +66,13 @@ export class TransfertUniqueComponent implements OnInit {
     private router: Router,
     // private toastr: ToastrService,
   ) {}
+
+  private getFromStorage(key: string) {
+    return JSON.parse(localStorage.getItem(key) || '{}');
+  }
+  // selectedBeneficiaires: any;
+  // infosCompteDebiteurs: any;
+  infosFormulaires: any;
 
   ngOnInit(): void {
     const userJson = localStorage.getItem('userInfo');
@@ -86,12 +93,17 @@ export class TransfertUniqueComponent implements OnInit {
     }
 
     this.getUserInfo();
+
+    this.initFormPaiementInterneExterne();
+    // this.patchFormWithSavedValues();
     this.loadTypeBeneficiaires();
     this.getListeBeneficiaire();
     this.getListeBanques();
-    this.initFormPaiementInterneExterne();
-  }
 
+    // this.selectedBeneficiaires = this.getFromStorage('selectedBeneficiaire');
+    // this.infosCompteDebiteurs = this.getFromStorage('infosCompteDebiteur');
+    this.infosFormulaires = this.getFromStorage('InfosSaisirDansFormulaire');
+  }
 
   getListeCompteClient(): void {
     if (!this.iOrganisationID) return;
@@ -150,32 +162,58 @@ export class TransfertUniqueComponent implements OnInit {
     );
   }
 
-  messageErreur: any;
-  statusMessageErreur: any;
+  messageErreur: string | null = null;
   status: boolean = false;
+
   infosCompteDebiteur: any;
+  // nomDebiteur: string | null = null;
+  // soldeDebiteur: number | null = null;
+  // devise: string | null = null;
+
+  loadingGetBalance: boolean = false;
 
   getAccountName(accountNumber: string): void {
+    if (!accountNumber) return;
+
+    this.loadingGetBalance = true;
+    this.status = false;
+    this.messageErreur = null;
+
     this.getAccount.getNomDebiteur(accountNumber).subscribe({
       next: (res) => {
         console.log('res: ', res);
-        this.infosCompteDebiteur = res?.data;
-        this.nomDebiteur = res?.data?.name;
-        this.soldeDebiteur = res?.data?.soldeDisp;
-        this.devise = res?.data?.devise;
-        this.status = false;
+        if (res.status === 200) {
+          this.infosCompteDebiteur = res?.data ?? null;
+          this.nomDebiteur = res?.data?.name ?? null;
+          this.soldeDebiteur = res?.data?.soldeDisp ?? null;
+          this.devise = res?.data?.devise ?? null;
+
+          this.loadingGetBalance = false;
+        } else {
+          this.loadingGetBalance = false;
+          this.nomDebiteur = null;
+          this.soldeDebiteur = null;
+          this.devise = null;
+          this.toastr.error(this.decodeMessage(res.message), '', {
+            positionClass: 'toast-custom-center',
+          });
+        }
       },
+
       error: (err: any) => {
-        if (err.error.status === 404) {
-          // décoder le message avant de l’affecter
-          this.messageErreur = this.decodeMessage(err.error.message);
+        this.loadingGetBalance = false;
+
+        this.nomDebiteur = null;
+        this.soldeDebiteur = null;
+        this.devise = null;
+
+        if (err?.error?.status === 404) {
+          this.messageErreur = this.decodeMessage(err?.error?.message);
           this.status = true;
         } else {
-          this.status = false;
+          this.messageErreur = 'Une erreur est survenue.';
+          this.status = true;
         }
-
-        this.nomDebiteur = '';
-        this.soldeDebiteur = '';
       },
     });
   }
@@ -224,6 +262,8 @@ export class TransfertUniqueComponent implements OnInit {
     this.beneficiaireService.getListeTypeBeneficiaire().subscribe({
       next: (res) => {
         this.listeTypeBeneficiaire = res?.data ?? [];
+        console.log('this.listeTypeBeneficiaire: ', this.listeTypeBeneficiaire);
+        this.patchFormWithSavedValues();
       },
       error: (err) => console.error(err),
     });
@@ -274,14 +314,16 @@ export class TransfertUniqueComponent implements OnInit {
       });
   }
 
+  idBenef: any;
+
   onBeneficiaireChange(event: Event): void {
-    const id = (event.target as HTMLSelectElement).value;
-    if (!id) {
+    this.idBenef = (event.target as HTMLSelectElement).value;
+    if (!this.idBenef) {
       this.selectedBeneficiaire = null;
       return;
     }
     this.selectedBeneficiaire = this.listeBeneficiaires.find(
-      (b) => b?.BeneficiaryID?.toString() === id,
+      (b) => b?.BeneficiaryID?.toString() === this.idBenef,
     );
     if (this.selectedBeneficiaire) {
       this.transferFormPaiementInterneExterne.patchValue({
@@ -296,10 +338,65 @@ export class TransfertUniqueComponent implements OnInit {
       dtPaymentDate: ['', Validators.required],
       vcPayerAccount: ['', Validators.required],
       beneficiaryCategory: ['', Validators.required],
+      vcBenefName: [''], // ajouté
+      vcBenefAccount: [''], // ajouté
       mAmount: ['', Validators.required],
     });
   }
 
+  // ===========================
+  // Patch des valeurs stockées
+  // ===========================
+  patchFormWithSavedValues(): void {
+    const infosFormulaires =
+      this.getFromStorage('InfosSaisirDansFormulaire') || {};
+    const idBenef = this.getFromStorage('idBenef') || {};
+
+    // Debug
+    console.log('Infos depuis localStorage:', infosFormulaires);
+    console.log('Liste des types de bénéficiaire:', this.listeTypeBeneficiaire);
+
+    // Étape 1 : chercher la catégorie correspondante (ignore espaces et casse)
+    const selectedCategory =
+      this.listeTypeBeneficiaire.find((type: any) => {
+        console.log('Objet type:', type);
+        console.log('type.vcName:', type.vcName);
+        console.log('vcBenefName du formulaire:', infosFormulaires.vcBenefName);
+
+        return (
+          type.vcName?.trim().toLowerCase() ===
+          infosFormulaires.vcBenefName?.trim().toLowerCase()
+        );
+      }) || null;
+
+    console.log('Catégorie sélectionnée:', selectedCategory);
+
+    // Étape 2 : chercher le bénéficiaire correspondant
+    // const selectedBeneficiaire =
+    //   this.listeBeneficiaires.find(
+    //     (b) => b.vcAccountNumber === idBenef.idBenef
+    //   ) || null;
+
+    const selectedBeneficiaire = this.listeBeneficiaires.find(
+      (b) => b?.BeneficiaryID?.toString() === idBenef.idBenef,
+    );
+
+    console.log('selectedBeneficiaire: ', selectedBeneficiaire);
+
+    // Patcher le formulaire
+    this.transferFormPaiementInterneExterne.patchValue({
+      dtPaymentDate: infosFormulaires.dtPaymentDate || '',
+      vcPayerAccount: infosFormulaires.vcPayerAccount || '',
+      mAmount: infosFormulaires.mAmount || '',
+      vcBenefAccount: infosFormulaires.vcBenefAccount || '',
+      beneficiaryCategory: selectedCategory,
+    });
+
+    // Définir la sélection du bénéficiaire pour l'affichage des infos
+    this.selectedBeneficiaire = selectedBeneficiaire;
+
+    this.getListeBeneficiaire();
+  }
   submitAttempt = false;
   loadingPaiementInterneExterne: boolean = false;
 
@@ -310,51 +407,63 @@ export class TransfertUniqueComponent implements OnInit {
     this.loadingPaiementInterneExterne = true;
 
     const formValue = this.transferFormPaiementInterneExterne.value;
+
+    console.log('formValue.mAmount: ', formValue.mAmount);
+    console.log('this.soldeDebiteur: ', this.soldeDebiteur);
+
+    // Vérifier d'abord si le solde est nul ou non disponible
+    if (this.soldeDebiteur === null || this.soldeDebiteur <= 0) {
+      this.loadingPaiementInterneExterne = false;
+      this.toastr.error(
+        'Votre solde est nul ou indisponible, vous ne pouvez pas effectuer de transaction.',
+        '',
+        { positionClass: 'toast-custom-center' },
+      );
+      return;
+    }
+
+    // Vérifier si le montant saisi dépasse le solde
     if (formValue.mAmount > this.soldeDebiteur) {
       this.loadingPaiementInterneExterne = false;
       this.toastr.error(
         'Le montant saisi doit être inférieur ou égal au solde.',
         '',
-        {
-          positionClass: 'toast-custom-center',
-        },
+        { positionClass: 'toast-custom-center' },
       );
       return;
-    } else {
-      const payload = {
-        vcPayerName: this.nomDebiteur,
-        dtPaymentDate: formValue.dtPaymentDate,
-        vcPaymentReference: 'REF123',
-        vcPayerAccount: formValue.vcPayerAccount,
-        vcBenefName: this.selectedBeneficiaireName,
-        mAmount: formValue.mAmount,
-        vcBenefAccount: this.selectedBeneficiaire.vcAccountNumber,
-        vcBenefBicCode: this.selectedBeneficiaire.vcBIC,
-        vcCorrespBicCode: '',
-        vcBenefCurrency: this.selectedBeneficiaire.vcCurrency,
-      };
-
-      // console.log('selectedBeneficiaire :', this.selectedBeneficiaire);
-      // console.log('Payload Mobile Money :', payload);
-
-      // Enregistrer dans le localStorage
-
-      localStorage.setItem(
-        'InfosSaisirDansFormulaire',
-        JSON.stringify(payload),
-      );
-      localStorage.setItem(
-        'selectedBeneficiaire',
-        JSON.stringify(this.selectedBeneficiaire),
-      );
-      localStorage.setItem(
-        'infosCompteDebiteur',
-        JSON.stringify(this.infosCompteDebiteur),
-      );
-      // Simuler un petit délai pour voir le loading
-      setTimeout(() => {
-        this.router.navigate(['/recap']);
-      }, 1000);
     }
+
+    // Si tout est correct, préparer le payload
+    const payload = {
+      vcPayerName: this.nomDebiteur,
+      dtPaymentDate: formValue.dtPaymentDate,
+      vcPaymentReference: 'REF123',
+      vcPayerAccount: formValue.vcPayerAccount,
+      vcBenefName: this.selectedBeneficiaireName,
+      mAmount: formValue.mAmount,
+      vcBenefAccount: this.selectedBeneficiaire.vcAccountNumber,
+      vcBenefBicCode: this.selectedBeneficiaire.vcBIC,
+      vcCorrespBicCode: '',
+      vcBenefCurrency: this.selectedBeneficiaire.vcCurrency,
+    };
+
+    // Enregistrer dans le localStorage
+    localStorage.setItem('InfosSaisirDansFormulaire', JSON.stringify(payload));
+    localStorage.setItem('idBenef', JSON.stringify(this.idBenef));
+    localStorage.setItem(
+      'selectedBeneficiaire',
+      JSON.stringify(this.selectedBeneficiaire),
+    );
+    localStorage.setItem(
+      'infosCompteDebiteur',
+      JSON.stringify(this.infosCompteDebiteur),
+    );
+
+    this.loadingPaiementInterneExterne = false;
+
+    // Optionnel : simuler un petit délai pour voir le loading
+    setTimeout(() => {
+      this.router.navigate(['/recap']);
+    }, 1000);
   }
 }
