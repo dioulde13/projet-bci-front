@@ -55,8 +55,8 @@ export class ValiderOtpAfterLoginComponent implements AfterViewInit, OnInit {
     private router: Router,
     private authService: AuthService,
     // private authServiceNode: AuthServicesNodes,
-    private toastr: ToastrService,
-    private notification: NotificationService
+    // private toastr: ToastrService,
+    private notification: NotificationService,
   ) {}
 
   moveToNext(event: any, index: number) {
@@ -96,32 +96,34 @@ export class ValiderOtpAfterLoginComponent implements AfterViewInit, OnInit {
     this.otpService.verifierOtp(otp, this.loginEmail).subscribe({
       next: (response) => {
         this.isLoading = false;
-                  console.log("retour api:",response);
-                  console.log("status api:",response.status);
-
+        // console.log("retour api:",response);
+        // console.log("status api:",response.status);
         if (response?.status && response.status === 200) {
-          console.log("success api:",response);
+          // console.log("success api:",response);
           this.authService.setUserInfo(response.data);
           this.authService.setUserInfoConfig(response.config);
-          this.toastr.success('Connexion réussie avec succès...', '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.success('Connexion réussie avec succès...');
+          // this.toastr.success('Connexion réussie avec succès...', '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           this.router.navigate(['/dashboard']);
         } else {
           // apres  3 tantative d'envoi d'otp l'utilisateur est bloquer.
-          if(response.status === 405){
+          if (response.status === 405) {
             this.router.navigate(['/login']);
           }
-          this.toastr.error(response.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.error(response.message);
+          // this.toastr.error(response.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.toastr.error(err.message, '', {
-          positionClass: 'toast-custom-center',
-        });
+        this.notification.error(err.message);
+        // this.toastr.error(err.message, '', {
+        //   positionClass: 'toast-custom-center',
+        // });
       },
     });
   }
@@ -151,7 +153,7 @@ export class ValiderOtpAfterLoginComponent implements AfterViewInit, OnInit {
           // this.toastr.success(response.message, '', {
           //   positionClass: 'toast-custom-center',
           // });
-        }else{
+        } else {
           this.notification.error(response.message);
           // this.toastr.error(response.message, '', {
           //   positionClass: 'toast-custom-center',
@@ -161,7 +163,7 @@ export class ValiderOtpAfterLoginComponent implements AfterViewInit, OnInit {
       },
       error: (err) => {
         this.isLoadingReEnvoi = false;
-        this.notification.error("Une erreur interne est survenue.");
+        this.notification.error('Une erreur interne est survenue.');
         // this.toastr.error(err.error.message, '', {
         //   positionClass: 'toast-custom-center',
         // });

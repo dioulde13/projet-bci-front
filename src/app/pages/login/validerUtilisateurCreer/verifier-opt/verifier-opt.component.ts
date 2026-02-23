@@ -14,6 +14,7 @@ import { OtpLoginServiceService } from '../../../../services/otpLogin/otp-login-
 import { AuthService } from '../../../../services/authServices/auth.service';
 // import { AuthServicesNodes } from '../../../../servicesNodes/authServices/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../../../../services/notification/notification.service';
 
 @Component({
   selector: 'app-verifier-opt',
@@ -53,7 +54,8 @@ export class VerifierOptComponent implements AfterViewInit, OnInit {
     private router: Router,
     private authService: AuthService,
     // private authServiceNode: AuthServicesNodes,
-    private toastr: ToastrService
+    // private toastr: ToastrService,
+    private notification: NotificationService,
   ) {}
 
   moveToNext(event: any, index: number) {
@@ -93,32 +95,35 @@ export class VerifierOptComponent implements AfterViewInit, OnInit {
     this.otpService.verifierOtp(otp, this.email).subscribe({
       next: (response) => {
         this.isLoading = false;
-        console.log('retour api:', response);
-        console.log('status api:', response.status);
+        // console.log('retour api:', response);
+        // console.log('status api:', response.status);
 
         if (response?.status && response.status === 200) {
-          console.log('success api:', response);
+          // console.log('success api:', response);
           this.authService.setUserInfo(response.data);
           this.authService.setUserInfoConfig(response.config);
-          this.toastr.success('Connexion réussie avec succès...', '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.success('Connexion réussie avec succès...');
+          // this.toastr.success('Connexion réussie avec succès...', '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           this.router.navigate(['/creerMotDePasse']);
         } else {
           // apres  3 tantative d'envoi d'otp l'utilisateur est bloquer.
           if (response.status === 405) {
             this.router.navigate(['/login']);
           }
-          this.toastr.error(response.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.error(response.message);
+          // this.toastr.error(response.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.toastr.error(err.message, '', {
-          positionClass: 'toast-custom-center',
-        });
+        this.notification.error(err.message);
+        // this.toastr.error(err.message, '', {
+        //   positionClass: 'toast-custom-center',
+        // });
       },
     });
   }
@@ -144,21 +149,24 @@ export class VerifierOptComponent implements AfterViewInit, OnInit {
         this.isLoadingReEnvoi = false;
         this.otpValues = ['', '', '', ''];
         if (response.status === 200) {
-          this.toastr.success(response.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.success(response.message);
+          // this.toastr.success(response.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
         } else {
-          this.toastr.error(response.message, '', {
-            positionClass: 'toast-custom-center',
-          });
-          console.log(response);
+          this.notification.error(response.message);
+          // this.toastr.error(response.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
+          // console.log(response);
         }
       },
       error: (err) => {
         this.isLoadingReEnvoi = false;
-        this.toastr.error(err.error.message, '', {
-          positionClass: 'toast-custom-center',
-        });
+        this.notification.error(err.error.message);
+        // this.toastr.error(err.error.message, '', {
+        //   positionClass: 'toast-custom-center',
+        // });
       },
     });
   }

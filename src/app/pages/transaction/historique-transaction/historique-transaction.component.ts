@@ -5,7 +5,8 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { HistoriqueTransactionService } from '../../../services/historiques/historique-transaction.service';
-import { ToastrService } from 'ngx-toastr';
+// import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../../../services/notification/notification.service';
 declare var bootstrap: any;
 
 @Component({
@@ -18,8 +19,10 @@ declare var bootstrap: any;
 export class HistoriqueTransactionComponent implements OnInit {
   constructor(
     private historiqueTransactionService: HistoriqueTransactionService,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
+    private notification: NotificationService,
   ) {}
+
 
   iOrganisationID!: number;
   infosUser: any;
@@ -38,6 +41,8 @@ export class HistoriqueTransactionComponent implements OnInit {
   searchText = '';
   sortColumn = '';
   sortDirection: 'asc' | 'desc' = 'asc';
+
+  selectedRowId: number | null = null;
 
   ngOnInit(): void {
     const today = new Date().toISOString().split('T')[0];
@@ -67,7 +72,6 @@ export class HistoriqueTransactionComponent implements OnInit {
             'this.listeHistoriqueTransactions: ',
             this.listeHistoriqueTransactions,
           );
-          // Extraire les modes uniques
           this.listePaymentModes = [
             ...new Set(
               this.listeHistoriqueTransactions
@@ -91,25 +95,21 @@ export class HistoriqueTransactionComponent implements OnInit {
   get filteredData() {
     let data = [...this.listeHistoriqueTransactions];
 
-    // Filtre date début
     if (this.dateDebut) {
       const debut = new Date(this.dateDebut);
       data = data.filter((d) => new Date(d.dtCreated) >= debut);
     }
 
-    // Filtre date fin
     if (this.dateFin) {
       const fin = new Date(this.dateFin);
       fin.setHours(23, 59, 59, 999);
       data = data.filter((d) => new Date(d.dtCreated) <= fin);
     }
 
-    // Filtre mode paiement
     if (this.paymentModeName) {
       data = data.filter((d) => d.PaymentModeName === this.paymentModeName);
     }
 
-    // Recherche texte
     if (this.searchText) {
       const term = this.searchText.toLowerCase();
       data = data.filter((d) =>
@@ -119,12 +119,10 @@ export class HistoriqueTransactionComponent implements OnInit {
       );
     }
 
-    // Tri
     if (this.sortColumn) {
       data.sort((a, b) => {
         const valA = a[this.sortColumn] ?? '';
         const valB = b[this.sortColumn] ?? '';
-
         if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
         if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
         return 0;
@@ -162,6 +160,7 @@ export class HistoriqueTransactionComponent implements OnInit {
   previousPage() {
     this.goToPage(this.currentPage - 1);
   }
+
   nextPage() {
     this.goToPage(this.currentPage + 1);
   }
@@ -208,7 +207,6 @@ export class HistoriqueTransactionComponent implements OnInit {
 
   formatMontant(t: any): string {
     const montant = Number(t);
-
     return montant.toLocaleString('fr-FR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -217,18 +215,12 @@ export class HistoriqueTransactionComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     if (!status) return 'Inconnu';
-
     switch (status.toLowerCase()) {
-      case 'success':
-        return 'Succès';
-      case 'cancelled':
-        return 'Annulé';
-      case 'failed':
-        return 'Échoué';
-      case 'pending':
-        return 'En attente';
-      default:
-        return status;
+      case 'success':   return 'Succès';
+      case 'cancelled': return 'Annulé';
+      case 'failed':    return 'Échoué';
+      case 'pending':   return 'En attente';
+      default:          return status;
     }
   }
 
@@ -253,7 +245,7 @@ export class HistoriqueTransactionComponent implements OnInit {
   }
 
   // ========================
-  // EXPORT PDF
+  // EXPORT PDF (liste complète)
   // ========================
   exportPdf() {
     if (this.filteredData.length === 0) return;
@@ -277,6 +269,347 @@ export class HistoriqueTransactionComponent implements OnInit {
     doc.save('transactions.pdf');
   }
 
+ printRow(transaction: any) {
+  this.selectedRowId = transaction.id;
+
+  setTimeout(() => {
+    const now = new Date();
+    const dateRapport =
+      now.toLocaleDateString('fr-FR') +
+      ' ' +
+      now.toLocaleTimeString('fr-FR');
+
+    const datePaiement = transaction.dtCreated
+      ? new Date(transaction.dtCreated).toLocaleDateString('fr-FR', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        })
+      : '';
+
+    const badgeClass =
+      transaction.Status?.toLowerCase() === 'success'
+        ? 'badge-success'
+        : transaction.Status?.toLowerCase() === 'pending'
+        ? 'badge-warning'
+        : 'badge-danger';
+
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head>
+        <meta charset="UTF-8"/>
+        <title>Avis de Paiement – ${transaction.Reference || ''}</title>
+        <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+
+          body {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #222;
+            padding: 30px 40px;
+            background: #fff;
+          }
+
+          /* ── En-tête ── */
+          .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 14px;
+            border-bottom: 1.5px solid #aaa;
+          }
+
+          .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+          }
+
+          .logo-circle {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: 3px solid #1e3c82;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+            line-height: 1.2;
+            text-align: center;
+            padding: 4px;
+            flex-shrink: 0;
+          }
+
+          .logo-circle .letter-b { font-size: 18px; color: #c0392b; }
+          .logo-circle .letter-c { font-size: 18px; color: #1e3c82; }
+          .logo-circle .letter-i { font-size: 18px; color: #27ae60; }
+
+          .bank-name-block { display: flex; flex-direction: column; }
+
+          .bank-arabic {
+            font-size: 15px;
+            font-weight: bold;
+            color: #1a1a1a;
+            direction: rtl;
+          }
+
+          .bank-french {
+            font-size: 11px;
+            font-weight: bold;
+            color: #1e3c82;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+            text-transform: uppercase;
+          }
+
+          .header-right { text-align: right; }
+
+          .header-right .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a1a1a;
+            letter-spacing: 0.5px;
+          }
+
+          .header-right .report-date {
+            font-size: 11px;
+            color: #555;
+            margin-top: 4px;
+          }
+
+          /* ── Bloc organisation ── */
+          .org-block {
+            margin: 18px 0 6px 0;
+            font-size: 12.5px;
+            line-height: 1.9;
+            color: #222;
+          }
+
+          .org-block .org-name { font-weight: bold; font-size: 13px; }
+
+          /* ── Intro ── */
+          .intro {
+            margin: 14px 0 18px 0;
+            font-size: 12.5px;
+            color: #333;
+          }
+
+          /* ── Section titre ── */
+          .section-title {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #1e3c82;
+            background: #f0f4ff;
+            padding: 5px 8px;
+            letter-spacing: 0.5px;
+          }
+
+          /* ── Tableau ── */
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+
+          tr { border-bottom: 0.5px solid #ddd; }
+
+          td {
+            padding: 8px 8px;
+            font-size: 12.5px;
+            vertical-align: top;
+          }
+
+          td:nth-child(1) {
+            font-weight: bold;
+            width: 240px;
+            color: #111;
+          }
+
+          td:nth-child(2) {
+            width: 16px;
+            color: #111;
+            font-weight: bold;
+            text-align: center;
+            padding-left: 0;
+            padding-right: 0;
+          }
+
+          td:nth-child(3) { color: #333; }
+
+          /* ── Badge statut ── */
+          .badge {
+            display: inline-block;
+            padding: 3px 14px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+          }
+          .badge-success { background: #d4edda; color: #155724; }
+          .badge-danger  { background: #f8d7da; color: #721c24; }
+          .badge-warning { background: #fff3cd; color: #856404; }
+
+          /* ── Pied de page ── */
+          .footer {
+            margin-top: 40px;
+            border-top: 1px solid #aaa;
+            padding-top: 8px;
+            text-align: center;
+            font-size: 9px;
+            color: #999;
+            font-style: italic;
+          }
+
+          @media print {
+            body { padding: 15px 20px; }
+            @page { margin: 10mm; size: A4 portrait; }
+          }
+        </style>
+      </head>
+      <body>
+
+        <!-- ══ EN-TÊTE ══ -->
+        <div class="header">
+          <div class="header-left">
+            <div class="logo-circle">
+              <span class="letter-b">B</span><span class="letter-c">C</span><span class="letter-i">I</span>
+            </div>
+            <div class="bank-name-block">
+              <div class="bank-arabic">بنك التجـارة و الصنـاعة . غينيا</div>
+              <div class="bank-french">Banque pour le Commerce et l'Industrie-Guinée</div>
+            </div>
+          </div>
+          <div class="header-right">
+            <div class="title">Avis de Paiement</div>
+            <div class="report-date">Date / heure du rapport : ${dateRapport}</div>
+          </div>
+        </div>
+
+        <!-- ══ BLOC ORGANISATION ══ -->
+        <div class="org-block">
+          <div class="org-name">${transaction.OrganisationName || ''}</div>
+          <div>${transaction.UserFullName || ''}</div>
+          <div>Conakry, Guinée</div>
+        </div>
+
+        <p class="intro">Ceci est la confirmation d'un paiement effectué en votre nom :</p>
+
+        <!-- ══ TABLEAU ══ -->
+        <table>
+          <tbody>
+
+            <!-- ─ Informations générales ─ -->
+            <tr><td colspan="3" class="section-title">Informations générales</td></tr>
+
+            <tr>
+              <td>Référence du Paiement</td><td>:</td>
+              <td>${transaction.Reference || ''}</td>
+            </tr>
+            <tr>
+              <td>Type de Transaction</td><td>:</td>
+              <td>${transaction.TypeTransaction || ''}</td>
+            </tr>
+            <tr>
+              <td>Mode de Paiement</td><td>:</td>
+              <td>${transaction.PaymentModeName || ''}</td>
+            </tr>
+            <tr>
+              <td>Date de Paiement</td><td>:</td>
+              <td>${datePaiement}</td>
+            </tr>
+            <tr>
+              <td>Statut</td><td>:</td>
+              <td><span class="badge ${badgeClass}">${this.getStatusLabel(transaction.Status)}</span></td>
+            </tr>
+
+            <!-- ─ Expéditeur ─ -->
+            <tr><td colspan="3" class="section-title">Expéditeur</td></tr>
+
+            <tr>
+              <td>Nom de l'Expéditeur</td><td>:</td>
+              <td>${transaction.PayerName || ''}</td>
+            </tr>
+            <tr>
+              <td>Compte Expéditeur</td><td>:</td>
+              <td>${transaction.PayerAccount || ''}</td>
+            </tr>
+            <tr>
+              <td>Devise Expéditeur</td><td>:</td>
+              <td>${transaction.debiteurCurrency || ''}</td>
+            </tr>
+            <tr>
+              <td>Banque Expéditeur</td><td>:</td>
+              <td>${transaction.vcSenderBankName || ''}</td>
+            </tr>
+
+            <!-- ─ Bénéficiaire ─ -->
+            <tr><td colspan="3" class="section-title">Bénéficiaire</td></tr>
+
+            <tr>
+              <td>Nom du Bénéficiaire</td><td>:</td>
+              <td>${transaction.BenefName || ''}</td>
+            </tr>
+            <tr>
+              <td>Compte Bénéficiaire</td><td>:</td>
+              <td>${transaction.BenefAccount || ''}</td>
+            </tr>
+            <tr>
+              <td>Devise Bénéficiaire</td><td>:</td>
+              <td>${transaction.BenefCurrency || ''}</td>
+            </tr>
+            <tr>
+              <td>Banque Bénéficiaire</td><td>:</td>
+              <td>${transaction.vcReceiverBankName || ''}</td>
+            </tr>
+            <tr>
+              <td>BIC Bénéficiaire</td><td>:</td>
+              <td>${transaction.BenefBIC || ''}</td>
+            </tr>
+
+            <!-- ─ Montants ─ -->
+            <tr><td colspan="3" class="section-title">Montants & Taux</td></tr>
+
+            <tr>
+              <td>Montant du Paiement</td><td>:</td>
+              <td><strong>${transaction.debiteurCurrency || ''}&nbsp;${this.formatMontant(transaction.Amount)}</strong></td>
+            </tr>
+            <tr>
+              <td>Montant Converti</td><td>:</td>
+              <td>${transaction.BenefCurrency || ''}&nbsp;${this.formatMontant(transaction.mAmountConverted)}</td>
+            </tr>
+
+          </tbody>
+        </table>
+
+        <!-- ══ PIED DE PAGE ══ -->
+        <div class="footer">
+          Ceci est un avis de paiement généré par ordinateur et ne nécessite pas une signature autorisée.
+          En cas de divergence, veuillez contacter votre organisation.
+        </div>
+
+      </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.focus();
+
+    printWindow.onload = () => {
+      printWindow.print();
+      printWindow.close();
+    };
+
+    this.selectedRowId = null;
+  }, 100);
+}
+  // ========================
+  // MODALS
+  // ========================
   selectedTransaction: any = null;
   isCancelling: boolean = false;
   isVerifying: boolean = false;
@@ -284,7 +617,6 @@ export class HistoriqueTransactionComponent implements OnInit {
   cancelModalInstance: any;
   verifierModalInstance: any;
 
-  // Annulation
   openCancelModal(transaction: any) {
     this.selectedTransaction = transaction;
     const modalEl: any = document.getElementById('cancelModal');
@@ -297,11 +629,8 @@ export class HistoriqueTransactionComponent implements OnInit {
     this.selectedTransaction = null;
   }
 
-  // Vérification
   openVerifierModal(transaction: any) {
     this.selectedTransaction = transaction;
-
-    console.log('this.selectedTransaction: ', this.selectedTransaction);
     const modalEl: any = document.getElementById('verifierModal');
     this.verifierModalInstance = new bootstrap.Modal(modalEl);
     this.verifierModalInstance.show();
@@ -313,38 +642,35 @@ export class HistoriqueTransactionComponent implements OnInit {
   }
 
   confirmVerifier() {
-    console.log(this.selectedTransaction.iRequestID);
     this.isVerifying = true;
 
     this.historiqueTransactionService
-      .getAllTransactions(this.selectedTransaction.iRequestID) // adapte si besoin
+      .getAllTransactions(this.selectedTransaction.iRequestID)
       .subscribe({
         next: (response: any) => {
           if (response.status === 200) {
-            console.log('response: ', response);
-            this.toastr.success('Transaction annuler avec success', '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.success('Transaction vérifiée avec succès');
+            // this.toastr.success('Transaction vérifiée avec succès', '', {
+            //   positionClass: 'toast-custom-center',
+            // });
             if (this.verifierModalInstance) this.verifierModalInstance.hide();
             this.selectedTransaction = null;
           } else {
             if (this.verifierModalInstance) this.verifierModalInstance.hide();
             this.selectedTransaction = null;
-            this.toastr.error(this.decodeMessage(response.message), '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.error(this.decodeMessage(response.message));
+            // this.toastr.error(this.decodeMessage(response.message), '', {
+            //   positionClass: 'toast-custom-center',
+            // });
           }
-
           this.historiqueTransactionsListe();
-          this.selectedTransaction = null;
-
           this.isVerifying = false;
         },
         error: () => {
           this.isVerifying = false;
         },
       });
-    // ⚡ Simule API call
+
     setTimeout(() => {
       this.isVerifying = false;
       this.closeVerifierModal();
@@ -353,54 +679,45 @@ export class HistoriqueTransactionComponent implements OnInit {
 
   decodeMessage(encoded: string): string {
     if (!encoded) return encoded;
-
-    return (
-      encoded
-        // replacement des séquences courantes
-        .replace(/\+á/g, 'à')
-        .replace(/\+é/g, 'é')
-        .replace(/\+è/g, 'è')
-        .replace(/\+®/g, 'é')
-        .replace(/\+ç/g, 'ç')
-        .replace(/\+ô/g, 'ô')
-        .replace(/\+°/g, 'ô')
-        .replace(/\+ù/g, 'ù')
-        .replace(/\+/g, ' ') // transformer les + restants en espaces
-        .trim()
-    );
+    return encoded
+      .replace(/\+á/g, 'à')
+      .replace(/\+é/g, 'é')
+      .replace(/\+è/g, 'è')
+      .replace(/\+®/g, 'é')
+      .replace(/\+ç/g, 'ç')
+      .replace(/\+ô/g, 'ô')
+      .replace(/\+°/g, 'ô')
+      .replace(/\+ù/g, 'ù')
+      .replace(/\+/g, ' ')
+      .trim();
   }
 
   confirmCancel() {
     if (!this.selectedTransaction) return;
-
-    // console.log('this.selectedTransaction: ', this.selectedTransaction);
     this.isCancelling = true;
 
     this.historiqueTransactionService
-      .cancelTransaction(this.selectedTransaction.iRequestID) // adapte si besoin
+      .cancelTransaction(this.selectedTransaction.iRequestID)
       .subscribe({
         next: (response: any) => {
           if (response.status === 200) {
-            this.toastr.success('Transaction annuler avec success', '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.success('Transaction annulée avec succès');
+
+            // this.toastr.success('Transaction annulée avec succès', '', {
+            //   positionClass: 'toast-custom-center',
+            // });
             if (this.cancelModalInstance) this.cancelModalInstance.hide();
             this.selectedTransaction = null;
           } else {
             if (this.cancelModalInstance) this.cancelModalInstance.hide();
             this.selectedTransaction = null;
-            this.toastr.error(this.decodeMessage(response.message), '', {
-              positionClass: 'toast-custom-center',
-            });
-          }
-          // Retirer la transaction de la liste
-          // this.listeHistoriqueTransactions =
-          //   this.listeHistoriqueTransactions.filter(
-          //     (t) => t.Reference !== this.selectedTransaction.Reference,
-          //   );
-          this.historiqueTransactionsListe();
-          this.selectedTransaction = null;
+            this.notification.error(this.decodeMessage(response.message));
 
+            // this.toastr.error(this.decodeMessage(response.message), '', {
+            //   positionClass: 'toast-custom-center',
+            // });
+          }
+          this.historiqueTransactionsListe();
           this.isCancelling = false;
         },
         error: () => {
@@ -408,6 +725,7 @@ export class HistoriqueTransactionComponent implements OnInit {
         },
       });
   }
+
   closeModal() {
     this.selectedTransaction = null;
   }

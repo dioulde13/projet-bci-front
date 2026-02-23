@@ -1,13 +1,21 @@
-import { Component, Inject, OnInit, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnInit,
+  OnDestroy,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule, DatePipe, DOCUMENT } from '@angular/common';
 import { Renderer2 } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { interval, Subscription } from 'rxjs';
 import Papa from 'papaparse';
 import { AuthService } from '../../services/authServices/auth.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ToastrService } from 'ngx-toastr';
 import { StatutBancaireService } from '../../servicesNodes/statutBancaire/statut-bancaire.service';
+import { NotificationService } from '../../services/notification/notification.service';
 
 @Component({
   selector: 'app-layout',
@@ -23,8 +31,8 @@ import { StatutBancaireService } from '../../servicesNodes/statutBancaire/statut
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css'],
 })
-export class LayoutComponent implements OnInit, AfterViewInit {
-  isDarkMode = false; // Toujours light par défaut
+export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
+  isDarkMode = false;
 
   constructor(
     private renderer: Renderer2,
@@ -32,6 +40,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     private router: Router,
     @Inject(DOCUMENT) private document: Document,
     private toastr: ToastrService,
+    private notification: NotificationService,
     private statutBancaireService: StatutBancaireService,
   ) {}
 
@@ -40,7 +49,12 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   headers: string[] = [];
   selectedFile: File | null = null;
 
-  // Quand on sélectionne un fichier, on le stocke mais on ne parse pas encore
+  // ── Polling ─────────────────────────────────────────────────────────────────
+  statusCoreBanking: any;
+  showNetworkNotification = false;
+  private statusPolling$!: Subscription;
+
+  // ── CSV ──────────────────────────────────────────────────────────────────────
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -48,9 +62,8 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // Quand on clique sur "Charger", on parse le fichier stocké
   onFormSubmit(event: Event): void {
-    event.preventDefault(); // Empêche le rechargement de page
+    event.preventDefault();
     if (this.selectedFile) {
       this.parseCSV(this.selectedFile);
     } else {
@@ -76,33 +89,24 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     reader.readAsText(file);
   }
 
-  // Ajoute une méthode getUser() pour exposer le signal value dans le template
+  // ── Utilisateur ──────────────────────────────────────────────────────────────
   getUser() {
-    const result = this.authService.userInfo();
-    // console.log('Résultat de userInfo:', result);
-    return result;
+    return this.authService.userInfo();
   }
 
   getUserInfoConfig() {
     const result = this.authService.userInfoConfig();
-    // console.log('Résultat de userInfoConfig:', result);
-
-    const dataConfig = result;
-    // console.log('dataConfig : ', dataConfig);
-    if (dataConfig) {
-      this.userCurrentTimeZone = dataConfig.organisation.find(
+    if (result) {
+      this.userCurrentTimeZone = result.organisation.find(
         (c: any) => c.vcKey === 'TimeZone',
       )?.vcValue;
-      // console.log('userCurrentTimeZone : ', this.userCurrentTimeZone);
     }
     return result;
   }
 
   currentUserInfo: any;
 
-  statusCoreBanking: any;
-  showNetworkNotification = false;
-
+  // ── Core Banking Status ──────────────────────────────────────────────────────
   recuperStatusCoreBanking() {
     this.statutBancaireService.coreBankingStatus().subscribe({
       next: (response: any) => {
@@ -128,26 +132,27 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     });
   }
 
-  notificationEnCoursDeveloppement() {
-    this.toastr.error(
+  private startPolling(): void {
+    this.statusPolling$ = interval(10_000).subscribe(() => {
+      this.recuperStatusCoreBanking();
+    });
+  }
+
+  // ── Notification ─────────────────────────────────────────────────────────────
+  notificationEnCoursDeveloppement(): void {
+    this.notification.error(
       'Cette fonctionnalité est en cours de développement.',
-      '',
-      {
-        positionClass: 'toast-custom-center',
-      },
     );
   }
 
+  // ── Lifecycle ────────────────────────────────────────────────────────────────
   ngOnInit(): void {
-    this.recuperStatusCoreBanking();
-    // const dataConfig = this.getUserInfoConfig();
-    // console.log('dataConfig : ', dataConfig);
-    // if (dataConfig) {
-    //   this.userCurrentTimeZone = dataConfig.organisation.find(
-    //     (c: any) => c.vcKey === 'TimeZone'
-    //   )?.vcValue;
-    //   console.log('userCurrentTimeZone : ', this.userCurrentTimeZone);
-    // }
+    this.recuperStatusCoreBanking(); // 1er appel immédiat
+    this.startPolling(); // puis toutes les 10 secondes
+  }
+
+  ngOnDestroy(): void {
+    this.statusPolling$?.unsubscribe(); // évite les fuites mémoire
   }
 
   ngAfterViewInit(): void {
@@ -159,7 +164,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // On force toujours light au premier chargement
+  // ── Thème ────────────────────────────────────────────────────────────────────
   setLightThemeAsDefault(): void {
     this.isDarkMode = false;
     this.applyTheme(this.isDarkMode);
@@ -167,9 +172,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   }
 
   toggleTheme(): void {
-    // Au clic, on lit directement l'état du localStorage (pas la variable isDarkMode)
     const currentTheme = localStorage.getItem('theme');
-
     if (currentTheme === 'light') {
       this.isDarkMode = true;
       localStorage.setItem('theme', 'dark');
@@ -177,13 +180,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
       this.isDarkMode = false;
       localStorage.setItem('theme', 'light');
     }
-
     this.applyTheme(this.isDarkMode);
   }
 
   applyTheme(isDark: boolean): void {
     const body = this.document.body;
-
     if (isDark) {
       this.renderer.setAttribute(body, 'data-bs-theme', 'dark');
       this.renderer.setAttribute(body, 'data-sidebar', 'dark');
@@ -193,34 +194,29 @@ export class LayoutComponent implements OnInit, AfterViewInit {
       this.renderer.setAttribute(body, 'data-sidebar', 'brand');
       this.renderer.setAttribute(body, 'data-topbar', 'brand');
     }
-
-    // Attributs fixes
     this.renderer.setAttribute(body, 'data-layout-scrollable', 'false');
     this.renderer.setAttribute(body, 'data-layout-size', 'fluid');
     this.renderer.setAttribute(body, 'data-sidebar-size', 'sm');
     this.renderer.addClass(body, 'mat-typography');
   }
 
+  // ── Déconnexion ──────────────────────────────────────────────────────────────
   isLoggingOut = false;
 
   logout(): void {
     this.isLoggingOut = true;
 
-    // 🔹 afficher le toast et récupérer la référence
     const toastRef = this.toastr.success('Déconnexion en cours...', '', {
       positionClass: 'toast-custom-center',
-      disableTimeOut: true, // pour qu'il reste visible jusqu'à suppression
+      disableTimeOut: true,
     });
 
     this.authService.deConnexion().subscribe({
       next: (response) => {
         this.isLoggingOut = false;
-
-        // 🔹 supprimer le toast "en cours"
         this.toastr.clear(toastRef.toastId);
 
         if (response.status === 200) {
-          console.log('Déconnexion réussie :', response);
           this.toastr.success('Déconnexion réussie...', '', {
             positionClass: 'toast-custom-center',
           });
@@ -233,10 +229,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         this.isLoggingOut = false;
-
-        // 🔹 supprimer le toast "en cours" si erreur aussi
         this.toastr.clear(toastRef.toastId);
-
         console.error('Erreur lors de la déconnexion :', error);
         this.toastr.error('Erreur lors de la déconnexion.', '', {
           positionClass: 'toast-custom-center',

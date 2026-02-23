@@ -9,13 +9,14 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { FormNouveauPasseService } from '../../../../services/formNouveauPasse/form-nouveau-passe.service';
+import { NotificationService } from '../../../../services/notification/notification.service';
 
 @Component({
   selector: 'app-creer-mot-de-passe',
   imports: [ReactiveFormsModule, CommonModule],
   standalone: true,
   templateUrl: './creer-mot-de-passe.component.html',
-  styleUrl: './creer-mot-de-passe.component.css'
+  styleUrl: './creer-mot-de-passe.component.css',
 })
 export class CreerMotDePasseComponent implements OnInit {
   form!: FormGroup;
@@ -30,7 +31,8 @@ export class CreerMotDePasseComponent implements OnInit {
     private fb: FormBuilder,
     private formNouveauPasseService: FormNouveauPasseService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private notification: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -61,27 +63,30 @@ export class CreerMotDePasseComponent implements OnInit {
         // console.log(res);
         if (res.status && res.status === 200) {
           // console.log(res.message);
-          this.toastr.success(res.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          // this.toastr.success(res.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
+          this.notification.success(res.message);
           this.success = true;
           localStorage.removeItem('email_recu');
           localStorage.removeItem('token_recu');
           this.router.navigate(['/login']);
         } else {
           // console.log(res.message);
-          this.toastr.error(res.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.error(res.message);
+          // this.toastr.error(res.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           this.success = false;
         }
         this.loading = false;
       },
       error: (err) => {
         this.success = false;
-        this.toastr.error(err?.message, '', {
-          positionClass: 'toast-custom-center',
-        });
+        this.notification.error(err.message);
+        // this.toastr.error(err?.message, '', {
+        //   positionClass: 'toast-custom-center',
+        // });
         this.loading = false;
       },
     });

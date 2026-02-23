@@ -15,54 +15,59 @@
     <div class="row">
       <div class="col-lg-8 col-xl-9">
         <div class="card">
-
-
-
-<div class="card-body">
-  <div class="row">
-
-    <!-- ================= SKELETON ================= -->
-    <ng-container *ngIf="loadingOperateur; else realOperateurs">
-      <div class="col-sm-6 col-xl-3" *ngFor="let item of [1,2,3,4,5,6,7,8]">
-        <div class="card card-custom text-center skeleton-card" style="height: 14rem;">
-          <div class="skeleton skeleton-image mb-2"></div>
           <div class="card-body">
-            <div class="skeleton skeleton-text w-75 mx-auto"></div>
-          </div>
-        </div>
-      </div>
-    </ng-container>
+            <div class="row">
+              <!-- ================= SKELETON ================= -->
+              <ng-container *ngIf="loadingOperateur; else realOperateurs">
+                <div
+                  class="col-sm-6 col-xl-3"
+                  *ngFor="let item of [1, 2, 3, 4]"
+                >
+                  <div
+                    class="card card-custom text-center skeleton-card"
+                    style="height: 14rem"
+                  >
+                    <div class="skeleton skeleton-image mb-2"></div>
+                    <div class="card-body">
+                      <div class="skeleton skeleton-text w-75 mx-auto"></div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
 
-    <!-- ================= CONTENU RÉEL ================= -->
-    <ng-template #realOperateurs>
-      <div class="col-sm-6 col-xl-3" *ngFor="let operateur of listeOperateur">
-        <button
-          type="button"
-          class="p-0 border-0 bg-transparent w-100 text-start"
-          (click)="nextPages(operateur.vcAccountName)"
-        >
-          <div class="card card-custom text-center" style="height: 14rem;">
-            <img
-              style="height: 10rem"
-              src="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking%20-%202-W-2.svg?h=c746ea9e25952b9505731b7d644e74e9"
-              [alt]="operateur.vcAccountName"
-            />
-            <div class="card-body">
-              <h5 class="fw-semibold font-size-16 mb-1">
-                <span class="text-body">{{ operateur.vcAccountName }}</span>
-              </h5>
+              <!-- ================= CONTENU RÉEL ================= -->
+              <ng-template #realOperateurs>
+                <div
+                  class="col-sm-6 col-xl-3"
+                  *ngFor="let operateur of listeOperateur"
+                >
+                  <button
+                    type="button"
+                    class="p-0 border-0 bg-transparent w-100 text-start"
+                    (click)="nextPages(operateur.vcAccountName)"
+                  >
+                    <div
+                      class="card card-custom text-center"
+                      style="height: 14rem"
+                    >
+                      <img
+                        style="height: 10rem"
+                        src="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking%20-%202-W-2.svg?h=c746ea9e25952b9505731b7d644e74e9"
+                        [alt]="operateur.vcAccountName"
+                      />
+                      <div class="card-body">
+                        <h5 class="fw-semibold font-size-16 mb-1">
+                          <span class="text-body">{{
+                            operateur.vcAccountName
+                          }}</span>
+                        </h5>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </ng-template>
             </div>
           </div>
-        </button>
-      </div>
-    </ng-template>
-
-  </div>
-</div>
-
-
-
-
         </div>
       </div>
       <div class="col-lg-4 col-xl-3">

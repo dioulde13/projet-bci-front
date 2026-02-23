@@ -12,9 +12,10 @@ import { Niveau } from '../model/niveau.model';
 import { Categorie } from '../model/categorie.model';
 import { Resumer } from '../model/resumer.model';
 import { ConfigPersonnalitionService } from '../../services/configPersonnalition/config-personnalition.service';
-import { ToastrService } from 'ngx-toastr';
+// import { ToastrService } from 'ngx-toastr';
 import { GnfFormatPipe } from '../gnfFormat/gnf-format.pipe';
 import { GnfNumberFormatDirective } from '../../directives/gnf-number-format.directive';
+import { NotificationService } from '../../services/notification/notification.service';
 
 @Component({
   selector: 'app-config-personnalisation',
@@ -95,8 +96,9 @@ export class ConfigPersonnalisationComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private configurationPer: ConfigPersonnalitionService,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
     private router: Router,
+    private notification: NotificationService,
   ) {
     this.niveauForm = this.fb.group({
       id: [null],
@@ -414,7 +416,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
 
     this.modeEnvoiOtp = modeEnvoiOtp ? JSON.parse(modeEnvoiOtp) : null;
 
-    console.log('this.modeEnvoiOtp:', this.modeEnvoiOtp);
+    // console.log('this.modeEnvoiOtp:', this.modeEnvoiOtp);
 
     // Récupération des comptes depuis le localStorage
     const comptesStockes = localStorage.getItem('comptes');
@@ -486,9 +488,10 @@ export class ConfigPersonnalisationComponent implements OnInit {
     );
 
     if (existeDeja) {
-      this.toastr.error('⚠️ Une catégorie avec ce nom existe déjà.', '', {
-        positionClass: 'toast-custom-center',
-      });
+      this.notification.error('⚠️ Une catégorie avec ce nom existe déjà.');
+      // this.toastr.error('⚠️ Une catégorie avec ce nom existe déjà.', '', {
+      //   positionClass: 'toast-custom-center',
+      // });
       return;
     }
 
@@ -755,9 +758,10 @@ export class ConfigPersonnalisationComponent implements OnInit {
             if (callback) callback();
           } else {
             this.checkLien = false;
-            this.toastr.error(response.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.error(response.message);
+            // this.toastr.error(response.message, '', {
+            //   positionClass: 'toast-custom-center',
+            // });
           }
         },
         error: (err: any) => {
@@ -772,36 +776,43 @@ export class ConfigPersonnalisationComponent implements OnInit {
   nextStep() {
     // Vérifie l’étape 1
     if (this.currentStep === 1 && this.comptesSelectionnes.length === 0) {
-      this.toastr.error('Veuillez sélectionner au moins un compte.', '', {
-        positionClass: 'toast-custom-center',
-      });
+      this.notification.error('Veuillez sélectionner au moins un compte.');
+
+      // this.toastr.error('Veuillez sélectionner au moins un compte.', '', {
+      //   positionClass: 'toast-custom-center',
+      // });
       return;
     }
 
     // Vérifie l’étape 2
     if (this.currentStep === 2 && !this.canGoNextStep2()) {
-      this.toastr.error(
+      this.notification.error(
         'Veuillez configurer la validation multi-niveaux.',
-        '',
-        { positionClass: 'toast-custom-center' },
       );
+      // this.toastr.error(
+      //   'Veuillez configurer la validation multi-niveaux.',
+      //   '',
+      //   { positionClass: 'toast-custom-center' },
+      // );
       return;
     }
 
     // Vérifie l’étape 4
     if (this.currentStep === 4 && !this.canGoNextStep4Code()) {
-      this.toastr.error('Veuillez saisir le Code pin(transaction).', '', {
-        positionClass: 'toast-custom-center',
-      });
+      this.notification.error('Veuillez saisir le Code pin(transaction).');
+      // this.toastr.error('Veuillez saisir le Code pin(transaction).', '', {
+      //   positionClass: 'toast-custom-center',
+      // });
       return;
     }
 
     // Vérifie l’étape 5 uniquement si validationConfiguredLien = true
     if (this.currentStep === 5 && this.validationConfiguredLien === true) {
       if (!this.lienSaisi || this.lienSaisi.trim() === '') {
-        this.toastr.error('Veuillez saisir le lien.', '', {
-          positionClass: 'toast-custom-center',
-        });
+        this.notification.error('Veuillez saisir le lien.');
+        // this.toastr.error('Veuillez saisir le lien.', '', {
+        //   positionClass: 'toast-custom-center',
+        // });
         return;
       }
 
@@ -892,11 +903,14 @@ export class ConfigPersonnalisationComponent implements OnInit {
     const formValue: any = this.niveauForm.value;
 
     if (formValue.max < formValue.min) {
-      this.toastr.error(
+      this.notification.error(
         'La valeur max ne doit pas être inférieure à la valeur min.',
-        '',
-        { positionClass: 'toast-custom-center' },
       );
+      // this.toastr.error(
+      //   'La valeur max ne doit pas être inférieure à la valeur min.',
+      //   '',
+      //   { positionClass: 'toast-custom-center' },
+      // );
       return;
     }
 
@@ -905,7 +919,8 @@ export class ConfigPersonnalisationComponent implements OnInit {
     );
 
     if (!selectedRole) {
-      this.toastr.error('Rôle invalide');
+      this.notification.error('Rôle invalide');
+      // this.toastr.error('Rôle invalide');
       return;
     }
 
@@ -918,9 +933,10 @@ export class ConfigPersonnalisationComponent implements OnInit {
     );
 
     if (duplicateRole) {
-      this.toastr.error('Un niveau avec ce rôle existe déjà.', '', {
-        positionClass: 'toast-custom-center',
-      });
+      this.notification.error('Un niveau avec ce rôle existe déjà.');
+      // this.toastr.error('Un niveau avec ce rôle existe déjà.', '', {
+      //   positionClass: 'toast-custom-center',
+      // });
       return;
     }
 
@@ -1124,9 +1140,10 @@ export class ConfigPersonnalisationComponent implements OnInit {
         next: (res) => {
           if (res.status === 200) {
             this.loadingFinal = false;
-            this.toastr.success(res.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.success(res.message);
+            // this.toastr.success(res.message, '', {
+            //   positionClass: 'toast-custom-center',
+            // });
             this.router.navigate(['/login']);
             console.log('Souscription OK', res);
             localStorage.removeItem('niveaux');
@@ -1140,18 +1157,22 @@ export class ConfigPersonnalisationComponent implements OnInit {
             localStorage.removeItem('msisdn');
           } else {
             this.loadingFinal = false;
-            this.toastr.error(res.message, '', {
-              positionClass: 'toast-custom-center',
-            });
-            console.log('Souscription OK', res);
+            this.notification.error(res.message);
+
+            // this.toastr.error(res.message, '', {
+            //   positionClass: 'toast-custom-center',
+            // });
+            // console.log('Souscription OK', res);
           }
         },
         error: (err) => {
           this.loadingFinal = false;
-          this.toastr.error(err.message, '', {
-            positionClass: 'toast-custom-center',
-          });
-          console.error('Erreur souscription', err);
+            this.notification.error('Une erreur interne est survenue.');
+
+          // this.toastr.error(err.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
+          // console.error('Erreur souscription', err);
         },
       });
   }

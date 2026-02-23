@@ -8,47 +8,45 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   standalone: true,
   templateUrl: './type-paiement.component.html',
-  styleUrl: './type-paiement.component.css'
+  styleUrl: './type-paiement.component.css',
 })
-export class TypePaiementComponent implements OnInit{
-
-
+export class TypePaiementComponent implements OnInit {
   // [src]="
   //                       'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
   //                       facturier.vcLogoPath
   //                     "
 
-  constructor(private mobileMoneyService: MobileMoneyService, private router: Router){}
-
+  constructor(
+    private mobileMoneyService: MobileMoneyService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.recupererListeOperateur();
   }
 
-
   nextPages(typeOperateur: string): void {
-  if (!typeOperateur) {
-    console.error('Nom du facturier manquant');
-    return;
+    if (!typeOperateur) {
+      console.error('Nom du facturier manquant');
+      return;
+    }
+
+    this.router.navigate(['/modePaiment', typeOperateur]);
   }
 
-  this.router.navigate(['/modePaiment', typeOperateur]);
-}
-
-  listeOperateur:any[] = [];
+  listeOperateur: any[] = [];
   loadingOperateur: boolean = false;
 
-  recupererListeOperateur(){
+  recupererListeOperateur() {
     this.loadingOperateur = true;
     this.mobileMoneyService.listeMobileOperators().subscribe({
-       next: (response: any) => {
+      next: (response: any) => {
         this.listeOperateur = (response?.data ?? []).filter(
-          (f: any) => f.btEnabled === true
+          (f: any) => f.btEnabled === true,
         );
         this.loadingOperateur = false;
       },
       error: (err) => console.error(err),
-    })
+    });
   }
-
 }

@@ -6,14 +6,15 @@ import {
   ElementRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router} from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranfertUniqueService } from '../../../../services/transfertUniqueService/tranfert-unique.service';
-import { ToastrService } from 'ngx-toastr';
+// import { ToastrService } from 'ngx-toastr';
 import { PaiementInterneExterneService } from '../../../../servicesNodes/paiementInterneExterne/paiement-interne-externe.service';
 import { Location } from '@angular/common';
 import { OtpLoginServiceService } from '../../../../services/otpLogin/otp-login-service.service';
 import { CurrencyRateService } from '../../../../servicesNodes/currencyRate/currency-rate.service';
+import { NotificationService } from '../../../../services/notification/notification.service';
 
 @Component({
   selector: 'app-recap',
@@ -25,12 +26,13 @@ import { CurrencyRateService } from '../../../../servicesNodes/currencyRate/curr
 export class RecapComponent implements OnInit {
   constructor(
     private tranfertUniqueService: TranfertUniqueService,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
     private router: Router,
     private paiementInterneExterneService: PaiementInterneExterneService,
     private location: Location,
     private otpService: OtpLoginServiceService,
     private currencyRateService: CurrencyRateService,
+    private notification: NotificationService,
   ) {}
 
   /* =====================================================
@@ -72,7 +74,7 @@ export class RecapComponent implements OnInit {
     this.infosCompteDebiteur = this.getFromStorage('infosCompteDebiteur');
     this.infosFormulaire = this.getFromStorage('InfosSaisirDansFormulaire');
     this.userInfo = this.getFromStorage('userInfo');
-    this.vcPhoneNumber = this.userInfo.vcPhoneNumber; 
+    this.vcPhoneNumber = this.userInfo.vcPhoneNumber;
     console.log('this.vcPhoneNumber: ', this.vcPhoneNumber);
 
     this.getTauxEchange(); // On laisse juste ça ici
@@ -121,13 +123,14 @@ export class RecapComponent implements OnInit {
       console.log('taux utilisé:', taux);
 
       this.tauxConversion = taux;
+      console.log('this.tauxConversion: ', this.tauxConversion);
 
       this.montantBenConverti = montantDeb * taux;
 
       console.log('tauxConversion:', this.tauxConversion);
       console.log('montantBenConverti:', this.montantBenConverti);
-    } else{
-       const taux = this.currencyRate?.nRate ?? 1;
+    } else {
+      const taux = this.currencyRate?.nRate ?? 1;
 
       console.log('taux utilisé:', taux);
 
@@ -171,27 +174,30 @@ export class RecapComponent implements OnInit {
       receiverBankName: this.selectedBeneficiaire?.vcName,
       devise_debiteur: this.infosCompteDebiteur?.devise,
       montant_converti: this.montantBenConverti,
-      rate: this.tauxConversion
+      rate: this.tauxConversion,
     };
 
     console.log('payload: ', payload);
 
     this.tranfertUniqueService.sendTransaction(payload).subscribe({
       next: (res) => {
-        // console.log('res: ', res);
-        if(res.status === 200){
-        if (res.data.reference && res.data.transaction_id) {
-          this.reference = res.data.reference;
-          this.transaction_id = res.data.transaction_id;
-          this.submitFormPayementInterneExterne();
-          } else{
+        console.log('res: ', res);
+        if (res.status === 200) {
+          if (res.data.reference && res.data.transaction_id) {
+            this.reference = res.data.reference;
+            this.transaction_id = res.data.transaction_id;
+            this.submitFormPayementInterneExterne();
+          } else {
             this.isLoading = false;
           }
           // this.toastr.success(res.data.message);
         }
       },
       error: (err) => {
-        this.toastr.error('Une erreur interne est survenue.');
+        this.notification.error('Une erreur interne est survenue.');
+        // this.toastr.error('Une erreur interne est survenue.');
+            this.isLoading = false;
+
       },
     });
   }
@@ -224,13 +230,16 @@ export class RecapComponent implements OnInit {
           // console.log('Paiement réussi :', res);
           if (res.status === 200) {
             this.modalOtp = false;
-            this.toastr.success(
+            this.notification.success(
               'La transaction a été effectuée avec succès',
-              '',
-              {
-                positionClass: 'toast-custom-center',
-              },
             );
+            // this.toastr.success(
+            //   'La transaction a été effectuée avec succès',
+            //   '',
+            //   {
+            //     positionClass: 'toast-custom-center',
+            //   },
+            // );
             this.isLoading = false;
             this.router.navigate(['/historiqueTransactions']);
             localStorage.removeItem('InfosSaisirDansFormulaire');
@@ -239,17 +248,19 @@ export class RecapComponent implements OnInit {
           } else {
             this.isLoading = false;
             this.modalOtp = false;
-            this.toastr.error(res.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.error(res.message);
+            // this.toastr.error(res.message, '', {
+            //   positionClass: 'toast-custom-center',
+            // });
           }
         },
         error: (err) => {
           this.modalOtp = false;
           // console.error('Erreur paiement :', err);
-          this.toastr.error('Une erreur interne est survenu', '', {
-            positionClass: 'toast-custom-center',
-          });
+          // this.toastr.error('Une erreur interne est survenu', '', {
+          //   positionClass: 'toast-custom-center',
+          // });
+          this.notification.error('Une erreur interne est survenu');
         },
       });
   }
@@ -281,19 +292,22 @@ export class RecapComponent implements OnInit {
           if (response.status === 200) {
             this.loadiongConfirmeOtp = false;
             this.modalOtp = true;
-            this.toastr.success('OTP envoyé avec succès', '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.success('OTP envoyé avec succès');
+            // this.toastr.success('OTP envoyé avec succès', '', {
+            //   positionClass: 'toast-custom-center',
+            // });
           } else {
-            this.toastr.error(response.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.error(response.message);
+            // this.toastr.error(response.message, '', {
+            //   positionClass: 'toast-custom-center',
+            // });
           }
         },
         error: (err) => {
-          this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.error('Erreur lors de l’envoi de l’OTP');
+          // this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           console.error(err);
         },
       });
@@ -326,18 +340,20 @@ export class RecapComponent implements OnInit {
             this.envoyerTransaction();
           } else {
             this.isLoading = false;
-            this.toastr.error(response.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.error(response.message);
+            // this.toastr.error(response.message, '', {
+            //   positionClass: 'toast-custom-center',
+            // });
             this.otpValues = ['', '', '', ''];
           }
         },
         error: (err) => {
           this.isLoading = false;
-          this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
-            positionClass: 'toast-custom-center',
-          });
-          console.error(err);
+          this.notification.error('Erreur lors de l’envoi de l’OTP');
+          // this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
+          //   positionClass: 'toast-custom-center',
+          // });
+          // console.error(err);
         },
       });
 
@@ -399,21 +415,24 @@ export class RecapComponent implements OnInit {
         this.isLoadingRenvoyez = false;
         this.otpValues = ['', '', '', ''];
         if (response.status === 200) {
-          this.toastr.success(response.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.success(response.message);
+          // this.toastr.success(response.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
         } else {
-          this.toastr.error(response.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.error(response.message);
+          // this.toastr.error(response.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           // console.log(response);
         }
       },
       error: (err) => {
         this.isLoadingRenvoyez = false;
-        this.toastr.error('Une erreur interne est survenue.', '', {
-          positionClass: 'toast-custom-center',
-        });
+        this.notification.error('Une erreur interne est survenue.');
+        // this.toastr.error('Une erreur interne est survenue.', '', {
+        //   positionClass: 'toast-custom-center',
+        // });
       },
     });
   }

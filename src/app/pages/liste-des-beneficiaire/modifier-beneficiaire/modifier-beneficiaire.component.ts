@@ -4,7 +4,7 @@ import { BeneficiaireService } from '../../../services/beneficiaire/beneficiaire
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgClass, NgForOf, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
+// import { ToastrService } from 'ngx-toastr';
 import { NotificationService } from '../../../services/notification/notification.service';
 
 declare const bootstrap: any; 
@@ -28,7 +28,7 @@ export class ModifierBeneficiaireComponent implements OnInit {
     private route: ActivatedRoute,
     private beneficiaireService: BeneficiaireService,
     private fb: FormBuilder,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
     private notification: NotificationService
   ) {}
 
@@ -88,7 +88,7 @@ export class ModifierBeneficiaireComponent implements OnInit {
         if (dataArray && dataArray.length > 0) {
           const data = dataArray[0];
 
-          console.log('detail beneficiaire:', data);
+          // console.log('detail beneficiaire yyyy:', data);
 
           this.demande = {
             vcPersonalID: data.BeneficiaryID,
@@ -212,7 +212,8 @@ export class ModifierBeneficiaireComponent implements OnInit {
       } else {
         this.loadingModication = false;
         this.notification.error('📷 Aucune photo sélectionnée');
-        // this.toastr.error('📷 Aucune photo sélectionnée', '', {
+        // this.toastr.error('📷 Aucune photo sélectionnée', '', {1234567890
+
         //   positionClass: 'toast-custom-center',
         // });
         return;
@@ -227,10 +228,11 @@ export class ModifierBeneficiaireComponent implements OnInit {
 
     this.beneficiaireService.modifierBeneficiaire(payload).subscribe({
       next: (res: any) => {
-        console.log('✅ Beneficiaire modifié avec succès', res);
-        this.toastr.success(res.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+        // console.log('✅ Beneficiaire modifié avec succès', res);
+        this.notification.success(res.message);
+        // this.toastr.success(res.message, '', {
+        //     positionClass: 'toast-custom-center',
+        //   });
         // Fermer le modal Bootstrap
         const modalEl = document.getElementById('modifierModal');
         if (modalEl) {

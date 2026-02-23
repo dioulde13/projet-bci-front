@@ -9,6 +9,7 @@ import * as XLSX from 'xlsx';
 import type { Config } from 'datatables.net';
 import { BeneficiaireEnAttenteService } from '../../servicesNodes/beneficiaireEnAttente/beneficiaire-en-attente.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NotificationService } from '../../services/notification/notification.service';
 
 @Component({
   selector: 'app-beneficiaire-en-attente',
@@ -46,8 +47,9 @@ export class BeneficiaireEnAttenteComponent implements OnInit, OnDestroy {
   // constructeur
   constructor(
     private beneficiaireEnAttente: BeneficiaireEnAttenteService,
-    private toastr: ToastrService,
-    private router: Router
+    // private toastr: ToastrService,
+    private router: Router,
+    private notification: NotificationService,
   ) {}
 
   // A l'initialisation
@@ -116,22 +118,25 @@ export class BeneficiaireEnAttenteComponent implements OnInit, OnDestroy {
 
             if (res?.error?.message === 'Unauthenticated.') {
               console.error('🚨 Session expirée, redirection vers login');
-              this.toastr.error('Votre session a expirée', '', {
-                positionClass: 'toast-custom-center',
-              });
+              this.notification.error('Votre session a expirée');
+              // this.toastr.error('Votre session a expirée', '', {
+              //   positionClass: 'toast-custom-center',
+              // });
               this.router.navigate(['/login']);
             }
           }
 
           this.isLoadingDemandes = false;
-          console.log('📌 isLoadingDemandes =', this.isLoadingDemandes);
+          // console.log('📌 isLoadingDemandes =', this.isLoadingDemandes);
         },
 
         error: (err) => {
-          console.error('❌ Erreur lors du chargement des demandes :', err);
-          this.toastr.error('Une erreur interne est survenue.', '', {
-            positionClass: 'toast-custom-center',
-          });
+          // console.error('❌ Erreur lors du chargement des demandes :', err);
+              this.notification.error('Une erreur interne est survenue.');
+
+          // this.toastr.error('Une erreur interne est survenue.', '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           this.isLoadingDemandes = false;
         },
       });

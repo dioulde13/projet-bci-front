@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingServiceService } from '../../../services/loading/loading-service.service';
 import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../../../services/notification/notification.service';
 
 @Component({
   selector: 'app-loading-page',
@@ -18,7 +19,8 @@ export class LoadingPageComponent implements OnInit {
     private loadingService: LoadingServiceService,
     private route: ActivatedRoute,
     private router: Router,
-    private toastr: ToastrService
+    private notification: NotificationService,
+    // private toastr: ToastrService
   ) {}
 
   ngOnInit() {
@@ -38,16 +40,18 @@ export class LoadingPageComponent implements OnInit {
           } else {
             this.router.navigate(['/reunitialiserMotPasse']);
             // console.log(response.message);
-            this.toastr.error(response.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.error(response.message);
+            // this.toastr.error(response.message, '', {
+            //   positionClass: 'toast-custom-center',
+            // });
           }
         },
         error: (err) => {
           console.log(err);
-          this.toastr.error(err.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+          this.notification.error(err.message);
+          // this.toastr.error(err.message, '', {
+          //     positionClass: 'toast-custom-center',
+          //   });
         },
       });
       // }

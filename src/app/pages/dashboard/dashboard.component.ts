@@ -178,10 +178,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private balanceService: BalanceService,
     private saveFichierCSVService: SaveFichierCSVService,
     private bciLoaderService: BciLoaderService,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
     private router: Router,
     private beneficiaireEnAttente: BeneficiaireEnAttenteService,
-     private notification: NotificationService
+    private notification: NotificationService,
   ) {}
 
   iOrganisationID!: number;
@@ -221,7 +221,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     // this.dixTransactionsRecentsListe();
     // this.processAccounts();
   }
-
 
   //   totalSolde: any;
 
@@ -542,15 +541,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.bciLoaderService.load();
   }
 
-  
-   userInfo: any;
+  userInfo: any;
   idOrganisation!: number;
 
-   isLoadingDemandes: boolean = false;
+  isLoadingDemandes: boolean = false;
   demandes: any[] = [];
   traitedDemandes: any[] = [];
   rejectedDemandes: any[] = [];
-
 
   // Chargement de demandes de souscriptions
   private loadeDemandeSouscriptions(): void {
@@ -567,27 +564,26 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
           if (res?.status === 200) {
             this.demandes = res?.data.filter(
-              (d: any) => d.vcStatus === 'En traitement'
+              (d: any) => d.vcStatus === 'En traitement',
             );
             this.traitedDemandes = res?.data.filter(
-              (d: any) => d.vcStatus === 'Valide'
+              (d: any) => d.vcStatus === 'Valide',
             );
             this.rejectedDemandes = res?.data.filter(
-              (d: any) => d.vcStatus === 'Rejete'
+              (d: any) => d.vcStatus === 'Rejete',
             );
 
             console.log('demandes: ', this.demandes);
 
             console.log(
-              `📊 Total demandes en traitement : ${this.demandes.length}`
+              `📊 Total demandes en traitement : ${this.demandes.length}`,
             );
             console.log(
-              `✅ Total demandes validées : ${this.traitedDemandes.length}`
+              `✅ Total demandes validées : ${this.traitedDemandes.length}`,
             );
             console.log(
-              `❌ Total demandes rejetées : ${this.rejectedDemandes.length}`
+              `❌ Total demandes rejetées : ${this.rejectedDemandes.length}`,
             );
-
           } else {
             console.warn('⚠️ Réponse serveur avec status non 200 :', res);
 
@@ -615,7 +611,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         },
       });
   }
-
 
   // title = 'generic file import';
   openModal = false;
@@ -664,9 +659,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       .saveFichierCSVTransaction(file, 1, this.iOrganisationID)
       .subscribe({
         next: (res) => {
-          this.toastr.success(res.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.success(res.message);
+          // this.toastr.success(res.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           this.openModal = false;
           this.loadingValidation = false;
           console.log('Import réussi', res);
@@ -678,7 +674,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   notificationEnCoursDeveloppement() {
-     this.notification.error('Cette fonctionnalité est en cours de développement.');
+    this.notification.error(
+      'Cette fonctionnalité est en cours de développement.',
+    );
     // this.toastr.error(
     //   'Cette fonctionnalité est en cours de développement.',
     //   '',

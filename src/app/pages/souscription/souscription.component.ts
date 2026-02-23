@@ -3,7 +3,8 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SouscriptionsService } from '../../services/souscription/souscriptions.service';
-import { ToastrService } from 'ngx-toastr';
+// import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../../services/notification/notification.service';
 
 @Component({
   selector: 'app-souscription',
@@ -25,8 +26,9 @@ export class SouscriptionComponent {
 
   constructor(
     private sousCription: SouscriptionsService,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
     private router: Router,
+    private notification: NotificationService,
   ) {}
 
   selectedMethod: string = '';
@@ -111,13 +113,15 @@ export class SouscriptionComponent {
             // this.showModal = true;
           } else {
             this.loading = false;
-            this.toastr.error(res.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.error(res.message);
+            // this.toastr.error(res.message, '', {
+            //   positionClass: 'toast-custom-center',
+            // });
           }
         },
         error: () => {
           this.erreur = 'Erreur : Impossible de récupérer les informations.';
+          this.notification.error(this.erreur);
           this.loading = false;
         },
       });

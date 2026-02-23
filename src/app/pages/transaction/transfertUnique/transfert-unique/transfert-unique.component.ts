@@ -16,6 +16,7 @@ import { PaiementInterneExterneService } from '../../../../servicesNodes/paiemen
 import { GnfNumberFormatDirective } from '../../../../directives/gnf-number-format.directive';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../../../../services/notification/notification.service';
 
 @Component({
   selector: 'app-transfert-unique',
@@ -62,8 +63,9 @@ export class TransfertUniqueComponent implements OnInit {
     private beneficiaireNodeService: BeneficiaireNodeService,
     private banqueNameVerifierService: BanqueNameVerifierService,
     private paiementInterneExterneService: PaiementInterneExterneService,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
     private router: Router,
+    private notification: NotificationService,
     // private toastr: ToastrService,
   ) {}
 
@@ -194,9 +196,10 @@ export class TransfertUniqueComponent implements OnInit {
           this.nomDebiteur = null;
           this.soldeDebiteur = null;
           this.devise = null;
-          this.toastr.error(this.decodeMessage(res.message), '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.error(this.decodeMessage(res.message));
+          // this.toastr.error(this.decodeMessage(res.message), '', {
+          //   positionClass: 'toast-custom-center',
+          // });
         }
       },
 
@@ -262,7 +265,7 @@ export class TransfertUniqueComponent implements OnInit {
     this.beneficiaireService.getListeTypeBeneficiaire().subscribe({
       next: (res) => {
         this.listeTypeBeneficiaire = res?.data ?? [];
-        console.log('this.listeTypeBeneficiaire: ', this.listeTypeBeneficiaire);
+        // console.log('this.listeTypeBeneficiaire: ', this.listeTypeBeneficiaire);
         this.patchFormWithSavedValues();
       },
       error: (err) => console.error(err),
@@ -306,7 +309,7 @@ export class TransfertUniqueComponent implements OnInit {
           this.listeBeneficiaires = response?.data.filter(
             (l: any) => l.btEnabled === '1',
           );
-          console.log('this.listeBeneficiaires: ', this.listeBeneficiaires);
+          // console.log('this.listeBeneficiaires: ', this.listeBeneficiaires);
         },
         error: () => {
           this.listeBeneficiaires = [];
@@ -353,15 +356,15 @@ export class TransfertUniqueComponent implements OnInit {
     const idBenef = this.getFromStorage('idBenef') || {};
 
     // Debug
-    console.log('Infos depuis localStorage:', infosFormulaires);
-    console.log('Liste des types de bénéficiaire:', this.listeTypeBeneficiaire);
+    // console.log('Infos depuis localStorage:', infosFormulaires);
+    // console.log('Liste des types de bénéficiaire:', this.listeTypeBeneficiaire);
 
     // Étape 1 : chercher la catégorie correspondante (ignore espaces et casse)
     const selectedCategory =
       this.listeTypeBeneficiaire.find((type: any) => {
-        console.log('Objet type:', type);
-        console.log('type.vcName:', type.vcName);
-        console.log('vcBenefName du formulaire:', infosFormulaires.vcBenefName);
+        // console.log('Objet type:', type);
+        // console.log('type.vcName:', type.vcName);
+        // console.log('vcBenefName du formulaire:', infosFormulaires.vcBenefName);
 
         return (
           type.vcName?.trim().toLowerCase() ===
@@ -369,7 +372,7 @@ export class TransfertUniqueComponent implements OnInit {
         );
       }) || null;
 
-    console.log('Catégorie sélectionnée:', selectedCategory);
+    // console.log('Catégorie sélectionnée:', selectedCategory);
 
     // Étape 2 : chercher le bénéficiaire correspondant
     // const selectedBeneficiaire =
@@ -381,7 +384,7 @@ export class TransfertUniqueComponent implements OnInit {
       (b) => b?.BeneficiaryID?.toString() === idBenef.idBenef,
     );
 
-    console.log('selectedBeneficiaire: ', selectedBeneficiaire);
+    // console.log('selectedBeneficiaire: ', selectedBeneficiaire);
 
     // Patcher le formulaire
     this.transferFormPaiementInterneExterne.patchValue({
@@ -408,28 +411,37 @@ export class TransfertUniqueComponent implements OnInit {
 
     const formValue = this.transferFormPaiementInterneExterne.value;
 
-    console.log('formValue.mAmount: ', formValue.mAmount);
-    console.log('this.soldeDebiteur: ', this.soldeDebiteur);
+    // console.log('formValue.mAmount: ', formValue.mAmount);
+    // console.log('this.soldeDebiteur: ', this.soldeDebiteur);
 
     // Vérifier d'abord si le solde est nul ou non disponible
     if (this.soldeDebiteur === null || this.soldeDebiteur <= 0) {
       this.loadingPaiementInterneExterne = false;
-      this.toastr.error(
-        'Votre solde est nul ou indisponible, vous ne pouvez pas effectuer de transaction.',
-        '',
-        { positionClass: 'toast-custom-center' },
+      this.notification.error(
+        this.decodeMessage(
+          'Votre solde est nul ou indisponible, vous ne pouvez pas effectuer de transaction.',
+        ),
       );
+
+      // this.toastr.error(
+      //   'Votre solde est nul ou indisponible, vous ne pouvez pas effectuer de transaction.',
+      //   '',
+      //   { positionClass: 'toast-custom-center' },
+      // );
       return;
     }
 
     // Vérifier si le montant saisi dépasse le solde
     if (formValue.mAmount > this.soldeDebiteur) {
       this.loadingPaiementInterneExterne = false;
-      this.toastr.error(
+      this.notification.error(
         'Le montant saisi doit être inférieur ou égal au solde.',
-        '',
-        { positionClass: 'toast-custom-center' },
       );
+      // this.toastr.error(
+      //   'Le montant saisi doit être inférieur ou égal au solde.',
+      //   '',
+      //   { positionClass: 'toast-custom-center' },
+      // );
       return;
     }
 

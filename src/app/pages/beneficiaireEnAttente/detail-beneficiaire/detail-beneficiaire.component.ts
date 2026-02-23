@@ -10,6 +10,7 @@ import { CurrencyPipe, NgClass, NgForOf, NgIf } from '@angular/common';
 
 import { BeneficiaireEnAttenteService } from '../../../servicesNodes/beneficiaireEnAttente/beneficiaire-en-attente.service';
 import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../../../services/notification/notification.service';
 
 declare var bootstrap: any;
 
@@ -25,7 +26,8 @@ export class DetailBeneficiaireComponent implements OnInit {
     private route: ActivatedRoute,
     private beneficiaireService: BeneficiaireEnAttenteService,
     private fb: FormBuilder,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
+    private notification: NotificationService,
     private router: Router
   ) {}
 
@@ -179,9 +181,10 @@ export class DetailBeneficiaireComponent implements OnInit {
       )
       .subscribe({
         next: (res) => {
-          this.toastr.success(res.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.success(res.message);
+          // this.toastr.success(res.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           this.router.navigate(['/beneficiaireEnAttente']);
           // console.log('✅ Demande validée avec succès', res);
           this.closeModal('valideModal');
@@ -216,18 +219,15 @@ export class DetailBeneficiaireComponent implements OnInit {
       )
       .subscribe({
         next: (res) => {
-          console.log('res', res);
-          this.toastr.success(res.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          // console.log('res', res);
+          this.notification.success(res.message);
           this.router.navigate(['/beneficiaireEnAttente']);
-          // console.log('✅ Demande validée avec succès', res);
-          // Tu peux afficher un toast ou message de succès ici
           this.closeModal('valideModal');
           this.valideForm.reset();
         },
         error: (err) => {
-          console.error('❌ Erreur lors de la validation', err);
+          this.notification.error('Une erreur interne est survenue.');
+          // console.error('❌ Erreur lors de la validation', err);
           // Gérer l'erreur (toast, message, etc.)
         },
       });

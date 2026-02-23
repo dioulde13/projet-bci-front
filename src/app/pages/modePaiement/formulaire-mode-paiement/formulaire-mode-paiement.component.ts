@@ -1,19 +1,44 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-// import { BeneficiaireService } from '../../../services/beneficiaire/beneficiaire.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DashboardService } from '../../../services/dashboard/dashboard.service';
 import { MobileMoneyService } from '../../../servicesNodes/modePaiementOperateur/mobileMoney/mobile-money.service';
-import { ToastrService } from 'ngx-toastr';
 import { GetAccountNameService } from '../../../servicesNodes/verifierNomDebiteur/get-account-name.service';
 import { GnfNumberFormatDirective } from '../../../directives/gnf-number-format.directive';
+import { NotificationService } from '../../../services/notification/notification.service';
+
+// ── Validateur personnalisé : préfixe téléphone selon opérateur ──────────────
+function telephoneOperateurValidator(getOperateur: () => string | null): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value as string;
+    if (!value) return null;
+
+    const operateur = getOperateur()?.toUpperCase();
+
+    const prefixesOrange = ['622', '621', '623', '611', '612', '613'];
+    const prefixesMTN    = ['666', '662', '661', '663', '664'];
+
+    const prefixesAutorises =
+      operateur === 'ORANGE MONEY' ? prefixesOrange :
+      operateur === 'MOBILE MONEY' ? prefixesMTN    : [];
+
+    if (prefixesAutorises.length === 0) return null;
+
+    const prefixeValide = prefixesAutorises.some((p) => value.startsWith(p));
+
+    return prefixeValide ? null : { prefixeInvalide: { operateur, valeur: value } };
+  };
+}
 
 @Component({
   selector: 'app-formulaire-mode-paiement',
@@ -31,27 +56,25 @@ export class FormulaireModePaiementComponent implements OnInit {
   userInfo: any;
   idOrganisation!: number;
 
-  // typeOperateur!: 'ORANGE MONEY' | 'MOBILE MONEY';
-
   orangeMoneyForm!: FormGroup;
+  mobileMoneyForm!: FormGroup;
+
+  // ── Validation instantanée téléphone ─────────────────────────────────────
+  telephoneError: string = '';
+  telephoneSuccess: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    // private beneficiaireService: BeneficiaireService,
     private listeCompteCLientService: DashboardService,
     private mobileMoneyService: MobileMoneyService,
-    private toastr: ToastrService,
+    private notification: NotificationService,
     private getAccount: GetAccountNameService,
     private router: Router,
   ) {}
 
-  mobileMoneyForm!: FormGroup;
-
-  /** Récupération infos utilisateur */
   private getUserInfo(): void {
     const user = localStorage.getItem('userInfo');
-    console.log('user: ', user);
     if (user) {
       this.userInfo = JSON.parse(user);
       this.idOrganisation = this.userInfo.iOrganisationID;
@@ -60,45 +83,97 @@ export class FormulaireModePaiementComponent implements OnInit {
 
   listeOperateur: any[] = [];
   operateur: any;
-
   objetRecuperer: any;
 
   frais: any;
   btFeesUsePercent: boolean = false;
   btFeesIncluded: boolean = false;
-
   fraisLabel: string = '';
   montantTotal: number = 0;
   fraisCalcul: number = 0;
   vcAccountName: any;
 
-  recupererListeOperateur() {
+  typeOperateur: string | null = null;
+
+  get prefixesAutorises(): string {
+    const op = this.typeOperateur?.toUpperCase();
+    if (op === 'ORANGE') return '611, 612, 613, 620, 621, 622, 623, 624, 625, 626, 627, 628, 629';
+    if (op === 'MTN') return '660, 661, 662, 663, 664, 666';
+    return '';
+  }
+
+  // ── Retourne les préfixes autorisés selon l'opérateur ────────────────────
+  private getPrefixesParOperateur(): string[] {
+    const op = this.typeOperateur?.toUpperCase();
+    if (op === 'ORANGE') return ['610', '611', '612', '613', '620', '621', '622', '623', '624', '625',];
+    if (op === 'MTN') return ['666', '662', '661', '663', '664'];
+    return [];
+  }
+
+  // ── Validation instantanée en temps réel ─────────────────────────────────
+  validateTelephone(value: string): void {
+    this.telephoneError   = '';
+    this.telephoneSuccess = false;
+
+    if (!value) return;
+
+    const prefixes = this.getPrefixesParOperateur();
+    if (prefixes.length === 0) return;
+
+    const op = this.typeOperateur?.toUpperCase();
+    const nomOperateur =
+      op === 'ORANGE MONEY' ? 'ORANGE' :
+      op === 'MOBILE MONEY' ? 'MTN' : '';
+
+    // Dès 3 chiffres, on contrôle le préfixe
+    if (value.length >= 3) {
+      const prefixeValide = prefixes.some(p => value.startsWith(p));
+      if (!prefixeValide) {
+        this.telephoneError = `Préfixe invalide pour ${nomOperateur}. Préfixes autorisés : ${prefixes.join(', ')}`;
+        return;
+      }
+    }
+
+    // Numéro complet valide
+    if (value.length === 9) {
+      const prefixeValide = prefixes.some(p => value.startsWith(p));
+      if (prefixeValide) {
+        this.telephoneSuccess = true;
+      } else {
+        this.telephoneError = `Numéro invalide pour ${nomOperateur}.`;
+      }
+    }
+  }
+
+  // ── Handler input téléphone ───────────────────────────────────────────────
+  onInputTelephone(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.validateTelephone(value);
+  }
+
+  recupererListeOperateur(): void {
     this.mobileMoneyService.listeMobileOperators().subscribe({
       next: (response: any) => {
-        console.log("response: ", response);
         const operateur = (response?.data ?? []).find(
           (f: any) => f.FacturierName === this.typeOperateur,
         );
-        console.log("operateur: ", operateur);
 
         if (!operateur) return;
-       
-        this.vcAccountName = operateur?.vcAccountName;
-        console.log("this.vcAccountName: ", this.vcAccountName);
-        this.frais = operateur?.nFees;
-        this.btFeesUsePercent = operateur?.btFeesUsePercent;
-        this.btFeesIncluded = operateur?.btFeesIncluded;
 
-        // 🔥 Construction label frais
+        this.vcAccountName    = operateur?.vcAccountName;
+        this.frais            = operateur?.nFees;
+        this.btFeesUsePercent = operateur?.btFeesUsePercent;
+        this.btFeesIncluded   = operateur?.btFeesIncluded;
+
         if (this.btFeesIncluded) {
-          this.fraisLabel = 'Frais inclus';
+          this.fraisLabel  = 'Frais inclus';
           this.fraisCalcul = 0;
         } else {
           if (this.btFeesUsePercent) {
-            this.fraisLabel = `${this.frais} %`;
+            this.fraisLabel  = `${this.frais} %`;
             this.fraisCalcul = this.frais / 100;
           } else {
-            this.fraisLabel = `${this.frais}`;
+            this.fraisLabel  = `${this.frais}`;
             this.fraisCalcul = this.frais;
           }
         }
@@ -106,8 +181,7 @@ export class FormulaireModePaiementComponent implements OnInit {
     });
   }
 
-  // 🔥 Calcul automatique du total
-  calculerTotal() {
+  calculerTotal(): void {
     const montant = Number(this.mobileMoneyForm.get('montant')?.value || 0);
 
     if (!montant) {
@@ -126,11 +200,6 @@ export class FormulaireModePaiementComponent implements OnInit {
     }
   }
 
-
-  
-
-  typeOperateur: string | null = null;
-
   ngOnInit(): void {
     const rawNomFacture = this.route.snapshot.paramMap.get('typeOperateur');
 
@@ -141,54 +210,38 @@ export class FormulaireModePaiementComponent implements OnInit {
     console.log('this.typeOperateur: ', this.typeOperateur);
 
     this.recupererListeOperateur();
-
-    // 1️⃣ récupérer l'utilisateur
     this.getUserInfo();
 
-    // 2️⃣ vérifier que l'id organisation existe
     if (this.idOrganisation) {
-      // this.getListeBeneficiaire();
       this.getListeCompteClient();
     } else {
       console.error('ID Organisation introuvable');
     }
 
-    // 3️⃣ récupérer type opérateur
-    this.typeOperateur =
-      (this.route.snapshot.paramMap.get('typeOperateur') as
-        | 'ORANGE MONEY'
-        | 'MOBILE MONEY') || 'MOBILE MONEY';
-
-    // 4️⃣ init formulaires
     this.initOrangeMoneyForm();
     this.initMobileMoneyForm();
-
-    // console.log('Type opérateur :', this.typeOperateur);
   }
 
   phoneMaxLength = 9;
 
-  // Autoriser uniquement les chiffres + touches utiles
   onlyDigits(event: KeyboardEvent): void {
-    const allowedKeys = [
-      'Backspace',
-      'ArrowLeft',
-      'ArrowRight',
-      'Delete',
-      'Tab',
-    ];
+    const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
 
-    if (allowedKeys.includes(event.key)) return;
+    if (allowedKeys.includes(event.key)) {
+      // Valider après suppression
+      setTimeout(() => {
+        const val = (event.target as HTMLInputElement).value;
+        this.validateTelephone(val);
+      }, 0);
+      return;
+    }
 
-    // Bloquer tout sauf chiffres
     if (!/^\d$/.test(event.key)) {
       event.preventDefault();
       return;
     }
 
     const input = event.target as HTMLInputElement;
-
-    // Bloquer si longueur max atteinte
     if (input.value.length >= this.phoneMaxLength) {
       event.preventDefault();
     }
@@ -198,42 +251,76 @@ export class FormulaireModePaiementComponent implements OnInit {
     });
   }
 
-  // Bloquer le collage invalide
   onPaste(event: ClipboardEvent): void {
     const pastedData = event.clipboardData?.getData('text') || '';
 
-    // Autoriser uniquement chiffres
     if (!/^\d+$/.test(pastedData)) {
       event.preventDefault();
       return;
     }
 
     const input = event.target as HTMLInputElement;
-
-    // Bloquer si dépasse 9 chiffres
     if (input.value.length + pastedData.length > this.phoneMaxLength) {
       event.preventDefault();
+      return;
     }
+
+    // Valider après collage
+    setTimeout(() => {
+      const val = (event.target as HTMLInputElement).value;
+      this.validateTelephone(val);
+    }, 0);
   }
 
-  // 🔷 MOBILE MONEY
   initMobileMoneyForm(): void {
+    const saved     = localStorage.getItem('InfosFormulaireModePaiement');
+    const savedData = saved ? JSON.parse(saved) : null;
+    const payload   = savedData?.payload;
+    const isBtoW    = payload?.vcOperationType === 'B2W';
+
     this.mobileMoneyForm = this.fb.group({
-      compteSource: ['', Validators.required],
+      compteSource: [
+        payload ? (isBtoW ? payload.vcPayerAccount : payload.vcBenefAccount) : '',
+        Validators.required,
+      ],
       telephone: [
-        '',
+        payload ? (isBtoW ? payload.vcBenefAccount : payload.vcPayerAccount) : '',
         [
           Validators.required,
-          Validators.pattern('^[0-9]{9,12}$'), // numéro valide
+          Validators.pattern('^[0-9]{9,12}$'),
+          telephoneOperateurValidator(() => this.typeOperateur),
         ],
       ],
-      montant: ['', [Validators.required, Validators.min(1)]],
+      montant: [
+        payload?.mAmount ?? '',
+        [Validators.required, Validators.min(1)],
+      ],
       frais: [''],
-      description: ['', Validators.required],
-      typeTransactionMM: ['B2W', Validators.required],
+      description: [
+        payload?.vcNotes ?? '',
+        Validators.required,
+      ],
+      typeTransactionMM: [
+        payload?.vcOperationType ?? 'B2W',
+        Validators.required,
+      ],
     });
 
-    // Écouter le changement du compte sélectionné
+    if (savedData?.soldeDebiteur !== undefined) {
+      this.soldeDebiteur = savedData.soldeDebiteur;
+      this.devise        = savedData.devise;
+    }
+
+    if (payload?.mAmount) {
+      this.calculerTotal();
+    }
+
+    // Valider le téléphone au chargement si une valeur est déjà présente
+    const telInitial = this.mobileMoneyForm.get('telephone')?.value;
+    if (telInitial) {
+      this.validateTelephone(telInitial);
+    }
+
     this.mobileMoneyForm
       .get('compteSource')
       ?.valueChanges.subscribe((accountNumber) => {
@@ -243,41 +330,50 @@ export class FormulaireModePaiementComponent implements OnInit {
           this.soldeDebiteur = '';
         }
       });
+
+    this.mobileMoneyForm
+      .get('telephone')
+      ?.valueChanges.subscribe(() => {
+        this.mobileMoneyForm.get('telephone')?.updateValueAndValidity({ emitEvent: false });
+      });
+
+    this.mobileMoneyForm
+      .get('montant')
+      ?.valueChanges.subscribe(() => {
+        this.calculerTotal();
+      });
   }
 
   soldeDebiteur: any = null;
-devise: any = null;
-loadingGetBalance: boolean = false;
+  devise: any = null;
+  loadingGetBalance: boolean = false;
 
-getAccountName(accountNumber: string): void {
-  this.loadingGetBalance = true;
+  getAccountName(accountNumber: string): void {
+    this.loadingGetBalance = true;
 
-  this.getAccount.getNomDebiteur(accountNumber).subscribe({
-    next: (res) => {
-      this.soldeDebiteur = res?.data?.soldeDisp ?? null;
-      this.devise = res?.data?.devise ?? null;
-      this.loadingGetBalance = false;
-
-      console.log('this.soldeDebiteur: ', this.soldeDebiteur);
-    },
-    error: () => {
-      this.soldeDebiteur = null;
-      this.devise = null;
-      this.loadingGetBalance = false;
-    },
-  });
-}
+    this.getAccount.getNomDebiteur(accountNumber).subscribe({
+      next: (res) => {
+        this.soldeDebiteur     = res?.data?.soldeDisp ?? null;
+        this.devise            = res?.data?.devise ?? null;
+        this.loadingGetBalance = false;
+      },
+      error: () => {
+        this.soldeDebiteur     = null;
+        this.devise            = null;
+        this.loadingGetBalance = false;
+      },
+    });
+  }
 
   loadingMobileMoney: boolean = false;
 
-  // 🔥 SUBMIT MOBILE
   submitMobileMoney(): void {
-    if (this.mobileMoneyForm.invalid) {
+    if (this.mobileMoneyForm.invalid || this.telephoneError) {
       this.mobileMoneyForm.markAllAsTouched();
       return;
     }
 
-    this.loadingMobileMoney = true; // 🔥 METS LE ICI
+    this.loadingMobileMoney = true;
 
     const formValue = this.mobileMoneyForm.value;
 
@@ -286,55 +382,44 @@ getAccountName(accountNumber: string): void {
       Number(formValue.montant) > this.soldeDebiteur
     ) {
       this.loadingMobileMoney = false;
-
-      this.toastr.error(
-        'Le montant saisi doit être inférieur ou égal au solde.',
-        '',
-        {
-          positionClass: 'toast-custom-center',
-        },
-      );
-
-      return; // IMPORTANT
-    } else {
-      const payload = {
-        vcPayerAccount:
-          formValue.typeTransactionMM === 'B2W'
-            ? formValue.compteSource
-            : formValue.telephone,
-
-        vcBenefAccount:
-          formValue.typeTransactionMM === 'B2W'
-            ? formValue.telephone
-            : formValue.compteSource,
-
-        mAmount: Number(formValue.montant),
-        vcOperatorAccount: this.vcAccountName,
-        mFees: this.btFeesIncluded ? this.fraisCalcul : this.fraisCalcul,
-        vcNotes: formValue.description,
-        vcOperationType: formValue.typeTransactionMM,
-      };
-
-      localStorage.setItem(
-        'InfosFormulaireModePaiement',
-        JSON.stringify({
-          payload,
-          soldeDebiteur: this.soldeDebiteur,
-          devise: this.devise,
-        }),
-      );
-      // Simuler un petit délai pour voir le loading
-      setTimeout(() => {
-        this.router.navigate(['/recapModePaiement']);
-      }, 1000);
+      this.notification.error('Le montant saisi doit être inférieur ou égal au solde.');
+      return;
     }
+
+    const payload = {
+      vcPayerAccount:
+        formValue.typeTransactionMM === 'B2W'
+          ? formValue.compteSource
+          : formValue.telephone,
+      vcBenefAccount:
+        formValue.typeTransactionMM === 'B2W'
+          ? formValue.telephone
+          : formValue.compteSource,
+      mAmount:           Number(formValue.montant),
+      vcOperatorAccount: this.vcAccountName,
+      mFees:             this.btFeesIncluded ? this.fraisCalcul : this.fraisCalcul,
+      vcNotes:           formValue.description,
+      vcOperationType:   formValue.typeTransactionMM,
+    };
+
+    localStorage.setItem(
+      'InfosFormulaireModePaiement',
+      JSON.stringify({
+        payload,
+        soldeDebiteur: this.soldeDebiteur,
+        devise:        this.devise,
+      }),
+    );
+
+    setTimeout(() => {
+      this.router.navigate(['/recapModePaiement']);
+    }, 1000);
   }
 
   listeCompteClient: any[] = [];
-  selectedDebitAccount = '';
-
-  errorMessage = '';
-  typesCompte = '';
+  selectedDebitAccount     = '';
+  errorMessage             = '';
+  typesCompte              = '';
 
   getListeCompteClient(): void {
     if (!this.idOrganisation) return;
@@ -351,30 +436,31 @@ getAccountName(accountNumber: string): void {
       });
   }
 
-  // 🔶 ORANGE MONEY
   initOrangeMoneyForm(): void {
     this.orangeMoneyForm = this.fb.group({
-      typePaiement: ['Mobile Money', Validators.required],
-      fournisseur: ['Orange Money', Validators.required],
+      typePaiement:      ['Mobile Money', Validators.required],
+      fournisseur:       ['Orange Money', Validators.required],
       numeroMobile: [
         '',
-        [Validators.required, Validators.pattern(/^\d{8,15}$/)],
+        [
+          Validators.required,
+          Validators.pattern(/^\d{8,15}$/),
+          telephoneOperateurValidator(() => this.typeOperateur),
+        ],
       ],
-      nomCompte: ['', [Validators.required, Validators.minLength(2)]],
+      nomCompte:         ['', [Validators.required, Validators.minLength(2)]],
       emailBeneficiaire: ['', [Validators.required, Validators.email]],
-      compteSource: ['', Validators.required],
-      montant: ['', [Validators.required, Validators.min(1)]],
-      devise: ['GNF', Validators.required],
-      objetTransfert: ['', [Validators.required, Validators.minLength(3)]],
+      compteSource:      ['', Validators.required],
+      montant:           ['', [Validators.required, Validators.min(1)]],
+      devise:            ['GNF', Validators.required],
+      objetTransfert:    ['', [Validators.required, Validators.minLength(3)]],
     });
   }
 
-  // 🔥 SUBMIT ORANGE
   submitOrangeMoney(): void {
     if (this.orangeMoneyForm.invalid) {
       this.orangeMoneyForm.markAllAsTouched();
       return;
     }
-    console.log('Orange Money :', this.orangeMoneyForm.value);
   }
 }

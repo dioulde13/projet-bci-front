@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { TranfertUniqueService } from '../../../services/transfertUniqueService/tranfert-unique.service';
 import { OtpLoginServiceService } from '../../../services/otpLogin/otp-login-service.service';
+import { NotificationService } from '../../../services/notification/notification.service';
 
 @Component({
   selector: 'app-recap-mode-paiement',
@@ -28,7 +29,8 @@ import { OtpLoginServiceService } from '../../../services/otpLogin/otp-login-ser
 export class RecapModePaiementComponent implements OnInit {
   constructor(
     private tranfertUniqueService: TranfertUniqueService,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
+    private notification: NotificationService,
     private modePaiementService: ModePaiementService,
     private mobileMoneyService: MobileMoneyService,
     private router: Router,
@@ -109,7 +111,6 @@ export class RecapModePaiementComponent implements OnInit {
     );
   }
 
-
   reference: any;
   transaction_id: any;
 
@@ -132,26 +133,32 @@ export class RecapModePaiementComponent implements OnInit {
 
     this.mobileMoneyService.payerMobileMoney(payload).subscribe({
       next: (res) => {
-        console.log("res: ", res);
-        if(res.status === 200){
-        this.toastr.success("Transaction effectuée avec succès ✅", '', {
-          positionClass: 'toast-custom-center',
-        });
-        this.isLoading = false;
-        this.router.navigate(['/historiqueTransactions']);
-        localStorage.removeItem('InfosFormulaireModePaiement');
-        } else{
+        console.log('res: ', res);
+        if (res.status === 200) {
+          this.notification.success('Transaction effectuée avec succès ✅');
+          // this.toastr.success("Transaction effectuée avec succès ✅", '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           this.isLoading = false;
-          this.toastr.success(this.decodeMessage(res.message), '', {
-          positionClass: 'toast-custom-center',
-        });
+          this.router.navigate(['/historiqueTransactions']);
+          localStorage.removeItem('InfosFormulaireModePaiement');
+        } else {
+          this.isLoading = false;
+          this.notification.error(this.decodeMessage(res.message));
+
+          //   this.toastr.success(this.decodeMessage(res.message), '', {
+          //   positionClass: 'toast-custom-center',
+          // });
         }
       },
       error: (err) => {
-        this.toastr.error('Une erreur interne est survenu', '', {
-          positionClass: 'toast-custom-center',
-        });
-        console.error('Erreur paiement :', err);
+        this.notification.error(
+          this.decodeMessage('Une erreur interne est survenu'),
+        );
+        // this.toastr.error('Une erreur interne est survenu', '', {
+        //   positionClass: 'toast-custom-center',
+        // });
+        // console.error('Erreur paiement :', err);
         // toast erreur ic
       },
     });
@@ -187,15 +194,18 @@ export class RecapModePaiementComponent implements OnInit {
           this.reference = res.data.reference;
           this.transaction_id = res.data.transaction_id;
           this.addMobileMoneyTransaction();
-        } else{
+        } else {
           this.isLoading = false;
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.toastr.error('Une erreur interne est survenue.', '', {
-          positionClass: 'toast-custom-center',
-        });
+        this.notification.error(
+          this.decodeMessage('Une erreur interne est survenu'),
+        );
+        // this.toastr.error('Une erreur interne est survenue.', '', {
+        //   positionClass: 'toast-custom-center',
+        // });
         console.error('Erreur paiement :', err);
         // toast erreur ic
       },
@@ -231,24 +241,29 @@ export class RecapModePaiementComponent implements OnInit {
           if (response.status === 200) {
             this.loadiongConfirmeOtp = false;
             this.modalOtp = true;
-            this.toastr.success('OTP envoyé avec succès', '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.success(
+              this.decodeMessage('OTP envoyé avec succès'),
+            );
+            // this.toastr.success('OTP envoyé avec succès', '', {
+            //   positionClass: 'toast-custom-center',
+            // });
           } else {
-            this.toastr.error(response.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.error(this.decodeMessage(response.message));
+            // this.toastr.error(response.message, '', {
+            //   positionClass: 'toast-custom-center',
+            // });
           }
         },
         error: (err) => {
-          this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
-            positionClass: 'toast-custom-center',
-          });
-          console.error(err);
+          this.notification.error(
+            this.decodeMessage('Erreur lors de l’envoi de l’OTP'),
+          );
+          // this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
+          //   positionClass: 'toast-custom-center',
+          // });
+          // console.error(err);
         },
       });
-
-      
 
     // Focus sur le premier input OTP
     setTimeout(() => {
@@ -277,17 +292,19 @@ export class RecapModePaiementComponent implements OnInit {
             this.submitMobileMoney();
           } else {
             this.isLoading = false;
-            this.toastr.error(response.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.error(response.message);
+            // this.toastr.error(response.message, '', {
+            //   positionClass: 'toast-custom-center',
+            // });
           }
         },
         error: (err) => {
           this.isLoading = false;
-          this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
-            positionClass: 'toast-custom-center',
-          });
-          console.error(err);
+          this.notification.error('Erreur lors de l’envoi de l’OTP');
+          // this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
+          //   positionClass: 'toast-custom-center',
+          // });
+          // console.error(err);
         },
       });
 
@@ -350,27 +367,30 @@ export class RecapModePaiementComponent implements OnInit {
         this.isLoadingRenvoyez = false;
         this.otpValues = ['', '', '', ''];
         if (response.status === 200) {
-          this.toastr.success(response.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.success(response.message);
+          // this.toastr.success(response.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
         } else {
-          this.toastr.error(response.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.error(response.message);
+          // this.toastr.error(response.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           // console.log(response);
         }
       },
       error: (err) => {
         this.isLoadingRenvoyez = false;
-        this.toastr.error(err.error.message, '', {
-          positionClass: 'toast-custom-center',
-        });
+          this.notification.error("Une erreur interne est survenue.");
+        // this.toastr.error(err.error.message, '', {
+        //   positionClass: 'toast-custom-center',
+        // });
       },
     });
   }
 
   retour() {
     this.location.back();
-    localStorage.removeItem('InfosFormulaireModePaiement');
+    // localStorage.removeItem('InfosFormulaireModePaiement');
   }
 }

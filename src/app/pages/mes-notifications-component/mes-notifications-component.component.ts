@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { MesNotifsService } from '../../services/mesNotifs/mes-notifs-service.service';
 import { AuthService } from '../../services/authServices/auth.service';
-import { ToastrService } from 'ngx-toastr';
+// import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 import { NgFor, NgIf } from '@angular/common';
 import { DataTableDirective } from '../../directives/data-table/data-table.directive';
+import { NotificationService } from '../../services/notification/notification.service';
 
 declare var bootstrap: any;
 
@@ -16,7 +17,7 @@ declare var bootstrap: any;
   styleUrls: ['./mes-notifications-component.component.css'],
 })
 export class MesNotificationsComponentComponent implements OnInit {
-   isLoading: boolean = false;
+  isLoading: boolean = false;
   notifications: any[] = [];
   currentUser: any = null;
 
@@ -28,7 +29,8 @@ export class MesNotificationsComponentComponent implements OnInit {
   constructor(
     private mesNotifsService: MesNotifsService,
     private authService: AuthService,
-    private toastr: ToastrService
+    // private toastr: ToastrService,
+    private notification: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -43,21 +45,26 @@ export class MesNotificationsComponentComponent implements OnInit {
       next: (res) => {
         if (res?.status && res?.status === 200) {
           this.notifications = res.data;
-          console.log('res api => ', res);
+          // console.log('res api => ', res);
         } else {
-          this.toastr.error(res?.message);
+          this.notification.error(res?.message);
+          // this.toastr.error(res?.message);
           console.log('Erreur chargement mes notifs : ', res);
         }
         this.isLoading = false;
       },
-
       error: (err) => {
-          this.toastr.error(err?.error?.message === "Unauthenticated." ? "Votre session a expiré." : 'Erreur lors du chargement des pays',
-          '',
-          {
-            positionClass: 'toast-custom-center',
-          }
+        this.notification.error(
+          err?.error?.message === 'Unauthenticated.'
+            ? 'Votre session a expiré.'
+            : 'Erreur lors du chargement des pays',
         );
+        //   this.toastr.error(err?.error?.message === "Unauthenticated." ? "Votre session a expiré." : 'Erreur lors du chargement des pays',
+        //   '',
+        //   {
+        //     positionClass: 'toast-custom-center',
+        //   }
+        // );
         this.isLoading = false;
       },
     });
@@ -83,7 +90,8 @@ export class MesNotificationsComponentComponent implements OnInit {
   bloquerEtDebloquer(): void {
     if (this.isloadingBloquerDebloquer) return; // 🔒 empêche le double clic
     if (this.selectedUserId === null) {
-      this.toastr.error('Aucune notification sélectionnée.');
+      this.notification.error('Aucune notification sélectionnée.');
+      // this.toastr.error('Aucune notification sélectionnée.');
       return;
     }
 
@@ -97,22 +105,32 @@ export class MesNotificationsComponentComponent implements OnInit {
     this.mesNotifsService.setToggleNotification(params).subscribe({
       next: (res) => {
         if (res?.status && res?.status === 200) {
-          this.toastr.success(res?.message);
+          this.notification.success(res?.message);
+          // this.toastr.success(res?.message);
           this.loadNotifications();
         } else {
-          this.toastr.error(res?.message);
+          this.notification.error(res?.message);
+          // this.toastr.error(res?.message);
         }
         this.isloadingBloquerDebloquer = false;
         this.closeModalBloquerDebloquer();
       },
 
       error: (err) => {
-         this.toastr.error(err?.error?.message === "Unauthenticated." ? "Votre session a expiré." : 'Erreur lors du chargement des pays',
-          '',
-          {
-            positionClass: 'toast-custom-center',
-          }
+        this.notification.error(
+          err?.error?.message === 'Unauthenticated.'
+            ? 'Votre session a expiré.'
+            : 'Erreur lors du chargement des pays',
         );
+        // this.toastr.error(
+        //   err?.error?.message === 'Unauthenticated.'
+        //     ? 'Votre session a expiré.'
+        //     : 'Erreur lors du chargement des pays',
+        //   '',
+        //   {
+        //     positionClass: 'toast-custom-center',
+        //   },
+        // );
         this.isloadingBloquerDebloquer = false;
         this.closeModalBloquerDebloquer();
       },
