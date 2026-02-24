@@ -27,8 +27,8 @@ export class RecapComponent implements OnInit {
   constructor(
     private tranfertUniqueService: TranfertUniqueService,
     // private toastr: ToastrService,
-    private router: Router,
     private paiementInterneExterneService: PaiementInterneExterneService,
+    private router: Router,
     private location: Location,
     private otpService: OtpLoginServiceService,
     private currencyRateService: CurrencyRateService,
@@ -75,7 +75,7 @@ export class RecapComponent implements OnInit {
     this.infosFormulaire = this.getFromStorage('InfosSaisirDansFormulaire');
     this.userInfo = this.getFromStorage('userInfo');
     this.vcPhoneNumber = this.userInfo.vcPhoneNumber;
-    console.log('this.vcPhoneNumber: ', this.vcPhoneNumber);
+    // console.log('this.vcPhoneNumber: ', this.vcPhoneNumber);
 
     this.getTauxEchange(); // On laisse juste ça ici
   }
@@ -138,8 +138,8 @@ export class RecapComponent implements OnInit {
 
       this.montantBenConverti = montantDeb * taux;
 
-      console.log('tauxConversion:', this.tauxConversion);
-      console.log('montantBenConverti:', this.montantBenConverti);
+      // console.log('tauxConversion:', this.tauxConversion);
+      // console.log('montantBenConverti:', this.montantBenConverti);
     }
   }
 
@@ -233,13 +233,7 @@ export class RecapComponent implements OnInit {
             this.notification.success(
               'La transaction a été effectuée avec succès',
             );
-            // this.toastr.success(
-            //   'La transaction a été effectuée avec succès',
-            //   '',
-            //   {
-            //     positionClass: 'toast-custom-center',
-            //   },
-            // );
+           
             this.isLoading = false;
             this.router.navigate(['/historiqueTransactions']);
             localStorage.removeItem('InfosSaisirDansFormulaire');

@@ -36,3 +36,108 @@
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ============================================
+   LOADER BARRE EN HAUT
+   ============================================ */
+.global-loader-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.loader-progress {
+  height: 4px;
+  background: linear-gradient(90deg, #343473, #6c7fe8, #343473);
+  background-size: 200% 100%;
+  animation: loader-slide 1.2s linear infinite;
+}
+
+@keyframes loader-slide {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================
+   OVERLAY GRIS — BLOQUE TOUS LES CLICS
+   ============================================ */
+.global-click-blocker {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   SKELETON
+   ============================================ */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #eeeeee 25%,
+    #dddddd 50%,
+    #eeeeee 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+.skeleton-image {
+  height: 10rem;
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+}
+
+.skeleton-text {
+  height: 14px;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ============================================
+   CARTE OPÉRATEUR
+   ============================================ */
+.card-custom {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.card-custom:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+button.p-0.border-0.bg-transparent:focus .card-custom {
+  outline: 2px solid #343473;
+}

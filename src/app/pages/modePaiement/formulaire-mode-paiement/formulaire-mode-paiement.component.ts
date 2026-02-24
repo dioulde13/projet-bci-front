@@ -154,11 +154,15 @@ export class FormulaireModePaiementComponent implements OnInit {
   recupererListeOperateur(): void {
     this.mobileMoneyService.listeMobileOperators().subscribe({
       next: (response: any) => {
+        console.log("response: ", response);
         const operateur = (response?.data ?? []).find(
-          (f: any) => f.FacturierName === this.typeOperateur,
+          (f: any) => f.vcAccountName === this.typeOperateur,
         );
+        
 
         if (!operateur) return;
+
+        console.log("operateur: ", operateur);
 
         this.vcAccountName    = operateur?.vcAccountName;
         this.frais            = operateur?.nFees;
@@ -395,11 +399,11 @@ export class FormulaireModePaiementComponent implements OnInit {
         formValue.typeTransactionMM === 'B2W'
           ? formValue.telephone
           : formValue.compteSource,
-      mAmount:           Number(formValue.montant),
+      mAmount: Number(formValue.montant),
       vcOperatorAccount: this.vcAccountName,
-      mFees:             this.btFeesIncluded ? this.fraisCalcul : this.fraisCalcul,
-      vcNotes:           formValue.description,
-      vcOperationType:   formValue.typeTransactionMM,
+      mFees: this.btFeesIncluded ? this.fraisCalcul : this.fraisCalcul,
+      vcNotes: formValue.description,
+      vcOperationType: formValue.typeTransactionMM,
     };
 
     localStorage.setItem(

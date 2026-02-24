@@ -370,12 +370,19 @@ export const routes: Routes = [
           import('./pages/transaction/transfertUnique/security-question/security-question.component')
             .then(m => m.SecurityQuestionComponent),
         canActivate: [AuthGuard],
-      },
+      }, 
       {
         path: 'recap',
         loadComponent: () =>
           import('./pages/transaction/transfertUnique/recap/recap.component')
             .then(m => m.RecapComponent),
+        canActivate: [AuthGuard],
+      },
+       {
+        path: 'recapTransfertEntreCompte',
+        loadComponent: () =>
+          import('./pages/transaction/recap-transfert-entre-compte/recap-transfert-entre-compte.component')
+            .then(m => m.RecapTransfertEntreCompteComponent),
         canActivate: [AuthGuard],
       },
       {

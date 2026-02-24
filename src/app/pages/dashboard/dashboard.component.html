@@ -1,110 +1,39 @@
+<!-- ===== BARRE LOADER EN HAUT ===== -->
+<div class="global-loader-bar" *ngIf="isLoading">
+  <div class="loader-progress"></div>
+</div>
+
+<!-- ===== OVERLAY GRIS BLOQUANT LES CLICS ===== -->
+<div class="global-click-blocker" *ngIf="isLoading"></div>
+
 <div class="page-content">
   <div class="container-fluid">
+
+    <!-- ===== LIGNE 1 : Vue d'ensemble / Liens rapides / Cliché ===== -->
     <div class="row mt-3">
-      <!-- <div class="col-xl-4">
-        <div
-          class="card card-h-100"
-          style="
-            background: url(&quot;assets/img/images-bci/bg-chart-BCI-Internet_Banking-3.jpg?h=60704d8652a4d6012af3cf7b9e758808&quot;)
-              right / cover;
-          "
-        >
-          <div class="card-header text-light bg-transparent">
-            <div class="d-flex align-items-center flex-wrap">
-              <h5 class="text-nowrap card-title me-2">
-                Vue d'ensemble financière
-              </h5>
-            </div>
-          </div>
-          <div
-            class="card-body text-light finance-chart-container"
-            id="chart-container"
-          >
-            <ol
-              class="breadcrumb text-light finance-breadcrumb mb-0 ps-0"
-              id="financeBreadcrumb"
-            >
-              <li class="breadcrumb-item active">
-                <span class="text-light"></span>
-              </li>
-            </ol>
-            <div class="row align-items-center">
-              <div class="col-sm col-lg-6">
-                <div
-                  id="financeChart"
-                  class="e-charts"
-                  data-colors='["#fd625e", "#2ab57d", "#4ba6ef", "#ffbf53", "#5156be"]'
-                ></div>
-              </div>
 
-              <div class="row align-items-center">
-                <div class="col-md-6 text-center">
-                  <div style="height: 250px; width: 250px; margin: auto">
-                    <canvas #financialChart></canvas>
-                  </div>
-                </div>
-
-                <div class="col-md-6 align-self-center">
-                  <div class="mt-4 mt-sm-0">
-                    <p class="mb-1 text-white">Montant total</p>
-
-                    <ng-container
-                      *ngIf="isDashboardLoading; else balanceContent"
-                    >
-                      <div class="skeleton skeleton-title mb-3"></div>
-                      <div class="skeleton skeleton-small"></div>
-                    </ng-container>
-
-                    <ng-template #balanceContent>
-                      <h4 class="text-light mb-4 fs-4">
-                        {{ soldeDebiteur | number: "1.2-2" }}
-                        {{ deviseDebiteur }}
-                      </h4>
-
-                      <p>
-                        <small class="text-white" style="font-size: 15px">
-                          {{ countNombreComptes }} Total des comptes
-                        </small>
-                      </p>
-                    </ng-template>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
+      <!-- Vue d'ensemble financière -->
       <div class="col-xl-4">
         <div
           class="card card-h-100"
-          style="
-            background: url(&quot;assets/img/images-bci/bg-chart-BCI-Internet_Banking-3.jpg&quot;)
-              right / cover;
-          "
+          style="background: url('assets/img/images-bci/bg-chart-BCI-Internet_Banking-3.jpg') right / cover;"
         >
-          <!-- HEADER -->
           <div class="card-header text-light bg-transparent">
             <h5 class="card-title mb-0">Vue d'ensemble financière</h5>
           </div>
 
-          <!-- BODY -->
           <div class="card-body text-light">
             <div class="row">
-              <!-- ✅ TEXTE EN BAS -->
               <div class="col-12 text-center">
                 <p class="mb-1">Valeur nette</p>
                 <ng-container *ngIf="isDashboardLoading; else balanceContent">
                   <div class="skeleton skeleton-title mb-3"></div>
                   <div class="skeleton skeleton-small"></div>
                 </ng-container>
-
                 <ng-template #balanceContent>
                   <h4 class="text-light mb-4 fs-4">
-                    {{ soldeDebiteur | number: "1.2-2" }}
-                    {{ deviseDebiteur }}
+                    {{ soldeDebiteur | number: "1.2-2" }} {{ deviseDebiteur }}
                   </h4>
-
                   <p>
                     <small class="text-white" style="font-size: 15px">
                       {{ countNombreComptes }} Total des comptes
@@ -112,7 +41,7 @@
                   </p>
                 </ng-template>
               </div>
-              <!-- ✅ CHART EN HAUT -->
+
               <div class="col-12 d-flex justify-content-center mb-4">
                 <div style="height: 200px; width: 250px">
                   <canvas #financialChart></canvas>
@@ -123,22 +52,19 @@
         </div>
       </div>
 
+      <!-- Liens rapides -->
       <div class="col-xl-4">
         <div class="card bg-light card-h-100">
           <div class="card-header bg-transparent border-bottom border-white">
-            <div class="d-flex align-items-center flex-wrap">
-              <h5 class="card-title me-2">Liens rapides</h5>
-            </div>
+            <h5 class="card-title me-2">Liens rapides</h5>
           </div>
 
           <div class="card-body finance-chart-container">
             <div class="row text-center justify-content-center">
-              <!-- ================= SKELETON ================= -->
+
+              <!-- SKELETON -->
               <ng-container *ngIf="isDashboardLoading; else realContent">
-                <div
-                  class="col-6 col-md-4 mb-4"
-                  *ngFor="let item of [1, 2, 3, 4, 5, 6, 7]"
-                >
+                <div class="col-6 col-md-4 mb-4" *ngFor="let item of [1,2,3,4,5,6,7]">
                   <div class="custom-icon-container">
                     <div class="skeleton skeleton-icon mb-3"></div>
                     <div class="skeleton skeleton-text"></div>
@@ -146,13 +72,11 @@
                 </div>
               </ng-container>
 
-              <!-- ================= CONTENU NORMAL ================= -->
+              <!-- CONTENU NORMAL -->
               <ng-template #realContent>
+
                 <div class="col-6 col-md-4 mb-4">
-                  <a
-                    (click)="notificationEnCoursDeveloppement()"
-                    class="custom-icon-container"
-                  >
+                  <a (click)="notificationEnCoursDeveloppement()" class="custom-icon-container">
                     <i class="icon ion-social-buffer custom-icon-size"></i>
                     <p class="custom-icon-text">Transferts multiples</p>
                   </a>
@@ -166,18 +90,12 @@
                     instructions="Veuillez charger le fichier des virements du mois en cours."
                     previewTitle="Récapitulatif des virements"
                     [duplicateCheckFields]="['numeroCompte', 'bic', 'montant']"
-                    [validateButtonText]="
-                      loadingValidation ? 'Validation en cours...' : 'Valider'
-                    "
+                    [validateButtonText]="loadingValidation ? 'Validation en cours...' : 'Valider'"
                     (importDataCompleted)="onImportedData($event)"
                     (modalClosed)="openModal = false"
-                  >
-                  </bci-generic-file-import>
+                  ></bci-generic-file-import>
 
-                  <a
-                    class="custom-icon-container"
-                    (click)="notificationEnCoursDeveloppement()"
-                  >
+                  <a class="custom-icon-container" (click)="notificationEnCoursDeveloppement()">
                     <i class="icon ion-upload custom-icon-size"></i>
                     <p class="custom-icon-text">Chargement de fichier</p>
                   </a>
@@ -187,6 +105,7 @@
                   <a
                     routerLink="/transfertUnique"
                     class="custom-icon-container"
+                    (click)="showLoader()"
                   >
                     <i class="icon ion-ios-people custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert unique</p>
@@ -194,9 +113,13 @@
                 </div>
 
                 <div class="col-6 col-md-4 mb-4">
-                  <a routerLink="/typePaiement" class="custom-icon-container">
+                  <a
+                    routerLink="/typePaiement"
+                    class="custom-icon-container"
+                    (click)="showLoader()"
+                  >
                     <i class="icon ion-ios-paper custom-icon-size"></i>
-                    <p class="custom-icon-text">Tranfert mobile</p>
+                    <p class="custom-icon-text">Transfert mobile</p>
                   </a>
                 </div>
 
@@ -204,6 +127,7 @@
                   <a
                     routerLink="/paiementFacture"
                     class="custom-icon-container"
+                    (click)="showLoader()"
                   >
                     <i class="icon ion-ios-paper custom-icon-size"></i>
                     <p class="custom-icon-text">Paiements de factures</p>
@@ -214,17 +138,15 @@
                   <a
                     routerLink="/listeBeneficiaire"
                     class="custom-icon-container"
+                    (click)="showLoader()"
                   >
                     <i class="icon ion-ios-cog custom-icon-size"></i>
                     <p class="custom-icon-text">Gérer les bénéficiaires</p>
                   </a>
                 </div>
-                <!-- (click)="openTransferModal()" -->
+
                 <div class="col-6 col-md-4 mb-4">
-                  <a
-                    class="custom-icon-container"
-                    (click)="openTransferModal()"
-                  >
+                  <a class="custom-icon-container" (click)="openTransferModal()">
                     <i class="bi bi-currency-exchange custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert international</p>
                   </a>
@@ -234,90 +156,46 @@
                   [isOpenModal]="isModalOpen"
                   (modalClosed)="closeTransferModal()"
                   (importDataCompleted)="handleValidation($event)"
-                >
-                </app-ordre-transfert-international>
-                <!-- <div class="col-6 ">
-                  <div class="px-4 py-4">
-                    <button
-                      (click)="openTransferModal()"
-                      class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 fw-bold rounded shadow"
-                    >
-                      <span
-                        class="d-flex align-items-center justify-content-center bg-white bg-opacity-25 rounded p-1"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg>
-                      </span>
-                      <span>Transfert international</span>
-                    </button>
-                  </div>
-                  <app-ordre-transfert-international
-                    [isOpenModal]="isModalOpen"
-                    (modalClosed)="closeTransferModal()"
-                    (importDataCompleted)="handleValidation($event)"
-                  >
-                  </app-ordre-transfert-international>
-                </div> -->
+                ></app-ordre-transfert-international>
+
               </ng-template>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Cliché du travail -->
       <div class="col-xl-4">
         <div class="card text-white bg-info card-h-100">
           <div class="card-header bg-transparent d-flex">
-            <h4 class="flex-grow-1 card-title mb-0">
-              Cliché du travail pour aujourd'hui
-            </h4>
+            <h4 class="flex-grow-1 card-title mb-0">Cliché du travail pour aujourd'hui</h4>
           </div>
           <div class="card-body finance-chart-container">
             <div class="row">
               <div class="col-lg">
                 <p class="font-size-13">{{ dateDuJour }}</p>
               </div>
-              <!-- <div class="col-lg-4">
-                <h3 class="text-end text-white mb-1">
-                  <span class="counter-value" data-target="90">0</span>&nbsp;%
-                </h3>
-              </div> -->
             </div>
             <div class="px-3 pt-1" data-simplebar="" style="max-height: 266px">
               <ul class="list-unstyled activity-wid mb-0">
+
+                <!-- Traité -->
                 <li class="activity-list activity-border">
                   <div class="bg-transparent activity-icon avatar-md">
-                    <span
-                      class="text-success bg-success-subtle avatar-title rounded-circle"
-                      ><i class="icon ion-checkmark bx font-size-24"></i
-                    ></span>
+                    <span class="text-success bg-success-subtle avatar-title rounded-circle">
+                      <i class="icon ion-checkmark bx font-size-24"></i>
+                    </span>
                   </div>
                   <div class="timeline-list-item">
                     <div class="d-flex">
                       <div class="flex-grow-1 overflow-hidden me-4">
                         <h5 class="text-white font-size-14 mb-2">Traité</h5>
-                        <h5 class="text-light font-size-18 mb-2">
-                          {{ traitedDemandes.length }}
-                        </h5>
+                        <h5 class="text-light font-size-18 mb-2">{{ traitedDemandes.length }}</h5>
                         <div class="progress mb-0 animated-progess">
                           <div
                             class="bg-success progress-bar progress-bar-striped"
                             role="progressbar"
                             style="width: 100%"
-                            aria-valuenow="100"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
                           ></div>
                         </div>
                       </div>
@@ -325,47 +203,37 @@
                         <div class="dropdown">
                           <button
                             class="btn text-muted font-size-24"
-                            aria-expanded="false"
                             data-bs-toggle="dropdown"
                             type="button"
-                            aria-haspopup="true"
                           >
                             <i class="icon ion-android-more-vertical"></i>
                           </button>
                           <div class="dropdown-menu dropdown-menu-end">
-                            <a
-                              class="dropdown-item"
-                              routerLink="/beneficiaireEnAttente"
-                              >Voir détails</a
-                            >
+                            <a class="dropdown-item" routerLink="/beneficiaireEnAttente">Voir détails</a>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </li>
+
+                <!-- En cours -->
                 <li class="activity-list activity-border">
                   <div class="bg-transparent activity-icon avatar-md">
-                    <span
-                      class="text-warning bg-warning-subtle avatar-title rounded-circle"
-                      ><i class="icon ion-load-a bx font-size-24"></i
-                    ></span>
+                    <span class="text-warning bg-warning-subtle avatar-title rounded-circle">
+                      <i class="icon ion-load-a bx font-size-24"></i>
+                    </span>
                   </div>
                   <div class="timeline-list-item">
                     <div class="d-flex">
                       <div class="flex-grow-1 overflow-hidden me-4">
                         <h5 class="text-white font-size-14 mb-2">En cours</h5>
-                        <h5 class="text-light font-size-18 mb-2">
-                          {{ demandes.length }}
-                        </h5>
+                        <h5 class="text-light font-size-18 mb-2">{{ demandes.length }}</h5>
                         <div class="progress mb-0 animated-progess">
                           <div
                             class="bg-warning progress-bar progress-bar-striped"
                             role="progressbar"
                             style="width: 100%"
-                            aria-valuenow="50"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
                           ></div>
                         </div>
                       </div>
@@ -373,47 +241,37 @@
                         <div class="dropdown">
                           <button
                             class="btn text-muted font-size-24"
-                            aria-expanded="false"
                             data-bs-toggle="dropdown"
                             type="button"
-                            aria-haspopup="true"
                           >
                             <i class="icon ion-android-more-vertical"></i>
                           </button>
                           <div class="dropdown-menu dropdown-menu-end">
-                            <a
-                              class="dropdown-item"
-                              routerLink="/beneficiaireEnAttente"
-                              >Voir détails</a
-                            >
+                            <a class="dropdown-item" routerLink="/beneficiaireEnAttente">Voir détails</a>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </li>
+
+                <!-- Rejeté -->
                 <li class="activity-list activity-border">
                   <div class="bg-transparent activity-icon avatar-md">
-                    <span
-                      class="text-danger bg-danger-subtle avatar-title rounded-circle"
-                      ><i class="icon ion-close-circled bx font-size-24"></i
-                    ></span>
+                    <span class="text-danger bg-danger-subtle avatar-title rounded-circle">
+                      <i class="icon ion-close-circled bx font-size-24"></i>
+                    </span>
                   </div>
                   <div class="timeline-list-item">
                     <div class="d-flex">
                       <div class="flex-grow-1 overflow-hidden me-4">
                         <h5 class="text-white font-size-14 mb-2">Rejeté</h5>
-                        <h5 class="text-light font-size-18 mb-2">
-                          {{ rejectedDemandes.length }}
-                        </h5>
+                        <h5 class="text-light font-size-18 mb-2">{{ rejectedDemandes.length }}</h5>
                         <div class="progress mb-0 animated-progess">
                           <div
                             class="bg-danger progress-bar progress-bar-striped"
                             role="progressbar"
                             style="width: 100%"
-                            aria-valuenow="100"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
                           ></div>
                         </div>
                       </div>
@@ -421,55 +279,44 @@
                         <div class="dropdown">
                           <button
                             class="btn text-muted font-size-24"
-                            aria-expanded="false"
                             data-bs-toggle="dropdown"
                             type="button"
-                            aria-haspopup="true"
                           >
                             <i class="icon ion-android-more-vertical"></i>
                           </button>
                           <div class="dropdown-menu dropdown-menu-end">
-                            <a
-                              class="dropdown-item"
-                              routerLink="/beneficiaireEnAttente"
-                              >Voir détails</a
-                            >
+                            <a class="dropdown-item" routerLink="/beneficiaireEnAttente">Voir détails</a>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </li>
+
               </ul>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-xl-5">
-        <!-- <div class="card-deck-wrapper">
-          <div class="card-group">
-            <div class="card text-white bg-primary mb-4">
-              <div class="card-header bg-transparent">
-                <h4 class="card-title">{{ typesCompte }}</h4>
-              </div>
-            </div>
-          </div>
-        </div> -->
 
-        <div class="card">
+    <!-- ===== LIGNE 2 : Récapitulatif + Transactions ===== -->
+    <div class="row align-items-stretch">
+
+      <!-- Récapitulatif des comptes -->
+      <div class="col-xl-4 d-flex flex-column">
+        <div class="card h-100 d-flex flex-column">
           <div class="card-header">
             <div class="d-flex align-items-center flex-wrap">
-              <h5 class="text-nowrap card-title me-2">
-                Récapitulatif des comptes
-              </h5>
+              <h5 class="text-nowrap card-title me-2">Récapitulatif des comptes</h5>
               <div class="ms-auto"></div>
             </div>
           </div>
 
-          <div class="card-body p-0">
-            <div class="table-responsive">
+          <div class="card-body p-0 flex-grow-1 overflow-auto">
+            <div class="table-responsive h-100">
+
+              <!-- Skeleton -->
               <div *ngIf="loading" class="p-3">
                 <table class="table table-hover table-striped">
                   <thead class="table-primary">
@@ -480,7 +327,6 @@
                       <th>Solde net</th>
                     </tr>
                   </thead>
-
                   <tbody>
                     <tr *ngFor="let item of [1, 2, 3, 4, 5]">
                       <td><div class="skeleton skeleton-text w-75"></div></td>
@@ -492,13 +338,15 @@
                 </table>
               </div>
 
-              <div *ngIf="errorMessage" class="alert alert-danger">
+              <!-- Erreur -->
+              <div *ngIf="errorMessage" class="alert alert-danger m-3">
                 {{ errorMessage }}
               </div>
 
+              <!-- Tableau réel -->
               <table
                 *ngIf="!loading && !errorMessage"
-                class="table table-hover table-striped datatable"
+                class="table table-hover table-striped datatable mb-0"
               >
                 <thead class="table-primary">
                   <tr>
@@ -508,209 +356,116 @@
                     <th>Solde net</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   <tr *ngFor="let compte of listeCompteClient">
-                    <td class="text-start align-content-center">
-                      {{ compte.vcPersonalName }}
-                    </td>
-
-                    <td class="text-start align-items-center">
-                      {{ compte.vcAccountNumber }} <br />
-                    </td>
-
-                    <td class="text-start align-content-center">
-                      {{ compte.vcAccountType }}
-                    </td>
-
+                    <td class="text-start align-content-center">{{ compte.vcPersonalName }}</td>
+                    <td class="text-start align-items-center">{{ compte.vcAccountNumber }}</td>
+                    <td class="text-start align-content-center">{{ compte.vcAccountType }}</td>
                     <td class="text-nowrap align-content-center">
                       {{ compte.mBalance | number }} {{ compte.vcCurrency }}
                     </td>
                   </tr>
                 </tbody>
               </table>
+
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Bouton pour sélectionner le fichier -->
-      <!-- <button class="btn btn-primary mb-3" (click)="fileInput.click()">
-        Charger le fichier Excel
-      </button> -->
+      <!-- Dix dernières transactions -->
+      <div class="col-xl-8 d-flex flex-column">
+        <div class="card h-100 d-flex flex-column">
+          <div class="card-header bg-transparent d-flex align-items-center">
+            <h4 class="flex-grow-1 card-title mb-0">Dix dernières transactions</h4>
+          </div>
 
-      <!-- Input type file caché -->
-      <!-- <input
-        #fileInput
-        type="file"
-        accept=".xlsx, .xls"
-        (change)="onFileChange($event)"
-        style="display: none"
-      />
-
-      <table
-        class="table table-bordered table-hover"
-        *ngIf="beneficiaires.length"
-      >
-        <thead class="table-light">
-          <tr>
-            <th>Prénom</th>
-            <th>Nom</th>
-            <th>Type</th>
-            <th>Compte</th>
-            <th>BIC</th>
-            <th>Montant</th>
-            <th>Devise</th>
-            <th>Mode paiement</th>
-            <th>Banque</th>
-            <th>Adresse banque</th>
-            <th>Objet</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let b of beneficiaires">
-            <td>{{ b.prenom }}</td>
-            <td>{{ b.nom }}</td>
-            <td>{{ b.typeBeneficiaire }}</td>
-            <td>{{ b.numeroCompte }}</td>
-            <td>{{ b.bic }}</td>
-            <td>{{ b.montant | number: "1.0-2" }}</td>
-            <td>{{ b.devise }}</td>
-            <td>{{ b.modePaiement }}</td>
-            <td>{{ b.nomBanque }}</td>
-            <td>{{ b.adresseBanque }}</td>
-            <td>{{ b.objetPaiement }}</td>
-          </tr>
-        </tbody>
-      </table> -->
-
-      <div class="col-xl-7">
-        <div class="row">
-          <div class="col-xl-12">
-            <div class="card card-h-100">
-              <div class="card-header bg-transparent d-flex align-items-center">
-                <h4 class="flex-grow-1 card-title mb-0">
-                  Dix dernières transactions
-                </h4>
-              </div>
-              <div class="card-header d-flex">
-                <div class="row account-info">
-                  <div class="col-12">
-                    <div class="flex-shrink-0 float-end">
-                      <select
-                        class="form-select-sm form-select mb-0 w-100"
-                        [(ngModel)]="selectedAccountNumber"
-                        (ngModelChange)="dixTransactionsRecentsListe()"
-                        (change)="onDebitAccountSelect($event)"
-                      >
-                        <option
-                          *ngFor="let c of listeCompteClient"
-                          [value]="c.vcAccountNumber"
-                        >
-                          {{ c.vcAccountNumber }}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
+          <div class="card-header d-flex">
+            <div class="row account-info w-100">
+              <div class="col-12">
+                <div class="flex-shrink-0 float-end">
+                  <select
+                    class="form-select-sm form-select mb-0 w-100"
+                    [(ngModel)]="selectedAccountNumber"
+                    (ngModelChange)="dixTransactionsRecentsListe()"
+                    (change)="onDebitAccountSelect($event)"
+                  >
+                    <option *ngFor="let c of listeCompteClient" [value]="c.vcAccountNumber">
+                      {{ c.vcAccountNumber }}
+                    </option>
+                  </select>
                 </div>
-              </div>
-
-              <div class="card-body finance-chart-container">
-                <div class="table-responsive">
-                  <table class="table custom-table">
-                    <thead class="table-light">
-                      <tr>
-                        <th>Date</th>
-                        <th class="text-end">Référence</th>
-                        <th class="text-end">Type</th>
-                        <th>Description</th>
-                        <th class="text-end">Montant</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      <!-- ================= SKELETON ================= -->
-                      <ng-container
-                        *ngIf="loadingDixPremiereTransactions; else realRows"
-                      >
-                        <tr *ngFor="let item of [1, 2, 3, 4, 5]">
-                          <td>
-                            <div class="skeleton skeleton-text w-75"></div>
-                          </td>
-                          <td>
-                            <div
-                              class="skeleton skeleton-text w-50 ms-auto"
-                            ></div>
-                          </td>
-                          <td>
-                            <div
-                              class="skeleton skeleton-text w-50 ms-auto"
-                            ></div>
-                          </td>
-                          <td>
-                            <div class="skeleton skeleton-text w-100"></div>
-                          </td>
-                          <td>
-                            <div
-                              class="skeleton skeleton-text w-50 ms-auto"
-                            ></div>
-                          </td>
-                        </tr>
-                      </ng-container>
-
-                      <!-- ================= CONTENU RÉEL ================= -->
-                      <ng-template #realRows>
-                        <tr *ngFor="let t of listeDixPremiereTransactions">
-                          <td>{{ formatDateOper(t.dateOper) }}</td>
-                          <td class="text-end">{{ t.bankReference }}</td>
-                          <td class="text-end">{{ t.sigOper }}</td>
-                          <td>{{ t.libelleOper }}</td>
-                          <td class="text-end">{{ formatMontant(t) }}</td>
-                        </tr>
-
-                        <!-- Spinner scroll -->
-                        <tr *ngIf="loadingMore">
-                          <td colspan="5" class="text-center py-3">
-                            <div
-                              class="spinner-border text-primary"
-                              role="status"
-                            ></div>
-                          </td>
-                        </tr>
-
-                        <!-- Aucun résultat -->
-                        <tr
-                          *ngIf="
-                            !loadingDixPremiereTransactions &&
-                            listeDixPremiereTransactions.length === 0
-                          "
-                        >
-                          <td colspan="5" class="text-center text-muted">
-                            Aucune transaction trouvée
-                          </td>
-                        </tr>
-                      </ng-template>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div class="d-grid p-2 border-top">
-                <a
-                  class="btn btn-link btn-sm text-center font-size-14"
-                  role="button"
-                  routerLink="/transactions"
-                  ><span
-                    class="d-xxl-flex justify-content-xxl-center align-items-xxl-center"
-                    ><i class="icon ion-eye me-1 font-size-18"></i>Visualiser
-                    plus</span
-                  ></a
-                >
               </div>
             </div>
           </div>
+
+          <div class="card-body p-0 flex-grow-1 overflow-auto">
+            <div class="table-responsive h-100">
+              <table class="table custom-table mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date</th>
+                    <th class="text-end">Référence</th>
+                    <th class="text-end">Type</th>
+                    <th>Description</th>
+                    <th class="text-end">Montant</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <!-- Skeleton -->
+                  <ng-container *ngIf="loadingDixPremiereTransactions; else realRows">
+                    <tr *ngFor="let item of [1, 2, 3, 4, 5]">
+                      <td><div class="skeleton skeleton-text w-75"></div></td>
+                      <td><div class="skeleton skeleton-text w-50 ms-auto"></div></td>
+                      <td><div class="skeleton skeleton-text w-50 ms-auto"></div></td>
+                      <td><div class="skeleton skeleton-text w-100"></div></td>
+                      <td><div class="skeleton skeleton-text w-50 ms-auto"></div></td>
+                    </tr>
+                  </ng-container>
+
+                  <!-- Contenu réel -->
+                  <ng-template #realRows>
+                    <tr *ngFor="let t of listeDixPremiereTransactions">
+                      <td>{{ formatDateOper(t.dateOper) }}</td>
+                      <td class="text-end">{{ t.bankReference }}</td>
+                      <td class="text-end">{{ t.sigOper }}</td>
+                      <td>{{ t.libelleOper }}</td>
+                      <td class="text-end">{{ formatMontant(t) }}</td>
+                    </tr>
+
+                    <!-- Spinner scroll -->
+                    <tr *ngIf="loadingMore">
+                      <td colspan="5" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status"></div>
+                      </td>
+                    </tr>
+
+                    <!-- Aucun résultat -->
+                    <tr *ngIf="!loadingDixPremiereTransactions && listeDixPremiereTransactions.length === 0">
+                      <td colspan="5" class="text-center text-muted">Aucune transaction trouvée</td>
+                    </tr>
+                  </ng-template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="d-grid p-2 border-top mt-auto">
+            <a
+              class="btn btn-link btn-sm text-center font-size-14"
+              role="button"
+              routerLink="/transactions"
+              (click)="showLoader()"
+            >
+              <span class="d-xxl-flex justify-content-xxl-center align-items-xxl-center">
+                <i class="icon ion-eye me-1 font-size-18"></i>Visualiser plus
+              </span>
+            </a>
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>

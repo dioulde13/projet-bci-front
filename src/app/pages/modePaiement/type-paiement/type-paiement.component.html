@@ -1,32 +1,34 @@
+<!-- ===== BARRE LOADER EN HAUT ===== -->
+<div class="global-loader-bar" *ngIf="isLoading">
+  <div class="loader-progress"></div>
+</div>
+
+<!-- ===== OVERLAY GRIS BLOQUANT LES CLICS ===== -->
+<div class="global-click-blocker" *ngIf="isLoading"></div>
+
 <!-- Start: Page -->
 <div class="page-content">
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
-        <div
-          class="d-sm-flex justify-content-between align-items-center page-title-box mt-4"
-        >
+        <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
           <div>
-            <h4 class="fw-bold mb-sm-0 font-size-18">Liste des operateur</h4>
+            <h4 class="fw-bold mb-sm-0 font-size-18">Liste des operateurs</h4>
           </div>
         </div>
       </div>
     </div>
+
     <div class="row">
       <div class="col-lg-8 col-xl-9">
         <div class="card">
           <div class="card-body">
             <div class="row">
+
               <!-- ================= SKELETON ================= -->
               <ng-container *ngIf="loadingOperateur; else realOperateurs">
-                <div
-                  class="col-sm-6 col-xl-3"
-                  *ngFor="let item of [1, 2, 3, 4]"
-                >
-                  <div
-                    class="card card-custom text-center skeleton-card"
-                    style="height: 14rem"
-                  >
+                <div class="col-sm-6 col-xl-3" *ngFor="let item of [1, 2, 3, 4]">
+                  <div class="card card-custom text-center skeleton-card" style="height: 14rem">
                     <div class="skeleton skeleton-image mb-2"></div>
                     <div class="card-body">
                       <div class="skeleton skeleton-text w-75 mx-auto"></div>
@@ -37,19 +39,13 @@
 
               <!-- ================= CONTENU RÉEL ================= -->
               <ng-template #realOperateurs>
-                <div
-                  class="col-sm-6 col-xl-3"
-                  *ngFor="let operateur of listeOperateur"
-                >
+                <div class="col-sm-6 col-xl-3" *ngFor="let operateur of listeOperateur">
                   <button
                     type="button"
                     class="p-0 border-0 bg-transparent w-100 text-start"
                     (click)="nextPages(operateur.vcAccountName)"
                   >
-                    <div
-                      class="card card-custom text-center"
-                      style="height: 14rem"
-                    >
+                    <div class="card card-custom text-center" style="height: 14rem">
                       <img
                         style="height: 10rem"
                         src="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking%20-%202-W-2.svg?h=c746ea9e25952b9505731b7d644e74e9"
@@ -57,40 +53,37 @@
                       />
                       <div class="card-body">
                         <h5 class="fw-semibold font-size-16 mb-1">
-                          <span class="text-body">{{
-                            operateur.vcAccountName
-                          }}</span>
+                          <span class="text-body">{{ operateur.vcAccountName }}</span>
                         </h5>
                       </div>
                     </div>
                   </button>
                 </div>
               </ng-template>
+
             </div>
           </div>
         </div>
       </div>
+
       <div class="col-lg-4 col-xl-3">
         <div class="card bg-light mb-4">
           <div class="card-body">
-            <a href="#" class="custom-icon-container"
-              ><img
+            <a href="#" class="custom-icon-container">
+              <img
                 class="my-3"
                 src="assets/img/images-bci/Icon-Info-BCI.svg?h=971d9075427a2ea3fd79b5880d5e839f"
-            /></a>
-            <h4 class="fw-bold text-center">
-              Payez vos factures facilement&nbsp; !
-            </h4>
+              />
+            </a>
+            <h4 class="fw-bold text-center">Payez vos factures facilement&nbsp;!</h4>
             <p class="text-start mt-3">
               Grâce à notre service, réglez vos factures rapidement et sans
-              complications, en toute simplicité. Profitez d’un paiement
-              sécurisé, fiable et accessible à tout moment pour tous vos
-              besoins.
+              complications, en toute simplicité. Profitez d'un paiement
+              sécurisé, fiable et accessible à tout moment pour tous vos besoins.
             </p>
             <p class="text-start mt-3">
-              Que ce soit pour vos factures d’électricité, d’eau ou autres
-              services, BCI Guinée vous offre une solution pratique pour gagner
-              du temps.
+              Que ce soit pour vos factures d'électricité, d'eau ou autres
+              services, BCI Guinée vous offre une solution pratique pour gagner du temps.
             </p>
             <p class="fw-semibold text-start mt-3">
               Un service conçu pour vous offrir rapidité, confort et sécurité,
@@ -100,6 +93,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </div>
 <!-- End: Page -->

@@ -15,7 +15,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ToastrService } from 'ngx-toastr';
+// import { ToastrService } from 'ngx-toastr';
 import { GnfNumberFormatDirective } from '../../../directives/gnf-number-format.directive';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TransactionsBillPendingService } from '../../../services/transactionsBillPendingServices/transactions-bill-pending.service';
@@ -248,6 +248,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
   montantEDG: number = 0;
   montantTotalEDG: number = 0;
+  fraisTotal: number = 0;
 
   initialPrepayerEDG(): void {
     this.paymentFormPrepayerEDG = this.fb.group({
@@ -315,6 +316,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       this.montantTotalEDG = montant;
     } else {
       this.montantTotalEDG = montant + fraisEcash + fraisBank;
+      this.fraisTotal = fraisEcash + fraisBank;
     }
   }
 
@@ -344,6 +346,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         this.vcAccountType = this.ligneSelectionner[0].vcAccountType;
         console.log('this.vcAccountType: ', this.vcAccountType);
         this.vcAccountName = this.ligneSelectionner[0].vcAccountName;
+        console.log('this.vcAccountName: ', this.vcAccountName);
         this.photoRecuperer = this.ligneSelectionner[0].vcLogoPath;
         this.fraisNFeesEDG = this.ligneSelectionner[0].nFees;
         this.fraisNFeesBankEDG = this.ligneSelectionner[0].nFeesBank;
@@ -434,7 +437,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
           ? v.debitAccountEDG
           : post.modalDebitAccountPost,
       benef_name: this.vcAccountName ?? '',
-      benef_account: 'BeneficiaireGN98-7654-3210-9876',
+      benef_account: '',
       amount:
         this.vcAccountType === 'PREPAID'
           ? this.montantTotalEDG
@@ -548,6 +551,8 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
             // this.loadingPrepayerEDG = false;
             this.paymentForm.reset();
           } else {
+            this.isLoading = false;
+
             this.notification.error(response.message);
             // this.toastr.error(response.message, '', {
             //   positionClass: 'toast-custom-center',

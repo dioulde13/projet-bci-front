@@ -1,10 +1,16 @@
+<!-- ===== BARRE LOADER EN HAUT ===== -->
+<div class="global-loader-bar" *ngIf="isLoading">
+  <div class="loader-progress"></div>
+</div>
+
+<!-- ===== OVERLAY GRIS BLOQUANT LES CLICS ===== -->
+<div class="global-click-blocker" *ngIf="isLoading"></div>
+
 <div class="page-content">
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
-        <div
-          class="d-sm-flex justify-content-between align-items-center page-title-box mt-4"
-        >
+        <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
           <div>
             <h4 class="fw-bold mb-sm-0 font-size-18">Paiements de factures</h4>
           </div>
@@ -27,16 +33,11 @@
         <div class="card">
           <div class="card-body">
             <div class="row">
+
               <!-- ================= SKELETON ================= -->
               <ng-container *ngIf="loadingFacturier; else realFacturiers">
-                <div
-                  class="col-sm-6 col-xl-3"
-                  *ngFor="let item of [1, 2, 3, 4, 5, 6, 7, 8]"
-                >
-                  <div
-                    class="card card-custom text-center skeleton-card"
-                    style="height: 14rem"
-                  >
+                <div class="col-sm-6 col-xl-3" *ngFor="let item of [1, 2, 3, 4, 5, 6, 7, 8]">
+                  <div class="card card-custom text-center skeleton-card" style="height: 14rem">
                     <div class="skeleton skeleton-image mb-2"></div>
                     <div class="card-body">
                       <div class="skeleton skeleton-text w-75 mx-auto"></div>
@@ -47,23 +48,13 @@
 
               <!-- ================= CONTENU RÉEL ================= -->
               <ng-template #realFacturiers>
-                <div
-                  class="col-sm-6 col-xl-3"
-                  *ngFor="let facturier of listeFacturier"
-                >
+                <div class="col-sm-6 col-xl-3" *ngFor="let facturier of listeFacturier">
                   <button
                     type="button"
                     class="p-0 border-0 bg-transparent w-100 text-start"
                     (click)="nextPages(facturier.FacturierName)"
                   >
-                    <div
-                      class="card card-custom text-center"
-                      style="height: 14rem"
-                    >
-                    <!-- [src]="
-                          'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
-                          facturier.vcLogoPath
-                        " -->
+                    <div class="card card-custom text-center" style="height: 14rem">
                       <img
                         style="height: 10rem"
                         src="assets/img/logos/LOGO%20BCI%20-%20Internet%20Banking%20-%202-W-2.svg?h=c746ea9e25952b9505731b7d644e74e9"
@@ -71,15 +62,14 @@
                       />
                       <div class="card-body">
                         <h5 class="fw-semibold font-size-16 mb-1">
-                          <span class="text-body">{{
-                            facturier.FacturierName
-                          }}</span>
+                          <span class="text-body">{{ facturier.FacturierName }}</span>
                         </h5>
                       </div>
                     </div>
                   </button>
                 </div>
               </ng-template>
+
             </div>
           </div>
         </div>
@@ -91,9 +81,7 @@
             <a href="#" class="custom-icon-container">
               <img class="my-3" src="assets/img/images-bci/Icon-Info-BCI.svg" />
             </a>
-            <h4 class="fw-bold text-center">
-              Payez vos factures facilement&nbsp;!
-            </h4>
+            <h4 class="fw-bold text-center">Payez vos factures facilement&nbsp;!</h4>
             <p class="text-start mt-3">
               Grâce à notre service, réglez vos factures rapidement et sans
               complications, en toute simplicité.
@@ -105,5 +93,6 @@
         </div>
       </div>
     </div>
+
   </div>
 </div>

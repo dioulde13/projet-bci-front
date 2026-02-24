@@ -2,19 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MobileMoneyService } from '../../../servicesNodes/modePaiementOperateur/mobileMoney/mobile-money.service';
 import { CommonModule } from '@angular/common';
+import { NavigationCancel, NavigationEnd, NavigationError } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-type-paiement',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   standalone: true,
   templateUrl: './type-paiement.component.html',
   styleUrl: './type-paiement.component.css',
 })
 export class TypePaiementComponent implements OnInit {
-  // [src]="
-  //                       'https://dev-api-bcibankjs.ecash-guinee.com/api/webdav/read-image/' +
-  //                       facturier.vcLogoPath
-  //                     "
 
   constructor(
     private mobileMoneyService: MobileMoneyService,
@@ -25,12 +23,37 @@ export class TypePaiementComponent implements OnInit {
     this.recupererListeOperateur();
   }
 
+  // ===== LOADER NAVIGATION =====
+  isLoading = false;
+  private navigationSubscription!: Subscription;
+
+  showLoader() {
+    if (this.isLoading) return; // bloque double-clic
+    this.isLoading = true;
+
+    if (this.navigationSubscription) {
+      this.navigationSubscription.unsubscribe();
+    }
+
+    this.navigationSubscription = this.router.events.subscribe((event) => {
+      if (
+        event instanceof NavigationEnd ||
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError
+      ) {
+        this.isLoading = false;
+        this.navigationSubscription.unsubscribe();
+      }
+    });
+  }
+  // =============================
+
   nextPages(typeOperateur: string): void {
     if (!typeOperateur) {
       console.error('Nom du facturier manquant');
       return;
     }
-
+    this.showLoader();
     this.router.navigate(['/modePaiment', typeOperateur]);
   }
 
@@ -46,7 +69,10 @@ export class TypePaiementComponent implements OnInit {
         );
         this.loadingOperateur = false;
       },
-      error: (err) => console.error(err),
+      error: (err) => {
+        console.error(err);
+        this.loadingOperateur = false;
+      },
     });
   }
 }

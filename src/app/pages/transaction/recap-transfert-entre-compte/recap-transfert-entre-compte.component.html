@@ -1,0 +1,195 @@
+<div class="container mt-3">
+  <div class="card shadow-sm border-0 rounded-4" style="max-height: 90vh; overflow-y: auto">
+    <div class="card-header text-white rounded-top-4 py-2">
+      <h5 class="mb-0">Récapitulatif du Transfert entre Comptes</h5>
+    </div>
+
+    <div class="card-body p-3">
+
+      <!-- ======================== -->
+      <!-- COMPTE DÉBITEUR (Compte 1) -->
+      <!-- ======================== -->
+      <h6 class="fw-bold text-primary mb-2">💳 Compte Débiteur</h6>
+      <div class="row g-2 mb-3">
+        <div class="col-md-4">
+          <small class="text-muted">Numéro de compte</small>
+          <div class="fw-bold">{{ payload?.compteDebiteur || '—' }}</div>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Nom du titulaire</small>
+          <div class="fw-bold">{{ infosCompte1?.name || '—' }}</div>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Solde disponible</small>
+          <div class="fw-bold text-success">
+            {{ infosCompte1?.soldeDisp | number: '1.2-2' }} {{ infosCompte1?.devise }}
+          </div>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Devise</small>
+          <div class="fw-bold">{{ infosCompte1?.devise || '—' }}</div>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Statut</small>
+          <div class="fw-bold">
+            <span class="badge" [ngClass]="infosCompte1?.isActive ? 'bg-success' : 'bg-danger'">
+              {{ infosCompte1?.isActive ? 'Actif' : 'Inactif' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-2" />
+
+      <!-- ======================== -->
+      <!-- COMPTE BÉNÉFICIAIRE (Compte 2) -->
+      <!-- ======================== -->
+      <h6 class="fw-bold text-primary mb-2">🏦 Compte Bénéficiaire</h6>
+      <div class="row g-2 mb-3">
+        <div class="col-md-4">
+          <small class="text-muted">Numéro de compte</small>
+          <div class="fw-bold">{{ payload?.compteBeneficiaire || '—' }}</div>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Nom du titulaire</small>
+          <div class="fw-bold">{{ infosCompte2?.name || '—' }}</div>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Solde disponible</small>
+          <div class="fw-bold text-success">
+            {{ infosCompte2?.soldeDisp | number: '1.2-2' }} {{ infosCompte2?.devise }}
+          </div>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Devise</small>
+          <div class="fw-bold">{{ infosCompte2?.devise || '—' }}</div>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Statut</small>
+          <div class="fw-bold">
+            <span class="badge" [ngClass]="infosCompte2?.isActive ? 'bg-success' : 'bg-danger'">
+              {{ infosCompte2?.isActive ? 'Actif' : 'Inactif' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-2" />
+
+      <!-- ======================== -->
+      <!-- DÉTAILS DU TRANSFERT -->
+      <!-- ======================== -->
+      <h6 class="fw-bold text-primary mb-2">📋 Détails du Transfert</h6>
+      <div class="row g-2 mb-3">
+        <div class="col-md-4">
+          <small class="text-muted">Montant </small>
+          <div class="fw-bold fs-5 text-danger">
+            {{ payload?.mAmount | number: '1.2-2' }} {{ infosCompte1?.devise }}
+          </div>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Montant à transferer</small>
+          <div class="fw-bold fs-5 text-success">
+            {{ montantBenConverti | number: '1.2-2' }} {{ infosCompte2?.devise }}
+          </div>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Taux d'échange</small>
+          <div class="fw-bold">
+            1 {{ infosCompte1?.devise }} = {{ tauxConversion }} {{ infosCompte2?.devise }}
+          </div>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Date de transfert</small>
+          <div class="fw-bold">
+            {{ payload?.dtPaymentDate | date: 'dd/MM/yyyy HH:mm' }}
+          </div>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Description</small>
+          <div class="fw-bold">{{ payload?.vcNotes || '—' }}</div>
+        </div>
+      </div>
+
+      <hr class="my-2" />
+
+      <!-- ACTIONS -->
+      <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-success px-3" (click)="openModalOtp()" [disabled]="loadiongConfirmeOtp">
+          <span *ngIf="!loadiongConfirmeOtp">Confirmer</span>
+          <span *ngIf="loadiongConfirmeOtp">
+            <span class="spinner-border spinner-border-sm me-1"></span>
+            Confirmation en cours...
+          </span>
+        </button>
+        <button (click)="retour()" class="btn btn-outline-secondary px-3">Retour</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ======================== -->
+<!-- MODAL OTP -->
+<!-- ======================== -->
+<div class="modal-backdrop-custom" *ngIf="modalOtp">
+  <div class="modal-content-custom shadow-lg">
+    <h4 class="mb-3 text-center">Validation OTP</h4>
+    <p class="text-center text-muted">Veuillez entrer le code à 4 chiffres</p>
+
+    <div class="otp-container">
+      <div class="alert alert-info" role="alert">
+        <span>Un code de vérification (OTP) a été envoyé à votre adresse email.</span>
+      </div>
+
+      <label class="form-label text-center w-100">Entrez votre code OTP</label>
+      <div class="otp-inputs d-flex justify-content-center gap-2">
+        <ng-container *ngFor="let item of [0, 1, 2, 3]; let i = index">
+          <input
+            class="form-control otp-input"
+            type="text"
+            maxlength="1"
+            pattern="[0-9]"
+            required
+            (input)="moveToNext($event, i)"
+            #otpInput
+            [(ngModel)]="otpValues[i]"
+            name="otp{{ i }}"
+          />
+        </ng-container>
+      </div>
+
+      <div class="text-center mb-2">
+        <small class="text-muted">Exemple : 1234</small>
+      </div>
+
+      <div class="alert alert-light" role="alert">
+        <div class="d-flex justify-content-between align-items-center">
+          <span>Vous n'avez pas reçu le code ?</span>
+          <button
+            (click)="reEnvoiOtp()"
+            class="btn btn-primary btn-sm"
+            type="button"
+            [disabled]="isLoadingRenvoyez"
+          >
+            <span *ngIf="isLoadingRenvoyez" class="spinner-border spinner-border-sm me-2"></span>
+            {{ isLoadingRenvoyez ? 'En cours...' : 'Renvoyer' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <button class="btn btn-outline-danger" (click)="closeModalOtp()">Annuler</button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="!isOtpComplete() || isLoading"
+        (click)="verifyOtp()"
+      >
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        {{ isLoading ? 'Vérification...' : 'Valider le Code' }}
+      </button>
+    </div>
+  </div>
+</div>
