@@ -265,8 +265,6 @@
                 </div>
               </a>
             </div>
-
-           
           </div>
         </div>
 
@@ -549,13 +547,18 @@
               ><span data-key="t-apps">Transactions</span></a
             >
             <ul class="sub-menu mm-collapse" aria-expanded="false">
-               <li>
-                <a class="text-truncate" routerLink="/historiqueTransactions"
-                  ><span data-key="t-chat">Historiques de transactions</span></a
-                >
+              <li>
+                <a routerLink="/historiqueTransactions">
+                  <span data-key="t-chat">Historique des transactions</span>
+                </a>
               </li>
-                <li>
-                <a class="text-truncate" routerLink="/transfertUnique"
+              <li>
+                <a routerLink="/transactionsInternational">
+                  <span data-key="t-chat">Transactions internationales</span>
+                </a>
+              </li>
+              <li>
+                <a routerLink="/transfertUnique"
                   ><span data-key="t-chat">Transfert Unique</span></a
                 >
               </li>
@@ -563,17 +566,8 @@
                 <a (click)="notificationEnCoursDeveloppement()"
                   ><span>Transferts multiples</span></a
                 >
-              </li> 
-              
-            
-              <!-- <li>
-                <a
-                  href="transferts.multiples/chargementDeFichier.html"
-                  data-bs-target="#chargementDeFichier"
-                  data-bs-toggle="modal"
-                  ><span>Chargement de fichier</span></a
-                >
-              </li> -->
+              </li>
+
               <li>
                 <a routerLink="/paiementFacture"
                   ><span>Paiements de factures</span></a

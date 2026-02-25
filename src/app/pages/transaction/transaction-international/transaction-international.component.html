@@ -1,0 +1,436 @@
+<!-- Start: Page -->
+<div class="page-content">
+  <div class="container-fluid">
+
+    <!-- ================= PAGE TITLE ================= -->
+    <div class="row">
+      <div class="col-12">
+        <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
+          <div>
+            <h4 class="mb-sm-0 font-size-18 fw-bolder">
+              Transactions Internationales
+            </h4>
+            <p class="text-muted mb-0 mt-1">
+              <i class="fas fa-globe-africa me-1"></i>
+              Historique des transferts internationaux
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+
+        <!-- ================= FILTER CARD ================= -->
+        <div class="card shadow-sm mb-3">
+          <div class="card-body py-3">
+            <div class="row gx-3 gy-2 align-items-end">
+
+              <!-- Mode de paiement -->
+              <div class="col-md-3">
+                <label class="form-label text-muted mb-1 small fw-semibold">
+                  <i class="fas fa-exchange-alt me-1"></i> Mode de paiement
+                </label>
+                <select
+                  class="form-select form-select-sm"
+                  [(ngModel)]="paymentModeName"
+                  name="paymentModeName"
+                  (change)="currentPage = 1"
+                >
+                  <option value="">Tous les modes</option>
+                  <option *ngFor="let mode of listePaymentModes" [value]="mode">
+                    {{ mode }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Date début -->
+              <div class="col-md-3">
+                <label class="form-label text-muted mb-1 small fw-semibold">
+                  <i class="fas fa-calendar-alt me-1"></i> Date début
+                </label>
+                <input
+                  class="form-control form-control-sm"
+                  type="date"
+                  name="dateDebut"
+                  [(ngModel)]="dateDebut"
+                  (change)="currentPage = 1"
+                />
+              </div>
+
+              <!-- Date fin -->
+              <div class="col-md-3">
+                <label class="form-label text-muted mb-1 small fw-semibold">
+                  <i class="fas fa-calendar-alt me-1"></i> Date fin
+                </label>
+                <input
+                  class="form-control form-control-sm"
+                  type="date"
+                  name="dateFin"
+                  [(ngModel)]="dateFin"
+                  (change)="currentPage = 1"
+                />
+              </div>
+
+              <!-- Bouton Rechercher -->
+              <div class="col-md-3">
+                <button
+                  class="btn btn-primary btn-sm w-100"
+                  (click)="historiqueTransactionsListe()"
+                >
+                  <i class="fas fa-search me-1"></i> Rechercher
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= TABLE CARD ================= -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+
+            <!-- HEADER ACTIONS -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="d-flex gap-2">
+                <button class="btn btn-success btn-sm" (click)="exportExcel()">
+                  <i class="fas fa-file-excel me-1"></i> Excel
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="exportPdf()">
+                  <i class="fas fa-file-pdf me-1"></i> PDF
+                </button>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="text-muted small">
+                  Total : <strong>{{ filteredData.length }}</strong> transaction(s)
+                </span>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  style="width: 220px"
+                  placeholder="🔍 Rechercher..."
+                  [(ngModel)]="searchText"
+                  name="searchText"
+                  (input)="currentPage = 1"
+                />
+              </div>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-responsive" *ngIf="!isLoadingUser">
+              <table class="table table-hover table-bordered align-middle mb-0" style="font-size: 13px;">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-nowrap" style="cursor:pointer" (click)="sort('dtCreated')">
+                      Date <i [class]="getSortIcon('dtCreated')"></i>
+                    </th>
+                    <th class="text-nowrap" style="cursor:pointer" (click)="sort('Reference')">
+                      Référence <i [class]="getSortIcon('Reference')"></i>
+                    </th>
+                    <th class="text-nowrap" style="cursor:pointer" (click)="sort('PayerName')">
+                      Expéditeur <i [class]="getSortIcon('PayerName')"></i>
+                    </th>
+                    <th class="text-nowrap" style="cursor:pointer" (click)="sort('BenefName')">
+                      Bénéficiaire <i [class]="getSortIcon('BenefName')"></i>
+                    </th>
+                    <th class="text-nowrap" style="cursor:pointer" (click)="sort('vcReceiverBankName')">
+                      Banque bénéficiaire <i [class]="getSortIcon('vcReceiverBankName')"></i>
+                    </th>
+                    <th class="text-nowrap" style="cursor:pointer" (click)="sort('PaymentModeName')">
+                      Mode <i [class]="getSortIcon('PaymentModeName')"></i>
+                    </th>
+                    <th class="text-nowrap text-end" style="cursor:pointer" (click)="sort('Amount')">
+                      Montant <i [class]="getSortIcon('Amount')"></i>
+                    </th>
+                    <th class="text-nowrap text-end" style="cursor:pointer" (click)="sort('mAmountConverted')">
+                      Converti <i [class]="getSortIcon('mAmountConverted')"></i>
+                    </th>
+                    <th class="text-nowrap text-center" style="cursor:pointer" (click)="sort('nRate')">
+                      Taux <i [class]="getSortIcon('nRate')"></i>
+                    </th>
+                    <th class="text-center">Statut</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  <!-- Aucune donnée -->
+                  <tr *ngIf="paginedTransaction.length === 0">
+                    <td colspan="11" class="text-center text-muted py-4">
+                      <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                      Aucune transaction trouvée.
+                    </td>
+                  </tr>
+
+                  <!-- Lignes de données -->
+                  <tr *ngFor="let liste of paginedTransaction">
+
+                    <td class="text-nowrap">
+                      {{ liste.dtCreated | date: "dd/MM/yyyy" }}<br>
+                      <small class="text-muted">{{ liste.dtCreated | date: "HH:mm" }}</small>
+                    </td>
+
+                    <td>
+                      <code class="text-primary" style="font-size:11px">{{ liste.Reference }}</code>
+                    </td>
+
+                    <td>
+                      <div class="fw-semibold">{{ liste.PayerName }}</div>
+                      <small class="text-muted">{{ liste.PayerAccount }}</small>
+                    </td>
+
+                    <td>
+                      <div class="fw-semibold">{{ liste.BenefName }}</div>
+                      <small class="text-muted">{{ liste.BenefAccount }}</small>
+                    </td>
+
+                    <td>
+                      <div>{{ liste.vcReceiverBankName }}</div>
+                      <small class="text-muted">BIC : {{ liste.BenefBIC || '-' }}</small>
+                    </td>
+
+                    <td>
+                      <span class="badge bg-info text-dark">{{ liste.PaymentModeName }}</span>
+                    </td>
+
+                    <td class="text-nowrap text-end fw-bold">
+                      {{ formatMontant(liste.Amount) }}<br>
+                      <small class="text-muted fw-normal">{{ liste.debiteurCurrency }}</small>
+                    </td>
+
+                    <td class="text-nowrap text-end fw-bold">
+                      {{ formatMontant(liste.mAmountConverted) }}<br>
+                      <small class="text-muted fw-normal">{{ liste.BenefCurrency }}</small>
+                    </td>
+
+                    <td class="text-nowrap text-center">
+                      {{ formatMontant(liste.nRate) }}
+                    </td>
+
+                    <!-- STATUT -->
+                    <td class="text-center align-middle">
+                      <span [class]="getStatusClass(liste.Status)" style="font-size:11px; padding: 4px 10px;">
+                        {{ getStatusLabel(liste.Status) }}
+                      </span>
+                    </td>
+
+                    <!-- ACTIONS -->
+                    <td class="text-center align-middle">
+                      <div class="d-flex justify-content-center gap-1">
+
+                        <!-- Imprimer (success uniquement) -->
+                        <button
+                          *ngIf="liste.Status?.toLowerCase() === 'success'"
+                          class="btn btn-outline-secondary btn-sm px-2"
+                          title="Imprimer le reçu"
+                          (click)="printRow(liste)"
+                        >
+                          <i class="fas fa-print"></i>
+                        </button>
+
+                        <!-- Vérifier (pending uniquement) -->
+                        <button
+                          *ngIf="liste.Status?.toLowerCase() === 'pending'"
+                          class="btn btn-outline-info btn-sm px-2"
+                          title="Vérifier la transaction"
+                          (click)="openVerifierModal(liste)"
+                        >
+                          <i class="fas fa-sync-alt"></i>
+                        </button>
+
+                        <!-- Annuler (success uniquement) -->
+                        <button
+                          *ngIf="liste.Status?.toLowerCase() === 'success'"
+                          class="btn btn-outline-danger btn-sm px-2"
+                          title="Annuler la transaction"
+                          (click)="openCancelModal(liste)"
+                        >
+                          <i class="fas fa-times-circle"></i>
+                        </button>
+
+                        <!-- Aucune action disponible -->
+                        <span
+                          *ngIf="liste.Status?.toLowerCase() !== 'success' && liste.Status?.toLowerCase() !== 'pending'"
+                          class="text-muted small"
+                        >—</span>
+
+                      </div>
+                    </td>
+
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- ================= LOADING ================= -->
+            <div *ngIf="isLoadingUser" class="text-center my-5">
+              <div class="spinner-border text-primary" style="width: 2.5rem; height: 2.5rem;"></div>
+              <p class="text-muted mt-3">Chargement des transactions...</p>
+            </div>
+
+            <!-- ================= PAGINATION ================= -->
+            <div
+              *ngIf="!isLoadingUser && filteredData.length > 0"
+              class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2"
+            >
+              <div class="text-muted small">
+                Affichage <strong>{{ startIndex() }}</strong> à <strong>{{ endIndex() }}</strong>
+                sur <strong>{{ filteredData.length }}</strong> résultats
+              </div>
+
+              <div class="d-flex align-items-center gap-1">
+                <button
+                  class="btn btn-sm btn-outline-secondary"
+                  (click)="previousPage()"
+                  [disabled]="currentPage === 1"
+                >
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <ng-container *ngFor="let page of getPages()">
+                  <button
+                    class="btn btn-sm"
+                    [ngClass]="{
+                      'btn-primary': page === currentPage,
+                      'btn-outline-secondary': page !== currentPage && page !== '...',
+                      'btn-light disabled': page === '...'
+                    }"
+                    (click)="onPageClick(page)"
+                    [disabled]="page === '...'"
+                  >
+                    {{ page }}
+                  </button>
+                </ng-container>
+
+                <button
+                  class="btn btn-sm btn-outline-secondary"
+                  (click)="nextPage()"
+                  [disabled]="currentPage === totalPages()"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+
+              <!-- Nombre de lignes par page -->
+              <div class="d-flex align-items-center gap-2">
+                <label class="text-muted small mb-0">Lignes :</label>
+                <select
+                  class="form-select form-select-sm"
+                  style="width: 70px"
+                  [(ngModel)]="pageSize"
+                  name="pageSize"
+                  (change)="currentPage = 1"
+                >
+                  <option [value]="5">5</option>
+                  <option [value]="10">10</option>
+                  <option [value]="25">25</option>
+                  <option [value]="50">50</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL ANNULATION ================= -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title text-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>Confirmation d'annulation
+        </h5>
+        <button type="button" class="btn-close" (click)="closeCancelModal()"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <p class="fw-bold mb-3">Êtes-vous sûr de vouloir annuler cette transaction ?</p>
+        <div *ngIf="selectedTransaction" class="bg-light rounded p-3 text-start">
+          <div class="mb-1">
+            <strong>Référence :</strong>
+            <code class="ms-2 text-primary">{{ selectedTransaction.Reference }}</code>
+          </div>
+          <div class="mb-1">
+            <strong>Expéditeur :</strong> {{ selectedTransaction.PayerName }}
+          </div>
+          <div class="mb-1">
+            <strong>Bénéficiaire :</strong> {{ selectedTransaction.BenefName }}
+          </div>
+          <div>
+            <strong>Montant :</strong>
+            <span class="text-danger fw-bold ms-1">
+              {{ formatMontant(selectedTransaction.Amount) }} {{ selectedTransaction.debiteurCurrency }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button class="btn btn-secondary px-4" (click)="closeCancelModal()">
+          <i class="fas fa-times me-1"></i> Non
+        </button>
+        <button
+          class="btn btn-danger px-4"
+          [disabled]="isCancelling"
+        >
+          <span *ngIf="!isCancelling">
+            <i class="fas fa-ban me-1"></i> Oui, annuler
+          </span>
+          <span *ngIf="isCancelling">
+            <span class="spinner-border spinner-border-sm me-1"></span> Annulation...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL VÉRIFICATION ================= -->
+<div class="modal fade" id="verifierModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title text-primary">
+          <i class="fas fa-sync-alt me-2"></i>Vérification de transaction
+        </h5>
+        <button type="button" class="btn-close" (click)="closeVerifierModal()"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <p class="fw-bold mb-3">Voulez-vous vérifier cette transaction ?</p>
+        <div *ngIf="selectedTransaction" class="bg-light rounded p-3 text-start">
+          <div class="mb-1">
+            <strong>Référence :</strong>
+            <code class="ms-2 text-primary">{{ selectedTransaction.Reference }}</code>
+          </div>
+          <div>
+            <strong>Montant :</strong>
+            <span class="fw-bold ms-1">
+              {{ formatMontant(selectedTransaction.Amount) }} {{ selectedTransaction.debiteurCurrency }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button class="btn btn-secondary px-4" (click)="closeVerifierModal()">
+          <i class="fas fa-times me-1"></i> Non
+        </button>
+        <button
+          class="btn btn-primary px-4"
+          [disabled]="isVerifying"
+        >
+          <span *ngIf="!isVerifying">
+            <i class="fas fa-check me-1"></i> Oui, vérifier
+          </span>
+          <span *ngIf="isVerifying">
+            <span class="spinner-border spinner-border-sm me-1"></span> Vérification...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

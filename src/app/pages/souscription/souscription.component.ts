@@ -42,7 +42,7 @@ export class SouscriptionComponent {
         next: (res) => {
           if (res.status === 200) {
             this.resultat = res;
-            console.log(this.resultat);
+            // console.log(this.resultat);
             // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             // if (!this.resultat.clientDetails.mail) {

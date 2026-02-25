@@ -36,6 +36,9 @@ export class TransfertUniqueComponent implements OnInit {
   transferFormPaiementInterneExterne!: FormGroup;
 
   listeCompteClient: any[] = [];
+  listeCompteClient1: any[] = [];
+  listeCompteClient2: any[] = [];
+
   listeBeneficiaire: any[] = [];
   filteredBeneficiaire: any[] = [];
   filteredBeneficiaireOne: any[] = [];
@@ -122,6 +125,10 @@ export class TransfertUniqueComponent implements OnInit {
     }
   }
 
+  // Ajouter ces propriétés
+  listeCompteClient1Filtered: any[] = []; // pour Compte 1
+  listeCompteClient2Filtered: any[] = []; // pour Compte 2
+
   // =============================================
   // LISTE COMPTES CLIENT
   // =============================================
@@ -133,6 +140,9 @@ export class TransfertUniqueComponent implements OnInit {
       .subscribe({
         next: (response: any) => {
           this.listeCompteClient = response?.data?.[0]?.comptes ?? [];
+
+          this.listeCompteClient1Filtered = [...this.listeCompteClient]; // 🔥
+          this.listeCompteClient2Filtered = [...this.listeCompteClient]; // 🔥
           this.loading = false;
 
           this.typesCompte = [
@@ -552,6 +562,19 @@ export class TransfertUniqueComponent implements OnInit {
 
   onCompte1Change(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
+
+    // 🔥 Filtrer Compte 2 : exclure le compte sélectionné dans Compte 1
+    this.listeCompteClient2Filtered = this.listeCompteClient.filter(
+      (c) => c.vcAccountNumber !== value,
+    );
+
+    // Réinitialiser Compte 2 si c'est le même
+    const compte2 = this.transfertEntreCompteForm.get('compte2')?.value;
+    if (compte2 === value) {
+      this.transfertEntreCompteForm.patchValue({ compte2: '' });
+      this.infosCompte2 = null;
+    }
+
     if (!value) {
       this.infosCompte1 = null;
       return;
@@ -572,6 +595,19 @@ export class TransfertUniqueComponent implements OnInit {
 
   onCompte2Change(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
+
+    // 🔥 Filtrer Compte 1 : exclure le compte sélectionné dans Compte 2
+    this.listeCompteClient1Filtered = this.listeCompteClient.filter(
+      (c) => c.vcAccountNumber !== value,
+    );
+
+    // Réinitialiser Compte 1 si c'est le même
+    const compte1 = this.transfertEntreCompteForm.get('compte1')?.value;
+    if (compte1 === value) {
+      this.transfertEntreCompteForm.patchValue({ compte1: '' });
+      this.infosCompte1 = null;
+    }
+
     if (!value) {
       this.infosCompte2 = null;
       return;
@@ -590,54 +626,6 @@ export class TransfertUniqueComponent implements OnInit {
     });
   }
 
-  // submitTransfertEntreCompte(): void {
-  //   this.transfertEntreCompteForm.markAllAsTouched();
-  //   if (this.transfertEntreCompteForm.invalid) return;
-
-  //   const formValue = this.transfertEntreCompteForm.value;
-
-  //   // Vérification solde insuffisant
-  //   if (this.infosCompte1?.soldeDisp < Number(formValue.montant)) {
-  //     this.notification.error(
-  //       'Le montant saisi dépasse le solde disponible du Compte 1.',
-  //     );
-  //     return;
-  //   }
-
-  //   // Vérification même compte
-  //   if (formValue.compte1 === formValue.compte2) {
-  //     this.notification.error(
-  //       'Le compte débiteur et le compte bénéficiaire doivent être différents.',
-  //     );
-  //     return;
-  //   }
-
-  //   this.loadingEntreCompte = true;
-
-  //   const payload = {
-  //     compteDebiteur: formValue.compte1,
-  //     compteBeneficiaire: formValue.compte2,
-  //     mAmount: Number(formValue.montant),
-  //     dtPaymentDate: formValue.dtPaymentDate,
-  //     vcNotes: formValue.description,
-  //   };
-
-  //   // 🔥 Sauvegarder et naviguer vers le récap
-  //   localStorage.setItem(
-  //     'InfosTransfertEntreCompte',
-  //     JSON.stringify({
-  //       payload,
-  //       infosCompte1: this.infosCompte1,
-  //       infosCompte2: this.infosCompte2,
-  //     }),
-  //   );
-  //   localStorage.setItem('activeTab', JSON.stringify({activeTab: this.activeTab}))
-
-  //   setTimeout(() => {
-  //     this.loadingEntreCompte = false;
-  //     this.router.navigate(['/recapTransfertEntreCompte']);
-  //   }, 1000);
-  // }
   submitTransfertEntreCompte(): void {
     this.transfertEntreCompteForm.markAllAsTouched();
     if (this.transfertEntreCompteForm.invalid) return;

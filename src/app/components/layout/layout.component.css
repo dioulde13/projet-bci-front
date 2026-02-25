@@ -9,3 +9,19 @@ body.dark {
   --primary-text-color: #FFD369;
   --main-bg-color: #393E46;
 } */
+
+
+/* Sidebar nav - texte responsive */
+.sub-menu li a span,
+.nav-link span {
+  white-space: normal !important;
+  word-break: break-word;
+  line-height: 1.4;
+  display: inline-block;
+}
+
+.sub-menu li a {
+  white-space: normal !important;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}

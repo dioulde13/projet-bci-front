@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MobileMoneyService } from '../../../servicesNodes/modePaiementOperateur/mobileMoney/mobile-money.service';
 import { CommonModule } from '@angular/common';
 import { NavigationCancel, NavigationEnd, NavigationError } from '@angular/router';
@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-type-paiement',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   standalone: true,
   templateUrl: './type-paiement.component.html',
   styleUrl: './type-paiement.component.css',

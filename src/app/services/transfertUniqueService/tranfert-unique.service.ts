@@ -3,8 +3,6 @@ import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 
-
-
 @Injectable({
   providedIn: 'root',
 })
@@ -12,6 +10,10 @@ export class TranfertUniqueService {
   private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
+
+  getBank(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/getBank`);
+  }
 
   sendOtpTransaction(phoneNumber: string): Observable<any> {
     const body = { phoneNumber: phoneNumber };
@@ -49,7 +51,7 @@ export class TranfertUniqueService {
       );
   }
 
-   /**
+  /**
    * Envoyer une transaction interne ou externe
    */
   sendTransaction(payload: any): Observable<any> {
@@ -61,7 +63,9 @@ export class TranfertUniqueService {
       }),
       catchError((error) => {
         console.error('❌ Erreur lors de la transaction:', error);
-        return throwError(() => new Error(error?.message || 'Erreur du serveur'));
+        return throwError(
+          () => new Error(error?.message || 'Erreur du serveur'),
+        );
       }),
     );
   }

@@ -71,6 +71,7 @@ export class RecapTransfertEntreCompteComponent implements OnInit {
   /* =====================================================
      INITIALISATION
   ===================================================== */
+
   ngOnInit(): void {
     this.loginEmail = localStorage.getItem('loginEmail');
     this.userInfo = this.getFromStorage('userInfo');
@@ -94,6 +95,28 @@ export class RecapTransfertEntreCompteComponent implements OnInit {
     // console.log('payload      :', this.payload);
 
     this.getTauxEchange();
+    this.getBankListe();
+  }
+
+  listeBanque: any[] = [];
+  banName: any;
+  vcBIC: any;
+
+  getBankListe(): void {
+    this.tranfertUniqueService.getBank().subscribe({
+      next: (response: any) => {
+        this.listeBanque = response?.data ?? [];
+        this.banName = response?.data.banName;
+        this.vcBIC = response?.data.vcBIC;
+        console.log('this.banName: ', this.banName);
+        console.log('vcBIC: ', this.vcBIC);
+
+        console.log('Liste des banques reçue :', this.listeBanque);
+      },
+      error: (err: any) => {
+        console.error('Erreur lors de la récupération des banques :', err);
+      },
+    });
   }
 
   /* =====================================================
@@ -194,14 +217,14 @@ export class RecapTransfertEntreCompteComponent implements OnInit {
       payer_account: this.payload.compteDebiteur,
       benef_name: this.infosCompte2.name,
       benef_account: this.payload.compteBeneficiaire,
-      // benef_bic_code: this.selectedBeneficiaire.vcBIC,
+      benef_bic_code: this.vcBIC,
       amount: this.payload.mAmount,
       benef_currency: this.infosCompte2.devise,
-      // type: this.selectedBeneficiaire.typaiementPaiement,
+       type: 'Interne',
       organisation_id: this.userInfo.iOrganisationID,
       user_id: this.userInfo.id,
-      // payment_mode_id: this.selectedBeneficiaire.idTypePaiement,
-      // receiverBankName: this.selectedBeneficiaire?.vcName,
+      payment_mode_id: 1,
+      receiverBankName: this.banName,
       devise_debiteur: this.infosCompte1?.devise,
       montant_converti: this.montantBenConverti,
       rate: this.tauxConversion,
@@ -241,7 +264,7 @@ export class RecapTransfertEntreCompteComponent implements OnInit {
       vcBenefName: this.infosCompte2.name,
       mAmount: this.payload.mAmount,
       vcBenefAccount: this.payload.compteBeneficiaire,
-      // vcBenefBicCode: this.selectedBeneficiaire.vcBIC,
+      vcBenefBicCode: this.vcBIC,
       vcCorrespBicCode: '',
       vcBenefCurrency: this.infosCompte2.devise,
       iTransactionID: this.transaction_id,
@@ -259,12 +282,11 @@ export class RecapTransfertEntreCompteComponent implements OnInit {
             this.notification.success(
               'La transaction a été effectuée avec succès',
             );
-
-            this.isLoading = false;
             this.router.navigate(['/historiqueTransactions']);
             localStorage.removeItem('InfosSaisirDansFormulaire');
             localStorage.removeItem('selectedBeneficiaire');
             localStorage.removeItem('infosCompteDebiteur');
+            this.isLoading = false;
           } else {
             this.isLoading = false;
             this.modalOtp = false;
@@ -305,7 +327,7 @@ export class RecapTransfertEntreCompteComponent implements OnInit {
           if (response.status === 200) {
             // 🔥 Appeler ici votre service de transfert entre comptes
             this.envoyerTransaction();
-            this.isLoading = false;
+            // this.isLoading = false;
           } else {
             this.isLoading = false;
             this.otpValues = ['', '', '', ''];

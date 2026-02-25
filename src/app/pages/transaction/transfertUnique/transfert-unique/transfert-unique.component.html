@@ -205,7 +205,7 @@
                   <!-- Date -->
                   <div class="row mb-3">
                     <div class="col-md-12">
-                      <label class="form-label fw-bold text-body required">Date</label>
+                      <label class="form-label fw-bold text-body required">Date programmée</label>
                       <input class="form-control mt-2" type="datetime-local" formControlName="dtPaymentDate" />
                       <small
                         class="text-danger"
@@ -258,7 +258,7 @@
                         (change)="onCompte1Change($event)"
                       >
                         <option value="">-- Sélectionner le compte débiteur --</option>
-                        <option *ngFor="let c of listeCompteClient" [value]="c.vcAccountNumber">
+                        <option *ngFor="let c of listeCompteClient1Filtered" [value]="c.vcAccountNumber">
                           {{ c.vcAccountNumber }}
                         </option>
                       </select>
@@ -297,7 +297,7 @@
                         (change)="onCompte2Change($event)"
                       >
                         <option value="">-- Sélectionner le compte bénéficiaire --</option>
-                        <option *ngFor="let c of listeCompteClient" [value]="c.vcAccountNumber">
+                        <option *ngFor="let c of listeCompteClient2Filtered" [value]="c.vcAccountNumber">
                           {{ c.vcAccountNumber }}
                         </option>
                       </select>

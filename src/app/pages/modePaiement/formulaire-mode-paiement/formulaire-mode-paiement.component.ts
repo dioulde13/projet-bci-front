@@ -18,7 +18,9 @@ import { GnfNumberFormatDirective } from '../../../directives/gnf-number-format.
 import { NotificationService } from '../../../services/notification/notification.service';
 
 // ── Validateur personnalisé : préfixe téléphone selon opérateur ──────────────
-function telephoneOperateurValidator(getOperateur: () => string | null): ValidatorFn {
+function telephoneOperateurValidator(
+  getOperateur: () => string | null,
+): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value as string;
     if (!value) return null;
@@ -26,17 +28,22 @@ function telephoneOperateurValidator(getOperateur: () => string | null): Validat
     const operateur = getOperateur()?.toUpperCase();
 
     const prefixesOrange = ['622', '621', '623', '611', '612', '613'];
-    const prefixesMTN    = ['666', '662', '661', '663', '664'];
+    const prefixesMTN = ['666', '662', '661', '663', '664'];
 
     const prefixesAutorises =
-      operateur === 'ORANGE MONEY' ? prefixesOrange :
-      operateur === 'MOBILE MONEY' ? prefixesMTN    : [];
+      operateur === 'ORANGE MONEY'
+        ? prefixesOrange
+        : operateur === 'MOBILE MONEY'
+          ? prefixesMTN
+          : [];
 
     if (prefixesAutorises.length === 0) return null;
 
     const prefixeValide = prefixesAutorises.some((p) => value.startsWith(p));
 
-    return prefixeValide ? null : { prefixeInvalide: { operateur, valeur: value } };
+    return prefixeValide
+      ? null
+      : { prefixeInvalide: { operateur, valeur: value } };
   };
 }
 
@@ -92,12 +99,14 @@ export class FormulaireModePaiementComponent implements OnInit {
   montantTotal: number = 0;
   fraisCalcul: number = 0;
   vcAccountName: any;
+  operator_account: any;
 
   typeOperateur: string | null = null;
 
   get prefixesAutorises(): string {
     const op = this.typeOperateur?.toUpperCase();
-    if (op === 'ORANGE') return '611, 612, 613, 620, 621, 622, 623, 624, 625, 626, 627, 628, 629';
+    if (op === 'ORANGE')
+      return '611, 612, 613, 620, 621, 622, 623, 624, 625, 626, 627, 628, 629';
     if (op === 'MTN') return '660, 661, 662, 663, 664, 666';
     return '';
   }
@@ -105,14 +114,26 @@ export class FormulaireModePaiementComponent implements OnInit {
   // ── Retourne les préfixes autorisés selon l'opérateur ────────────────────
   private getPrefixesParOperateur(): string[] {
     const op = this.typeOperateur?.toUpperCase();
-    if (op === 'ORANGE') return ['610', '611', '612', '613', '620', '621', '622', '623', '624', '625',];
+    if (op === 'ORANGE')
+      return [
+        '610',
+        '611',
+        '612',
+        '613',
+        '620',
+        '621',
+        '622',
+        '623',
+        '624',
+        '625',
+      ];
     if (op === 'MTN') return ['666', '662', '661', '663', '664'];
     return [];
   }
 
   // ── Validation instantanée en temps réel ─────────────────────────────────
   validateTelephone(value: string): void {
-    this.telephoneError   = '';
+    this.telephoneError = '';
     this.telephoneSuccess = false;
 
     if (!value) return;
@@ -122,12 +143,11 @@ export class FormulaireModePaiementComponent implements OnInit {
 
     const op = this.typeOperateur?.toUpperCase();
     const nomOperateur =
-      op === 'ORANGE MONEY' ? 'ORANGE' :
-      op === 'MOBILE MONEY' ? 'MTN' : '';
+      op === 'ORANGE MONEY' ? 'ORANGE' : op === 'MOBILE MONEY' ? 'MTN' : '';
 
     // Dès 3 chiffres, on contrôle le préfixe
     if (value.length >= 3) {
-      const prefixeValide = prefixes.some(p => value.startsWith(p));
+      const prefixeValide = prefixes.some((p) => value.startsWith(p));
       if (!prefixeValide) {
         this.telephoneError = `Préfixe invalide pour ${nomOperateur}. Préfixes autorisés : ${prefixes.join(', ')}`;
         return;
@@ -136,7 +156,7 @@ export class FormulaireModePaiementComponent implements OnInit {
 
     // Numéro complet valide
     if (value.length === 9) {
-      const prefixeValide = prefixes.some(p => value.startsWith(p));
+      const prefixeValide = prefixes.some((p) => value.startsWith(p));
       if (prefixeValide) {
         this.telephoneSuccess = true;
       } else {
@@ -154,30 +174,30 @@ export class FormulaireModePaiementComponent implements OnInit {
   recupererListeOperateur(): void {
     this.mobileMoneyService.listeMobileOperators().subscribe({
       next: (response: any) => {
-        console.log("response: ", response);
+        console.log('response: ', response);
         const operateur = (response?.data ?? []).find(
           (f: any) => f.vcAccountName === this.typeOperateur,
         );
-        
 
         if (!operateur) return;
 
-        console.log("operateur: ", operateur);
+        console.log('operateur: ', operateur);
 
-        this.vcAccountName    = operateur?.vcAccountName;
-        this.frais            = operateur?.nFees;
+        this.vcAccountName = operateur?.vcAccountName;
+        this.operator_account = operateur?.vcAccountNumber;
+        this.frais = operateur?.nFees;
         this.btFeesUsePercent = operateur?.btFeesUsePercent;
-        this.btFeesIncluded   = operateur?.btFeesIncluded;
+        this.btFeesIncluded = operateur?.btFeesIncluded;
 
         if (this.btFeesIncluded) {
-          this.fraisLabel  = 'Frais inclus';
+          this.fraisLabel = 'Frais inclus';
           this.fraisCalcul = 0;
         } else {
           if (this.btFeesUsePercent) {
-            this.fraisLabel  = `${this.frais} %`;
+            this.fraisLabel = `${this.frais} %`;
             this.fraisCalcul = this.frais / 100;
           } else {
-            this.fraisLabel  = `${this.frais}`;
+            this.fraisLabel = `${this.frais}`;
             this.fraisCalcul = this.frais;
           }
         }
@@ -229,7 +249,13 @@ export class FormulaireModePaiementComponent implements OnInit {
   phoneMaxLength = 9;
 
   onlyDigits(event: KeyboardEvent): void {
-    const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
+    const allowedKeys = [
+      'Backspace',
+      'ArrowLeft',
+      'ArrowRight',
+      'Delete',
+      'Tab',
+    ];
 
     if (allowedKeys.includes(event.key)) {
       // Valider après suppression
@@ -277,18 +303,26 @@ export class FormulaireModePaiementComponent implements OnInit {
   }
 
   initMobileMoneyForm(): void {
-    const saved     = localStorage.getItem('InfosFormulaireModePaiement');
+    const saved = localStorage.getItem('InfosFormulaireModePaiement');
     const savedData = saved ? JSON.parse(saved) : null;
-    const payload   = savedData?.payload;
-    const isBtoW    = payload?.vcOperationType === 'B2W';
+    const payload = savedData?.payload;
+    const isBtoW = payload?.vcOperationType === 'B2W';
 
     this.mobileMoneyForm = this.fb.group({
       compteSource: [
-        payload ? (isBtoW ? payload.vcPayerAccount : payload.vcBenefAccount) : '',
+        payload
+          ? isBtoW
+            ? payload.vcPayerAccount
+            : payload.vcBenefAccount
+          : '',
         Validators.required,
       ],
       telephone: [
-        payload ? (isBtoW ? payload.vcBenefAccount : payload.vcPayerAccount) : '',
+        payload
+          ? isBtoW
+            ? payload.vcBenefAccount
+            : payload.vcPayerAccount
+          : '',
         [
           Validators.required,
           Validators.pattern('^[0-9]{9,12}$'),
@@ -300,10 +334,7 @@ export class FormulaireModePaiementComponent implements OnInit {
         [Validators.required, Validators.min(1)],
       ],
       frais: [''],
-      description: [
-        payload?.vcNotes ?? '',
-        Validators.required,
-      ],
+      description: [payload?.vcNotes ?? '', Validators.required],
       typeTransactionMM: [
         payload?.vcOperationType ?? 'B2W',
         Validators.required,
@@ -312,7 +343,7 @@ export class FormulaireModePaiementComponent implements OnInit {
 
     if (savedData?.soldeDebiteur !== undefined) {
       this.soldeDebiteur = savedData.soldeDebiteur;
-      this.devise        = savedData.devise;
+      this.devise = savedData.devise;
     }
 
     if (payload?.mAmount) {
@@ -335,17 +366,15 @@ export class FormulaireModePaiementComponent implements OnInit {
         }
       });
 
-    this.mobileMoneyForm
-      .get('telephone')
-      ?.valueChanges.subscribe(() => {
-        this.mobileMoneyForm.get('telephone')?.updateValueAndValidity({ emitEvent: false });
-      });
+    this.mobileMoneyForm.get('telephone')?.valueChanges.subscribe(() => {
+      this.mobileMoneyForm
+        .get('telephone')
+        ?.updateValueAndValidity({ emitEvent: false });
+    });
 
-    this.mobileMoneyForm
-      .get('montant')
-      ?.valueChanges.subscribe(() => {
-        this.calculerTotal();
-      });
+    this.mobileMoneyForm.get('montant')?.valueChanges.subscribe(() => {
+      this.calculerTotal();
+    });
   }
 
   soldeDebiteur: any = null;
@@ -357,13 +386,13 @@ export class FormulaireModePaiementComponent implements OnInit {
 
     this.getAccount.getNomDebiteur(accountNumber).subscribe({
       next: (res) => {
-        this.soldeDebiteur     = res?.data?.soldeDisp ?? null;
-        this.devise            = res?.data?.devise ?? null;
+        this.soldeDebiteur = res?.data?.soldeDisp ?? null;
+        this.devise = res?.data?.devise ?? null;
         this.loadingGetBalance = false;
       },
       error: () => {
-        this.soldeDebiteur     = null;
-        this.devise            = null;
+        this.soldeDebiteur = null;
+        this.devise = null;
         this.loadingGetBalance = false;
       },
     });
@@ -386,7 +415,9 @@ export class FormulaireModePaiementComponent implements OnInit {
       Number(formValue.montant) > this.soldeDebiteur
     ) {
       this.loadingMobileMoney = false;
-      this.notification.error('Le montant saisi doit être inférieur ou égal au solde.');
+      this.notification.error(
+        'Le montant saisi doit être inférieur ou égal au solde.',
+      );
       return;
     }
 
@@ -400,7 +431,8 @@ export class FormulaireModePaiementComponent implements OnInit {
           ? formValue.telephone
           : formValue.compteSource,
       mAmount: Number(formValue.montant),
-      vcOperatorAccount: this.vcAccountName,
+      vcAccountName: this.vcAccountName,
+      operator_account: this.operator_account,
       mFees: this.btFeesIncluded ? this.fraisCalcul : this.fraisCalcul,
       vcNotes: formValue.description,
       vcOperationType: formValue.typeTransactionMM,
@@ -411,7 +443,7 @@ export class FormulaireModePaiementComponent implements OnInit {
       JSON.stringify({
         payload,
         soldeDebiteur: this.soldeDebiteur,
-        devise:        this.devise,
+        devise: this.devise,
       }),
     );
 
@@ -421,9 +453,9 @@ export class FormulaireModePaiementComponent implements OnInit {
   }
 
   listeCompteClient: any[] = [];
-  selectedDebitAccount     = '';
-  errorMessage             = '';
-  typesCompte              = '';
+  selectedDebitAccount = '';
+  errorMessage = '';
+  typesCompte = '';
 
   getListeCompteClient(): void {
     if (!this.idOrganisation) return;
@@ -442,8 +474,8 @@ export class FormulaireModePaiementComponent implements OnInit {
 
   initOrangeMoneyForm(): void {
     this.orangeMoneyForm = this.fb.group({
-      typePaiement:      ['Mobile Money', Validators.required],
-      fournisseur:       ['Orange Money', Validators.required],
+      typePaiement: ['Mobile Money', Validators.required],
+      fournisseur: ['Orange Money', Validators.required],
       numeroMobile: [
         '',
         [
@@ -452,12 +484,12 @@ export class FormulaireModePaiementComponent implements OnInit {
           telephoneOperateurValidator(() => this.typeOperateur),
         ],
       ],
-      nomCompte:         ['', [Validators.required, Validators.minLength(2)]],
+      nomCompte: ['', [Validators.required, Validators.minLength(2)]],
       emailBeneficiaire: ['', [Validators.required, Validators.email]],
-      compteSource:      ['', Validators.required],
-      montant:           ['', [Validators.required, Validators.min(1)]],
-      devise:            ['GNF', Validators.required],
-      objetTransfert:    ['', [Validators.required, Validators.minLength(3)]],
+      compteSource: ['', Validators.required],
+      montant: ['', [Validators.required, Validators.min(1)]],
+      devise: ['GNF', Validators.required],
+      objetTransfert: ['', [Validators.required, Validators.minLength(3)]],
     });
   }
 

@@ -34,3 +34,29 @@
     color: white;
     width: 120px; /* largeur du bouton */
   }
+
+  /* Styles des onglets */
+.nav-tabs .nav-link {
+  color: #6c757d;
+  border: 2px solid transparent;
+  border-radius: 6px 6px 0 0;
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background-color: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #0d6efd;
+  border-color: #dee2e6 #dee2e6 transparent;
+  background-color: #f0f4ff;
+}
+
+/* ✅ Onglet actif en bleu */
+.nav-tabs .nav-link.active {
+  color: #ffffff !important;
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+}

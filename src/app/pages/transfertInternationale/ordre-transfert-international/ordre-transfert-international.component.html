@@ -86,57 +86,31 @@
           <!-- Raison Sociale -->
           <div class="col-12">
             <label class="form-label fw-bold text-dark">
-              Raison Sociale <span class="text-danger">*</span> :
+              Raison Sociale :
             </label>
 
             <input
               type="text"
               formControlName="raisonSocialeDO"
-              [class.border-danger]="
-                f['raisonSocialeDO'].touched && f['raisonSocialeDO'].invalid
-              "
-              class="form-control"
+              class="form-control bg-light"
               placeholder=""
+              readonly
             />
-
-            <div
-              *ngIf="
-                f['raisonSocialeDO'].touched && f['raisonSocialeDO'].invalid
-              "
-              class="mt-1"
-            >
-              <p class="text-danger small fw-semibold fst-italic mb-0">
-                La raison sociale est obligatoire.
-              </p>
-            </div>
           </div>
-
           <!-- Adresse -->
           <div class="col-12">
             <label class="form-label fw-bold text-dark">
-              Adresse Complète <span class="text-danger">*</span> :
+              Adresse Complète :
             </label>
 
             <textarea
               formControlName="adresseDO"
               rows="3"
-              [class.border-danger]="
-                f['adresseDO'].touched && f['adresseDO'].invalid
-              "
-              class="form-control"
+              class="form-control bg-light"
               placeholder=""
+              readonly
             ></textarea>
-
-            <div
-              *ngIf="f['adresseDO'].touched && f['adresseDO'].invalid"
-              class="mt-1"
-            >
-              <p class="text-danger small fw-semibold fst-italic mb-0">
-                L'adresse complète est obligatoire pour valider le transfert.
-              </p>
-            </div>
           </div>
-
           <!-- Compte Transfert -->
           <div class="col-md-6">
             <label class="form-label fw-bold text-dark">
@@ -152,7 +126,7 @@
             >
               <option value="" disabled selected>Choisissez un compte</option>
               <option *ngFor="let c of listeMesComptes" [value]="c.numero">
-                {{ c.numero }} - {{ c.libelle }}
+                {{ c.numero }} - {{ c.libelle }} | {{ c.devise }}
               </option>
             </select>
 
@@ -168,33 +142,8 @@
             </div>
           </div>
 
-          <!-- Toggle Commission + Compte Commission -->
-          <div class="mb-3 d-flex align-items-start gap-3 col-md-6">
-            <!-- Toggle Même compte pour les frais -->
-            <div
-              class="d-flex align-items-center gap-1 shrink-0"
-              style="width: 140px"
-            >
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="toggleCommission"
-                  [(ngModel)]="memeCompteCommission"
-                  [ngModelOptions]="{ standalone: true }"
-                  (change)="onToggleCommission()"
-                  style="accent-color: #3b3b7a; cursor: pointer"
-                />
-                <label
-                  class="form-check-label text-xs fw-semibold text-muted fst-italic"
-                  for="toggleCommission"
-                  style="font-size: 0.75rem"
-                >
-                  Même compte<br />pour les frais
-                </label>
-              </div>
-            </div>
-
+          <!-- Compte Commission  -->
+          <div class="col-md-6">
             <!-- Champ N° Compte Commission -->
             <div class="grow">
               <label
@@ -202,7 +151,7 @@
                 class="form-label fw-bold text-dark"
               >
                 N° Compte Commission
-                <span *ngIf="!memeCompteCommission" class="text-danger">*</span>
+                <span class="text-danger">*</span>
                 :
               </label>
               <input
@@ -211,24 +160,30 @@
                 formControlName="compteCommission"
                 class="form-control"
                 [class.is-invalid]="
-                  !memeCompteCommission &&
                   f['compteCommission'].touched &&
                   f['compteCommission'].errors?.['required']
                 "
                 placeholder="Saisissez le compte..."
-                [disabled]="memeCompteCommission"
                 style="height: 42px"
               />
               <div
-                class="invalid-feedback"
+                class="text-danger small fw-semibold fst-italic mb-0"
                 *ngIf="
-                  !memeCompteCommission &&
                   f['compteCommission'].touched &&
                   f['compteCommission'].errors?.['required']
                 "
               >
-                ⚠️ Le compte de commission est requis.
+                Le compte de commission est requis.
               </div>
+            </div>
+          </div>
+          <div *ngIf="selectedAccountDetails" class="">
+            <div class="">
+              <span class="text-muted small fw-bold">Solde disponible :</span>
+              <span class="mb-0 text-danger fw-bold">
+                {{ selectedAccountDetails.soldeDisp | number: "1.2-2" }}
+                <span class="small">{{ selectedAccountDetails.devise }}</span>
+              </span>
             </div>
           </div>
           <!-- Montant -->
@@ -246,18 +201,28 @@
             />
 
             <div
-              class="invalid-feedback"
+              class="text-danger small fw-semibold fst-italic mb-0"
               *ngIf="f['montant'].touched && f['montant'].invalid"
             >
               <p *ngIf="f['montant'].errors?.['required']" class="mb-0">
                 Le montant est obligatoire.
               </p>
+
               <p *ngIf="f['montant'].errors?.['min']" class="mb-0">
                 Le montant doit être supérieur à 0.
               </p>
+
+              <p
+                *ngIf="
+                  f['montant'].hasError('insuffisant') && f['montant'].touched
+                "
+                class="mb-0"
+              >
+                Le montant saisi ne doit pas être supérieur au solde
+                disponible...
+              </p>
             </div>
           </div>
-
           <!-- Devise -->
           <div class="mb-3 col-md-6">
             <label class="form-label fw-bold">Devise :</label>
@@ -277,6 +242,37 @@
                 <label class="form-check-label" for="devise-{{ d }}">
                   {{ d }}
                 </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-3" *ngIf="transfertForm.get('montant')?.value > 0">
+            <div class="col-12">
+              <div
+                class="p-3 rounded border bg-light d-flex justify-content-between align-items-center"
+              >
+                <div>
+                  <small class="text-muted d-block">Montant saisi</small>
+                  <span class="fw-bold text-dark"
+                    >{{ transfertForm.get("montant")?.value | number: "1.2-2" }}
+                    {{ accountCurrency }}</span
+                  >
+                </div>
+
+                <div class="text-center px-3">
+                  <i class="bi bi-arrow-right-circle text-warning fs-4"></i>
+                  <small class="d-block text-muted" style="font-size: 10px"
+                    >Taux: {{ exchangeRate }}</small
+                  >
+                </div>
+
+                <div class="text-end">
+                  <small class="text-muted d-block">Montant à transférer</small>
+                  <span class="fw-bold text-danger">
+                    {{ convertedAmount | number: "1.2-2" }}
+                    {{ transfertForm.get("devise")?.value }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -330,7 +326,7 @@
               *ngIf="
                 f['motifEconomique'].touched && f['motifEconomique'].invalid
               "
-              class="invalid-feedback d-block"
+              class="text-danger small fw-semibold fst-italic mb-0 d-block"
             >
               Le motif économique est obligatoire pour justifier le transfert.
             </div>
@@ -396,6 +392,73 @@
             </div>
           </div>
         </div>
+        <div class="row g-3 pt-4 border-top mt-4">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-bold text-uppercase small mb-1">
+              Pièce jointe DDI :
+              <span
+                *ngIf="f['ddiFile'].hasValidator(Validators.required)"
+                class="text-danger"
+                >*</span
+              >
+            </label>
+            <p class="small text-muted mb-2 fst-italic">
+              Format PDF (Max 5 Mo)
+            </p>
+            <input
+              accept="application/pdf"
+              type="file"
+              (change)="onFileChange($event, 'ddiFile')"
+              class="form-control form-control-sm"
+              [class.is-invalid]="f['ddiFile'].invalid && f['ddiFile'].touched"
+            />
+            <div
+              *ngIf="f['ddiFile'].touched && f['ddiFile'].invalid"
+              class="invalid-feedback d-block small mt-1"
+            >
+              <p *ngIf="f['ddiFile'].errors?.['required']">
+                Document obligatoire pour ce montant/motif.
+              </p>
+              <p *ngIf="f['ddiFile'].errors?.['invalidFormat']">
+                PDF uniquement.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-bold text-uppercase small mb-1">
+              Pièce jointe Assurance :
+              <span
+                *ngIf="f['assuranceFile'].hasValidator(Validators.required)"
+                class="text-danger"
+                >*</span
+              >
+            </label>
+            <p class="small text-muted mb-2 fst-italic">
+              Format PDF (Max 5 Mo)
+            </p>
+            <input
+              accept="application/pdf"
+              type="file"
+              (change)="onFileChange($event, 'assuranceFile')"
+              class="form-control form-control-sm"
+              [class.is-invalid]="
+                f['assuranceFile'].invalid && f['assuranceFile'].touched
+              "
+            />
+            <div
+              *ngIf="f['assuranceFile'].touched && f['assuranceFile'].invalid"
+              class="invalid-feedback d-block small mt-1"
+            >
+              <p *ngIf="f['assuranceFile'].errors?.['required']">
+                ⚠️ Obligatoire pour importation marchandises.
+              </p>
+              <p *ngIf="f['assuranceFile'].errors?.['invalidFormat']">
+                ⚠️ PDF uniquement.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- STEP 3 -->
@@ -445,7 +508,8 @@
               [ngModelOptions]="{ standalone: true }"
               (focus)="isDropdownOpen = true"
               (blur)="closeDropdownWithDelay()"
-              placeholder="🔍 Tapez un nom ou un compte..."
+              placeholder="🔍 Nom de la banque ou code SWIFT..."
+              style="height: 45px"
               class="form-control"
             />
             <button
@@ -475,7 +539,9 @@
               class="d-flex justify-content-between align-items-start px-3 py-2 border-bottom hover-bg-light cursor-pointer"
             >
               <div>
-                <span class="fw-bold text-primary d-block">{{ b.vcName }}</span>
+                <span class="fw-bold d-block" style="color: #3b3b7a">{{
+                  b.vcName
+                }}</span>
                 <span class="small text-muted">{{ b.vcBIC }}</span>
               </div>
             </div>
@@ -493,39 +559,25 @@
               type="text"
               formControlName="raisonSocialeB"
               class="form-control"
+              [readonly]="modeSelection === 'existant'"
+              [class.bg-light]="modeSelection === 'existant'"
               [ngClass]="{
                 'is-invalid':
                   f['raisonSocialeB'].touched && f['raisonSocialeB'].invalid,
               }"
-              placeholder="Nom du bénéficiaire ou de l'entreprise"
             />
-            <div
-              *ngIf="f['raisonSocialeB'].touched && f['raisonSocialeB'].invalid"
-              class="invalid-feedback d-block"
-            >
-              La raison sociale du bénéficiaire est obligatoire.
-            </div>
           </div>
 
           <!-- Adresse complète -->
           <div class="col-12">
-            <label class="form-label fw-bold"
-              >Adresse Complète <span class="text-danger">*</span></label
-            >
+            <label class="form-label fw-bold">Adresse Complète</label>
             <textarea
               formControlName="adresseB"
               rows="2"
               class="form-control"
-              [ngClass]="{
-                'is-invalid': f['adresseB'].touched && f['adresseB'].invalid,
-              }"
+              [readonly]="modeSelection === 'existant'"
+              [class.bg-light]="modeSelection === 'existant'"
             ></textarea>
-            <div
-              *ngIf="f['adresseB'].touched && f['adresseB'].invalid"
-              class="invalid-feedback d-block"
-            >
-              L'adresse du bénéficiaire est obligatoire.
-            </div>
           </div>
 
           <!-- IBAN / N°Compte -->
@@ -537,18 +589,13 @@
               type="text"
               formControlName="ibanNCompte"
               class="form-control"
+              [readonly]="modeSelection === 'existant'"
+              [class.bg-light]="modeSelection === 'existant'"
               [ngClass]="{
                 'is-invalid':
                   f['ibanNCompte'].touched && f['ibanNCompte'].invalid,
               }"
             />
-            <div
-              *ngIf="f['ibanNCompte'].touched && f['ibanNCompte'].invalid"
-              class="invalid-feedback d-block"
-            >
-              L'IBAN ou le numéro de compte est requis pour effectuer le
-              transfert.
-            </div>
           </div>
 
           <!-- Banque bénéficiaire et SWIFT -->
@@ -646,97 +693,6 @@
               Le code SWIFT doit comporter au moins 8 caractères.
             </div>
           </div>
-
-          <!-- Pièces jointes -->
-          <div class="row g-3 pt-4 border-top mt-4">
-            <!-- Pièce jointe DDI -->
-            <div class="col-12 col-md-6">
-              <label class="form-label fw-bold text-uppercase small mb-1">
-                Pièce jointe DDI :
-              </label>
-
-              <p class="small text-muted mb-2 fst-italic">
-                Format accepté :
-                <span class="fw-semibold" style="color: #3b3b7a"
-                  >PDF uniquement</span
-                >
-                (Max :
-                <span class="fw-semibold" style="color: #3b3b7a">5 Mo</span>)
-              </p>
-
-              <input
-                type="file"
-                accept="application/pdf"
-                (change)="onFileChange($event, 'ddiFile')"
-                class="form-control form-control-sm"
-                [class.is-invalid]="
-                  f['ddiFile'].invalid && f['ddiFile'].touched
-                "
-              />
-
-              <div
-                *ngIf="f['ddiFile'].touched && f['ddiFile'].invalid"
-                class="invalid-feedback d-block small mt-1"
-              >
-                <p
-                  *ngIf="f['ddiFile']?.errors?.['invalidFormat']"
-                  class="mb-0 fst-italic"
-                >
-                  ⚠️ Seuls les fichiers PDF sont acceptés.
-                </p>
-                <p
-                  *ngIf="f['ddiFile']?.errors?.['maxSize']"
-                  class="mb-0 fst-italic"
-                >
-                  ⚠️ Le fichier dépasse la limite de 5 Mo.
-                </p>
-              </div>
-            </div>
-
-            <!-- Pièce jointe Assurance -->
-            <div class="col-12 col-md-6">
-              <label class="form-label fw-bold text-uppercase small mb-1">
-                Pièce jointe Assurance :
-              </label>
-
-              <p class="small text-muted mb-2 fst-italic">
-                Format accepté :
-                <span class="fw-semibold" style="color: #3b3b7a"
-                  >PDF uniquement</span
-                >
-                (Max :
-                <span class="fw-semibold" style="color: #3b3b7a">5 Mo</span>)
-              </p>
-
-              <input
-                type="file"
-                accept="application/pdf"
-                (change)="onFileChange($event, 'assuranceFile')"
-                class="form-control form-control-sm"
-                [class.is-invalid]="
-                  f['assuranceFile'].invalid && f['assuranceFile'].touched
-                "
-              />
-
-              <div
-                *ngIf="f['assuranceFile'].touched && f['assuranceFile'].invalid"
-                class="invalid-feedback d-block small mt-1"
-              >
-                <p
-                  *ngIf="f['assuranceFile']?.errors?.['invalidFormat']"
-                  class="mb-0 fst-italic"
-                >
-                  ⚠️ Seuls les fichiers PDF sont acceptés pour l'assurance.
-                </p>
-                <p
-                  *ngIf="f['assuranceFile']?.errors?.['maxSize']"
-                  class="mb-0 fst-italic"
-                >
-                  ⚠️ Le fichier est trop lourd (max 5 Mo).
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -753,7 +709,7 @@
         <!-- Donneur d'ordre -->
         <div class="border border-secondary mb-4 shadow-sm">
           <div
-            class="d-flex justify-content-between align-items-center bg-light border-bottom border-secondary px-3 py-2"
+            class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-light border-bottom border-secondary px-3 py-2 gap-2"
           >
             <h3
               class="fw-bold small text-uppercase fst-italic d-flex align-items-center gap-2 mb-0"
@@ -769,91 +725,152 @@
           </div>
 
           <div class="p-3">
-            <!-- Infos de base -->
             <div class="row g-3">
-              <div class="col-12 d-flex align-items-end gap-2">
-                <span class="fw-semibold text-dark" style="min-width: 8rem"
+              <div
+                class="col-12 d-flex flex-column flex-md-row align-items-md-end gap-1 gap-md-2 border-bottom border-dotted pb-1"
+              >
+                <span
+                  class="fw-semibold text-dark text-nowrap"
+                  style="min-width: 8.5rem"
                   >Raison sociale :</span
                 >
-                <span
-                  class="border-bottom border-dotted flex-fill px-2 fw-semibold"
-                  >{{ f["raisonSocialeDO"].value }}</span
-                >
+                <span class="flex-fill px-md-2 fw-semibold text-uppercase">{{
+                  f["raisonSocialeDO"].value
+                }}</span>
               </div>
-              <div class="col-12 d-flex align-items-end gap-2">
-                <span class="fw-semibold text-dark" style="min-width: 8rem"
+              <div
+                class="col-12 d-flex flex-column flex-md-row align-items-md-end gap-1 gap-md-2 border-bottom border-dotted pb-1"
+              >
+                <span
+                  class="fw-semibold text-dark text-nowrap"
+                  style="min-width: 8.5rem"
                   >Adresse Complète :</span
                 >
-                <span
-                  class="border-bottom border-dotted flex-fill px-2 fw-semibold"
-                  >{{ f["adresseDO"].value }}</span
-                >
+                <span class="flex-fill px-md-2 fw-semibold">{{
+                  f["adresseDO"].value
+                }}</span>
               </div>
             </div>
 
-            <!-- Comptes -->
-            <div class="row g-3 pt-2">
-              <div class="col-12 col-md-6 d-flex align-items-end gap-2">
-                <span class="fst-italic text-dark">N° Compte transfert :</span>
-                <span
-                  class="border-bottom border-dotted flex-fill px-2 fw-semibold"
-                  >{{ f["compteTransfert"].value }}</span
-                >
-              </div>
-              <div class="col-12 col-md-6 d-flex align-items-end gap-2">
-                <span class="fst-italic text-dark">N° Compte Commission :</span>
-                <span
-                  class="border-bottom border-dotted flex-fill px-2 fw-semibold"
-                  >{{ f["compteCommission"].value }}</span
-                >
-              </div>
-            </div>
-
-            <!-- Montant & Devise -->
-            <div class="d-flex flex-wrap align-items-center gap-3 pt-2">
+            <div class="row g-3 pt-3">
               <div
-                class="d-flex align-items-end gap-2 flex-fill"
-                style="min-width: 14rem"
+                class="col-12 col-md-6 d-flex flex-column flex-sm-row align-items-sm-end gap-1 gap-sm-2 border-bottom border-dotted pb-1"
+              >
+                <span class="fst-italic text-dark text-nowrap"
+                  >N° Compte transfert :</span
+                >
+                <span class="flex-fill px-sm-2 fw-semibold font-monospace">{{
+                  f["compteTransfert"].value
+                }}</span>
+              </div>
+              <div
+                class="col-12 col-md-6 d-flex flex-column flex-sm-row align-items-sm-end gap-1 gap-sm-2 border-bottom border-dotted pb-1"
+              >
+                <span class="fst-italic text-dark text-nowrap"
+                  >N° Compte Commission :</span
+                >
+                <span class="flex-fill px-sm-2 fw-semibold font-monospace">{{
+                  f["compteCommission"].value
+                }}</span>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-3 pt-3">
+              <div
+                class="d-flex align-items-end gap-2 flex-fill border-bottom border-dotted pb-1"
+                style="min-width: 12rem"
               >
                 <span class="fst-italic text-dark">Montant (Chiffres) :</span>
                 <span
-                  class="border-bottom border-dotted flex-fill px-2 font-monospace text-dark"
-                  >{{ f["montant"].value | number: "1.2-2" }}</span
+                  class="flex-fill px-2 font-monospace text-dark fw-bold fs-5"
                 >
+                  {{ f["montant"].value | number: "1.2-2" }}
+                </span>
               </div>
 
-              <div class="d-flex align-items-center gap-3 small">
-                <span class="fst-italic text-dark">Devise :</span>
+              <div
+                class="d-flex align-items-center gap-3 small bg-white p-2 border rounded shadow-sm"
+              >
+                <span class="fst-italic text-dark fw-bold">Devise :</span>
                 <div
-                  class="d-flex gap-2"
+                  class="d-flex gap-3"
                   *ngFor="let d of ['USD', 'EUR', 'GNF']"
                 >
-                  <span
-                    class="d-flex justify-content-center align-items-center border border-secondary bg-white"
-                    [class.bg-secondary]="f['devise'].value === d"
-                    style="
-                      width: 1rem;
-                      height: 1rem;
-                      font-size: 0.6rem;
-                      font-weight: bold;
-                    "
-                  >
-                    {{ f["devise"].value === d ? "X" : "" }}
-                  </span>
-                  <span
-                    [class.fw-bold]="f['devise'].value === d"
-                    [class.text-dark]="f['devise'].value === d"
-                    >{{ d }}</span
-                  >
+                  <div class="d-flex align-items-center gap-1">
+                    <span
+                      class="d-flex justify-content-center align-items-center border border-secondary"
+                      [class.bg-dark]="f['devise'].value === d"
+                      [class.text-white]="f['devise'].value === d"
+                      style="
+                        width: 1.1rem;
+                        height: 1.1rem;
+                        font-size: 0.7rem;
+                        font-weight: bold;
+                      "
+                    >
+                      {{ f["devise"].value === d ? "X" : "" }}
+                    </span>
+                    <span
+                      [class.fw-bold]="f['devise'].value === d"
+                      [class.text-dark]="f['devise'].value === d"
+                      >{{ d }}</span
+                    >
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- Frais à l'étranger -->
+            <div class="row mt-4 px-2">
+              <div class="col-12">
+                <div
+                  class="p-3 rounded border border-warning-subtle d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 shadow-sm"
+                  style="background-color: #fffcf5 !important"
+                >
+                  <div class="text-center text-sm-start">
+                    <small
+                      class="text-muted d-block text-uppercase fw-bold"
+                      style="font-size: 0.6rem"
+                      >Montant Saisi</small
+                    >
+                    <span class="fw-bold text-dark"
+                      >{{ f["montant"].value | number: "1.2-2" }}
+                      {{ accountCurrency }}</span
+                    >
+                  </div>
+
+                  <div
+                    class="text-center px-sm-4 border-sm-start border-sm-end border-warning-subtle"
+                  >
+                    <i
+                      class="bi bi-arrow-right-circle-fill text-warning fs-5 d-none d-sm-block mb-1"
+                    ></i>
+                    <small
+                      class="d-block text-muted fw-bold"
+                      style="font-size: 11px"
+                      >Taux: {{ exchangeRate }}</small
+                    >
+                  </div>
+
+                  <div class="text-center text-sm-end">
+                    <small
+                      class="text-muted d-block text-uppercase fw-bold"
+                      style="font-size: 0.6rem"
+                      >Montant à transférer</small
+                    >
+                    <span class="fw-bold text-danger fs-5"
+                      >{{ convertedAmount | number: "1.2-2" }}
+                      {{ f["devise"].value }}</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
             <div
-              class="d-flex flex-wrap gap-3 pt-3 border-top border-secondary small fst-italic text-muted"
+              class="d-flex align-items-center gap-3 small bg-white p-2 mt-4 border rounded shadow-sm"
             >
-              <span class="fw-semibold text-dark">Frais à l'étranger :</span>
+              <span class="fst-italic text-dark fw-bold"
+                >Frais à l'étranger :</span
+              >
               <div
                 class="d-flex gap-2"
                 *ngFor="
@@ -865,11 +882,13 @@
                 "
               >
                 <span
-                  class="d-flex justify-content-center align-items-center border border-secondary bg-white"
+                  class="d-flex justify-content-center align-items-center border border-secondary"
+                  [class.bg-dark]="f['fraisEtranger'].value === opt.v"
+                  [class.text-white]="f['fraisEtranger'].value === opt.v"
                   style="
-                    width: 1rem;
-                    height: 1rem;
-                    font-size: 0.6rem;
+                    width: 1.1rem;
+                    height: 1.1rem;
+                    font-size: 0.7rem;
                     font-weight: bold;
                   "
                   [class.bg-secondary]="f['fraisEtranger'].value === opt.v"
@@ -941,8 +960,14 @@
                 >
                   <span
                     class="d-flex justify-content-center align-items-center border border-secondary bg-white"
-                    style="width: 1rem; height: 1rem; font-size: 0.55rem"
-                    [class.bg-secondary]="f['typeTransaction'].value === t"
+                    [class.bg-dark]="f['typeTransaction'].value === t"
+                    [class.text-white]="f['typeTransaction'].value === t"
+                    style="
+                      width: 1.1rem;
+                      height: 1.1rem;
+                      font-size: 0.7rem;
+                      font-weight: bold;
+                    "
                   >
                     {{ f["typeTransaction"].value === t ? "X" : "" }}
                   </span>
@@ -976,75 +1001,115 @@
               Bénéficiaire :
             </h3>
           </div>
+
           <div class="p-3">
-            <div class="d-flex align-items-end gap-2 mb-2">
-              <span class="fw-semibold text-dark" style="min-width: 9rem"
-                >Raison sociale :</span
-              >
-              <span
-                class="border-bottom border-dotted flex-fill px-2 fw-semibold text-dark"
-                >{{ f["raisonSocialeB"].value }}</span
-              >
-            </div>
-            <div class="d-flex align-items-end gap-2 mb-2">
-              <span class="fw-semibold text-dark" style="min-width: 9rem"
-                >Adresse Complète :</span
-              >
-              <span
-                class="border-bottom border-dotted flex-fill px-2 fw-semibold text-dark"
-                >{{ f["adresseB"].value }}</span
-              >
-            </div>
-            <div class="d-flex align-items-end gap-2 mb-2">
-              <span class="fw-semibold text-dark" style="min-width: 9rem"
-                >IBAN (ou N° Compte) :</span
-              >
-              <span
-                class="border-bottom border-dotted flex-fill px-2 fw-semibold text-dark"
-                >{{ f["ibanNCompte"].value }}</span
-              >
+            <div class="row g-0 mb-3 border-bottom border-dotted pb-1">
+              <div class="col-12 col-sm-auto">
+                <span
+                  class="fw-semibold text-dark me-2"
+                  style="min-width: 9rem; display: inline-block"
+                  >Raison sociale :</span
+                >
+              </div>
+              <div class="col-12 col-sm flex-fill">
+                <span class="fw-semibold text-dark text-uppercase text-wrap">{{
+                  f["raisonSocialeB"].value
+                }}</span>
+              </div>
             </div>
 
-            <div class="row g-3">
-              <div class="col-12 col-md-6 d-flex align-items-end gap-2">
-                <span class="fw-semibold text-dark" style="min-width: 9rem"
-                  >Banque bénéficiaire :</span
-                >
+            <div class="row g-0 mb-3 border-bottom border-dotted pb-1">
+              <div class="col-12 col-sm-auto">
                 <span
-                  class="border-bottom border-dotted flex-fill px-2 fw-semibold d-flex align-items-center gap-2 text-dark"
+                  class="fw-semibold text-dark me-2"
+                  style="min-width: 9rem; display: inline-block"
+                  >Adresse Complète :</span
                 >
-                  <span>{{ f["bankBeneficiaire"].value?.split("(")[0] }}</span>
+              </div>
+              <div class="col-12 col-sm flex-fill">
+                <span class="fw-semibold text-dark text-wrap">{{
+                  f["adresseB"].value
+                }}</span>
+              </div>
+            </div>
+
+            <div class="row g-0 mb-3 border-bottom border-dotted pb-1">
+              <div class="col-12 col-sm-auto">
+                <span
+                  class="fw-semibold text-dark me-2"
+                  style="min-width: 9rem; display: inline-block"
+                  >IBAN (ou N° Compte) :</span
+                >
+              </div>
+              <div class="col-12 col-sm flex-fill">
+                <span class="fw-semibold text-dark font-monospace">{{
+                  f["ibanNCompte"].value
+                }}</span>
+              </div>
+            </div>
+            <div
+              class="row g-2 mt-2 border-bottom border-dotted pb-1 align-items-baseline"
+            >
+              <div
+                class="col-12 col-md-8 d-flex flex-wrap align-items-baseline gap-2"
+              >
+                <span
+                  class="fw-semibold text-dark text-nowrap"
+                  style="min-width: 9rem"
+                >
+                  Banque bénéficiaire :
+                </span>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <span class="fw-semibold text-dark">
+                    {{ f["bankBeneficiaire"].value?.split("(")[0] }}
+                  </span>
                   <span
                     *ngIf="f['bankBeneficiaire'].value?.includes('(')"
-                    class="bg-dark text-white small px-2 py-1 rounded fw-bold text-uppercase shadow-sm"
+                    class="bg-dark text-white badge rounded-1 text-uppercase small"
+                    style="font-size: 0.65rem; padding: 0.2rem 0.4rem"
                   >
                     {{
                       f["bankBeneficiaire"].value.split("(")[1].replace(")", "")
                     }}
                   </span>
-                </span>
+                </div>
               </div>
-              <div class="col-12 col-md-6 d-flex align-items-end gap-2">
-                <span class="fw-bold fst-italic text-dark">SWIFT :</span>
-                <span
-                  class="border-bottom border-dotted flex-fill px-2 fw-semibold text-dark"
-                  >{{ f["swifiBankBeneficiaire"].value }}</span
+
+              <div
+                class="col-12 col-md-4 d-flex align-items-baseline gap-2 justify-content-md-end"
+              >
+                <span class="fw-bold fst-italic text-dark small text-nowrap"
+                  >SWIFT :</span
                 >
+                <span
+                  class="fw-semibold text-dark font-monospace ps-2 border-start border-2 border-secondary"
+                >
+                  {{ f["swifiBankBeneficiaire"].value }}
+                </span>
               </div>
             </div>
 
-            <div class="row g-3 mt-2">
-              <div class="col-12 col-md-6 d-flex align-items-end gap-2">
-                <span class="fw-semibold text-dark" style="min-width: 9rem"
-                  >Banque intermédiaire :</span
-                >
+            <div
+              class="row g-2 mt-2 border-bottom border-dotted pb-1 align-items-baseline"
+              *ngIf="f['bankIntermediaire'].value"
+            >
+              <div
+                class="col-12 col-md-8 d-flex flex-wrap align-items-baseline gap-2"
+              >
                 <span
-                  class="border-bottom border-dotted flex-fill px-2 fw-semibold d-flex align-items-center gap-2 text-dark"
+                  class="fw-semibold text-dark text-nowrap"
+                  style="min-width: 9rem"
                 >
-                  <span>{{ f["bankIntermediaire"].value?.split("(")[0] }}</span>
+                  Banque intermédiaire :
+                </span>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <span class="fw-semibold text-dark">
+                    {{ f["bankIntermediaire"].value?.split("(")[0] }}
+                  </span>
                   <span
                     *ngIf="f['bankIntermediaire'].value?.includes('(')"
-                    class="bg-dark text-white small px-2 py-1 rounded fw-bold text-uppercase"
+                    class="bg-dark text-white badge rounded-1 text-uppercase small"
+                    style="font-size: 0.65rem"
                   >
                     {{
                       f["bankIntermediaire"].value
@@ -1052,19 +1117,25 @@
                         .replace(")", "")
                     }}
                   </span>
-                </span>
+                </div>
               </div>
-              <div class="col-12 col-md-6 d-flex align-items-end gap-2">
-                <span class="fw-bold fst-italic text-dark">SWIFT :</span>
-                <span
-                  class="border-bottom border-dotted flex-fill px-2 fw-semibold text-dark"
-                  >{{ f["swifibankIntermediaire"].value }}</span
+
+              <div
+                class="col-12 col-md-4 d-flex align-items-baseline gap-2 justify-content-md-end"
+              >
+                <span class="fw-bold fst-italic text-dark small text-nowrap"
+                  >SWIFT :</span
                 >
+                <span
+                  class="fw-semibold text-dark font-monospace border-start ps-2 ms-1 border-secondary"
+                  style="border-width: 2px !important"
+                >
+                  {{ f["swifibankIntermediaire"].value }}
+                </span>
               </div>
             </div>
           </div>
         </div>
-
         <!-- Avertissement -->
         <div
           class="border border-secondary p-3 bg-light small fst-italic text-dark shadow-sm"
@@ -1126,39 +1197,38 @@
       </button>
 
       <!-- Boutons Suivant / Valider -->
-      <div class="d-flex gap-2">
-        <!-- Suivant -->
-        <button
-          *ngIf="currentStep < 4"
-          type="button"
-          (click)="nextStep()"
-          [disabled]="!isStepValid(currentStep)"
-          class="btn text-white"
-          [ngClass]="{
-            'btn-primary': isStepValid(currentStep),
-            'opacity-50 cursor-not-allowed': !isStepValid(currentStep),
-          }"
-          style="background-color: #3b3b7a; border-color: #3b3b7a"
-        >
-          Suivant
-        </button>
+      <button
+        *ngIf="currentStep < 4"
+        type="button"
+        (click)="nextStep()"
+        [disabled]="!isStepValid(currentStep)"
+        class="btn text-white"
+        [ngClass]="{
+          'btn-primary': isStepValid(currentStep),
+          'opacity-50 cursor-not-allowed': !isStepValid(currentStep),
+        }"
+        style="background-color: #3b3b7a; border-color: #3b3b7a"
+      >
+        Suivant
+      </button>
+      <button
+        type="submit"
+        *ngIf="currentStep === 4"
+        (click)="validateTransactions()"
+        [disabled]="isSubmitting"
+        style="background-color: #3b3b7a; border-color: #3b3b7a"
+        class="btn text-white flex items-center gap-2"
+      >
+        <span *ngIf="!isSubmitting" class="text-xs">✓</span>
+        <span
+          *ngIf="isSubmitting"
+          class="inline-block animate-spin h-3 w-3 border-2 border-white border-t-transparent rounded-full"
+        ></span>
 
-        <!-- Valider -->
-        <button
-          *ngIf="currentStep === 4"
-          type="submit"
-          (click)="validateTransactions()"
-          class="btn d-flex align-items-center gap-1 text-white"
-          style="background-color: #3b3b7a; border-color: #3b3b7a"
-        >
-          <span class="small">✓</span>
-          <span
-            class="small fw-bold text-uppercase"
-            style="letter-spacing: 0.05em"
-            >Valider</span
-          >
-        </button>
-      </div>
+        <span class="text-xs font-bold uppercase tracking-wide">
+          {{ isSubmitting ? "Validation en cours..." : "Valider" }}
+        </span>
+      </button>
     </div>
   </div>
 </form>

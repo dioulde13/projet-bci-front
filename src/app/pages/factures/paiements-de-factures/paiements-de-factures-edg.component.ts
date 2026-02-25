@@ -449,6 +449,8 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         this.vcAccountType === 'PREPAID' ? 'Prépaiement' : 'Poste de paiement',
       organisation_id: this.iOrganisationID,
       user_id: this.infosUser.id,
+      vcMerchandAccountName: this.vcAccountName ?? '',
+      vcSenderCurrency: this.devise
     };
     // infosCompteurPostpayer
     console.log('PAYLOAD ENVOYÉ 👉', payload);

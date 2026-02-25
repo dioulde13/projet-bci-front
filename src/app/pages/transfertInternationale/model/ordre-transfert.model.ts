@@ -6,6 +6,9 @@ export interface IBeneficiaire {
   vcAccountNumber: string;
   vcName: string;
   vcBIC: string;
+  vcLastName: string;
+  vcFirstName: string;
+  vcCurrency:string;
   bankIntermediaire?: string;
   swifibankIntermediaire?: string;
 }

@@ -8,7 +8,7 @@ import {
 // import { RouterLink } from '@angular/router';
 // import { TranfertUniqueService } from '../../../services/transfertUniqueService/tranfert-unique.service';
 // import { PaiementInterneExterneService } from '../../../servicesNodes/paiementInterneExterne/paiement-interne-externe.service';
-import { ToastrService } from 'ngx-toastr';
+// import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModePaiementService } from '../../../services/modePaiementServices/mode-paiement.service';
@@ -121,7 +121,7 @@ export class RecapModePaiementComponent implements OnInit {
       vcBenefAccount: this.InfosFormulaireModePaiement?.payload.vcBenefAccount,
       mAmount: this.InfosFormulaireModePaiement?.payload.mAmount,
       vcOperatorAccount:
-        this.InfosFormulaireModePaiement?.payload.vcOperatorAccount,
+        this.InfosFormulaireModePaiement?.payload.vcAccountName,
       mFees: this.InfosFormulaireModePaiement?.payload.mFees,
       vcNotes: this.InfosFormulaireModePaiement?.payload.vcNotes,
       vcOperationType:
@@ -170,12 +170,14 @@ export class RecapModePaiementComponent implements OnInit {
       benef_account: this.InfosFormulaireModePaiement?.payload.vcBenefAccount,
       amount: this.InfosFormulaireModePaiement?.payload.mAmount,
       operator_account:
-        this.InfosFormulaireModePaiement?.payload.vcOperatorAccount,
+        this.InfosFormulaireModePaiement?.payload.vcAccountName,
       fees: this.InfosFormulaireModePaiement?.payload.mFees,
       notes: this.InfosFormulaireModePaiement?.payload.vcNotes,
       operation_type: this.InfosFormulaireModePaiement?.payload.vcOperationType,
       organisation_id: this.userInfo.iOrganisationID,
       user_id: this.userInfo.id,
+      vcSenderCurrency: this.InfosFormulaireModePaiement?.devise,
+      vcOperatorAccountName: this.InfosFormulaireModePaiement?.payload.vcAccountName,
     };
 
     // console.log('Payload Mobile Money :', payload);
