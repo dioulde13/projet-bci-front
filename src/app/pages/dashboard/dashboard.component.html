@@ -354,6 +354,7 @@
                     <th>Numéro de compte</th>
                     <th>Type de compte</th>
                     <th>Solde net</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -364,6 +365,7 @@
                     <td class="text-nowrap align-content-center">
                       {{ compte.mBalance | number }} {{ compte.vcCurrency }}
                     </td>
+                    <td class="text-start align-content-center">{{ compte.status }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -375,15 +377,15 @@
 
       <!-- Dix dernières transactions -->
       <div class="col-xl-8 d-flex flex-column">
-        <div class="card h-100 d-flex flex-column">
+        <div class="card d-flex flex-column">
           <div class="card-header bg-transparent d-flex align-items-center">
             <h4 class="flex-grow-1 card-title mb-0">Dix dernières transactions</h4>
           </div>
 
-          <div class="card-header d-flex">
+          <div class="d-flex">
             <div class="row account-info w-100">
               <div class="col-12">
-                <div class="flex-shrink-0 float-end">
+                <div class="flex-shrink-0 float-start">
                   <select
                     class="form-select-sm form-select mb-0 w-100"
                     [(ngModel)]="selectedAccountNumber"

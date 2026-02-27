@@ -85,7 +85,7 @@
         <div class="row g-4">
           <!-- Raison Sociale -->
           <div class="col-12">
-            <label class="form-label fw-bold text-dark">
+            <label class="form-label fw-bold text-dark text-start d-block">
               Raison Sociale :
             </label>
 
@@ -99,7 +99,7 @@
           </div>
           <!-- Adresse -->
           <div class="col-12">
-            <label class="form-label fw-bold text-dark">
+            <label class="form-label fw-bold text-dark text-start d-block">
               Adresse Complète :
             </label>
 
@@ -113,7 +113,7 @@
           </div>
           <!-- Compte Transfert -->
           <div class="col-md-6">
-            <label class="form-label fw-bold text-dark">
+            <label class="form-label fw-bold text-dark text-start d-block">
               N° Compte transfert <span class="text-danger">*</span> :
             </label>
 
@@ -148,7 +148,7 @@
             <div class="grow">
               <label
                 for="compteCommission"
-                class="form-label fw-bold text-dark"
+                class="form-label fw-bold text-dark text-start d-block"
               >
                 N° Compte Commission
                 <span class="text-danger">*</span>
@@ -178,7 +178,7 @@
             </div>
           </div>
           <div *ngIf="selectedAccountDetails" class="">
-            <div class="">
+            <div class="form-label fw-bold text-dark text-start d-block">
               <span class="text-muted small fw-bold">Solde disponible :</span>
               <span class="mb-0 text-danger fw-bold">
                 {{ selectedAccountDetails.soldeDisp | number: "1.2-2" }}
@@ -188,7 +188,7 @@
           </div>
           <!-- Montant -->
           <div class="mb-3 col-md-6">
-            <label for="montant" class="form-label fw-bold">
+            <label for="montant" class="form-label fw-bold text-dark text-start d-block">
               Montant <span class="text-danger">*</span> :
             </label>
             <input
@@ -225,7 +225,7 @@
           </div>
           <!-- Devise -->
           <div class="mb-3 col-md-6">
-            <label class="form-label fw-bold">Devise :</label>
+            <label class="form-label fw-bold text-dark text-start d-block">Devise :</label>
             <div class="d-flex gap-3 border rounded p-2">
               <div
                 *ngFor="let d of ['USD', 'EUR', 'GNF']"
@@ -252,7 +252,7 @@
                 class="p-3 rounded border bg-light d-flex justify-content-between align-items-center"
               >
                 <div>
-                  <small class="text-muted d-block">Montant saisi</small>
+                  <small class="form-label fw-bold text-dark text-start d-block">Montant saisi</small>
                   <span class="fw-bold text-dark"
                     >{{ transfertForm.get("montant")?.value | number: "1.2-2" }}
                     {{ accountCurrency }}</span
@@ -267,7 +267,7 @@
                 </div>
 
                 <div class="text-end">
-                  <small class="text-muted d-block">Montant à transférer</small>
+                  <small class="form-label fw-bold text-dark text-start d-block">Montant à transférer</small>
                   <span class="fw-bold text-danger">
                     {{ convertedAmount | number: "1.2-2" }}
                     {{ transfertForm.get("devise")?.value }}
@@ -279,7 +279,7 @@
 
           <!-- Frais à l'étranger -->
           <div class="mb-3">
-            <label class="form-label fw-bold">Frais à l'étranger :</label>
+            <label class="form-label fw-bold text-dark text-start d-block">Frais à l'étranger :</label>
             <div class="d-flex gap-3 border rounded p-3">
               <div
                 *ngFor="let mode of ['Partager', 'Donneur', 'Bénéficiaire']"
@@ -308,7 +308,7 @@
         <div class="row g-4">
           <!-- Motif économique -->
           <div class="col-12">
-            <label class="form-label fw-bold text-secondary">
+            <label class="form-label fw-bold text-dark text-start d-block">
               Motif économique <span class="text-danger">*</span> :
             </label>
 
@@ -335,7 +335,7 @@
 
         <!-- Type de transaction -->
         <div class="mt-4">
-          <label class="form-label fw-bold text-uppercase text-secondary">
+          <label class="form-label fw-bold text-dark text-start d-block">
             Type de Transaction
           </label>
 
@@ -376,7 +376,7 @@
               <!-- Autres -->
               <div class="col-12 mt-3 pt-3 border-top">
                 <label
-                  class="form-label text-muted fw-bold small text-uppercase"
+                  class="form-label fw-bold text-dark text-start d-block"
                 >
                   Autres :
                 </label>
@@ -394,7 +394,7 @@
         </div>
         <div class="row g-3 pt-4 border-top mt-4">
           <div class="col-12 col-md-6">
-            <label class="form-label fw-bold text-uppercase small mb-1">
+            <label class="form-label fw-bold text-dark text-start d-block">
               Pièce jointe DDI :
               <span
                 *ngIf="f['ddiFile'].hasValidator(Validators.required)"
@@ -402,7 +402,7 @@
                 >*</span
               >
             </label>
-            <p class="small text-muted mb-2 fst-italic">
+            <p class="small text-muted mb-2 fst-italic text-start d-block">
               Format PDF (Max 5 Mo)
             </p>
             <input
@@ -426,7 +426,7 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <label class="form-label fw-bold text-uppercase small mb-1">
+            <label class="form-label fw-bold text-dark text-start d-block">
               Pièce jointe Assurance :
               <span
                 *ngIf="f['assuranceFile'].hasValidator(Validators.required)"
@@ -434,7 +434,7 @@
                 >*</span
               >
             </label>
-            <p class="small text-muted mb-2 fst-italic">
+            <p class="small text-muted mb-2 fst-italic text-start d-block">
               Format PDF (Max 5 Mo)
             </p>
             <input
@@ -498,10 +498,48 @@
           *ngIf="modeSelection === 'existant'"
           class="mb-4 position-relative"
         >
-          <label class="form-label small text-secondary mb-1">
+          <label class="form-label small text-secondary mb-1 text-start d-block">
             Rechercher un bénéficiaire enregistré
           </label>
           <div class="position-relative">
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              [ngModelOptions]="{ standalone: true }"
+              (focus)="isDropdownOpen = true"
+              (blur)="closeDropdownWithDelay()"
+              [placeholder]="
+                isLoadingSwift
+                  ? 'Vérification du code SWIFT...'
+                  : '🔍 Nom de la banque ou code SWIFT...'
+              "
+              style="height: 45px"
+              class="form-control"
+              [disabled]="isLoadingSwift"
+            />
+
+            <div
+              *ngIf="isLoadingSwift"
+              class="position-absolute top-50 end-0 translate-middle-y me-3"
+            >
+              <div
+                class="spinner-border spinner-border-sm text-primary"
+                role="status"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+
+            <button
+              *ngIf="searchTerm && !isLoadingSwift"
+              (click)="searchTerm = ''; clearBeneficiaireFields()"
+              class="btn btn-sm position-absolute top-0 end-0 text-danger h-100 d-flex align-items-center"
+              style="border: none; background: none"
+            >
+              ✕
+            </button>
+          </div>
+          <!-- <div class="position-relative">
             <input
               type="text"
               [(ngModel)]="searchTerm"
@@ -520,7 +558,7 @@
             >
               ✕
             </button>
-          </div>
+          </div> -->
 
           <div
             *ngIf="isDropdownOpen"
@@ -529,7 +567,7 @@
           >
             <div
               *ngIf="!searchTerm"
-              class="px-2 py-1 small text-muted text-uppercase bg-light fw-bold"
+              class="px-2 py-1 small text-muted text-uppercase bg-light fw-bold text-start d-block"
             >
               Suggestions
             </div>
@@ -552,7 +590,7 @@
         <div class="row g-4">
           <!-- Raison Sociale -->
           <div class="col-12">
-            <label class="form-label fw-bold"
+            <label class="form-label fw-bold text-start d-block"
               >Raison Sociale <span class="text-danger">*</span></label
             >
             <input
@@ -570,7 +608,7 @@
 
           <!-- Adresse complète -->
           <div class="col-12">
-            <label class="form-label fw-bold">Adresse Complète</label>
+            <label class="form-label fw-bold text-start d-block">Adresse Complète</label>
             <textarea
               formControlName="adresseB"
               rows="2"
@@ -582,7 +620,7 @@
 
           <!-- IBAN / N°Compte -->
           <div class="col-12">
-            <label class="form-label fw-bold"
+            <label class="form-label fw-bold text-start d-block"
               >IBAN (ou N°Compte) <span class="text-danger">*</span></label
             >
             <input
@@ -600,7 +638,7 @@
 
           <!-- Banque bénéficiaire et SWIFT -->
           <div class="col-md-6">
-            <label class="form-label fw-bold"
+            <label class="form-label fw-bold text-start d-block"
               >Banque Bénéficiaire <span class="text-danger">*</span></label
             >
             <input
@@ -613,7 +651,7 @@
           </div>
 
           <div class="col-md-6 position-relative">
-            <label class="form-label fw-bold"
+            <label class="form-label fw-bold text-start d-block"
               >SWIFT <span class="text-danger">*</span></label
             >
             <input
@@ -653,7 +691,7 @@
 
           <!-- Banque intermédiaire -->
           <div class="col-md-6">
-            <label class="form-label fw-bold">Banque intermédiaire :</label>
+            <label class="form-label fw-bold text-start d-block">Banque intermédiaire :</label>
             <input
               type="text"
               formControlName="bankIntermediaire"
@@ -664,7 +702,7 @@
           </div>
 
           <div class="col-md-6 position-relative">
-            <label class="form-label fw-bold">SWIFT Intermédiaire :</label>
+            <label class="form-label fw-bold text-start d-block">SWIFT Intermédiaire :</label>
             <input
               type="text"
               formControlName="swifibankIntermediaire"
@@ -938,7 +976,7 @@
             </div>
 
             <div class="pt-2">
-              <span class="fw-bold small d-block mb-2"
+              <span class="fw-bold small d-block mb-2 text-start d-block"
                 >Type de Transaction :</span
               >
               <div
@@ -959,9 +997,11 @@
                   "
                 >
                   <span
-                    class="d-flex justify-content-center align-items-center border border-secondary bg-white"
+                    class="d-flex justify-content-center align-items-center border border-secondary"
                     [class.bg-dark]="f['typeTransaction'].value === t"
                     [class.text-white]="f['typeTransaction'].value === t"
+                    [class.bg-secondary]="f['typeTransaction'].value === t"
+                    
                     style="
                       width: 1.1rem;
                       height: 1.1rem;
@@ -1012,7 +1052,7 @@
                 >
               </div>
               <div class="col-12 col-sm flex-fill">
-                <span class="fw-semibold text-dark text-uppercase text-wrap">{{
+                <span class="fw-semibold text-dark text-uppercase text-wrap text-start d-block">{{
                   f["raisonSocialeB"].value
                 }}</span>
               </div>
@@ -1027,7 +1067,7 @@
                 >
               </div>
               <div class="col-12 col-sm flex-fill">
-                <span class="fw-semibold text-dark text-wrap">{{
+                <span class="fw-semibold text-dark text-wrap text-start d-block">{{
                   f["adresseB"].value
                 }}</span>
               </div>
@@ -1042,7 +1082,7 @@
                 >
               </div>
               <div class="col-12 col-sm flex-fill">
-                <span class="fw-semibold text-dark font-monospace">{{
+                <span class="fw-semibold text-dark font-monospace text-start d-block">{{
                   f["ibanNCompte"].value
                 }}</span>
               </div>
@@ -1237,6 +1277,7 @@
   *ngIf="showSwiftModal"
   [data]="tempSwiftData"
   [errorMessage]="swiftError"
+  [isLoading]="isLoadingSwift"
   [title]="
     tempSwiftTarget === 'beneficiaire'
       ? 'Vérification Banque Bénéficiaire'

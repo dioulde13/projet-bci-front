@@ -176,6 +176,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         next: (response) => {
           this.loadingListeCompteClient = false;
           this.listeCompteClient = response.data?.[0]?.comptes ?? [];
+          console.log("this.listeCompteClient: ", this.listeCompteClient);
           this.loading = false;
           this.countNombreComptes = this.listeCompteClient.length;
 

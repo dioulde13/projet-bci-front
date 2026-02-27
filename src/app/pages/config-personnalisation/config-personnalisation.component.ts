@@ -116,7 +116,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
         this.listeRoleNiveau = response.data.filter(
           (f: any) => f.vcRoleName !== 'DAF',
         );
-        console.log(this.listeRoleNiveau);
+        // console.log(this.listeRoleNiveau);
         // console.log(this.listeRoleNiveau);
       },
       error(err: any) {},
@@ -421,6 +421,8 @@ export class ConfigPersonnalisationComponent implements OnInit {
     // Récupération des comptes depuis le localStorage
     const comptesStockes = localStorage.getItem('comptes');
     this.comptes = comptesStockes ? JSON.parse(comptesStockes) : [];
+
+    console.log('this.comptes: ', this.comptes);
 
     // 🔥 Réappliquer la sélection cochée
     const savedSelection = localStorage.getItem('listecomptesSelectioner');
@@ -1090,7 +1092,11 @@ export class ConfigPersonnalisationComponent implements OnInit {
       nomCompte: acc.nomCompte,
       devise: acc.devise,
       posdisp: acc.posdisp,
+      btBlocked: acc.isBlocked ? 1 : 0,
+      vcBlockedStatus: acc.isBlockedDetails,
     }));
+
+    console.log('formattedAccounts: ', formattedAccounts);
 
     // 3️⃣ Construction de l'objet client
     const client = {
@@ -1108,7 +1114,9 @@ export class ConfigPersonnalisationComponent implements OnInit {
       dtBirthDate: vcJSONFullDetails.clientDetails?.dateOfBirth || '',
       vcMotherName: vcJSONFullDetails.clientDetails?.motherName || '',
       vcEmail: vcJSONFullDetails.clientDetails?.mail || '',
+      client: vcJSONFullDetails.clientDetails?.client || '',
       vcJSONFullDetails: vcJSONFullDetails,
+
     };
 
     // 4️⃣ Log général avant envoi
@@ -1167,7 +1175,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
         },
         error: (err) => {
           this.loadingFinal = false;
-            this.notification.error('Une erreur interne est survenue.');
+          this.notification.error('Une erreur interne est survenue.');
 
           // this.toastr.error(err.message, '', {
           //   positionClass: 'toast-custom-center',

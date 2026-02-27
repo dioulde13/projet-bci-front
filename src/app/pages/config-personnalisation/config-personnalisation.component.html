@@ -68,14 +68,14 @@
                         step === 1
                           ? "Comptes"
                           : step === 2
-                          ? "Validation"
-                          : step === 3
-                          ? "Catégories"
-                          : step === 4
-                          ? "Sécurité"
-                          : step === 5
-                          ? "Lien"
-                          : "Résumé"
+                            ? "Validation"
+                            : step === 3
+                              ? "Catégories"
+                              : step === 4
+                                ? "Sécurité"
+                                : step === 5
+                                  ? "Lien"
+                                  : "Résumé"
                       }}
                     </p>
                   </div>
@@ -107,11 +107,57 @@
                           />
                           <b class="compte">Compte - {{ compte.compte }}</b
                           ><br />
-                          <small>
-                            Type : {{ compte.typ }} | Devise :
-                            {{ compte.devise }} | Solde :
-                            {{ formatMontant(compte.posdisp) }}
-                          </small>
+                          <div class="d-flex flex-wrap gap-2 mt-1">
+                            <span
+                              class="badge rounded-pill bg-primary-subtle text-primary"
+                            >
+                              <i class="fas fa-tag me-1"></i
+                              ><span class="text-white">Type :</span> :
+                              {{ compte.typ }}
+                            </span>
+
+                            <span
+                              class="badge rounded-pill bg-info-subtle text-info"
+                            >
+                              <i class="fas fa-coins me-1"></i><span class="text-white">Devise </span>:
+                              {{ compte.devise }}
+                            </span>
+
+                            <span
+                              class="badge rounded-pill bg-success-subtle text-success"
+                            >
+                              <i class="fas fa-wallet me-1"></i><span class="text-white">Solde</span> :
+                              {{ formatMontant(compte.posdisp) }}
+                            </span>
+
+                            <span
+                              class="badge rounded-pill"
+                              [ngClass]="
+                                compte.isBlocked
+                                  ? 'bg-success-subtle text-success'
+                                  : 'bg-danger-subtle text-danger'
+                              "
+                            >
+                              <i
+                                class="fas me-1"
+                                [ngClass]="
+                                  compte.isBlocked
+                                    ? 'fa-check-circle'
+                                    : 'fa-ban'
+                                "
+                              ></i>
+                             <span class="text-white"> Status compte </span>:
+                              {{ compte.isBlocked ? "Actif" : "Bloqué" }}
+                            </span>
+
+                            <span
+                              class="badge rounded-pill bg-warning-subtle text-warning"
+                              *ngIf="compte.isBlockedDetails"
+                            >
+                              <i class="fas fa-info-circle me-1"></i>
+                             <span class="text-white"> Detail compte </span> : {{ compte.isBlockedDetails }}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
@@ -589,8 +635,8 @@
                                   s.option === "Code pin(transaction)"
                                     ? "****"
                                     : s.statut && s.statut.trim() !== ""
-                                    ? s.statut
-                                    : "Non configuré"
+                                      ? s.statut
+                                      : "Non configuré"
                                 }}
                               </td>
                               <td>

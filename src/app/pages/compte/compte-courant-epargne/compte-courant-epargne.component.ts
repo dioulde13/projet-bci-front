@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DashboardService } from '../../../services/dashboard/dashboard.service';
 import { BalanceService } from '../../../servicesNodes/balance/balance.service';
-import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -17,7 +16,6 @@ export class CompteCourantEpargneComponent implements OnInit {
   constructor(
     private listeCompteCLientService: DashboardService,
     private balanceService: BalanceService,
-    private toastr: ToastrService,
   ) {}
 
   iOrganisationID!: number;
@@ -44,7 +42,8 @@ export class CompteCourantEpargneComponent implements OnInit {
   }
 
   selectedAccountNumber: string = '';
-  loading = true;
+  loading = true;           // chargement de la liste des comptes
+  loadingBalance = true;    // chargement du solde (card bleue)
   errorMessage = '';
   typesCompte: string = '';
   listeCompteClient: any[] = [];
@@ -52,9 +51,7 @@ export class CompteCourantEpargneComponent implements OnInit {
 
   getListeCompteClient(): void {
     if (!this.iOrganisationID) {
-      console.warn(
-        'Impossible de récupérer la liste : iOrganisationID non défini',
-      );
+      console.warn('Impossible de récupérer la liste : iOrganisationID non défini');
       return;
     }
 
@@ -65,7 +62,6 @@ export class CompteCourantEpargneComponent implements OnInit {
           this.listeCompteClient = response.data?.[0]?.comptes ?? [];
           this.loading = false;
           this.countNombreComptes = this.listeCompteClient.length;
-          // console.log('Liste des comptes client :', this.listeCompteClient);
 
           // Extraire les types
           const types = [
@@ -73,20 +69,18 @@ export class CompteCourantEpargneComponent implements OnInit {
           ];
           this.typesCompte = types.join(' - ');
 
-          // 🔥 Sélection automatique du premier compte
+          // Sélection automatique du premier compte
           if (this.listeCompteClient.length > 0) {
-            this.selectedAccountNumber =
-              this.listeCompteClient[0].vcAccountNumber;
-            // console.log('selectedAccountNumber :', this.selectedAccountNumber);
-
+            this.selectedAccountNumber = this.listeCompteClient[0].vcAccountNumber;
             this.onDebitAccountChange(this.selectedAccountNumber);
-            // ✅ ICI SEULEMENT
-            // this.processAccounts();
+          } else {
+            this.loadingBalance = false; // aucun compte, pas de solde à charger
           }
         },
         error: (err: any) => {
           this.errorMessage = err.message;
           this.loading = false;
+          this.loadingBalance = false;
           console.error('Erreur getListeCompteClient', err);
         },
       });
@@ -101,6 +95,7 @@ export class CompteCourantEpargneComponent implements OnInit {
   deviseDebiteur: any = '';
 
   onDebitAccountChange(accountNumber: string): void {
+    this.loadingBalance = true; // ← skeleton solde activé à chaque changement de compte
     this.getBalance(accountNumber);
   }
 
@@ -114,25 +109,22 @@ export class CompteCourantEpargneComponent implements OnInit {
           this.soldeDebiteur = 0;
           this.deviseDebiteur = '';
         }
+        this.loadingBalance = false; // ← skeleton solde désactivé
       },
       error: (error) => {
         console.error('Erreur lors de la récupération du solde :', error);
         this.soldeDebiteur = 0;
+        this.loadingBalance = false; // ← skeleton solde désactivé même en erreur
       },
     });
   }
 
   formatSolde(solde: any): number {
     if (solde === null || solde === undefined) return 0;
-
-    // Si c'est déjà un number
     if (typeof solde === 'number') return solde;
-
-    // Si c'est une string avec virgule (ex: "2416,51")
     if (typeof solde === 'string') {
       return Number(solde.replace(',', '.')) || 0;
     }
-
     return 0;
   }
 }

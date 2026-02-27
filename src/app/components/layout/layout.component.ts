@@ -39,9 +39,10 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
     private authService: AuthService,
     private router: Router,
     @Inject(DOCUMENT) private document: Document,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
     private notification: NotificationService,
     private statutBancaireService: StatutBancaireService,
+    //  private notification: NotificationService,
   ) {}
 
   userCurrentTimeZone: string = '';
@@ -206,34 +207,38 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   logout(): void {
     this.isLoggingOut = true;
 
-    const toastRef = this.toastr.success('Déconnexion en cours...', '', {
-      positionClass: 'toast-custom-center',
-      disableTimeOut: true,
-    });
+    this.notification.error('Déconnexion en cours...');
+    // const toastRef = this.toastr.success('Déconnexion en cours...', '', {
+    //   positionClass: 'toast-custom-center',
+    //   disableTimeOut: true,
+    // });
 
     this.authService.deConnexion().subscribe({
       next: (response) => {
         this.isLoggingOut = false;
-        this.toastr.clear(toastRef.toastId);
+        // this.toastr.clear(toastRef.toastId);
 
         if (response.status === 200) {
-          this.toastr.success('Déconnexion réussie...', '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.success('Déconnexion réussie...');
+          // this.toastr.success('Déconnexion réussie...', '', {
+          //   positionClass: 'toast-custom-center',
+          // });
           this.router.navigate(['/login']);
         } else {
-          this.toastr.error(response.message, '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.notification.error(response.message);
+          // this.toastr.error(response.message, '', {
+          //   positionClass: 'toast-custom-center',
+          // });
         }
       },
       error: (error) => {
         this.isLoggingOut = false;
-        this.toastr.clear(toastRef.toastId);
+        // this.toastr.clear(toastRef.toastId);
         console.error('Erreur lors de la déconnexion :', error);
-        this.toastr.error('Erreur lors de la déconnexion.', '', {
-          positionClass: 'toast-custom-center',
-        });
+        this.notification.success('Erreur lors de la déconnexion.');
+        // this.toastr.error('Erreur lors de la déconnexion.', '', {
+        //   positionClass: 'toast-custom-center',
+        // });
       },
     });
   }

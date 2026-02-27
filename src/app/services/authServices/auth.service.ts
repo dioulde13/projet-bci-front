@@ -1,9 +1,10 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { catchError, Observable, throwError, tap, switchMap } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { catchError, Observable, throwError, tap} from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { map } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { InactivityServiceTsService } from '../inactivites/inactivity.service.ts.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +21,7 @@ export class AuthService {
   userInfo = this._userInfo.asReadonly();
   userInfoConfig = this._userInfoConfig.asReadonly();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private inactivityService: InactivityServiceTsService) {
     // console.log('%c[AuthService] ✅ Initialisation du service', 'color: cyan;');
     this.restoreFromLocalStorage();
   }
@@ -251,21 +252,21 @@ export class AuthService {
   //   return token;
   // }
 
-  logout(): void {
-    // console.log(
-    //   '%c[AuthService] 🚪 Déconnexion utilisateur...',
-    //   'color: orange;'
-    // );
-    localStorage.removeItem('token');
-    localStorage.removeItem('userInfo');
-    localStorage.removeItem('userInfoConfig');
-    this._userInfo.set(null);
-    this._userInfoConfig.set(null);
-    // console.log(
-    //   '%c[AuthService] ✅ Données utilisateur effacées',
-    //   'color: green;'
-    // );
-  }
+  // logout(): void {
+  //   // console.log(
+  //   //   '%c[AuthService] 🚪 Déconnexion utilisateur...',
+  //   //   'color: orange;'
+  //   // );
+  //   localStorage.removeItem('token');
+  //   localStorage.removeItem('userInfo');
+  //   localStorage.removeItem('userInfoConfig');
+  //   this._userInfo.set(null);
+  //   this._userInfoConfig.set(null);
+  //   // console.log(
+  //   //   '%c[AuthService] ✅ Données utilisateur effacées',
+  //   //   'color: green;'
+  //   // );
+  // }
 
   deConnexion(appName: string = 'Banking web site'): Observable<any> {
     const params = new HttpParams().set('appName', appName);
@@ -283,6 +284,7 @@ export class AuthService {
           localStorage.clear();
           this._userInfo.set(null);
           this._userInfoConfig.set(null);
+           this.inactivityService.stopWatching();
         }),
         catchError((error) => {
           console.error(

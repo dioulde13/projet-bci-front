@@ -13,9 +13,11 @@ import { OtpLoginServiceService } from '../../../services/otpLogin/otp-login-ser
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/authServices/auth.service';
 
-import { ToastrService } from 'ngx-toastr';
-import { AuthServicesNodes } from '../../../servicesNodes/authServices/auth.service';
+// import { ToastrService } from 'ngx-toastr';
+// import { AuthServicesNodes } from '../../../servicesNodes/authServices/auth.service';
 import { NotificationService } from '../../../services/notification/notification.service';
+import { InactivityServiceTsService } from '../../../services/inactivites/inactivity.service.ts.service';
+// import { InactivityService } from '../../../services/inactivites/inactivity.service.ts.service';
 
 @Component({
   selector: 'app-valider-otp-after-login',
@@ -57,6 +59,7 @@ export class ValiderOtpAfterLoginComponent implements AfterViewInit, OnInit {
     // private authServiceNode: AuthServicesNodes,
     // private toastr: ToastrService,
     private notification: NotificationService,
+    private inactivityService: InactivityServiceTsService
   ) {}
 
   moveToNext(event: any, index: number) {
@@ -106,6 +109,7 @@ export class ValiderOtpAfterLoginComponent implements AfterViewInit, OnInit {
           // this.toastr.success('Connexion réussie avec succès...', '', {
           //   positionClass: 'toast-custom-center',
           // });
+          this.inactivityService.startWatching();
           this.router.navigate(['/dashboard']);
         } else {
           // apres  3 tantative d'envoi d'otp l'utilisateur est bloquer.

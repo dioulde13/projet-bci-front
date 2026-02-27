@@ -51,7 +51,7 @@ export class OrdreTransfertInternationalComponent implements OnInit {
   today = new Date();
   isSubmitting = false;
   // --- ÉTAT FINANCIER & RÉGLEMENTAIRE ---
-  readonly LIMIT_DDI_GNF = 500000;
+  readonly LIMIT_DDI_GNF = 20000;
   insuffisantBalance: boolean = false;
   exchangeRate: number = 0;
   convertedAmount: number = 0;
@@ -501,7 +501,7 @@ export class OrdreTransfertInternationalComponent implements OnInit {
 
     this.transferService.getCountryName(isoCode).subscribe({
       next: (res) => {
-        const country = res?.[1]?.[0]?.name;
+        const country = res?.data?.[1]?.[0]?.name;
         this.applyFinalData(
           isBenef,
           `${this.tempSwiftData.vcName} (${country?.toUpperCase() || isoCode.toUpperCase()})`,

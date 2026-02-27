@@ -1,0 +1,76 @@
+/* ============================================================
+   SKELETON LOADING ANIMATION
+   ============================================================ */
+
+@keyframes shimmer {
+  0%   { background-position: -800px 0; }
+  100% { background-position:  800px 0; }
+}
+
+/* Base skeleton */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #e2e8f0 25%,
+    #f1f5f9 50%,
+    #e2e8f0 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 4px;
+  display: block;
+}
+
+/* Texte générique */
+.skeleton-text {
+  height: 14px;
+  margin-bottom: 6px;
+  border-radius: 3px;
+}
+
+/* Badge dans les onglets */
+.skeleton-badge {
+  display: inline-block;
+  width: 26px;
+  height: 18px;
+  border-radius: 10px;
+  vertical-align: middle;
+  /* Animation adaptée au fond de l'onglet actif (bleu) */
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.20) 25%,
+    rgba(255,255,255,0.45) 50%,
+    rgba(255,255,255,0.20) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Onglet inactif : badge sur fond blanc */
+.nav-link:not(.active) .skeleton-badge {
+  background: linear-gradient(
+    90deg,
+    #e2e8f0 25%,
+    #f1f5f9 50%,
+    #e2e8f0 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Cellule thead figée sur fond bleu */
+.skeleton-thead-cell {
+  display: block;
+  height: 13px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* Wrapper du skeleton table */
+.skeleton-table-wrapper {
+  padding: 4px 0;
+}
+
+.skeleton-table-wrapper table td {
+  vertical-align: middle;
+}

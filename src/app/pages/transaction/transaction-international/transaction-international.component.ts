@@ -13,7 +13,7 @@ declare var bootstrap: any;
   standalone: true,
   imports: [FormsModule, CommonModule],
   templateUrl: './transaction-international.component.html',
-  styleUrl: './transaction-international.component.css',
+  styleUrl: './transaction-international.component.css'
 })
 export class TransactionInternationalComponent implements OnInit {
   constructor(
@@ -33,7 +33,7 @@ export class TransactionInternationalComponent implements OnInit {
 
   isLoadingUser: boolean = false;
 
-  pageSize = 10;
+  pageSize = 5;
   currentPage = 1;
   searchText = '';
   sortColumn = '';
@@ -41,14 +41,29 @@ export class TransactionInternationalComponent implements OnInit {
 
   selectedRowId: number | null = null;
 
-  ngOnInit(): void {
-    // Par défaut : 30 derniers jours
-    const today = new Date();
-    const il30Jours = new Date();
-    il30Jours.setDate(today.getDate() - 30);
+  // ========================
+  // SKELETON CONFIG
+  // ========================
+  skeletonRows = Array(5);  // 5 lignes fantômes
+  skeletonHeaders = [
+    { width: '90px'  },  // Date
+    { width: '110px' },  // Référence
+    { width: '120px' },  // Prénom et nom
+    { width: '120px' },  // Organisation
+    { width: '110px' },  // Bénéficiaire
+    { width: '100px' },  // Mode paiement
+    { width: '80px'  },  // Montant
+    { width: '80px'  },  // Montant converti
+    { width: '60px'  },  // Taux
+    { width: '80px'  },  // Description
+    { width: '70px'  },  // Statut
+    { width: '60px'  },  // Action
+  ];
 
-    this.dateDebut = il30Jours.toISOString().split('T')[0];
-    this.dateFin = today.toISOString().split('T')[0];
+  ngOnInit(): void {
+    // Pas de filtre de date par défaut — on affiche tout au chargement
+    this.dateDebut = '';
+    this.dateFin = '';
 
     const userJson = localStorage.getItem('userInfo');
     if (userJson) {
@@ -69,8 +84,6 @@ export class TransactionInternationalComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.listeHistoriqueTransactions = response?.data || [];
-
-          // Extraire les modes de paiement uniques
           this.listePaymentModes = [
             ...new Set(
               this.listeHistoriqueTransactions
@@ -78,13 +91,11 @@ export class TransactionInternationalComponent implements OnInit {
                 .filter((m) => !!m),
             ),
           ];
-
           this.currentPage = 1;
           this.isLoadingUser = false;
         },
         error: () => {
           this.isLoadingUser = false;
-          this.notification.error('Erreur lors du chargement des transactions.');
         },
       });
   }
@@ -95,16 +106,19 @@ export class TransactionInternationalComponent implements OnInit {
   get filteredData() {
     let data = [...this.listeHistoriqueTransactions];
 
+    // Comparaison sur la partie date uniquement (YYYY-MM-DD)
     if (this.dateDebut) {
-      const debut = new Date(this.dateDebut);
-      debut.setHours(0, 0, 0, 0);
-      data = data.filter((d) => new Date(d.dtCreated) >= debut);
+      data = data.filter((d) => {
+        const dateCreated = d.dtCreated?.substring(0, 10) ?? '';
+        return dateCreated >= this.dateDebut;
+      });
     }
 
     if (this.dateFin) {
-      const fin = new Date(this.dateFin);
-      fin.setHours(23, 59, 59, 999);
-      data = data.filter((d) => new Date(d.dtCreated) <= fin);
+      data = data.filter((d) => {
+        const dateCreated = d.dtCreated?.substring(0, 10) ?? '';
+        return dateCreated <= this.dateFin;
+      });
     }
 
     if (this.paymentModeName) {
@@ -149,10 +163,7 @@ export class TransactionInternationalComponent implements OnInit {
   }
 
   endIndex() {
-    return Math.min(
-      this.currentPage * this.pageSize,
-      this.filteredData.length,
-    );
+    return Math.min(this.currentPage * this.pageSize, this.filteredData.length);
   }
 
   goToPage(page: number) {
@@ -161,45 +172,21 @@ export class TransactionInternationalComponent implements OnInit {
     }
   }
 
-  previousPage() {
-    this.goToPage(this.currentPage - 1);
-  }
-
-  nextPage() {
-    this.goToPage(this.currentPage + 1);
-  }
+  previousPage() { this.goToPage(this.currentPage - 1); }
+  nextPage()     { this.goToPage(this.currentPage + 1); }
 
   getPages(): (number | string)[] {
     const total = this.totalPages();
     const pages: (number | string)[] = [];
-    const maxVisible = 5;
 
-    if (total <= maxVisible) {
+    if (total <= 5) {
       for (let i = 1; i <= total; i++) pages.push(i);
+    } else if (this.currentPage <= 3) {
+      pages.push(1, 2, 3, 4, 5, '...', total);
+    } else if (this.currentPage >= total - 2) {
+      pages.push(1, '...', total - 4, total - 3, total - 2, total - 1, total);
     } else {
-      if (this.currentPage <= 3) {
-        pages.push(1, 2, 3, 4, 5, '...', total);
-      } else if (this.currentPage >= total - 2) {
-        pages.push(
-          1,
-          '...',
-          total - 4,
-          total - 3,
-          total - 2,
-          total - 1,
-          total,
-        );
-      } else {
-        pages.push(
-          1,
-          '...',
-          this.currentPage - 1,
-          this.currentPage,
-          this.currentPage + 1,
-          '...',
-          total,
-        );
-      }
+      pages.push(1, '...', this.currentPage - 1, this.currentPage, this.currentPage + 1, '...', total);
     }
     return pages;
   }
@@ -217,17 +204,8 @@ export class TransactionInternationalComponent implements OnInit {
     }
   }
 
-  getSortIcon(col: string): string {
-    if (this.sortColumn !== col) return 'fas fa-sort text-muted';
-    return this.sortDirection === 'asc'
-      ? 'fas fa-sort-up text-primary'
-      : 'fas fa-sort-down text-primary';
-  }
-
   formatMontant(t: any): string {
-    const montant = Number(t);
-    if (isNaN(montant)) return '0,00';
-    return montant.toLocaleString('fr-FR', {
+    return Number(t).toLocaleString('fr-FR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
@@ -244,115 +222,67 @@ export class TransactionInternationalComponent implements OnInit {
     }
   }
 
-  getStatusClass(status: string): string {
-    if (!status) return 'badge bg-secondary';
-    switch (status.toLowerCase()) {
-      case 'success':   return 'badge bg-success';
-      case 'cancelled': return 'badge bg-secondary';
-      case 'failed':    return 'badge bg-danger';
-      case 'pending':   return 'badge bg-warning text-dark';
-      default:          return 'badge bg-secondary';
-    }
-  }
-
   // ========================
   // EXPORT EXCEL
   // ========================
   exportExcel() {
-    if (this.filteredData.length === 0) {
-      this.notification.error('Aucune donnée à exporter.');
-      return;
-    }
+    if (this.filteredData.length === 0) return;
 
     const dataForExcel = this.filteredData.map((d) => ({
-      'Date': new Date(d.dtCreated).toLocaleString('fr-FR'),
-      'Référence': d.Reference,
-      'Expéditeur': d.PayerName,
-      'Compte expéditeur': d.PayerAccount,
-      'Bénéficiaire': d.BenefName,
-      'Compte bénéficiaire': d.BenefAccount,
-      'BIC bénéficiaire': d.BenefBIC,
-      'Banque expéditeur': d.vcSenderBankName,
-      'Banque bénéficiaire': d.vcReceiverBankName,
-      'Mode de paiement': d.PaymentModeName,
-      'Montant': d.Amount,
-      'Devise débiteur': d.debiteurCurrency,
-      'Montant converti': d.mAmountConverted,
-      'Devise bénéficiaire': d.BenefCurrency,
-      'Taux de change': d.nRate,
-      'Statut': this.getStatusLabel(d.Status),
-      'Organisation': d.OrganisationName,
-      'Utilisateur': d.UserFullName,
+      Date: new Date(d.dtCreated).toLocaleString(),
+      Reference: d.Reference,
+      Nom: d.UserFullName,
+      Mode: d.PaymentModeName,
+      Montant: d.Amount,
     }));
 
     const ws = XLSX.utils.json_to_sheet(dataForExcel);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Transactions Internationales');
-    XLSX.writeFile(wb, 'transactions_internationales.xlsx');
+    XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
+    XLSX.writeFile(wb, 'transactions.xlsx');
   }
 
   // ========================
   // EXPORT PDF
   // ========================
   exportPdf() {
-    if (this.filteredData.length === 0) {
-      this.notification.error('Aucune donnée à exporter.');
-      return;
-    }
+    if (this.filteredData.length === 0) return;
 
     const doc = new jsPDF('l', 'mm', 'a4');
-    doc.setFontSize(14);
-    doc.text('Transactions Internationales', 14, 15);
-    doc.setFontSize(9);
-    doc.text(`Généré le : ${new Date().toLocaleString('fr-FR')}`, 14, 22);
+    doc.text('Liste des transactions', 14, 15);
 
     autoTable(doc, {
-      startY: 28,
-      head: [
-        ['Date', 'Référence', 'Expéditeur', 'Bénéficiaire', 'Mode', 'Montant', 'Converti', 'Statut'],
-      ],
+      startY: 25,
+      head: [['Date', 'Reference', 'Nom', 'Mode', 'Montant']],
       body: this.filteredData.map((d) => [
-        new Date(d.dtCreated).toLocaleString('fr-FR'),
+        new Date(d.dtCreated).toLocaleString(),
         d.Reference,
-        d.PayerName,
-        d.BenefName,
+        d.UserFullName,
         d.PaymentModeName,
-        `${this.formatMontant(d.Amount)} ${d.debiteurCurrency}`,
-        `${this.formatMontant(d.mAmountConverted)} ${d.BenefCurrency}`,
-        this.getStatusLabel(d.Status),
+        d.Amount,
       ]),
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [30, 60, 130] },
+      styles: { fontSize: 9 },
     });
 
-    doc.save('transactions_internationales.pdf');
+    doc.save('transactions.pdf');
   }
 
-  // ========================
-  // IMPRESSION REÇU
-  // ========================
   printRow(transaction: any) {
-    this.selectedRowId = transaction.iRequestID;
+    this.selectedRowId = transaction.id;
 
     setTimeout(() => {
       const now = new Date();
-      const dateRapport =
-        now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR');
+      const dateRapport = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR');
 
       const datePaiement = transaction.dtCreated
         ? new Date(transaction.dtCreated).toLocaleDateString('fr-FR', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric',
+            day: '2-digit', month: 'long', year: 'numeric',
           })
         : '';
 
-      const badgeStyle =
-        transaction.Status?.toLowerCase() === 'success'
-          ? 'background:#d4edda;color:#155724;'
-          : transaction.Status?.toLowerCase() === 'pending'
-          ? 'background:#fff3cd;color:#856404;'
-          : 'background:#f8d7da;color:#721c24;';
+      const badgeClass =
+        transaction.Status?.toLowerCase() === 'success' ? 'badge-success' :
+        transaction.Status?.toLowerCase() === 'pending'  ? 'badge-warning' : 'badge-danger';
 
       const printWindow = window.open('', '_blank', 'width=900,height=700');
       if (!printWindow) return;
@@ -368,22 +298,30 @@ export class TransactionInternationalComponent implements OnInit {
             body { font-family: Arial, sans-serif; font-size: 13px; color: #222; padding: 30px 40px; background: #fff; }
             .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1.5px solid #aaa; }
             .header-left { display: flex; align-items: center; gap: 14px; }
-            .logo-circle { width: 68px; height: 68px; border-radius: 50%; border: 3px solid #1e3c82; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; line-height: 1; }
-            .letter-b { color: #c0392b; } .letter-c { color: #1e3c82; } .letter-i { color: #27ae60; }
-            .bank-french { font-size: 11px; font-weight: bold; color: #1e3c82; text-transform: uppercase; margin-top: 4px; }
-            .bank-arabic { font-size: 14px; font-weight: bold; direction: rtl; }
+            .logo-circle { width: 68px; height: 68px; border-radius: 50%; border: 3px solid #1e3c82; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; line-height: 1.2; text-align: center; padding: 4px; flex-shrink: 0; }
+            .logo-circle .letter-b { font-size: 18px; color: #c0392b; }
+            .logo-circle .letter-c { font-size: 18px; color: #1e3c82; }
+            .logo-circle .letter-i { font-size: 18px; color: #27ae60; }
+            .bank-name-block { display: flex; flex-direction: column; }
+            .bank-arabic { font-size: 15px; font-weight: bold; color: #1a1a1a; direction: rtl; }
+            .bank-french { font-size: 11px; font-weight: bold; color: #1e3c82; letter-spacing: 0.3px; margin-top: 2px; text-transform: uppercase; }
             .header-right { text-align: right; }
-            .header-right .title { font-size: 26px; font-weight: bold; color: #1a1a1a; }
+            .header-right .title { font-size: 28px; font-weight: bold; color: #1a1a1a; }
             .header-right .report-date { font-size: 11px; color: #555; margin-top: 4px; }
-            .org-block { margin: 18px 0 6px 0; font-size: 12.5px; line-height: 1.9; }
+            .org-block { margin: 18px 0 6px 0; font-size: 12.5px; line-height: 1.9; color: #222; }
+            .org-block .org-name { font-weight: bold; font-size: 13px; }
             .intro { margin: 14px 0 18px 0; font-size: 12.5px; color: #333; }
-            .section-title { font-size: 11px; font-weight: bold; text-transform: uppercase; color: #1e3c82; background: #f0f4ff; padding: 5px 8px; letter-spacing: 0.5px; }
+            .section-title { font-size: 11px; font-weight: bold; text-transform: uppercase; color: #1e3c82; background: #f0f4ff; padding: 5px 8px; }
             table { width: 100%; border-collapse: collapse; }
             tr { border-bottom: 0.5px solid #ddd; }
             td { padding: 8px; font-size: 12.5px; vertical-align: top; }
-            td:nth-child(1) { font-weight: bold; width: 240px; }
-            td:nth-child(2) { width: 16px; font-weight: bold; text-align: center; padding: 8px 0; }
+            td:nth-child(1) { font-weight: bold; width: 240px; color: #111; }
+            td:nth-child(2) { width: 16px; color: #111; font-weight: bold; text-align: center; padding-left: 0; padding-right: 0; }
+            td:nth-child(3) { color: #333; }
             .badge { display: inline-block; padding: 3px 14px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+            .badge-success { background: #d4edda; color: #155724; }
+            .badge-danger  { background: #f8d7da; color: #721c24; }
+            .badge-warning { background: #fff3cd; color: #856404; }
             .footer { margin-top: 40px; border-top: 1px solid #aaa; padding-top: 8px; text-align: center; font-size: 9px; color: #999; font-style: italic; }
             @media print { body { padding: 15px 20px; } @page { margin: 10mm; size: A4 portrait; } }
           </style>
@@ -392,9 +330,9 @@ export class TransactionInternationalComponent implements OnInit {
           <div class="header">
             <div class="header-left">
               <div class="logo-circle">
-                <span><span class="letter-b">B</span><span class="letter-c">C</span><span class="letter-i">I</span></span>
+                <span class="letter-b">B</span><span class="letter-c">C</span><span class="letter-i">I</span>
               </div>
-              <div>
+              <div class="bank-name-block">
                 <div class="bank-arabic">بنك التجـارة و الصنـاعة . غينيا</div>
                 <div class="bank-french">Banque pour le Commerce et l'Industrie-Guinée</div>
               </div>
@@ -404,15 +342,12 @@ export class TransactionInternationalComponent implements OnInit {
               <div class="report-date">Date / heure du rapport : ${dateRapport}</div>
             </div>
           </div>
-
           <div class="org-block">
-            <div style="font-weight:bold">${transaction.OrganisationName || ''}</div>
+            <div class="org-name">${transaction.OrganisationName || ''}</div>
             <div>${transaction.UserFullName || ''}</div>
             <div>Conakry, Guinée</div>
           </div>
-
           <p class="intro">Ceci est la confirmation d'un paiement effectué en votre nom :</p>
-
           <table>
             <tbody>
               <tr><td colspan="3" class="section-title">Informations générales</td></tr>
@@ -420,28 +355,23 @@ export class TransactionInternationalComponent implements OnInit {
               <tr><td>Type de Transaction</td><td>:</td><td>${transaction.TypeTransaction || ''}</td></tr>
               <tr><td>Mode de Paiement</td><td>:</td><td>${transaction.PaymentModeName || ''}</td></tr>
               <tr><td>Date de Paiement</td><td>:</td><td>${datePaiement}</td></tr>
-              <tr><td>Statut</td><td>:</td><td><span class="badge" style="${badgeStyle}">${this.getStatusLabel(transaction.Status)}</span></td></tr>
-
+              <tr><td>Statut</td><td>:</td><td><span class="badge ${badgeClass}">${this.getStatusLabel(transaction.Status)}</span></td></tr>
               <tr><td colspan="3" class="section-title">Expéditeur</td></tr>
               <tr><td>Nom de l'Expéditeur</td><td>:</td><td>${transaction.PayerName || ''}</td></tr>
               <tr><td>Compte Expéditeur</td><td>:</td><td>${transaction.PayerAccount || ''}</td></tr>
               <tr><td>Devise Expéditeur</td><td>:</td><td>${transaction.debiteurCurrency || ''}</td></tr>
               <tr><td>Banque Expéditeur</td><td>:</td><td>${transaction.vcSenderBankName || ''}</td></tr>
-
               <tr><td colspan="3" class="section-title">Bénéficiaire</td></tr>
               <tr><td>Nom du Bénéficiaire</td><td>:</td><td>${transaction.BenefName || ''}</td></tr>
               <tr><td>Compte Bénéficiaire</td><td>:</td><td>${transaction.BenefAccount || ''}</td></tr>
               <tr><td>Devise Bénéficiaire</td><td>:</td><td>${transaction.BenefCurrency || ''}</td></tr>
               <tr><td>Banque Bénéficiaire</td><td>:</td><td>${transaction.vcReceiverBankName || ''}</td></tr>
               <tr><td>BIC Bénéficiaire</td><td>:</td><td>${transaction.BenefBIC || ''}</td></tr>
-
               <tr><td colspan="3" class="section-title">Montants & Taux</td></tr>
-              <tr><td>Montant du Paiement</td><td>:</td><td><strong>${transaction.debiteurCurrency || ''} ${this.formatMontant(transaction.Amount)}</strong></td></tr>
-              <tr><td>Montant Converti</td><td>:</td><td>${transaction.BenefCurrency || ''} ${this.formatMontant(transaction.mAmountConverted)}</td></tr>
-              <tr><td>Taux de Change</td><td>:</td><td>${this.formatMontant(transaction.nRate)}</td></tr>
+              <tr><td>Montant du Paiement</td><td>:</td><td><strong>${transaction.debiteurCurrency || ''}&nbsp;${this.formatMontant(transaction.Amount)}</strong></td></tr>
+              <tr><td>Montant Converti</td><td>:</td><td>${transaction.BenefCurrency || ''}&nbsp;${this.formatMontant(transaction.mAmountConverted)}</td></tr>
             </tbody>
           </table>
-
           <div class="footer">
             Ceci est un avis de paiement généré par ordinateur et ne nécessite pas une signature autorisée.
             En cas de divergence, veuillez contacter votre organisation.
@@ -452,11 +382,7 @@ export class TransactionInternationalComponent implements OnInit {
 
       printWindow.document.close();
       printWindow.focus();
-      printWindow.onload = () => {
-        printWindow.print();
-        printWindow.close();
-      };
-
+      printWindow.onload = () => { printWindow.print(); printWindow.close(); };
       this.selectedRowId = null;
     }, 100);
   }
@@ -498,19 +424,10 @@ export class TransactionInternationalComponent implements OnInit {
   decodeMessage(encoded: string): string {
     if (!encoded) return encoded;
     return encoded
-      .replace(/\+á/g, 'à')
-      .replace(/\+é/g, 'é')
-      .replace(/\+è/g, 'è')
-      .replace(/\+®/g, 'é')
-      .replace(/\+ç/g, 'ç')
-      .replace(/\+ô/g, 'ô')
-      .replace(/\+°/g, 'ô')
-      .replace(/\+ù/g, 'ù')
-      .replace(/\+/g, ' ')
-      .trim();
+      .replace(/\+á/g, 'à').replace(/\+é/g, 'é').replace(/\+è/g, 'è')
+      .replace(/\+®/g, 'é').replace(/\+ç/g, 'ç').replace(/\+ô/g, 'ô')
+      .replace(/\+°/g, 'ô').replace(/\+ù/g, 'ù').replace(/\+/g, ' ').trim();
   }
 
-  closeModal() {
-    this.selectedTransaction = null;
-  }
+  closeModal() { this.selectedTransaction = null; }
 }

@@ -1,0 +1,54 @@
+<!-- src/app/components/notification/notification.component.html -->
+
+<div class="notif-wrapper" aria-live="polite" aria-atomic="false">
+  <div
+    *ngFor="let n of notifications; trackBy: trackById"
+    class="notif notif-{{ n.type }}"
+    [class.notif-closing]="closingIds.has(n.id)"
+    role="alert"
+  >
+    <!-- Icône -->
+    <div class="notif-icon">
+      <svg *ngIf="n.type === 'success'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      <svg *ngIf="n.type === 'error'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+      <svg *ngIf="n.type === 'warning'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <line x1="12" y1="8" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <svg *ngIf="n.type === 'info'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <line x1="12" y1="8" x2="12" y2="8"></line>
+        <line x1="12" y1="12" x2="12" y2="17"></line>
+      </svg>
+    </div>
+
+    <!-- Contenu -->
+    <div class="notif-content">
+      <div class="notif-title" *ngIf="n.title">{{ n.title }}</div>
+      <div class="notif-message">{{ n.message }}</div>
+    </div>
+
+    <!-- Bouton fermer -->
+    <button
+      class="notif-close"
+      (click)="close(n.id)"
+      aria-label="Fermer la notification"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Barre de progression -->
+    <div
+      class="notif-progress"
+      *ngIf="n.duration && n.duration > 0"
+      [style.animation-duration.ms]="n.duration"
+    ></div>
+  </div>
+</div>

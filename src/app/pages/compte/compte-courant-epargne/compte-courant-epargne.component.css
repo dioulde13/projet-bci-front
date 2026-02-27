@@ -1,0 +1,72 @@
+/* ============================================================
+   SKELETON LOADING ANIMATION
+   ============================================================ */
+
+@keyframes shimmer {
+  0%   { background-position: -800px 0; }
+  100% { background-position:  800px 0; }
+}
+
+/* Base skeleton — fond clair */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #e2e8f0 25%,
+    #f1f5f9 50%,
+    #e2e8f0 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 4px;
+  display: block;
+}
+
+/* Variante sombre pour fond bleu primaire */
+.skeleton-dark {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.10) 25%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.10) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 4px;
+  display: block;
+}
+
+/* Variantes de hauteur de texte */
+.skeleton-text {
+  height: 14px;
+  margin-bottom: 8px;
+  border-radius: 3px;
+}
+
+.skeleton-text.xl { height: 30px; }
+.skeleton-text.lg { height: 22px; }
+.skeleton-text.sm { height: 10px; }
+
+/* Cercle (avatar / icône) */
+.skeleton-circle {
+  border-radius: 50% !important;
+}
+
+/* Cellule thead figée (pas d'animation pour ne pas clignoter sur fond bleu) */
+.skeleton-thead-cell {
+  display: block;
+  height: 14px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* Espacement des lignes du tableau skeleton */
+.skeleton-row td {
+  padding: 14px 16px;
+  vertical-align: middle;
+}
+
+
+/* ============================================================
+   STYLES EXISTANTS DU COMPOSANT
+   (conservez ici vos propres règles CSS)
+   ============================================================ */

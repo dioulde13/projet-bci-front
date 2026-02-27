@@ -1,10 +1,11 @@
 import { Component, Renderer2 } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
+import { NotificationComponent } from './pages/notifications/notification/notification.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NotificationComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

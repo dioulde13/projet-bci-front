@@ -1,7 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
-import { AuthService } from '../authServices/auth.service';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,106 +8,74 @@ import { AuthService } from '../authServices/auth.service';
 export class InactivityServiceTsService {
   private timeoutId: any;
   private warningTimeoutId: any;
-  private countdownInterval: any;
+  private isWatching = false; // ⬅️ Empêche les doublons d'écouteurs
+  private warningShown = false; // ⬅️ Empêche les notifications multiples
 
-  private readonly INACTIVITY_TIME = 15 * 60 * 1000; // 15 min
-  private readonly WARNING_TIME = 30 * 1000; // 30 sec
-  private countdownValue = 30;
+  private readonly TIMEOUT_DURATION = 60 * 1000;
+  private readonly WARNING_BEFORE = 30 * 1000;
+
+  private readonly EVENTS = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+
+  // ⬅️ Référence stable pour pouvoir retirer les listeners correctement
+  private boundResetTimer = () => this.resetTimer();
 
   constructor(
     private router: Router,
     private ngZone: NgZone,
-    private authService: AuthService,
-    private toastr: ToastrService
+    private notification: NotificationService
   ) {}
 
-  // 🚀 Démarrer la surveillance
   startWatching(): void {
+    if (this.isWatching) return; // ⬅️ Ne pas démarrer deux fois
+    this.isWatching = true;
+
+    this.ngZone.runOutsideAngular(() => {
+      this.EVENTS.forEach(event =>
+        window.addEventListener(event, this.boundResetTimer)
+      );
+    });
+
     this.resetTimer();
-
-    ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach((event) =>
-      window.addEventListener(event, () => this.resetTimer())
-    );
-
-    console.log('🟢 Surveillance d’inactivité démarrée.');
-  }
-
-  // 🛑 Stopper la surveillance
-  stopWatching(): void {
-    if (this.timeoutId) clearTimeout(this.timeoutId);
-    if (this.warningTimeoutId) clearTimeout(this.warningTimeoutId);
-    if (this.countdownInterval) clearInterval(this.countdownInterval);
-    this.toastr.clear();
-
-    ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach((event) =>
-      window.removeEventListener(event, () => this.resetTimer())
-    );
-
-    console.log('🔴 Surveillance d’inactivité arrêtée.');
   }
 
   private resetTimer(): void {
-    if (this.timeoutId) clearTimeout(this.timeoutId);
-    if (this.warningTimeoutId) clearTimeout(this.warningTimeoutId);
-    if (this.countdownInterval) clearInterval(this.countdownInterval);
-    this.toastr.clear();
+    clearTimeout(this.timeoutId);
+    clearTimeout(this.warningTimeoutId);
+    this.warningShown = false; // ⬅️ Réinitialiser le flag à chaque activité
 
-    this.ngZone.runOutsideAngular(() => {
-      this.timeoutId = setTimeout(() => {
-        this.ngZone.run(() => this.handleInactivity());
-      }, this.INACTIVITY_TIME);
-
-      this.warningTimeoutId = setTimeout(() => {
-        this.ngZone.run(() => this.showWarningToastr());
-      }, this.INACTIVITY_TIME - this.WARNING_TIME);
-    });
-  }
-
-  private showWarningToastr(): void {
-    this.countdownValue = this.WARNING_TIME / 1000;
-
-    const toast = this.toastr.error(
-      `Vous allez être déconnecté dans ${this.countdownValue} secondes.`,
-      '',
-      {
-        disableTimeOut: true,
-        tapToDismiss: false,
-        closeButton: false,
-        positionClass: 'toast-custom-center',
-      }
-    );
-
-    this.countdownInterval = setInterval(() => {
-      this.countdownValue--;
-      if (this.countdownValue > 0) {
-        const message =
-          this.countdownValue > 1
-            ? `Vous allez être déconnecté dans ${this.countdownValue} secondes.`
-            : `Vous allez être déconnecté dans 1 seconde.`;
-
-        if (toast.toastRef.componentInstance) {
-          toast.toastRef.componentInstance.message = message;
+    // Timer 1 : avertissement affiché une seule fois à t=30s
+    this.warningTimeoutId = setTimeout(() => {
+      this.ngZone.run(() => {
+        if (!this.warningShown) { // ⬅️ N'afficher qu'une seule fois
+          this.warningShown = true;
+          this.notification.warning(
+            "Vous serez déconnecté dans 30 secondes en raison d'inactivité."
+          );
         }
-      } else {
-        clearInterval(this.countdownInterval);
-        this.toastr.clear();
-        this.handleInactivity();
-      }
-    }, 1000);
+      });
+    }, this.TIMEOUT_DURATION - this.WARNING_BEFORE);
+
+    // Timer 2 : déconnexion à t=60s
+    this.timeoutId = setTimeout(() => {
+      this.ngZone.run(() => this.logout());
+    }, this.TIMEOUT_DURATION);
   }
 
-  private handleInactivity(): void {
-    console.log('⏳ Utilisateur inactif — déconnexion automatique.');
-    // Déconnexion via le backend, session cookie
-    this.authService.deConnexion().subscribe({
-      next: () => {
-        this.stopWatching();
-        this.router.navigate(['/login']);
-      },
-      error: () => {
-        this.stopWatching();
-        this.router.navigate(['/login']);
-      },
-    });
+  private logout(): void {
+    // this.notification.error('Session expirée. Vous avez été déconnecté.');
+    localStorage.removeItem('token');
+    this.stopWatching();
+    this.router.navigate(['/login']);
+  }
+
+  stopWatching(): void {
+    clearTimeout(this.timeoutId);
+    clearTimeout(this.warningTimeoutId);
+    this.isWatching = false;
+    this.warningShown = false;
+    // ⬅️ Fonctionne maintenant car on utilise boundResetTimer (même référence)
+    this.EVENTS.forEach(event =>
+      window.removeEventListener(event, this.boundResetTimer)
+    );
   }
 }

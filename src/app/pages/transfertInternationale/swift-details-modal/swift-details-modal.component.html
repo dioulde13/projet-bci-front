@@ -125,6 +125,26 @@
           <button
             *ngIf="!errorMessage"
             type="button"
+            class="btn btn-sm text-white d-flex align-items-center gap-2"
+            [ngStyle]="{
+              'background-color': '#3B3B7A',
+              'border-color': '#3B3B7A',
+            }"
+            [disabled]="isLoading"
+            (click)="onConfirm.emit()"
+          >
+                        <span
+              *ngIf="isLoading"
+              class="spinner-border spinner-border-sm"
+            ></span>
+                        <span>{{
+              isLoading ? "Chargement en cours..." : "Utiliser cette banque"
+            }}</span>
+                      
+          </button>
+          <!-- <button
+            *ngIf="!errorMessage"
+            type="button"
             class="btn btn-sm text-white"
             [ngStyle]="{
               'background-color': '#3b3b7a',
@@ -133,7 +153,7 @@
             (click)="onConfirm.emit()"
           >
             Utiliser cette banque
-          </button>
+          </button> -->
         </div>
       </div>
     </div>

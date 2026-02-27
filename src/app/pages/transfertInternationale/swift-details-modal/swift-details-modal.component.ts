@@ -12,6 +12,7 @@ export class SwiftDetailsModalComponent {
   @Input() data: any;
   @Input() title: string = 'Vérification SWIFT';
   @Input() errorMessage: string = '';
+  @Input() isLoading: boolean = false;
 
   @Output() onClose = new EventEmitter<void>();
   @Output() onConfirm = new EventEmitter<void>();
