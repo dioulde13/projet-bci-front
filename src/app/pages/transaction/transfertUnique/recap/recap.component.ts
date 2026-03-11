@@ -6,7 +6,7 @@ import {
   ElementRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router} from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranfertUniqueService } from '../../../../services/transfertUniqueService/tranfert-unique.service';
 // import { ToastrService } from 'ngx-toastr';
@@ -157,7 +157,7 @@ export class RecapComponent implements OnInit {
   envoyerTransaction() {
     const payload = {
       payer_name: this.infosCompteDebiteur.name,
-      payment_date: this.formaterDate(this.infosFormulaire.dtPaymentDate),
+      payment_date: new Date().toISOString().split('T')[0],
       payer_account: this.infosFormulaire.vcPayerAccount,
       benef_name:
         this.selectedBeneficiaire.vcFirstName +
@@ -188,16 +188,20 @@ export class RecapComponent implements OnInit {
             this.transaction_id = res.data.transaction_id;
             this.submitFormPayementInterneExterne();
           } else {
+            this.notification.error(res.message);
             this.isLoading = false;
           }
           // this.toastr.success(res.data.message);
+        } else{
+           this.notification.error(res.message);
+            this.isLoading = false;
         }
       },
       error: (err) => {
-        this.notification.error('Une erreur interne est survenue.');
-        // this.toastr.error('Une erreur interne est survenue.');
-            this.isLoading = false;
-
+        const message =
+          err?.error?.message || 'Une erreur interne est survenue.';
+        this.notification.error(message);
+        this.isLoading = false;
       },
     });
   }
@@ -206,7 +210,7 @@ export class RecapComponent implements OnInit {
     // console.log('DIoulde: ', this.selectedBeneficiaire.vcCurrency);
     const payload = {
       vcPayerName: this.infosCompteDebiteur.name,
-      dtPaymentDate: this.formaterDate(this.infosFormulaire.dtPaymentDate),
+      dtPaymentDate: new Date().toISOString().split('T')[0],
       vcPaymentReference: this.reference,
       vcPayerAccount: this.infosFormulaire.vcPayerAccount,
       vcBenefName:
@@ -233,7 +237,7 @@ export class RecapComponent implements OnInit {
             this.notification.success(
               'La transaction a été effectuée avec succès',
             );
-           
+
             this.isLoading = false;
             this.router.navigate(['/historiqueTransactions']);
             localStorage.removeItem('InfosSaisirDansFormulaire');

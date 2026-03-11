@@ -13,7 +13,6 @@ import { interval, Subscription } from 'rxjs';
 import Papa from 'papaparse';
 import { AuthService } from '../../services/authServices/auth.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { ToastrService } from 'ngx-toastr';
 import { StatutBancaireService } from '../../servicesNodes/statutBancaire/statut-bancaire.service';
 import { NotificationService } from '../../services/notification/notification.service';
 

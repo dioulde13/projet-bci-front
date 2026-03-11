@@ -14,7 +14,7 @@ export class SaveFichierCSVService {
   saveFichierCSVTransaction(
     file: File,
     iOrganisationID: number,
-    iEnterpriseID: number,
+    iEnterpriseID: string,
   ): Observable<any> {
     const formData = new FormData();
 

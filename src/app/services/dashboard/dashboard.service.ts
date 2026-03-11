@@ -18,6 +18,8 @@ export class DashboardService {
   //   return localStorage.getItem('token');
   // }
 
+  
+
   // Récupère la liste des comptes clients pour une organisation
   getListeCompteClient(idOrganisation: number): Observable<any> {
   
@@ -27,6 +29,20 @@ export class DashboardService {
     );
 
     return this.http.get(`${this.baseUrl}/api/getListeCompteClient`, {
+      withCredentials: true,
+      params,
+    });
+  }
+
+   // Récupère la liste des comptes clients pour une organisation
+  getListeCompteClientAoujout(idOrganisation: number): Observable<any> {
+  
+    const params = new HttpParams().set(
+      'idOrganisation',
+      idOrganisation.toString(),
+    );
+
+    return this.http.get(`${this.baseUrl}/api/getListeCompteClientAoujout`, {
       withCredentials: true,
       params,
     });

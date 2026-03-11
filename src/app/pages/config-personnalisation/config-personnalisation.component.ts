@@ -1184,4 +1184,10 @@ export class ConfigPersonnalisationComponent implements OnInit {
         },
       });
   }
+
+
+  toggleSelection(compte: any) {
+  compte.isChecked = !compte.isChecked;
+  this.onCheckChange(compte); // garde ton comportement existant
+}
 }

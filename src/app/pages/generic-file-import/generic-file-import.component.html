@@ -1,0 +1,305 @@
+<div
+  *ngIf="isOpenModal"
+  class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+  style="z-index: 1080; background: rgba(0,0,0,0.4);"
+>
+  <div
+    class="position-relative mx-auto d-flex flex-column shadow-lg"
+    style="width: 96%; height: 85vh; max-width: 1400px; animation: fadeIn 0.3s ease;"
+  >
+    <div class="bg-white border rounded-2 d-flex flex-column overflow-hidden h-100">
+
+      <!-- Header -->
+      <div class="px-4 py-2 border-bottom d-flex justify-content-between align-items-center bg-white flex-shrink-0">
+        <h1 class="fs-6 text-secondary fw-semibold text-truncate me-2 mb-0">
+          {{ title }}
+        </h1>
+        <button (click)="closeModal()" class="btn p-1 text-muted lh-1" style="font-size: 1.5rem">
+          &times;
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="px-3 pt-2 pb-1 d-flex flex-column flex-grow-1 overflow-hidden">
+
+        <p class="mb-2 small fw-bold text-dark text-center flex-shrink-0" style="font-size: 15px">
+          {{ instructions }}
+        </p>
+
+        <!-- File upload area -->
+        <div class="border rounded bg-light px-3 py-2 mb-2 flex-shrink-0">
+          <div class="border border-2 rounded bg-white px-3 py-2" style="border-style: dashed !important">
+            <label class="d-block fw-bold text-dark mb-1" style="font-size: 15px">
+              Sélectionnez un fichier Excel / CSV
+            </label>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <input
+                #fileInput
+                type="file"
+                accept=".csv, .xlsx, .xls"
+                (change)="onFileSelected($event)"
+                class="form-control form-control-sm flex-grow-1"
+                style="font-size: 15px; cursor: pointer; max-width: 400px"
+              />
+              <button
+                (click)="parseSelectedFile()"
+                [disabled]="!selectedFile || isLoading || isValidating"
+                class="btn btn-sm text-white fw-bold shadow-sm"
+                style="background-color: #3b3b7a; font-size: 15px"
+              >
+                <span *ngIf="isLoading || isValidating" class="spinner-border spinner-border-sm me-1" role="status" style="font-size: 15px"></span>
+                {{ isLoading ? 'Lecture...' : isValidating ? 'Validation...' : 'Charger' }}
+              </button>
+              <button
+                (click)="reset()"
+                class="btn btn-sm btn-outline-secondary"
+                style="font-size: 10px"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview table area -->
+        <div class="border rounded d-flex flex-column flex-grow-1 overflow-hidden bg-white">
+
+          <!-- Table header bar -->
+          <div class="bg-light px-3 py-2 border-bottom flex-shrink-0 d-flex justify-content-between align-items-center">
+            <h2 class="fs-6 fw-bold text-secondary mb-0" style="font-size: 15px">{{ previewTitle }}</h2>
+            <div class="d-flex align-items-center gap-2">
+              <!-- Compteur total -->
+              <span
+                *ngIf="importedData.length > 0"
+                class="badge rounded-pill"
+                style="background-color: rgba(59,59,122,0.15); color: #3b3b7a; font-size: 10px"
+              >
+                {{ importedData.length }} ligne(s)
+              </span>
+              <!-- Compteur invalides -->
+              <span
+                *ngIf="invalidCount > 0"
+                class="badge rounded-pill bg-danger"
+                style="font-size: 15px"
+              >
+                {{ invalidCount }} invalide(s)
+              </span>
+              <!-- Spinner validation en cours -->
+              <span
+                *ngIf="isValidating"
+                class="d-flex align-items-center gap-1 text-muted"
+                style="font-size: 15px"
+              >
+                <span class="spinner-border spinner-border-sm" role="status"></span>
+                Validation en cours...
+              </span>
+            </div>
+          </div>
+
+          <div
+            *ngIf="importedData.length > 0; else emptyState"
+            class="d-flex flex-column flex-grow-1 overflow-hidden"
+          >
+            <!-- Scrollable table -->
+            <div class="overflow-auto flex-grow-1">
+              <table class="table table-sm table-hover table-bordered w-100 mb-0">
+                <thead class="bg-white position-sticky top-0" style="z-index: 20">
+                  <tr>
+                    <!-- Colonnes dynamiques -->
+                    <th
+                      *ngFor="let field of fields"
+                      class="px-3 py-2 text-start text-uppercase fw-bold text-secondary border-bottom bg-white"
+                      style="font-size: 15px; white-space: nowrap"
+                    >
+                      {{ field.label }}
+                    </th>
+                    <!-- Colonne Statut (si validation API activée) -->
+                    <th
+                      *ngIf="enableApiValidation"
+                      class="px-3 py-2 text-center text-uppercase fw-bold text-secondary border-bottom bg-white"
+                      style="font-size: 15px; white-space: nowrap; width: 80px"
+                    >
+                      Statut
+                    </th>
+                    <!-- Colonne Erreur (si validation API activée) -->
+                    <th
+                      *ngIf="enableApiValidation"
+                      class="px-3 py-2 text-start text-uppercase fw-bold text-secondary border-bottom bg-white"
+                      style="font-size: 10px; white-space: nowrap; min-width: 200px"
+                    >
+                      Erreur(s)
+                    </th>
+                    <!-- Colonne Action -->
+                    <th
+                      class="px-3 py-2 text-center text-uppercase fw-bold text-secondary border-bottom bg-white"
+                      style="font-size: 10px; white-space: nowrap; width: 60px"
+                    >
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="let row of paginatedData; let i = index"
+                    [class.table-danger]="row.isDuplicate || row._valid === false"
+                    [class.table-success]="row._valid === true"
+                    style="height: 2rem"
+                  >
+                    <!-- Cellules dynamiques -->
+                    <td
+                      *ngFor="let field of fields; let first = first"
+                      class="px-3 py-1 text-nowrap small"
+                    >
+                      <div
+                        class="d-flex align-items-center"
+                        [class.text-danger]="row.isDuplicate"
+                      >
+                        <span
+                          *ngIf="row.isDuplicate && first"
+                          class="bg-danger rounded-circle me-2 flex-shrink-0"
+                          style="width: 8px; height: 8px; display: inline-block"
+                        ></span>
+                        {{ row[field.key] }}
+                      </div>
+                    </td>
+
+                    <!-- Cellule Statut -->
+                    <td *ngIf="enableApiValidation" class="px-2 py-1 text-center align-middle">
+                      <!-- En attente de validation -->
+                      <span
+                        *ngIf="row._valid === undefined && isValidating"
+                        class="spinner-border spinner-border-sm text-secondary"
+                        role="status"
+                        style="width: 12px; height: 12px; border-width: 2px"
+                      ></span>
+                      <!-- Valide -->
+                      <span
+                        *ngIf="row._valid === true"
+                        class="badge rounded-pill bg-success"
+                        style="font-size: 9px"
+                      >
+                        ✓ Valide
+                      </span>
+                      <!-- Invalide -->
+                      <span
+                        *ngIf="row._valid === false"
+                        class="badge rounded-pill bg-danger"
+                        style="font-size: 9px"
+                      >
+                        ✗ Invalide
+                      </span>
+                    </td>
+
+                    <!-- Cellule Erreurs -->
+                    <td *ngIf="enableApiValidation" class="px-3 py-1 align-middle">
+                      <ng-container *ngIf="row._errors && row._errors.length > 0">
+                        <div
+                          *ngFor="let err of row._errors"
+                          class="text-danger d-flex align-items-start gap-1"
+                          style="font-size: 9px; line-height: 1.4"
+                        >
+                          <span class="flex-shrink-0 mt-1">•</span>
+                          <span>{{ err }}</span>
+                        </div>
+                      </ng-container>
+                      <span
+                        *ngIf="row._valid === true"
+                        class="text-success"
+                        style="font-size: 9px"
+                      >
+                        —
+                      </span>
+                    </td>
+
+                    <!-- Cellule Action -->
+                    <td class="px-2 py-1 text-center align-middle">
+                      <button
+                        (click)="removeRow(i)"
+                        class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center mx-auto"
+                        title="Supprimer cette ligne"
+                        style="font-size: 11px; width: 24px; height: 24px; padding: 0; line-height: 1"
+                      >
+                        &times;
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="px-3 py-2 bg-white border-top d-flex justify-content-between align-items-center flex-shrink-0">
+              <div class="d-flex align-items-center gap-2">
+                <span
+                  class="fw-bold rounded border px-2 py-1"
+                  style="font-size: 10px; background-color: rgba(59,59,122,0.1); color: #3b3b7a; border-color: rgba(59,59,122,0.2)"
+                >
+                  {{ currentPage }} / {{ totalPages }}
+                </span>
+                <span class="fw-bold text-muted d-none d-sm-inline" style="font-size: 10px; letter-spacing: 0.15em">
+                  Pages
+                </span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <button
+                  (click)="currentPage = currentPage - 1"
+                  [disabled]="currentPage === 1"
+                  class="btn btn-sm btn-outline-secondary fw-bold shadow-sm d-flex align-items-center gap-1"
+                  style="font-size: 10px"
+                >
+                  <span class="lh-1" style="font-size: 0.875rem">&lsaquo;</span>
+                  PRÉCÉDENT
+                </button>
+                <button
+                  (click)="currentPage = currentPage + 1"
+                  [disabled]="currentPage === totalPages"
+                  class="btn btn-sm btn-outline-secondary fw-bold shadow-sm d-flex align-items-center gap-1"
+                  style="font-size: 10px"
+                >
+                  SUIVANT
+                  <span class="lh-1" style="font-size: 0.875rem">&rsaquo;</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #emptyState>
+            <div
+              class="h-100 d-flex align-items-center justify-content-center text-muted fst-italic p-4"
+              style="font-size: 0.75rem"
+            >
+              Aucune donnée à afficher.
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-3 py-2 border-top d-flex flex-row justify-content-end align-items-center gap-2 bg-white flex-shrink-0">
+        <button
+          (click)="validateTransactions()"
+          [disabled]="importedData.length === 0 || isValidating"
+          class="btn btn-sm text-white shadow"
+          style="background-color: #3b3b7a; font-size: 0.875rem"
+        >
+          ✓ {{ validateButtonText }}
+        </button>
+        <button
+          (click)="reset()"
+          class="btn btn-sm text-white"
+          style="background-color: #7f8c8d; font-size: 0.875rem"
+        >
+          Annuler
+        </button>
+        <button
+          (click)="closeModal()"
+          class="btn btn-sm border-0"
+          style="color: #3b3b7a; font-size: 0.875rem"
+        >
+          Retour
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

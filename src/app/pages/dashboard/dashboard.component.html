@@ -8,15 +8,16 @@
 
 <div class="page-content">
   <div class="container-fluid">
-
     <!-- ===== LIGNE 1 : Vue d'ensemble / Liens rapides / Cliché ===== -->
     <div class="row mt-3">
-
       <!-- Vue d'ensemble financière -->
       <div class="col-xl-4">
         <div
           class="card card-h-100"
-          style="background: url('assets/img/images-bci/bg-chart-BCI-Internet_Banking-3.jpg') right / cover;"
+          style="
+            background: url(&quot;assets/img/images-bci/bg-chart-BCI-Internet_Banking-3.jpg&quot;)
+              right / cover;
+          "
         >
           <div class="card-header text-light bg-transparent">
             <h5 class="card-title mb-0">Vue d'ensemble financière</h5>
@@ -61,10 +62,12 @@
 
           <div class="card-body finance-chart-container">
             <div class="row text-center justify-content-center">
-
               <!-- SKELETON -->
               <ng-container *ngIf="isDashboardLoading; else realContent">
-                <div class="col-6 col-md-4 mb-4" *ngFor="let item of [1,2,3,4,5,6,7]">
+                <div
+                  class="col-6 col-md-4 mb-4"
+                  *ngFor="let item of [1, 2, 3, 4, 5, 6, 7]"
+                >
                   <div class="custom-icon-container">
                     <div class="skeleton skeleton-icon mb-3"></div>
                     <div class="skeleton skeleton-text"></div>
@@ -74,9 +77,11 @@
 
               <!-- CONTENU NORMAL -->
               <ng-template #realContent>
-
                 <div class="col-6 col-md-4 mb-4">
-                  <a (click)="notificationEnCoursDeveloppement()" class="custom-icon-container">
+                  <a
+                    routerLink="/preparationPaie"
+                    class="custom-icon-container"
+                  >
                     <i class="icon ion-social-buffer custom-icon-size"></i>
                     <p class="custom-icon-text">Transferts multiples</p>
                   </a>
@@ -89,13 +94,19 @@
                     title="Importation des Salaires BCI"
                     instructions="Veuillez charger le fichier des virements du mois en cours."
                     previewTitle="Récapitulatif des virements"
-                    [duplicateCheckFields]="['numeroCompte', 'bic', 'montant']"
-                    [validateButtonText]="loadingValidation ? 'Validation en cours...' : 'Valider'"
+                    [duplicateCheckFields]="['numeroCompte']"
+                    [validateButtonText]="
+                      loadingValidation ? 'Validation en cours...' : 'Valider'
+                    "
+                    [enableApiValidation]="true"
+                    [compteFieldKey]="'numeroCompte'"
+                    [bicFieldKey]="'bic'"
+                    [deviseFieldKey]="'devise'"
                     (importDataCompleted)="onImportedData($event)"
                     (modalClosed)="openModal = false"
                   ></bci-generic-file-import>
 
-                  <a class="custom-icon-container" (click)="notificationEnCoursDeveloppement()">
+                  <a (click)="openModal = true" class="custom-icon-container">
                     <i class="icon ion-upload custom-icon-size"></i>
                     <p class="custom-icon-text">Chargement de fichier</p>
                   </a>
@@ -146,7 +157,10 @@
                 </div>
 
                 <div class="col-6 col-md-4 mb-4">
-                  <a class="custom-icon-container" (click)="openTransferModal()">
+                  <a
+                    class="custom-icon-container"
+                    (click)="openTransferModal()"
+                  >
                     <i class="bi bi-currency-exchange custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert international</p>
                   </a>
@@ -157,7 +171,6 @@
                   (modalClosed)="closeTransferModal()"
                   (importDataCompleted)="handleValidation($event)"
                 ></app-ordre-transfert-international>
-
               </ng-template>
             </div>
           </div>
@@ -168,7 +181,9 @@
       <div class="col-xl-4">
         <div class="card text-white bg-info card-h-100">
           <div class="card-header bg-transparent d-flex">
-            <h4 class="flex-grow-1 card-title mb-0">Cliché du travail pour aujourd'hui</h4>
+            <h4 class="flex-grow-1 card-title mb-0">
+              Cliché du travail pour aujourd'hui
+            </h4>
           </div>
           <div class="card-body finance-chart-container">
             <div class="row">
@@ -178,11 +193,12 @@
             </div>
             <div class="px-3 pt-1" data-simplebar="" style="max-height: 266px">
               <ul class="list-unstyled activity-wid mb-0">
-
                 <!-- Traité -->
                 <li class="activity-list activity-border">
                   <div class="bg-transparent activity-icon avatar-md">
-                    <span class="text-success bg-success-subtle avatar-title rounded-circle">
+                    <span
+                      class="text-success bg-success-subtle avatar-title rounded-circle"
+                    >
                       <i class="icon ion-checkmark bx font-size-24"></i>
                     </span>
                   </div>
@@ -190,7 +206,9 @@
                     <div class="d-flex">
                       <div class="flex-grow-1 overflow-hidden me-4">
                         <h5 class="text-white font-size-14 mb-2">Traité</h5>
-                        <h5 class="text-light font-size-18 mb-2">{{ traitedDemandes.length }}</h5>
+                        <h5 class="text-light font-size-18 mb-2">
+                          {{ traitedDemandes.length }}
+                        </h5>
                         <div class="progress mb-0 animated-progess">
                           <div
                             class="bg-success progress-bar progress-bar-striped"
@@ -209,7 +227,11 @@
                             <i class="icon ion-android-more-vertical"></i>
                           </button>
                           <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" routerLink="/beneficiaireEnAttente">Voir détails</a>
+                            <a
+                              class="dropdown-item"
+                              routerLink="/beneficiaireEnAttente"
+                              >Voir détails</a
+                            >
                           </div>
                         </div>
                       </div>
@@ -220,7 +242,9 @@
                 <!-- En cours -->
                 <li class="activity-list activity-border">
                   <div class="bg-transparent activity-icon avatar-md">
-                    <span class="text-warning bg-warning-subtle avatar-title rounded-circle">
+                    <span
+                      class="text-warning bg-warning-subtle avatar-title rounded-circle"
+                    >
                       <i class="icon ion-load-a bx font-size-24"></i>
                     </span>
                   </div>
@@ -228,7 +252,9 @@
                     <div class="d-flex">
                       <div class="flex-grow-1 overflow-hidden me-4">
                         <h5 class="text-white font-size-14 mb-2">En cours</h5>
-                        <h5 class="text-light font-size-18 mb-2">{{ demandes.length }}</h5>
+                        <h5 class="text-light font-size-18 mb-2">
+                          {{ demandes.length }}
+                        </h5>
                         <div class="progress mb-0 animated-progess">
                           <div
                             class="bg-warning progress-bar progress-bar-striped"
@@ -247,7 +273,11 @@
                             <i class="icon ion-android-more-vertical"></i>
                           </button>
                           <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" routerLink="/beneficiaireEnAttente">Voir détails</a>
+                            <a
+                              class="dropdown-item"
+                              routerLink="/beneficiaireEnAttente"
+                              >Voir détails</a
+                            >
                           </div>
                         </div>
                       </div>
@@ -258,7 +288,9 @@
                 <!-- Rejeté -->
                 <li class="activity-list activity-border">
                   <div class="bg-transparent activity-icon avatar-md">
-                    <span class="text-danger bg-danger-subtle avatar-title rounded-circle">
+                    <span
+                      class="text-danger bg-danger-subtle avatar-title rounded-circle"
+                    >
                       <i class="icon ion-close-circled bx font-size-24"></i>
                     </span>
                   </div>
@@ -266,7 +298,9 @@
                     <div class="d-flex">
                       <div class="flex-grow-1 overflow-hidden me-4">
                         <h5 class="text-white font-size-14 mb-2">Rejeté</h5>
-                        <h5 class="text-light font-size-18 mb-2">{{ rejectedDemandes.length }}</h5>
+                        <h5 class="text-light font-size-18 mb-2">
+                          {{ rejectedDemandes.length }}
+                        </h5>
                         <div class="progress mb-0 animated-progess">
                           <div
                             class="bg-danger progress-bar progress-bar-striped"
@@ -285,14 +319,17 @@
                             <i class="icon ion-android-more-vertical"></i>
                           </button>
                           <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" routerLink="/beneficiaireEnAttente">Voir détails</a>
+                            <a
+                              class="dropdown-item"
+                              routerLink="/beneficiaireEnAttente"
+                              >Voir détails</a
+                            >
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </li>
-
               </ul>
             </div>
           </div>
@@ -302,20 +339,20 @@
 
     <!-- ===== LIGNE 2 : Récapitulatif + Transactions ===== -->
     <div class="row align-items-stretch">
-
       <!-- Récapitulatif des comptes -->
       <div class="col-xl-4 d-flex flex-column">
         <div class="card h-100 d-flex flex-column">
           <div class="card-header">
             <div class="d-flex align-items-center flex-wrap">
-              <h5 class="text-nowrap card-title me-2">Récapitulatif des comptes</h5>
+              <h5 class="text-nowrap card-title me-2">
+                Récapitulatif des comptes
+              </h5>
               <div class="ms-auto"></div>
             </div>
           </div>
 
           <div class="card-body p-0 flex-grow-1 overflow-auto">
             <div class="table-responsive h-100">
-
               <!-- Skeleton -->
               <div *ngIf="loading" class="p-3">
                 <table class="table table-hover table-striped">
@@ -329,19 +366,27 @@
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of [1, 2, 3, 4, 5]">
-                      <td><div class="skeleton skeleton-text w-75"></div></td>
-                      <td><div class="skeleton skeleton-text w-50"></div></td>
-                      <td><div class="skeleton skeleton-text w-50"></div></td>
-                      <td><div class="skeleton skeleton-text w-25"></div></td>
+                      <td>
+                        <div class="skeleton skeleton-text w-75"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton skeleton-text w-50"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton skeleton-text w-50"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton skeleton-text w-25"></div>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
               <!-- Erreur -->
-              <div *ngIf="errorMessage" class="alert alert-danger m-3">
+              <!-- <div *ngIf="errorMessage" class="alert alert-danger m-3">
                 {{ errorMessage }}
-              </div>
+              </div> -->
 
               <!-- Tableau réel -->
               <table
@@ -359,17 +404,35 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let compte of listeCompteClient">
-                    <td class="text-start align-content-center">{{ compte.vcPersonalName }}</td>
-                    <td class="text-start align-items-center">{{ compte.vcAccountNumber }}</td>
-                    <td class="text-start align-content-center">{{ compte.vcAccountType }}</td>
+                    <td class="text-start align-content-center">
+                      {{ compte.vcPersonalName }}
+                    </td>
+                    <td class="text-start align-items-center">
+                      {{ compte.vcAccountNumber }}
+                    </td>
+                    <td class="text-start align-content-center">
+                      {{ compte.vcAccountType }}
+                    </td>
                     <td class="text-nowrap align-content-center">
                       {{ compte.mBalance | number }} {{ compte.vcCurrency }}
                     </td>
-                    <td class="text-start align-content-center">{{ compte.status }}</td>
+                    <td
+                      class="text-start align-content-center"
+                      [ngClass]="
+                        compte.btBlocked === '0'
+                          ? 'text-success'
+                          : 'text-danger'
+                      "
+                    >
+                      {{
+                        compte.btBlocked === "0"
+                          ? "Actif"
+                          : compte.vcBlockedStatus
+                      }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
-
             </div>
           </div>
         </div>
@@ -379,7 +442,9 @@
       <div class="col-xl-8 d-flex flex-column">
         <div class="card d-flex flex-column">
           <div class="card-header bg-transparent d-flex align-items-center">
-            <h4 class="flex-grow-1 card-title mb-0">Dix dernières transactions</h4>
+            <h4 class="flex-grow-1 card-title mb-0">
+              Dix dernières transactions
+            </h4>
           </div>
 
           <div class="d-flex">
@@ -392,7 +457,10 @@
                     (ngModelChange)="dixTransactionsRecentsListe()"
                     (change)="onDebitAccountSelect($event)"
                   >
-                    <option *ngFor="let c of listeCompteClient" [value]="c.vcAccountNumber">
+                    <option
+                      *ngFor="let c of listeCompteClient"
+                      [value]="c.vcAccountNumber"
+                    >
                       {{ c.vcAccountNumber }}
                     </option>
                   </select>
@@ -416,13 +484,25 @@
 
                 <tbody>
                   <!-- Skeleton -->
-                  <ng-container *ngIf="loadingDixPremiereTransactions; else realRows">
+                  <ng-container
+                    *ngIf="loadingDixPremiereTransactions; else realRows"
+                  >
                     <tr *ngFor="let item of [1, 2, 3, 4, 5]">
-                      <td><div class="skeleton skeleton-text w-75"></div></td>
-                      <td><div class="skeleton skeleton-text w-50 ms-auto"></div></td>
-                      <td><div class="skeleton skeleton-text w-50 ms-auto"></div></td>
-                      <td><div class="skeleton skeleton-text w-100"></div></td>
-                      <td><div class="skeleton skeleton-text w-50 ms-auto"></div></td>
+                      <td>
+                        <div class="skeleton skeleton-text w-75"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton skeleton-text w-50 ms-auto"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton skeleton-text w-50 ms-auto"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton skeleton-text w-100"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton skeleton-text w-50 ms-auto"></div>
+                      </td>
                     </tr>
                   </ng-container>
 
@@ -439,13 +519,23 @@
                     <!-- Spinner scroll -->
                     <tr *ngIf="loadingMore">
                       <td colspan="5" class="text-center py-3">
-                        <div class="spinner-border text-primary" role="status"></div>
+                        <div
+                          class="spinner-border text-primary"
+                          role="status"
+                        ></div>
                       </td>
                     </tr>
 
                     <!-- Aucun résultat -->
-                    <tr *ngIf="!loadingDixPremiereTransactions && listeDixPremiereTransactions.length === 0">
-                      <td colspan="5" class="text-center text-muted">Aucune transaction trouvée</td>
+                    <tr
+                      *ngIf="
+                        !loadingDixPremiereTransactions &&
+                        listeDixPremiereTransactions.length === 0
+                      "
+                    >
+                      <td colspan="5" class="text-center text-muted">
+                        Aucune transaction trouvée
+                      </td>
                     </tr>
                   </ng-template>
                 </tbody>
@@ -460,14 +550,15 @@
               routerLink="/transactions"
               (click)="showLoader()"
             >
-              <span class="d-xxl-flex justify-content-xxl-center align-items-xxl-center">
+              <span
+                class="d-xxl-flex justify-content-xxl-center align-items-xxl-center"
+              >
                 <i class="icon ion-eye me-1 font-size-18"></i>Visualiser plus
               </span>
             </a>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>

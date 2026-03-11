@@ -19,8 +19,6 @@ import { ModalsService } from '../../../servicesNodes/modalsService/modals.servi
 import { AuthService } from '../../../services/authServices/auth.service';
 import * as XLSX from 'xlsx';
 
-// import { AuthService } from '../../../services/authServices/auth.service';
-
 @Component({
   selector: 'app-utilisateurs',
   standalone: true,
@@ -45,7 +43,6 @@ export class UtilisateursComponent implements OnInit {
   selectedUser: any = null;
   selectedUserId: number | null = null;
 
-  // userInfoConfig: any;
   userInfo: any;
   phoneCode: number = 0;
   phoneFormat: string = '';
@@ -57,6 +54,11 @@ export class UtilisateursComponent implements OnInit {
   id: number | null = null;
   idResponsable!: number;
   iOrganisationID!: number;
+
+  // Photo / Signature
+  selectedFile: File | null = null;
+  previewUrl: string | null = null;
+  isHoveringPhoto: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -73,7 +75,7 @@ export class UtilisateursComponent implements OnInit {
   getFormControlClass = (name: string) =>
     getFormControlClass(this.userForm, name);
 
-  userInfoConfig: any; // 👈 déclaration obligatoire
+  userInfoConfig: any;
   country: string = '';
   currency: string = '';
   timeZone: string = '';
@@ -84,18 +86,13 @@ export class UtilisateursComponent implements OnInit {
   ngOnInit(): void {
     this.getListePays();
     const userInfoString = localStorage.getItem('userInfo');
-    // console.log('userInfo (raw) ', userInfoString);
-
     const userInfoConfig = localStorage.getItem('userInfoConfig');
 
     if (userInfoConfig) {
-      // ✅ Parser la string JSON
       this.userInfoConfig = JSON.parse(userInfoConfig);
-      // console.log('UserInfoConfig :', this.userInfoConfig);
 
       const orgData = this.userInfoConfig.organisation || [];
 
-      // ✅ Extraction sécurisée
       this.country =
         orgData.find((c: any) => c.vcKey === 'Pays')?.vcValue || '';
 
@@ -116,19 +113,14 @@ export class UtilisateursComponent implements OnInit {
         '1';
     } else {
       this.userInfoConfig = null;
-      // console.warn('userInfoConfig non trouvé dans le localStorage');
     }
 
     this.phoneMaxLength = this.phoneFormat?.length || 0;
     this.phoneFirstNumber = this.phoneFormat?.charAt(0) || '';
 
-    // console.log('phoneFirstNumber: ', this.phoneFirstNumber);
-
     if (userInfoString) {
       try {
         this.userInfo = JSON.parse(userInfoString);
-        // console.log('userInfo (parsed) ', this.userInfo);
-
         this.idResponsable = this.userInfo.id;
         this.iOrganisationID = this.userInfo.iOrganisationID;
       } catch (error) {
@@ -222,10 +214,61 @@ export class UtilisateursComponent implements OnInit {
     }
   }
 
+  // ─── Photo / Signature ────────────────────────────────────────────────────
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+
+      // Validation du type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        this.toastr.error(
+          'Seuls les fichiers JPG, JPEG et PNG sont acceptés.',
+          '',
+          { positionClass: 'toast-custom-center' }
+        );
+        return;
+      }
+
+      // Validation de la taille (2 MB max)
+      if (file.size > 2 * 1024 * 1024) {
+        this.toastr.error(
+          'La taille du fichier ne doit pas dépasser 2 MB.',
+          '',
+          { positionClass: 'toast-custom-center' }
+        );
+        return;
+      }
+
+      this.selectedFile = file;
+
+      // Génération de la prévisualisation
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removePhoto(): void {
+    this.selectedFile = null;
+    this.previewUrl = null;
+    this.isHoveringPhoto = false;
+    const fileInput = document.getElementById('photoSignature') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  }
+
+  // ─── Modals ───────────────────────────────────────────────────────────────
+
   openCreateModal() {
     this.isEditMode = false;
     this.initForm();
     this.userForm.reset();
+    this.selectedFile = null;
+    this.previewUrl = null;
     this.modalsService.openModal('createUserModal');
   }
 
@@ -233,8 +276,6 @@ export class UtilisateursComponent implements OnInit {
     this.selectedUserId = user.id;
     this.btEnabled = +user.btEnabled === 0 ? 1 : 0;
     this.showModalOpenBloquerDebloquer = true;
-
-    // Ouvre la modal de confirmation
     this.modalsService.openModal('bloquerDebloquerModal');
     console.log('Selected user : ', user);
     console.log(this.selectedUserId, this.btEnabled);
@@ -252,8 +293,9 @@ export class UtilisateursComponent implements OnInit {
     this.modalsService.closeModal(modalId);
   }
 
+  // ─── Soumission ───────────────────────────────────────────────────────────
+
   onSubmit() {
-    // Vérifier si le formulaire est valide
     if (this.userForm.invalid) {
       this.userForm.markAllAsTouched();
       return;
@@ -261,43 +303,47 @@ export class UtilisateursComponent implements OnInit {
 
     const raw = this.userForm.value;
 
-    // Préparer le payload
-    const payload = {
-      nom: raw.vcLastname,
-      prenom: raw.vcFirstname,
-      email: raw.vcEmail,
-      iRoleID: raw.iRoleID,
-      phoneNumber: raw.vcPhoneNumber,
-      modeOtp: raw.modeOtp,
-      idPays: raw.idPays,
-      vcDescription: raw.vcDescription,
-    };
+    // Construction du FormData pour supporter l'envoi de fichier
+    const formData = new FormData();
+    formData.append('prenom', raw.vcFirstname);
+    formData.append('nom', raw.vcLastname);
+    formData.append('email', raw.vcEmail);
+    formData.append('iRoleID', raw.iRoleID);
+    formData.append('phoneNumber', raw.vcPhoneNumber);
+    formData.append('modeOtp', raw.modeOtp);
+    formData.append('idPays', raw.idPays);
+    formData.append('vcDescription', raw.vcDescription);
+
+    if (this.selectedFile) {
+      formData.append('photoSignature', this.selectedFile, this.selectedFile.name);
+    }
 
     this.isLoading = true;
 
     this.authServiceSimple
       .creerUnNouveauUtilisateur(
-        payload.prenom,
-        payload.nom,
-        payload.email,
-        payload.iRoleID,
-        payload.phoneNumber,
-        payload.modeOtp,
-        payload.idPays,
-        payload.vcDescription
+        raw.vcFirstname,
+        raw.vcLastname,
+        raw.vcEmail,
+        raw.iRoleID,
+        raw.vcPhoneNumber,
+        raw.modeOtp,
+        raw.idPays,
+        raw.vcDescription
+        // Passe formData à la place si ton service le supporte : formData
       )
       .subscribe({
         next: (res: any) => {
           this.toastr.success(
             res?.message || 'Utilisateur créé avec succès',
             '',
-            {
-              positionClass: 'toast-custom-center',
-            }
+            { positionClass: 'toast-custom-center' }
           );
           this.getAllUsers();
           this.isLoading = false;
           this.userForm.reset();
+          this.selectedFile = null;
+          this.previewUrl = null;
         },
         error: (err: any) => {
           console.error('Erreur création utilisateur:', err);
@@ -347,17 +393,17 @@ export class UtilisateursComponent implements OnInit {
       });
   }
 
+  // ─── Tableau / Pagination ─────────────────────────────────────────────────
+
   pageSize = 5;
   currentPage = 1;
   searchText = '';
   sortColumn = '';
   sortDirection: 'asc' | 'desc' = 'asc';
 
-  // Filtrer et trier
   get filteredData() {
     let data = [...this.allUsers];
 
-    // Recherche
     if (this.searchText) {
       const term = this.searchText.toLowerCase();
       data = data.filter((d) =>
@@ -367,7 +413,6 @@ export class UtilisateursComponent implements OnInit {
       );
     }
 
-    // Tri
     if (this.sortColumn) {
       data.sort((a, b) => {
         const valA = a[this.sortColumn] ?? '';
@@ -407,11 +452,11 @@ export class UtilisateursComponent implements OnInit {
   previousPage() {
     this.goToPage(this.currentPage - 1);
   }
+
   nextPage() {
     this.goToPage(this.currentPage + 1);
   }
 
-  // Pagination dynamique
   getPages(): (number | string)[] {
     const total = this.totalPages();
     const pages: (number | string)[] = [];
@@ -439,7 +484,6 @@ export class UtilisateursComponent implements OnInit {
     return pages;
   }
 
-  // Tri par colonne
   sort(col: string) {
     if (this.sortColumn === col) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -452,26 +496,19 @@ export class UtilisateursComponent implements OnInit {
   exportExcel() {
     if (this.filteredData.length === 0) return;
 
-    // Créer une copie des données et renommer les colonnes pour Excel
     const dataForExcel = this.filteredData.map((d) => ({
-      Date: new Date(d.dtCreated).toLocaleString(), // formater la date
+      Date: new Date(d.dtCreated).toLocaleString(),
       Nom: d.vcFirstname,
       Prénom: d.vcLastname,
       Email: d.email,
-      Télephone: d.vcPhoneNumber, 
-      Role: d.vcRoleName
-      // Date: d.dtCreated
+      Télephone: d.vcPhoneNumber,
+      Role: d.vcRoleName,
     }));
 
-    // Créer une feuille
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataForExcel);
-
-    // Créer le classeur
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Beneficiaires');
-
-    // Générer le fichier Excel
-    XLSX.writeFile(wb, 'beneficiaires.xlsx');
+    XLSX.utils.book_append_sheet(wb, ws, 'Utilisateurs');
+    XLSX.writeFile(wb, 'utilisateurs.xlsx');
   }
 
   onPageClick(page: number | string) {
@@ -512,7 +549,7 @@ export class UtilisateursComponent implements OnInit {
     this.authService.listeRole(this.iOrganisationID).subscribe({
       next: (res) => {
         this.roles = res.data;
-        console.log("this.roles: ",this.roles);
+        console.log('this.roles: ', this.roles);
         this.isLoading = false;
       },
       error: (err) => {

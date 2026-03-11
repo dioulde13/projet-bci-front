@@ -230,20 +230,24 @@ export class RecapTransfertEntreCompteComponent implements OnInit {
       rate: this.tauxConversion,
     };
 
-    console.log('payload: ', payload);
+    console.log('payloadssss: ', payload);
 
     this.tranfertUniqueService.sendTransaction(payload).subscribe({
       next: (res) => {
-        console.log('res: ', res);
+        console.log('resssss: ', res);
         if (res.status === 200) {
           if (res.data.reference && res.data.transaction_id) {
             this.reference = res.data.reference;
             this.transaction_id = res.data.transaction_id;
             this.submitFormPayementInterneExterne();
           } else {
+            this.notification.error(res.message);
             this.isLoading = false;
           }
           // this.toastr.success(res.data.message);
+        } else{
+          this.notification.error(res.message);
+            this.isLoading = false;
         }
       },
       error: (err) => {

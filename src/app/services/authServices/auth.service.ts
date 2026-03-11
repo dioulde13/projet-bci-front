@@ -21,7 +21,9 @@ export class AuthService {
   userInfo = this._userInfo.asReadonly();
   userInfoConfig = this._userInfoConfig.asReadonly();
 
-  constructor(private http: HttpClient, private inactivityService: InactivityServiceTsService) {
+  constructor(private http: HttpClient,
+     private inactivityService: InactivityServiceTsService
+    ) {
     // console.log('%c[AuthService] ✅ Initialisation du service', 'color: cyan;');
     this.restoreFromLocalStorage();
   }
@@ -296,6 +298,7 @@ export class AuthService {
         })
       );
   }
+  
 
   // -------------------- Profil --------------------
   modifierProfile(

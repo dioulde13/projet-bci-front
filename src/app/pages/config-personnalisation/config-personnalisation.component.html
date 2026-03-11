@@ -98,65 +98,128 @@
                       </div>
 
                       <div class="card-body">
-                        <div *ngFor="let compte of comptes" class="compte-card">
-                          <input
-                            class="input-checkbox"
-                            type="checkbox"
-                            [(ngModel)]="compte.isChecked"
-                            (ngModelChange)="onCheckChange(compte)"
-                          />
-                          <b class="compte">Compte - {{ compte.compte }}</b
-                          ><br />
-                          <div class="d-flex flex-wrap gap-2 mt-1">
-                            <span
-                              class="badge rounded-pill bg-primary-subtle text-primary"
-                            >
-                              <i class="fas fa-tag me-1"></i
-                              ><span class="text-white">Type :</span> :
-                              {{ compte.typ }}
-                            </span>
+                        <div class="comptes-grid">
+                          <div
+                            *ngFor="let compte of comptes"
+                            class="compte-card"
+                            [ngClass]="{ selected: compte.isChecked }"
+                            (click)="toggleSelection(compte)"
+                          >
+                            <div class="compte-header">
+                              <i class="fas fa-landmark compte-icon"></i>
+                              <span class="compte-name">{{
+                                compte.nomCompte
+                              }}</span>
+                              <i
+                                class="fas fa-check-circle selected-icon"
+                                *ngIf="compte.isChecked"
+                              ></i>
+                            </div>
 
-                            <span
-                              class="badge rounded-pill bg-info-subtle text-info"
-                            >
-                              <i class="fas fa-coins me-1"></i><span class="text-white">Devise </span>:
-                              {{ compte.devise }}
-                            </span>
+                            <div class="compte-info">
+                              <p class="solde-line">
+                                Solde actuel :
+                                <strong
+                                  >{{ formatMontant(compte.posdisp) }}
+                                  {{ compte.devise }}</strong
+                                >
+                              </p>
+                              <p class="numero-line">
+                                N° Compte : {{ compte.compte }}
+                              </p>
+                            </div>
 
-                            <span
-                              class="badge rounded-pill bg-success-subtle text-success"
-                            >
-                              <i class="fas fa-wallet me-1"></i><span class="text-white">Solde</span> :
-                              {{ formatMontant(compte.posdisp) }}
-                            </span>
-
-                            <span
-                              class="badge rounded-pill"
+                            <!-- Badge Status — texte wrap -->
+                            <div
+                              class="d-inline-flex align-items-center flex-wrap gap-1 rounded-pill px-2 py-1 mb-1"
+                              style="
+                                background-color: black;
+                                font-size: 0.7rem;
+                                max-width: 100%;
+                                word-break: break-word;
+                                white-space: normal;
+                              "
                               [ngClass]="
                                 compte.isBlocked
-                                  ? 'bg-success-subtle text-success'
-                                  : 'bg-danger-subtle text-danger'
+                                  ? 'text-danger'
+                                  : 'text-success'
                               "
                             >
                               <i
-                                class="fas me-1"
+                                class="fas"
                                 [ngClass]="
                                   compte.isBlocked
-                                    ? 'fa-check-circle'
-                                    : 'fa-ban'
+                                    ? 'fa-ban'
+                                    : 'fa-check-circle'
                                 "
                               ></i>
-                             <span class="text-white"> Status compte </span>:
-                              {{ compte.isBlocked ? "Actif" : "Bloqué" }}
-                            </span>
+                              <span class="text-white">Status compte</span>
+                              <span
+                                >:
+                                {{
+                                  compte.isBlocked ? "Inactif" : "Actif"
+                                }}</span
+                              >
+                            </div>
 
-                            <span
-                              class="badge rounded-pill bg-warning-subtle text-warning"
+                            <!-- Badge Detail — texte wrap -->
+                            <div
                               *ngIf="compte.isBlockedDetails"
+                              class="d-inline-flex align-items-start flex-wrap gap-1 rounded-pill px-2 py-1 mt-1"
+                              style="
+                                background-color: black;
+                                font-size: 0.7rem;
+                                max-width: 100%;
+                                word-break: break-word;
+                                white-space: normal;
+                              "
                             >
-                              <i class="fas fa-info-circle me-1"></i>
-                             <span class="text-white"> Detail compte </span> : {{ compte.isBlockedDetails }}
-                            </span>
+                              <i
+                                class="fas fa-info-circle text-warning mt-1"
+                              ></i>
+                              <span class="text-white">Detail compte :</span>
+                              <span
+                                class="text-warning fw-semibold"
+                                style="font-size: 10px"
+                                >{{ compte.isBlockedDetails }}</span
+                              >
+                            </div>
+
+                            <!-- <div class="compte-badges">
+                              <span>
+                                 Status compte :
+                              </span>
+                              <span
+                                class="status-badge"
+                                [ngClass]="
+                                  compte.isBlocked
+                                    ? 'text-danger'
+                                    : 'text-success'
+                                "
+                              >
+                                <i
+                                  class="fas"
+                                  [ngClass]="
+                                    compte.isBlocked
+                                      ? 'fa-ban'
+                                      : 'fa-check-circle'
+                                  "
+                                ></i>
+                               
+                                {{ compte.isBlocked ? "Inactif" : "Actif" }}
+                              </span>
+
+                              <span
+                                class="detail-badge"
+                                *ngIf="compte.isBlockedDetails"
+                              >
+                                <i class="fas fa-info-circle"></i>
+                                Detail compte :
+                                <span class="detail-text">{{
+                                  compte.isBlockedDetails
+                                }}</span>
+                              </span>
+                            </div> -->
                           </div>
                         </div>
                       </div>

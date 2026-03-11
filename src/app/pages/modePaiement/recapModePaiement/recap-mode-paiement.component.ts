@@ -197,6 +197,7 @@ export class RecapModePaiementComponent implements OnInit {
           this.transaction_id = res.data.transaction_id;
           this.addMobileMoneyTransaction();
         } else {
+          this.notification.error(this.decodeMessage(res.message));
           this.isLoading = false;
         }
       },

@@ -66,3 +66,64 @@ table {
   margin-left: 5px;
 }
 
+
+.comptes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 8px;
+}
+
+.compte-card {
+  position: relative;
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.compte-card:hover {
+  border-color: #a0b4ff;
+  box-shadow: 0 4px 12px rgba(99, 132, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ✅ Card sélectionnée */
+.compte-card.selected {
+  border-color: #4f6ef7;
+  background: linear-gradient(135deg, #eef1ff 0%, #f5f7ff 100%);
+  box-shadow: 0 4px 16px rgba(79, 110, 247, 0.25);
+}
+
+.compte-card.selected .compte-name {
+  color: #4f6ef7;
+}
+
+.compte-card.selected .solde-line strong {
+  color: #4f6ef7;
+}
+
+/* Icône ✓ qui apparaît en haut à droite quand sélectionné */
+.compte-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.selected-icon {
+  margin-left: auto;
+  color: #4f6ef7;
+  font-size: 18px;
+  animation: popIn 0.2s ease;
+}
+
+@keyframes popIn {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}

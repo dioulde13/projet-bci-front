@@ -16,7 +16,7 @@ import {
   NavigationCancel,
   NavigationEnd,
   NavigationError,
-  NavigationStart,
+  // NavigationStart,
   Router,
   RouterLink,
 } from '@angular/router';
@@ -31,6 +31,7 @@ import { OrdreTransfertInternationalComponent } from '../transfertInternationale
 import { BeneficiaireEnAttenteService } from '../../servicesNodes/beneficiaireEnAttente/beneficiaire-en-attente.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { Subscription } from 'rxjs';
+import { GenericFileImportComponent } from '../generic-file-import/generic-file-import.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -40,6 +41,7 @@ import { Subscription } from 'rxjs';
     CommonModule,
     FormsModule,
     OrdreTransfertInternationalComponent,
+    GenericFileImportComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
@@ -81,8 +83,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  listeCompteClient: any[] = [];
-
   // ===== LOADER NAVIGATION =====
   isLoading = false;
   private navigationSubscription!: Subscription;
@@ -115,10 +115,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private dixTransactionServiceNode: TransactionService,
     private balanceService: BalanceService,
     private saveFichierCSVService: SaveFichierCSVService,
+    private notification: NotificationService,
     private bciLoaderService: BciLoaderService,
     private router: Router,
     private beneficiaireEnAttente: BeneficiaireEnAttenteService,
-    private notification: NotificationService,
   ) {}
 
   iOrganisationID!: number;
@@ -136,6 +136,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.dateDuJour = `À la date du ${today.toLocaleDateString('fr-FR', options)}`;
 
     this.getBciLoader();
+
     const userJson = localStorage.getItem('userInfo');
 
     if (userJson) {
@@ -162,11 +163,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   typesCompte: string = '';
   countNombreComptes: any;
   loadingListeCompteClient: boolean = false;
+  listeCompteClient: any[] = [];
 
   getListeCompteClient(): void {
     this.loadingListeCompteClient = true;
     if (!this.iOrganisationID) {
-      console.warn('Impossible de récupérer la liste : iOrganisationID non défini');
+      console.warn(
+        'Impossible de récupérer la liste : iOrganisationID non défini',
+      );
       return;
     }
 
@@ -176,7 +180,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         next: (response) => {
           this.loadingListeCompteClient = false;
           this.listeCompteClient = response.data?.[0]?.comptes ?? [];
-          console.log("this.listeCompteClient: ", this.listeCompteClient);
+          console.log('this.listeCompteClient: ', this.listeCompteClient);
           this.loading = false;
           this.countNombreComptes = this.listeCompteClient.length;
 
@@ -186,7 +190,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           this.typesCompte = types.join(' - ');
 
           if (this.listeCompteClient.length > 0) {
-            this.selectedAccountNumber = this.listeCompteClient[0].vcAccountNumber;
+            this.selectedAccountNumber =
+              this.listeCompteClient[0].vcAccountNumber;
             this.dixTransactionsRecentsListe();
             this.onDebitAccountChange(this.selectedAccountNumber);
           }
@@ -393,15 +398,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   onImportedData(event: any) {
     this.loadingValidation = true;
 
-    const file: File = event?.detail?.file;
+    // Compatibilité : EventEmitter Angular (event direct ou event.file)
+    // et CustomEvent DOM natif (event.detail.file)
+    const file: File = event?.detail?.file ?? event?.file ?? event;
 
     if (!(file instanceof File)) {
-      console.error('Le fichier CSV est invalide ou non trouvé');
+      console.error('Le fichier CSV est invalide ou non trouvé', event);
+      this.loadingValidation = false;
       return;
     }
 
     this.saveFichierCSVService
-      .saveFichierCSVTransaction(file, 1, this.iOrganisationID)
+      .saveFichierCSVTransaction(file, this.iOrganisationID, '0')
       .subscribe({
         next: (res) => {
           this.notification.success(res.message);
@@ -410,12 +418,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         },
         error: (err) => {
           console.error('Erreur import', err);
+          this.loadingValidation = false;
         },
       });
   }
 
   notificationEnCoursDeveloppement() {
-    this.notification.error('Cette fonctionnalité est en cours de développement.');
+    this.notification.error(
+      'Cette fonctionnalité est en cours de développement.',
+    );
   }
 
   isModalOpen = false;

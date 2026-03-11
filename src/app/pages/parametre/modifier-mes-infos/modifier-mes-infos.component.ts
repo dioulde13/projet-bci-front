@@ -8,18 +8,26 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../../services/authServices/auth.service';
 import { ConfigurationsService } from '../../../services/ConfigurationsService/configurations.service';
 import { Router } from '@angular/router';
 import { GnfNumberFormatDirective } from '../../../directives/gnf-number-format.directive';
 import { GnfFormatPipe } from '../../gnfFormat/gnf-format.pipe';
-declare var bootstrap: any; // Si tu utilises juste Bootstrap 5 JS
+import { DashboardService } from '../../../services/dashboard/dashboard.service';
+import { NotificationService } from '../../../services/notification/notification.service';
+import { AjouterComptesService } from '../../../services/ajouterComptesServices/ajouter-comptes.service';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-modifier-mes-infos',
   standalone: true,
-  imports: [FormsModule, CommonModule, ReactiveFormsModule, GnfNumberFormatDirective, GnfFormatPipe],
+  imports: [
+    FormsModule,
+    CommonModule,
+    ReactiveFormsModule,
+    GnfNumberFormatDirective,
+    GnfFormatPipe,
+  ],
   templateUrl: './modifier-mes-infos.component.html',
   styleUrl: './modifier-mes-infos.component.css',
 })
@@ -77,10 +85,13 @@ export class ModifierMesInfosComponent {
 
   constructor(
     private authService: AuthService,
-    private toastr: ToastrService,
+    // private toastr: ToastrService,
     private orgService: ConfigurationsService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private listeCompteCLientService: DashboardService,
+    private notification: NotificationService,
+    private ajouterComptesService: AjouterComptesService,
   ) {}
 
   niveaux = [
@@ -130,7 +141,7 @@ export class ModifierMesInfosComponent {
 
     const formValue = this.niveauForm.value;
     const role = this.listeRoleNiveau.find(
-      (r) => r.id === +formValue.vcRoleName
+      (r) => r.id === +formValue.vcRoleName,
     );
 
     if (!role) return;
@@ -240,7 +251,7 @@ export class ModifierMesInfosComponent {
 
       const selected = this.countries.find(
         (c: any) =>
-          c.vcCode.toLowerCase().trim() === selectedCode.toLowerCase().trim()
+          c.vcCode.toLowerCase().trim() === selectedCode.toLowerCase().trim(),
       );
 
       console.log('Pays sélectionné :', selected);
@@ -255,7 +266,7 @@ export class ModifierMesInfosComponent {
             Devise: selected.devise || this.currency,
             TimeZonePerUser: this.timeZonePerUser === 1 ? true : false,
           },
-          { emitEvent: false }
+          { emitEvent: false },
         );
 
         // ✅ Récupération et stockage de l’ID du pays sélectionné
@@ -263,7 +274,279 @@ export class ModifierMesInfosComponent {
         console.log('ID du pays sélectionné :', this.selectedCountryId);
       }
     });
+
+    const userJson = localStorage.getItem('userInfo');
+
+    if (userJson) {
+      try {
+        this.infosUser = JSON.parse(userJson);
+      } catch {
+        this.infosUser = null;
+      }
+    }
+
+    if (this.infosUser?.iOrganisationID) {
+      this.iOrganisationID = this.infosUser.iOrganisationID;
+      this.getListeCompteClient();
+    } else {
+      console.warn('iOrganisationID non défini');
+      this.loading = false;
+    }
   }
+
+  loading = true;
+  loadingListeCompteClient: boolean = false;
+  listeCompteClient: any[] = [];
+  iOrganisationID!: number;
+  infosUser: any;
+
+  getIdClient: any;
+  searchValue: string = '';
+  listeComptesParIdClient: any[] = [];
+
+  getListeCompteClient(): void {
+    this.loadingListeCompteClient = true;
+    if (!this.iOrganisationID) {
+      console.warn(
+        'Impossible de récupérer la liste : iOrganisationID non défini',
+      );
+      return;
+    }
+
+    this.listeCompteCLientService
+      .getListeCompteClientAoujout(this.iOrganisationID)
+      .subscribe({
+        next: (response) => {
+          this.loadingListeCompteClient = false;
+          this.listeCompteClient = response.data?.[0]?.comptes ?? [];
+          console.log('this.listeCompteClient: ', this.listeCompteClient);
+          this.getIdClient =
+            response.data?.[0]?.comptes[0].vcAccountNumber?.substring(0, 6);
+
+          // Auto-remplir et lancer la recherche automatiquement
+          this.searchValue = this.getIdClient;
+          this.onSearch();
+
+          console.log('this.getIdClient: ', this.getIdClient);
+          console.log('this.listeCompteClient: ', this.listeCompteClient);
+          this.loading = false;
+        },
+        error: (err: any) => {
+          this.loadingListeCompteClient = false;
+          this.loading = false;
+          console.error('Erreur getListeCompteClient', err);
+        },
+      });
+  }
+
+  loadingSearch: boolean = false;
+  selectedComptes: any[] = [];
+
+  onSearch(): void {
+    if (!this.searchValue) return;
+    this.loadingSearch = true;
+
+    this.ajouterComptesService
+      .getInfoCompteClientAjout(this.searchValue)
+      .subscribe({
+        next: (response: any) => {
+          this.listeComptesParIdClient = response.comptes;
+           // 👇 LOG ici
+        console.log('✅ listeComptesParIdClient :', this.listeComptesParIdClient);
+        console.table(this.listeComptesParIdClient); // vue tabulaire dans la console
+          this.selectedComptes = []; // reset sélection
+          this.loadingSearch = false;
+        },
+        error: (err: any) => {
+          this.loadingSearch = false;
+          console.error('Erreur onSearch', err);
+        },
+      });
+  }
+
+   // Mais si vous voulez logger à l'ouverture, utilisez un listener :
+  onOpenModal(): void {
+    console.log('📂 Modal ouvert');
+    this.onSearch();
+  }
+
+
+  toggleSelection(compte: any): void {
+    const index = this.selectedComptes.findIndex(
+      (c) => c.compte === compte.compte,
+    );
+    if (index === -1) {
+      this.selectedComptes.push(compte);
+    } else {
+      this.selectedComptes.splice(index, 1);
+    }
+  }
+
+  isSelected(compte: any): boolean {
+    return this.selectedComptes.some((c) => c.compte === compte.compte);
+  }
+
+
+ 
+
+  ajouteCompte: boolean = false;
+  // ✅ Valider l'ajout des comptes sélectionnés
+  validerAjout(): void {
+    this.ajouteCompte = true;
+    if (this.selectedComptes.length === 0) return;
+
+    const clientID = Number(this.getIdClient);
+
+    this.ajouterComptesService
+      .addClientAccounts(clientID, this.selectedComptes)
+      .subscribe({
+        next: (response: any) => {
+          console.log('response: ', response);
+          if (response?.status === 200 || response?.success) {
+            this.notification.success(
+              `${this.selectedComptes.length} compte(s) ajouté(s) avec succès.`,
+            );
+            this.ajouteCompte = false;
+            const modalEl: any = document.getElementById('addCompteModal');
+            bootstrap.Modal.getInstance(modalEl)?.hide();
+            // Rafraîchir la liste des comptes
+            this.getListeCompteClient();
+            this.selectedComptes = [];
+          } else {
+            this.ajouteCompte = false;
+            this.notification.error(
+              response?.message || "Erreur lors de l'ajout.",
+            );
+          }
+        },
+        error: (err: any) => {
+          this.ajouteCompte = false;
+          this.notification.error(
+            err?.error?.message === 'Unauthenticated.'
+              ? 'Votre session a expiré.'
+              : "Erreur lors de l'ajout des comptes.",
+          );
+        },
+      });
+  }
+
+  // ✅ Confirmer le blocage/déblocage avec appel API
+  confirmToggleBlocage(): void {
+    if (!this.compteToToggle) return;
+
+    this.isProcessingBlocage = true;
+
+    const enabled = this.compteToToggle.btEnabled === '1' ? 0 : 1;
+    // const clientID = Number(this.getIdClient);
+    // const accountNumber = this.compteToToggle.vcAccountNumber;
+
+    this.ajouterComptesService
+      .toggleAccount(
+        this.compteToToggle.idClient,
+        this.compteToToggle.vcAccountNumber,
+        enabled,
+      )
+      .subscribe({
+        next: (response: any) => {
+          console.log('response: ', response);
+          this.isProcessingBlocage = false;
+
+          if (response?.status === 200 || response?.success) {
+            this.getListeCompteClient();
+            if (enabled) {
+              this.notification.success(response.message);
+            } else {
+              this.notification.error(response.message);
+            }
+            // Fermer le modal
+            const modalEl: any = document.getElementById('confirmBlocageModal');
+            bootstrap.Modal.getInstance(modalEl)?.hide();
+            this.compteToToggle = null;
+          } else {
+            this.notification.error(
+              response?.message || 'Erreur lors du changement de statut.',
+            );
+          }
+        },
+        error: (err: any) => {
+          this.isProcessingBlocage = false;
+          this.notification.error(
+            err?.error?.message === 'Unauthenticated.'
+              ? 'Votre session a expiré.'
+              : 'Erreur lors du changement de statut du compte.',
+          );
+        },
+      });
+  }
+
+  // Propriétés pour le modal de confirmation
+  compteToToggle: any = null;
+  isProcessingBlocage: boolean = false;
+
+  // Ouvrir le modal de confirmation
+  openBlocageModal(compte: any): void {
+    this.compteToToggle = compte;
+    console.log('this.compteToToggle: ', this.compteToToggle);
+    const modal = new bootstrap.Modal(
+      document.getElementById('confirmBlocageModal'),
+    );
+    modal.show();
+  }
+
+  // Confirmer le blocage/déblocage
+  // confirmToggleBlocage(): void {
+  //   if (!this.compteToToggle) return;
+
+  //   this.isProcessingBlocage = true;
+
+  //   // Inverser l'état : si btEnabled = '1' (actif), on passe à '0' (désactivé) et vice-versa
+  //   const newStatus = this.compteToToggle.btEnabled === '1' ? '0' : '1';
+  //   const action =
+  //     this.compteToToggle.btEnabled === '1' ? 'désactivé' : 'activé';
+
+  //   // Appel API
+  //   // this.listeCompteCLientService
+  //   //   .toggleBlocageCompte(this.compteToToggle.idCompte, newStatus)
+  //   //   .subscribe({
+  //   //     next: (response) => {
+  //   //       this.isProcessingBlocage = false;
+
+  //   //       if (response.status === 200) {
+  //   //         // Mettre à jour l'état localement
+  //   //         this.compteToToggle.btEnabled = newStatus;
+
+  //   //         // Fermer le modal
+  //   //         const modalEl: any = document.getElementById('confirmBlocageModal');
+  //   //         const modalInstance = bootstrap.Modal.getInstance(modalEl);
+  //   //         modalInstance.hide();
+
+  //   //         // Message de succès
+  //   //         this.toastr.success(
+  //   //           `Le compte ${this.compteToToggle.vcAccountNumber} a été ${action} avec succès.`,
+  //   //           '',
+  //   //           { positionClass: 'toast-custom-center' }
+  //   //         );
+
+  //   //         // Réinitialiser
+  //   //         this.compteToToggle = null;
+  //   //       } else {
+  //   //         this.toastr.error(response.message || 'Une erreur est survenue', '', {
+  //   //           positionClass: 'toast-custom-center'
+  //   //         });
+  //   //       }
+  //   //     },
+  //   //     error: (err) => {
+  //   //       this.isProcessingBlocage = false;
+  //   //       this.toastr.error(
+  //   //         err?.error?.message === 'Unauthenticated.'
+  //   //           ? 'Votre session a expiré.'
+  //   //           : 'Erreur lors du changement de statut du compte',
+  //   //         '',
+  //   //         { positionClass: 'toast-custom-center' }
+  //   //       );
+  //   //     }
+  //   //   });
+  // }
 
   // ✅ Changer visibilité mot de passe
   togglePasswordVisibility(field: 'old' | 'new' | 'confirm') {
@@ -342,7 +625,7 @@ export class ModifierMesInfosComponent {
         this.currentUserInfo.vcFirstname,
         this.currentUserInfo.email,
         this.currentUserInfo.vcPhoneNumber,
-        Number(this.currentUserInfo.id)
+        Number(this.currentUserInfo.id),
       )
       .subscribe({
         next: (response: any) => {
@@ -357,13 +640,8 @@ export class ModifierMesInfosComponent {
             // Gestion des scénarios de déconnexion
             if (response?.isDeconnectUsersPhone === 'pageotp') {
               // Affichage du message de success
-              this.toastr.success(
+              this.notification.success(
                 'Vos informations ont été modifiées. Déconnexion dans 5 secondes pour validation téléphone.',
-                '',
-                {
-                  positionClass: 'toast-custom-center',
-                  timeOut: 5000,
-                }
               );
 
               // Deconnexion et redirection apres 5 secondes
@@ -373,13 +651,8 @@ export class ModifierMesInfosComponent {
               }, 5000);
             } else if (response?.isDeconnectUsersEmail === 'pageemail') {
               // Affichage du message de success si l'email a ete modifier
-              this.toastr.success(
+              this.notification.success(
                 'Vos informations ont été modifiées. Déconnexion dans 5 secondes pour validation email.',
-                '',
-                {
-                  positionClass: 'toast-custom-center',
-                  timeOut: 5000,
-                }
               );
 
               // Deconnexion et redirection apres 5 secondes
@@ -389,28 +662,20 @@ export class ModifierMesInfosComponent {
               }, 5000);
             } else {
               // Sinon afficher cas meme le message de modification uniquement
-              this.toastr.success(response.message, '', {
-                positionClass: 'toast-custom-center',
-              });
+              this.notification.success(response.message);
             }
             // Si Erreur
           } else {
-            this.toastr.error(response.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.error(response.message, '');
           }
           console.log(response);
         },
         error: (error) => {
           this.isLoading = false;
-          this.toastr.error(
+          this.notification.error(
             error?.error?.message === 'Unauthenticated.'
               ? 'Votre session a expiré.'
               : 'Erreur lors du chargement des pays',
-            '',
-            {
-              positionClass: 'toast-custom-center',
-            }
           );
         },
       });
@@ -479,16 +744,14 @@ export class ModifierMesInfosComponent {
     // Vérification du formulaire avant tout
     if (form.invalid) {
       Object.values(form.controls).forEach((control) =>
-        control.markAsTouched()
+        control.markAsTouched(),
       );
       return; // Ne pas appeler l'API
     }
 
     // Vérifier correspondance des mots de passe
     if (this.password.new !== this.password.confirm) {
-      this.toastr.error('Les mots de passe ne correspondent pas.', '', {
-        positionClass: 'toast-custom-center',
-      });
+      this.notification.error('Les mots de passe ne correspondent pas.');
       return;
     }
 
@@ -498,37 +761,27 @@ export class ModifierMesInfosComponent {
       .updatePassword(
         this.password.old,
         this.password.new,
-        this.currentUserInfo.email
+        this.currentUserInfo.email,
       )
       .subscribe({
         next: (response: any) => {
           this.isLoading = false;
           if (response?.status === 200 || response?.success) {
-            this.toastr.success(response?.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.success(response?.message);
             this.password = { old: '', new: '', confirm: '' };
             form.resetForm();
           } else {
-            this.toastr.error(
+            this.notification.error(
               response?.message || 'Échec de la modification.',
-              '',
-              {
-                positionClass: 'toast-custom-center',
-              }
             );
           }
         },
         error: (error: any) => {
           this.isLoading = false;
-          this.toastr.error(
+          this.notification.error(
             error?.error?.message === 'Unauthenticated.'
               ? 'Votre session a expiré.'
               : 'Erreur lors du chargement des pays',
-            '',
-            {
-              positionClass: 'toast-custom-center',
-            }
           );
         },
       });
@@ -561,7 +814,7 @@ export class ModifierMesInfosComponent {
               c.vcName.toLowerCase().trim() ===
                 this.country?.toLowerCase().trim() ||
               c.vcCode.toLowerCase().trim() ===
-                this.country?.toLowerCase().trim()
+                this.country?.toLowerCase().trim(),
           );
 
           if (selectedCountry) {
@@ -573,7 +826,7 @@ export class ModifierMesInfosComponent {
                 TimeZone: selectedCountry.vcTimeZone,
                 Devise: selectedCountry.vcCurrency || this.currency,
               },
-              { emitEvent: false }
+              { emitEvent: false },
             );
           }
         }
@@ -581,14 +834,10 @@ export class ModifierMesInfosComponent {
         this.isLoadingCoutries = false;
       },
       error: (err) => {
-        this.toastr.error(
+        this.notification.error(
           err?.error?.message === 'Unauthenticated.'
             ? 'Votre session a expiré.'
             : 'Erreur lors du chargement des pays',
-          '',
-          {
-            positionClass: 'toast-custom-center',
-          }
         );
         console.log(err);
         console.log(err.error.message);
@@ -666,7 +915,7 @@ export class ModifierMesInfosComponent {
     // ✅ Récupérer le pays sélectionné (objet complet)
     const selectedCountry = this.countries.find(
       (c: any) =>
-        c.vcCode.toLowerCase().trim() === formValue.Pays.toLowerCase().trim()
+        c.vcCode.toLowerCase().trim() === formValue.Pays.toLowerCase().trim(),
     );
 
     // ✅ Récupérer l'id du pays
@@ -690,7 +939,7 @@ export class ModifierMesInfosComponent {
       payload.push(
         { vcKey: 'idPays', vcValue: selectedCountry.id },
         { vcKey: 'NomPays', vcValue: selectedCountry.vcName },
-        { vcKey: 'CodePays', vcValue: selectedCountry.vcCode }
+        { vcKey: 'CodePays', vcValue: selectedCountry.vcCode },
       );
     }
 
@@ -704,19 +953,15 @@ export class ModifierMesInfosComponent {
         this.orgId,
         payload,
         this.idUsers,
-        selectedCountryId
+        selectedCountryId,
       )
       .subscribe({
         next: (res) => {
           console.log('doneer envoyer sont : ', this.orgId, payload);
 
           if (res?.status && res?.status === 200) {
-            this.toastr.success(
+            this.notification.success(
               'Votre fuseau horaire a été modifié avec succès !',
-              '',
-              {
-                positionClass: 'toast-custom-center',
-              }
             );
 
             const oldConf = this.authService.getUserInfoConfig();
@@ -728,9 +973,7 @@ export class ModifierMesInfosComponent {
             console.log('New config : ', config);
             this.authService.setUserInfoConfig(config);
           } else {
-            this.toastr.error(res.message, '', {
-              positionClass: 'toast-custom-center',
-            });
+            this.notification.error(res.message, '');
           }
 
           console.log(res);
@@ -739,14 +982,10 @@ export class ModifierMesInfosComponent {
 
         error: (err) => {
           console.log(err);
-          this.toastr.error(
+          this.notification.error(
             err?.error?.message === 'Unauthenticated.'
               ? 'Votre session a expiré.'
               : 'Erreur lors du chargement des pays',
-            '',
-            {
-              positionClass: 'toast-custom-center',
-            }
           );
           this.isLoading = false;
         },

@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { InactivityServiceTsService } from '../inactivites/inactivity.service.ts.service';
+// import { InactivityServiceTsService } from '../inactivites/inactivity.service.ts.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +12,7 @@ export class OtpLoginServiceService {
 
   constructor(
     private http: HttpClient,
-    private inactivityService: InactivityServiceTsService, // ✅ injection du service d’inactivité
+    // private inactivityService: InactivityServiceTsService, // ✅ injection du service d’inactivité
     // private router: Router
   ) {}
 
@@ -35,7 +35,7 @@ export class OtpLoginServiceService {
           // localStorage.setItem('token', response.token);
 
           // 🚀 Démarrage automatique de la surveillance d’inactivité
-          this.inactivityService.startWatching();
+          // this.inactivityService.startWatching();
 
           // 🔁 Redirection vers le tableau de bord (ou autre)
           // this.router.navigate(['/dashboard']); // à adapter selon ta route

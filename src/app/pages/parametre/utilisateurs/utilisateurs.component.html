@@ -53,15 +53,12 @@
             <tbody>
               <tr *ngFor="let user of pagedBeneficiaire; let i = index">
                 <td>{{ i + 1 }}</td>
-
                 <td>{{ user.vcFirstname }}</td>
                 <td>{{ user.vcLastname }}</td>
                 <td>{{ user.email }}</td>
                 <td>{{ user.vcPhoneNumber }}</td>
                 <td>{{ user.vcRoleName }}</td>
-
                 <td>{{ user.dtCreated | date : "dd/MM/yyyy" }}</td>
-
                 <td>
                   <div class="d-flex gap-1 justify-content-center">
                     <button
@@ -103,8 +100,7 @@
                 *ngFor="let page of getPages()"
                 class="btn btn-sm me-1"
                 [ngClass]="{
-                  'btn-outline-secondary':
-                    page !== currentPage && page !== '...',
+                  'btn-outline-secondary': page !== currentPage && page !== '...',
                   'btn-secondary': page === currentPage,
                   disabled: page === '...'
                 }"
@@ -146,9 +142,13 @@
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════════
+     MODAL : Créer un utilisateur
+══════════════════════════════════════════════════ -->
 <div class="modal fade" role="dialog" tabindex="-1" id="createUserModal">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
+
       <div class="modal-header text-white bg-primary">
         <h5 class="text-white modal-title">
           <svg
@@ -178,14 +178,15 @@
       <div class="modal-body">
         <form [formGroup]="userForm" autocomplete="off">
           <div class="row">
+
+            <!-- Rôle -->
             <div class="col-md-4">
               <div class="mb-3">
                 <label class="form-label" for="role">
                   Rôle <span class="text-danger">*</span>
                 </label>
                 <select
-                  class="form-select form-select"
-                  required
+                  class="form-select"
                   id="role"
                   formControlName="iRoleID"
                   [ngClass]="getFormControlClass('iRoleID')"
@@ -195,13 +196,13 @@
                     {{ r.vcRoleName }}
                   </option>
                 </select>
-
                 <span class="text-danger" *ngIf="isInvalid('iRoleID')">
                   {{ getErrorMessage("iRoleID") }}
                 </span>
               </div>
             </div>
 
+            <!-- Prénom -->
             <div class="col-md-4">
               <div class="mb-3">
                 <label for="firstname" class="form-label">
@@ -211,7 +212,6 @@
                   type="text"
                   id="firstname"
                   class="form-control"
-                  required
                   formControlName="vcFirstname"
                   [ngClass]="getFormControlClass('vcFirstname')"
                 />
@@ -221,6 +221,7 @@
               </div>
             </div>
 
+            <!-- Nom -->
             <div class="col-md-4">
               <div class="mb-3">
                 <label for="lastname" class="form-label">
@@ -230,7 +231,6 @@
                   type="text"
                   id="lastname"
                   class="form-control"
-                  required
                   formControlName="vcLastname"
                   [ngClass]="getFormControlClass('vcLastname')"
                 />
@@ -240,6 +240,7 @@
               </div>
             </div>
 
+            <!-- Email -->
             <div class="col-md-4">
               <div class="mb-3">
                 <label for="email" class="form-label">
@@ -249,7 +250,6 @@
                   type="email"
                   id="email"
                   class="form-control"
-                  required
                   formControlName="vcEmail"
                   [ngClass]="getFormControlClass('vcEmail')"
                 />
@@ -259,25 +259,20 @@
               </div>
             </div>
 
+            <!-- Téléphone -->
             <div class="col-md-4">
-              <label>
-                Téléphone
-                <span class="text-danger">*
-                   <!-- ({{ phoneMaxLength }} carractères obligatoire) -->
-
-                </span>
+              <label class="form-label">
+                Téléphone <span class="text-danger">*</span>
               </label>
-
               <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">
                   +{{ phoneCode }}
                 </span>
-
                 <input
                   type="text"
                   placeholder="Entrez votre téléphone"
                   formControlName="vcPhoneNumber"
-                  class="form-control form-control"
+                  class="form-control"
                   (keydown)="onlyDigits($event)"
                   (paste)="onPaste($event)"
                   [ngClass]="getFormControlClass('vcPhoneNumber')"
@@ -288,62 +283,133 @@
               </span>
             </div>
 
+            <!-- Pays -->
             <div class="col-md-4">
-              <label class="form-label">
-                Pays<span class="text-danger">*</span>
-              </label>
-              <select
-                class="form-select form-select"
-                required
-                formControlName="idPays"
-                [ngClass]="getFormControlClass('idPays')"
-              >
-                <option [value]="null">-- Sélectionnez un pays --</option>
-                <option *ngFor="let country of listePays" [value]="country.id">
-                  {{ country.vcName }}
-                </option>
-              </select>
-
-              <span class="text-danger" *ngIf="isInvalid('idPays')">
-                {{ getErrorMessage("idPays") }}
-              </span>
+              <div class="mb-3">
+                <label class="form-label">
+                  Pays <span class="text-danger">*</span>
+                </label>
+                <select
+                  class="form-select"
+                  formControlName="idPays"
+                  [ngClass]="getFormControlClass('idPays')"
+                >
+                  <option [value]="null">-- Sélectionnez un pays --</option>
+                  <option *ngFor="let country of listePays" [value]="country.id">
+                    {{ country.vcName }}
+                  </option>
+                </select>
+                <span class="text-danger" *ngIf="isInvalid('idPays')">
+                  {{ getErrorMessage("idPays") }}
+                </span>
+              </div>
             </div>
 
+            <!-- Mode OTP -->
             <div class="col-md-4">
-              <label class="form-label">
-                Mode d'envoi de l'OTP <span class="text-danger">*</span>
-              </label>
-
-              <div
-                class="form-check"
-                [ngClass]="getFormControlClass('modeOtp')"
-              >
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  formControlName="modeOtp"
-                  id="otp_sms"
-                  value="SMS"
-                />
-                <label class="form-check-label" for="otp_sms"> SMS </label>
+              <div class="mb-3">
+                <label class="form-label">
+                  Mode d'envoi de l'OTP <span class="text-danger">*</span>
+                </label>
+                <div class="form-check" [ngClass]="getFormControlClass('modeOtp')">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    formControlName="modeOtp"
+                    id="otp_sms"
+                    value="SMS"
+                  />
+                  <label class="form-check-label" for="otp_sms">SMS</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    formControlName="modeOtp"
+                    id="otp_email"
+                    value="Email"
+                  />
+                  <label class="form-check-label" for="otp_email">Email</label>
+                </div>
+                <span class="text-danger" *ngIf="isInvalid('modeOtp')">
+                  {{ getErrorMessage("modeOtp") }}
+                </span>
               </div>
-
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  formControlName="modeOtp"
-                  id="otp_email"
-                  value="Email"
-                />
-                <label class="form-check-label" for="otp_email"> Email </label>
-              </div>
-
-              <span class="text-danger" *ngIf="isInvalid('modeOtp')">
-                {{ getErrorMessage("modeOtp") }}
-              </span>
             </div>
 
+            <!-- ── Photo / Signature ─────────────────────────────────── -->
+            <div class="col-md-8">
+              <div class="mb-3">
+                <label class="form-label">
+                  Photo (Signature) <span style="color: red;">*</span>
+                  <!-- <span class="text-muted fw-normal">
+                    (optionnel &mdash; JPG, PNG &middot; max 2&nbsp;MB)
+                  </span> -->
+                </label>
+
+                <!-- Zone cliquable -->
+                <div
+                  class="border rounded-3 p-3 text-center"
+                  [style.background-color]="isHoveringPhoto ? '#e9ecef' : '#f8f9fa'"
+                  style="border-style: dashed !important; cursor: pointer; transition: background-color 0.2s;"
+                  (click)="photoInput.click()"
+                  (mouseenter)="isHoveringPhoto = true"
+                  (mouseleave)="isHoveringPhoto = false"
+                >
+                  <!-- Aperçu si fichier sélectionné -->
+                  <ng-container *ngIf="previewUrl; else uploadPlaceholder">
+                    <img
+                      [src]="previewUrl"
+                      alt="Aperçu photo/signature"
+                      class="img-thumbnail mb-2"
+                      style="max-height: 160px; max-width: 100%; object-fit: contain;"
+                    />
+                    <br />
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-danger mt-1"
+                      (click)="$event.stopPropagation(); removePhoto()"
+                    >
+                      <i class="fas fa-trash-alt me-1"></i> Supprimer la photo
+                    </button>
+                  </ng-container>
+
+                  <!-- Placeholder -->
+                  <ng-template #uploadPlaceholder>
+                    <div class="py-3">
+                      <i
+                        class="fas fa-cloud-upload-alt fa-3x mb-2"
+                        style="color: #adb5bd;"
+                      ></i>
+                      <p class="mb-1 text-muted fw-semibold">
+                        Cliquez pour sélectionner une photo ou signature
+                      </p>
+                      <small class="text-muted">JPG, JPEG, PNG &mdash; Max 2 MB</small>
+                    </div>
+                  </ng-template>
+                </div>
+
+                <!-- Input caché -->
+                <input
+                  #photoInput
+                  type="file"
+                  id="photoSignature"
+                  accept="image/jpeg,image/jpg,image/png"
+                  class="d-none"
+                  (change)="onFileSelected($event)"
+                />
+
+                <!-- Infos fichier sélectionné -->
+                <small *ngIf="selectedFile" class="text-success d-block mt-1">
+                  <i class="fas fa-check-circle me-1"></i>
+                  {{ selectedFile.name }}
+                  &mdash; {{ (selectedFile.size / 1024).toFixed(1) }} KB
+                </small>
+              </div>
+            </div>
+            <!-- ── Fin Photo / Signature ─────────────────────────────── -->
+
+            <!-- Description -->
             <div class="col-md-12">
               <div class="mb-3">
                 <label class="form-label" for="description">
@@ -351,31 +417,35 @@
                 </label>
                 <textarea
                   class="form-control"
-                  required
                   rows="3"
-                  name="description"
+                  id="description"
                   formControlName="vcDescription"
                   [ngClass]="getFormControlClass('vcDescription')"
                 ></textarea>
-
                 <span class="text-danger" *ngIf="isInvalid('vcDescription')">
                   {{ getErrorMessage("vcDescription") }}
                 </span>
               </div>
             </div>
+
           </div>
         </form>
       </div>
+
       <div class="modal-footer">
-        <button class="btn btn-danger" data-bs-dismiss="modal" type="button">
+        <button
+          class="btn btn-danger"
+          data-bs-dismiss="modal"
+          type="button"
+          [disabled]="isLoading"
+        >
           Annuler
         </button>
-
         <button class="btn btn-primary" type="button" (click)="onSubmit()">
           <span *ngIf="!isLoading">Enregistrer</span>
           <span *ngIf="isLoading">
             <span
-              class="spinner-border spinner-border-sm"
+              class="spinner-border spinner-border-sm me-1"
               role="status"
               aria-hidden="true"
             ></span>
@@ -383,10 +453,14 @@
           </span>
         </button>
       </div>
+
     </div>
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════════
+     MODAL : Bloquer / Débloquer
+══════════════════════════════════════════════════ -->
 <div
   class="modal fade"
   id="bloquerDebloquerModal"
@@ -430,16 +504,13 @@
         >
           Non
         </button>
-
         <button
           type="button"
           class="btn btn-primary"
           (click)="bloquerEtDebloquer()"
           [disabled]="isloadingBloquerDebloquer"
         >
-          <ng-container
-            *ngIf="!isloadingBloquerDebloquer; else loadingTemplate"
-          >
+          <ng-container *ngIf="!isloadingBloquerDebloquer; else loadingTemplate">
             Oui
           </ng-container>
           <ng-template #loadingTemplate>

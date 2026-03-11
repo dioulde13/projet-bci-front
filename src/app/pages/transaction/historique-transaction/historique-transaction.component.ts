@@ -84,6 +84,7 @@ export class HistoriqueTransactionComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.listeHistoriqueTransactions = response?.data || [];
+          console.log('this.listeHistoriqueTransactions: ', this.listeHistoriqueTransactions);
           this.listePaymentModes = [
             ...new Set(
               this.listeHistoriqueTransactions
