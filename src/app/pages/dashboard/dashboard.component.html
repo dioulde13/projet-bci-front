@@ -81,6 +81,7 @@
                   <a
                     routerLink="/preparationPaie"
                     class="custom-icon-container"
+                    (click)="showLoader()"
                   >
                     <i class="icon ion-social-buffer custom-icon-size"></i>
                     <p class="custom-icon-text">Transferts multiples</p>
@@ -88,13 +89,13 @@
                 </div>
 
                 <div class="col-6 col-md-4 mb-4">
+                  <!-- Composant d'import de fichier -->
                   <bci-generic-file-import
                     [isOpenModal]="openModal"
                     [fields]="fields"
-                    title="Importation des Salaires BCI"
+                    title="Importation des fichiers"
                     instructions="Veuillez charger le fichier des virements du mois en cours."
                     previewTitle="Récapitulatif des virements"
-                    [duplicateCheckFields]="['numeroCompte']"
                     [validateButtonText]="
                       loadingValidation ? 'Validation en cours...' : 'Valider'
                     "
@@ -102,7 +103,7 @@
                     [compteFieldKey]="'numeroCompte'"
                     [bicFieldKey]="'bic'"
                     [deviseFieldKey]="'devise'"
-                    (importDataCompleted)="onImportedData($event)"
+                    (importDataCompleted)="onImportDataCompleted($event)"
                     (modalClosed)="openModal = false"
                   ></bci-generic-file-import>
 
@@ -366,27 +367,14 @@
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of [1, 2, 3, 4, 5]">
-                      <td>
-                        <div class="skeleton skeleton-text w-75"></div>
-                      </td>
-                      <td>
-                        <div class="skeleton skeleton-text w-50"></div>
-                      </td>
-                      <td>
-                        <div class="skeleton skeleton-text w-50"></div>
-                      </td>
-                      <td>
-                        <div class="skeleton skeleton-text w-25"></div>
-                      </td>
+                      <td><div class="skeleton skeleton-text w-75"></div></td>
+                      <td><div class="skeleton skeleton-text w-50"></div></td>
+                      <td><div class="skeleton skeleton-text w-50"></div></td>
+                      <td><div class="skeleton skeleton-text w-25"></div></td>
                     </tr>
                   </tbody>
                 </table>
               </div>
-
-              <!-- Erreur -->
-              <!-- <div *ngIf="errorMessage" class="alert alert-danger m-3">
-                {{ errorMessage }}
-              </div> -->
 
               <!-- Tableau réel -->
               <table
@@ -488,18 +476,14 @@
                     *ngIf="loadingDixPremiereTransactions; else realRows"
                   >
                     <tr *ngFor="let item of [1, 2, 3, 4, 5]">
-                      <td>
-                        <div class="skeleton skeleton-text w-75"></div>
-                      </td>
+                      <td><div class="skeleton skeleton-text w-75"></div></td>
                       <td>
                         <div class="skeleton skeleton-text w-50 ms-auto"></div>
                       </td>
                       <td>
                         <div class="skeleton skeleton-text w-50 ms-auto"></div>
                       </td>
-                      <td>
-                        <div class="skeleton skeleton-text w-100"></div>
-                      </td>
+                      <td><div class="skeleton skeleton-text w-100"></div></td>
                       <td>
                         <div class="skeleton skeleton-text w-50 ms-auto"></div>
                       </td>

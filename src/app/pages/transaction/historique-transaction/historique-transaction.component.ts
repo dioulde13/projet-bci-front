@@ -44,20 +44,20 @@ export class HistoriqueTransactionComponent implements OnInit {
   // ========================
   // SKELETON CONFIG
   // ========================
-  skeletonRows = Array(5);  // 5 lignes fantômes
+  skeletonRows = Array(5); // 5 lignes fantômes
   skeletonHeaders = [
-    { width: '90px'  },  // Date
-    { width: '110px' },  // Référence
-    { width: '120px' },  // Prénom et nom
-    { width: '120px' },  // Organisation
-    { width: '110px' },  // Bénéficiaire
-    { width: '100px' },  // Mode paiement
-    { width: '80px'  },  // Montant
-    { width: '80px'  },  // Montant converti
-    { width: '60px'  },  // Taux
-    { width: '80px'  },  // Description
-    { width: '70px'  },  // Statut
-    { width: '60px'  },  // Action
+    { width: '90px' }, // Date
+    { width: '110px' }, // Référence
+    { width: '120px' }, // Prénom et nom
+    { width: '120px' }, // Organisation
+    { width: '110px' }, // Bénéficiaire
+    { width: '100px' }, // Mode paiement
+    { width: '80px' }, // Montant
+    { width: '80px' }, // Montant converti
+    { width: '60px' }, // Taux
+    { width: '80px' }, // Description
+    { width: '70px' }, // Statut
+    { width: '60px' }, // Action
   ];
 
   ngOnInit(): void {
@@ -84,7 +84,10 @@ export class HistoriqueTransactionComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.listeHistoriqueTransactions = response?.data || [];
-          console.log('this.listeHistoriqueTransactions: ', this.listeHistoriqueTransactions);
+          console.log(
+            'this.listeHistoriqueTransactions: ',
+            this.listeHistoriqueTransactions,
+          );
           this.listePaymentModes = [
             ...new Set(
               this.listeHistoriqueTransactions
@@ -173,8 +176,12 @@ export class HistoriqueTransactionComponent implements OnInit {
     }
   }
 
-  previousPage() { this.goToPage(this.currentPage - 1); }
-  nextPage()     { this.goToPage(this.currentPage + 1); }
+  previousPage() {
+    this.goToPage(this.currentPage - 1);
+  }
+  nextPage() {
+    this.goToPage(this.currentPage + 1);
+  }
 
   getPages(): (number | string)[] {
     const total = this.totalPages();
@@ -187,7 +194,15 @@ export class HistoriqueTransactionComponent implements OnInit {
     } else if (this.currentPage >= total - 2) {
       pages.push(1, '...', total - 4, total - 3, total - 2, total - 1, total);
     } else {
-      pages.push(1, '...', this.currentPage - 1, this.currentPage, this.currentPage + 1, '...', total);
+      pages.push(
+        1,
+        '...',
+        this.currentPage - 1,
+        this.currentPage,
+        this.currentPage + 1,
+        '...',
+        total,
+      );
     }
     return pages;
   }
@@ -215,11 +230,16 @@ export class HistoriqueTransactionComponent implements OnInit {
   getStatusLabel(status: string): string {
     if (!status) return 'Inconnu';
     switch (status.toLowerCase()) {
-      case 'success':   return 'Succès';
-      case 'cancelled': return 'Annulé';
-      case 'failed':    return 'Échoué';
-      case 'pending':   return 'En attente';
-      default:          return status;
+      case 'success':
+        return 'Succès';
+      case 'cancelled':
+        return 'Annulé';
+      case 'failed':
+        return 'Échoué';
+      case 'pending':
+        return 'En attente';
+      default:
+        return status;
     }
   }
 
@@ -273,17 +293,23 @@ export class HistoriqueTransactionComponent implements OnInit {
 
     setTimeout(() => {
       const now = new Date();
-      const dateRapport = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR');
+      const dateRapport =
+        now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR');
 
       const datePaiement = transaction.dtCreated
         ? new Date(transaction.dtCreated).toLocaleDateString('fr-FR', {
-            day: '2-digit', month: 'long', year: 'numeric',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
           })
         : '';
 
       const badgeClass =
-        transaction.Status?.toLowerCase() === 'success' ? 'badge-success' :
-        transaction.Status?.toLowerCase() === 'pending'  ? 'badge-warning' : 'badge-danger';
+        transaction.Status?.toLowerCase() === 'success'
+          ? 'badge-success'
+          : transaction.Status?.toLowerCase() === 'pending'
+            ? 'badge-warning'
+            : 'badge-danger';
 
       const printWindow = window.open('', '_blank', 'width=900,height=700');
       if (!printWindow) return;
@@ -383,7 +409,10 @@ export class HistoriqueTransactionComponent implements OnInit {
 
       printWindow.document.close();
       printWindow.focus();
-      printWindow.onload = () => { printWindow.print(); printWindow.close(); };
+      printWindow.onload = () => {
+        printWindow.print();
+        printWindow.close();
+      };
       this.selectedRowId = null;
     }, 100);
   }
@@ -412,6 +441,8 @@ export class HistoriqueTransactionComponent implements OnInit {
 
   openVerifierModal(transaction: any) {
     this.selectedTransaction = transaction;
+    console.log(this.selectedTransaction);
+
     const modalEl: any = document.getElementById('verifierModal');
     this.verifierModalInstance = new bootstrap.Modal(modalEl);
     this.verifierModalInstance.show();
@@ -423,12 +454,26 @@ export class HistoriqueTransactionComponent implements OnInit {
   }
 
   confirmVerifier() {
+    console.log('response confirmVerifier: ');
+    // console.log(this.selectedTransaction.iRequestID);
+    // console.log(this.selectedTransaction);
+
     this.isVerifying = true;
+
+    if (this.selectedTransaction.iRequestID === null) {
+      this.notification.error(
+        this.decodeMessage(
+          'Echec de verification  ,  ID TXN banque  introuvable',
+        ),
+      );
+      this.isVerifying = false;
+    }
 
     this.historiqueTransactionService
       .getAllTransactions(this.selectedTransaction.iRequestID)
       .subscribe({
         next: (response: any) => {
+          console.log('response confirmVerifier: ', response);
           if (response.status === 200) {
             this.notification.success('Transaction vérifiée avec succès');
             if (this.verifierModalInstance) this.verifierModalInstance.hide();
@@ -441,7 +486,9 @@ export class HistoriqueTransactionComponent implements OnInit {
           this.historiqueTransactionsListe();
           this.isVerifying = false;
         },
-        error: () => { this.isVerifying = false; },
+        error: () => {
+          this.isVerifying = false;
+        },
       });
 
     setTimeout(() => {
@@ -470,17 +517,28 @@ export class HistoriqueTransactionComponent implements OnInit {
           this.historiqueTransactionsListe();
           this.isCancelling = false;
         },
-        error: () => { this.isCancelling = false; },
+        error: () => {
+          this.isCancelling = false;
+        },
       });
   }
 
   decodeMessage(encoded: string): string {
     if (!encoded) return encoded;
     return encoded
-      .replace(/\+á/g, 'à').replace(/\+é/g, 'é').replace(/\+è/g, 'è')
-      .replace(/\+®/g, 'é').replace(/\+ç/g, 'ç').replace(/\+ô/g, 'ô')
-      .replace(/\+°/g, 'ô').replace(/\+ù/g, 'ù').replace(/\+/g, ' ').trim();
+      .replace(/\+á/g, 'à')
+      .replace(/\+é/g, 'é')
+      .replace(/\+è/g, 'è')
+      .replace(/\+®/g, 'é')
+      .replace(/\+ç/g, 'ç')
+      .replace(/\+ô/g, 'ô')
+      .replace(/\+°/g, 'ô')
+      .replace(/\+ù/g, 'ù')
+      .replace(/\+/g, ' ')
+      .trim();
   }
 
-  closeModal() { this.selectedTransaction = null; }
+  closeModal() {
+    this.selectedTransaction = null;
+  }
 }

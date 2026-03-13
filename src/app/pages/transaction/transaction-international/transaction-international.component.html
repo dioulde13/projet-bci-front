@@ -124,6 +124,7 @@
               <table class="table mb-0 align-middle dt-responsive nowrap">
                 <thead class="table-light">
                   <tr>
+                    <th class="text-nowrap" (click)="sort('iRequestID')">ID TXN banque</th>
                     <th class="text-nowrap" (click)="sort('dtCreated')">Date</th>
                     <th class="text-nowrap" (click)="sort('Reference')">Référence</th>
                     <th class="text-nowrap" (click)="sort('UserFullName')">Prénom et nom</th>
@@ -141,7 +142,7 @@
 
                 <tbody>
                   <tr *ngFor="let liste of paginedTransaction">
-
+                    <td>{{ liste.iRequestID }}</td>
                     <td class="text-nowrap">{{ liste.dtCreated | date: "dd/MM/yyyy HH:mm" }}</td>
                     <td>{{ liste.Reference }}</td>
                     <td>{{ liste.UserFullName }}</td>

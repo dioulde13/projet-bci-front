@@ -16,7 +16,6 @@ import {
   NavigationCancel,
   NavigationEnd,
   NavigationError,
-  // NavigationStart,
   Router,
   RouterLink,
 } from '@angular/router';
@@ -32,6 +31,7 @@ import { BeneficiaireEnAttenteService } from '../../servicesNodes/beneficiaireEn
 import { NotificationService } from '../../services/notification/notification.service';
 import { Subscription } from 'rxjs';
 import { GenericFileImportComponent } from '../generic-file-import/generic-file-import.component';
+import { ImportListeBeneficiaireService } from '../../services/importListeBeneficiaire/import-liste-beneficiaire.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -88,11 +88,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   private navigationSubscription!: Subscription;
 
   showLoader() {
-    if (this.isLoading) return; // bloque double-clic
+    if (this.isLoading) return;
 
     this.isLoading = true;
 
-    // Se désabonner si déjà abonné pour éviter les fuites mémoire
     if (this.navigationSubscription) {
       this.navigationSubscription.unsubscribe();
     }
@@ -114,11 +113,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private listeCompteCLientService: DashboardService,
     private dixTransactionServiceNode: TransactionService,
     private balanceService: BalanceService,
-    private saveFichierCSVService: SaveFichierCSVService,
+    // private saveFichierCSVService: SaveFichierCSVService,
     private notification: NotificationService,
     private bciLoaderService: BciLoaderService,
     private router: Router,
     private beneficiaireEnAttente: BeneficiaireEnAttenteService,
+    private importBeneficiaireService: ImportListeBeneficiaireService,
   ) {}
 
   iOrganisationID!: number;
@@ -378,7 +378,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // ===== IMPORT BÉNÉFICIAIRES =====
   openModal = false;
+  loadingValidation: boolean = false;
+
   fields: any[] = [
     { key: 'prenom', label: 'Prénom', required: true },
     { key: 'nom', label: 'Nom', required: true },
@@ -393,35 +396,94 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     { key: 'objetPaiement', label: 'Objet du paiement' },
   ];
 
-  loadingValidation: boolean = false;
+  onImportDataCompleted(event: { data: any[]; file: File | null }): void {
+    const importedRows = event?.data ?? [];
 
-  onImportedData(event: any) {
-    this.loadingValidation = true;
+    // ✅ Log des noms de colonnes du fichier importé
+    if (importedRows.length > 0) {
+      const colonnes = Object.keys(importedRows[0]);
+      console.log('📋 Noms des colonnes du fichier importé :', colonnes);
+      console.log('📋 Première ligne (données brutes) :', importedRows[0]);
+    } else {
+      console.warn('⚠️ Aucune ligne dans le fichier importé.');
+    }
 
-    // Compatibilité : EventEmitter Angular (event direct ou event.file)
-    // et CustomEvent DOM natif (event.detail.file)
-    const file: File = event?.detail?.file ?? event?.file ?? event;
+    console.log('importedRows: ', importedRows);
 
-    if (!(file instanceof File)) {
-      console.error('Le fichier CSV est invalide ou non trouvé', event);
-      this.loadingValidation = false;
+    const raw = localStorage.getItem('validationResults');
+    const validationResults: any[] = raw ? JSON.parse(raw) : [];
+
+    // ✅ Vérifier si au moins une ligne est invalide
+    const hasInvalidLines = validationResults.some((r) => r.valid === false);
+
+    if (hasInvalidLines) {
+      const invalidCount = validationResults.filter(
+        (r) => r.valid === false,
+      ).length;
+      this.notification.error(
+        `Impossible de valider : ${invalidCount} ligne(s) invalide(s) détectée(s). Veuillez retirer toutes les lignes invalides avant de continuer.`,
+      );
+      return; // ⛔ On stoppe ici, on n'envoie rien
+    }
+
+    if (!importedRows || importedRows.length === 0) {
+      this.notification.error('Aucune donnée à importer.');
       return;
     }
 
-    this.saveFichierCSVService
-      .saveFichierCSVTransaction(file, this.iOrganisationID, '0')
+    const beneficiaires = importedRows.map((row) => ({
+      prenom: row['prenom'] ?? '',
+      nom: row['nom'] ?? '',
+      typeBeneficiaire: row['typeBeneficiaire'] ?? '',
+      numeroCompte: row['numeroCompte'] ?? '',
+      bic: row['bic'] ?? '',
+      montant: Number(row['montant']) ?? 0,
+      devise: row['devise'] ?? '',
+      modePaiement: row['modePaiement'] ?? '',
+      nomBanque: row['nomBanque'] ?? '',
+      adresseBanque: row['adresseBanque'] ?? '',
+      objetPaiement: row['objetPaiement'] ?? '',
+    }));
+
+    // const donneeFichier = localStorage.getItem('donneesDansFichiers');
+    // const tableauFichier: any[] = donneeFichier
+    //   ? JSON.parse(donneeFichier)
+    //   : [];
+
+    // console.log('tableauFichier: ', tableauFichier); 
+    // console.log('fields: ', this.fields); 
+
+    console.log('beneficiaires: ', beneficiaires);
+
+    this.loadingValidation = true;
+
+    this.importBeneficiaireService
+      .importBeneficiaires(this.iOrganisationID, beneficiaires)
       .subscribe({
         next: (res) => {
-          this.notification.success(res.message);
-          this.openModal = false;
           this.loadingValidation = false;
+          if (res?.status === 200 || res?.status === 201) {
+            this.notification.success(
+              `${beneficiaires.length} bénéficiaire(s) importé(s) avec succès.`,
+            );
+            this.openModal = false;
+            localStorage.removeItem('validationResults'); // ✅ nettoyage
+          } else {
+            this.notification.error(
+              res?.message ?? "Erreur lors de l'importation.",
+            );
+          }
         },
         error: (err) => {
-          console.error('Erreur import', err);
           this.loadingValidation = false;
+          console.error('Erreur importBeneficiaires :', err);
+          this.notification.error(
+            "Une erreur est survenue lors de l'importation.",
+          );
         },
       });
   }
+  // ================================
 
   notificationEnCoursDeveloppement() {
     this.notification.error(

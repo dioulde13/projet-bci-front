@@ -15,6 +15,9 @@ import { AuthService } from '../../services/authServices/auth.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { StatutBancaireService } from '../../servicesNodes/statutBancaire/statut-bancaire.service';
 import { NotificationService } from '../../services/notification/notification.service';
+import { SidebarService } from '../../services/sidebar/sidebar.service';
+import { NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-layout',
@@ -41,7 +44,7 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
     // private toastr: ToastrService,
     private notification: NotificationService,
     private statutBancaireService: StatutBancaireService,
-    //  private notification: NotificationService,
+    private sidebarService: SidebarService,
   ) {}
 
   userCurrentTimeZone: string = '';
@@ -145,8 +148,57 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
+  // ── Sidebar ──────────────────────────────────────────────────────────────────
+  private applySidebarState(): void {
+    const size = this.sidebarService.isSidebarCollapsed ? 'sm' : 'lg';
+    this.renderer.setAttribute(this.document.body, 'data-sidebar-size', size);
+
+    if (this.sidebarService.isSidebarCollapsed) {
+      this.renderer.removeClass(this.document.body, 'sidebar-enable');
+    } else {
+      this.renderer.addClass(this.document.body, 'sidebar-enable');
+    }
+  }
+
+  toggleSidebar(): void {
+    this.sidebarService.isSidebarCollapsed =
+      !this.sidebarService.isSidebarCollapsed;
+    this.applySidebarState();
+  }
+
+  toggleSubMenu(menuId: string, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.sidebarService.toggleSubMenu(menuId);
+  }
+
+  isSubMenuOpen(menuId: string): boolean {
+    return this.sidebarService.isSubMenuOpen(menuId);
+  }
+
   // ── Lifecycle ────────────────────────────────────────────────────────────────
   ngOnInit(): void {
+    // 1. Theme initialization
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      this.isDarkMode = savedTheme === 'dark';
+    }
+    this.applyTheme(this.isDarkMode);
+
+    // 2. Sidebar initialization
+    this.applySidebarState();
+
+    // 3. Listen for navigation to re-apply states
+    // Some routes or external scripts might reset body attributes
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.applySidebarState();
+        this.applyTheme(this.isDarkMode);
+      });
+
     this.recuperStatusCoreBanking(); // 1er appel immédiat
     this.startPolling(); // puis toutes les 10 secondes
   }
@@ -196,7 +248,7 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.renderer.setAttribute(body, 'data-layout-scrollable', 'false');
     this.renderer.setAttribute(body, 'data-layout-size', 'fluid');
-    this.renderer.setAttribute(body, 'data-sidebar-size', 'sm');
+    // We removed the hardcoded 'sm' size from here to allow toggleSidebar to manage it
     this.renderer.addClass(body, 'mat-typography');
   }
 

@@ -46,6 +46,7 @@
           class="btn btn-sm px-3 font-size-16 header-item ms-2"
           id="vertical-menu-btn"
           type="button"
+          (click)="toggleSidebar()"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -514,19 +515,31 @@
             </a>
           </li>
 
-          <li class="nav-item">
-            <a class="nav-link has-arrow"
+          <li class="nav-item" [class.mm-active]="isSubMenuOpen('comptes')">
+            <a
+              class="nav-link has-arrow"
+              href="javascript:void(0);"
+              (click)="toggleSubMenu('comptes', $event)"
               ><i class="icon ion-ios-albums"></i><span>Comptes</span></a
             >
-            <ul class="sub-menu mmm-collapse" aria-expanded="false">
-              <li>
+            <ul
+              class="sub-menu mm-collapse"
+              [class.mm-show]="isSubMenuOpen('comptes')"
+              aria-expanded="false"
+            >
+              <li [class.mm-active]="isSubMenuOpen('comptes-ce')">
                 <a
                   class="text-truncate align-self-center has-arrow"
                   routerLink="/compteCourantEpargne"
-                  href="#"
+                  href="javascript:void(0);"
+                  (click)="toggleSubMenu('comptes-ce', $event)"
                   ><span>Compte Courant - Ep..</span></a
                 >
-                <ul class="sub-menu mmm-collapse" aria-expanded="false">
+                <ul
+                  class="sub-menu mm-collapse"
+                  [class.mm-show]="isSubMenuOpen('comptes-ce')"
+                  aria-expanded="false"
+                >
                   <li>
                     <a routerLink="/compteCourantEpargne"
                       ><span>Vue d'ensemble</span></a
@@ -541,12 +554,19 @@
               </li>
             </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link has-arrow"
+          <li class="nav-item" [class.mm-active]="isSubMenuOpen('transactions')">
+            <a
+              class="nav-link has-arrow"
+              href="javascript:void(0);"
+              (click)="toggleSubMenu('transactions', $event)"
               ><i class="icon ion-cash"></i
               ><span data-key="t-apps">Transactions</span></a
             >
-            <ul class="sub-menu mm-collapse" aria-expanded="false">
+            <ul
+              class="sub-menu mm-collapse"
+              [class.mm-show]="isSubMenuOpen('transactions')"
+              aria-expanded="false"
+            >
               <li>
                 <a routerLink="/historiqueTransactions">
                   <span data-key="t-chat">Historique des transactions</span>
@@ -580,12 +600,19 @@
               </li>
             </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link has-arrow"
+          <li class="nav-item" [class.mm-active]="isSubMenuOpen('parametres')">
+            <a
+              class="nav-link has-arrow"
+              href="javascript:void(0);"
+              (click)="toggleSubMenu('parametres', $event)"
               ><i class="icon ion-android-settings"></i
               ><span>Paramètres</span></a
             >
-            <ul class="sub-menu mm-collapse" aria-expanded="false">
+            <ul
+              class="sub-menu mm-collapse"
+              [class.mm-show]="isSubMenuOpen('parametres')"
+              aria-expanded="false"
+            >
               <li>
                 <a routerLink="/utilisateurs"><span>Utilisateurs</span></a>
               </li>
@@ -597,6 +624,11 @@
               <li>
                 <a routerLink="/mesNotifications"
                   ><span>Mes Notifications</span></a
+                >
+              </li>
+              <li>
+                <a routerLink="/securite"
+                  ><span>Securite</span></a
                 >
               </li>
             </ul>

@@ -1,0 +1,101 @@
+<div class="security-wrapper">
+  <div class="security-card">
+
+    <!-- Header -->
+    <div class="card-header">
+      <div class="shield-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="card-title">Questions de sécurité</div>
+        <div class="card-subtitle">Configurez vos questions pour sécuriser votre compte</div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="securiteForm" (ngSubmit)="saveSecuriteQuestionsSecurite()" novalidate>
+
+      <div class="questions-list">
+        <div
+          class="question-item"
+          *ngFor="let q of listesQuestions; let i = index"
+          [class.has-error]="securiteForm.get(q.controlName)?.touched && securiteForm.get(q.controlName)?.invalid"
+          [class.is-valid]="securiteForm.get(q.controlName)?.valid && securiteForm.get(q.controlName)?.value"
+        >
+          <label class="question-label">
+            {{ q.vcQuestion }}
+            <span class="required-star">*</span>
+            <span
+              *ngIf="securiteForm.get(q.controlName)?.touched && securiteForm.get(q.controlName)?.invalid"
+              style="color:#e53e3e; font-weight:400; font-style:italic; font-size:0.75rem;"
+            >
+              (obligatoire)
+            </span>
+          </label>
+
+          <div class="input-wrapper">
+            <input
+              class="question-input"
+              [formControlName]="q.controlName"
+              type="text"
+              placeholder="Votre réponse"
+              autocomplete="off"
+            />
+            <span class="input-status">
+              <svg
+                *ngIf="securiteForm.get(q.controlName)?.valid && securiteForm.get(q.controlName)?.value"
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </span>
+          </div>
+
+          <div
+            class="error-message"
+            *ngIf="securiteForm.get(q.controlName)?.touched && securiteForm.get(q.controlName)?.invalid"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            Veuillez remplir cette question.
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-section" *ngIf="listesQuestions.length > 0">
+        <div class="progress-label">
+          <span>Progression</span>
+          <span>{{ getFilledCount() }} / {{ listesQuestions.length }} réponses</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getProgressPercent()"></div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="securiteForm.invalid || isLoading"
+        >
+          <span *ngIf="!isLoading">Mettre à jour</span>
+          <span *ngIf="isLoading" class="loader"></span>
+        </button>
+        <button type="button" class="btn-secondary" (click)="securiteForm.reset()">
+          Annuler
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
