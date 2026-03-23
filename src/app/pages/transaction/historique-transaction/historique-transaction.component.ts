@@ -26,6 +26,8 @@ export class HistoriqueTransactionComponent implements OnInit {
 
   dateDebut: string = '';
   dateFin: string = '';
+  selectedDateDebut: string = '';
+  selectedDateFin: string = '';
   paymentModeName: string = '';
 
   listeHistoriqueTransactions: any[] = [];
@@ -61,9 +63,11 @@ export class HistoriqueTransactionComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    // Pas de filtre de date par défaut — on affiche tout au chargement
-    this.dateDebut = '';
-    this.dateFin = '';
+    const today = new Date().toISOString().split('T')[0];
+    this.dateDebut = today;
+    this.dateFin = today;
+    this.selectedDateDebut = today;
+    this.selectedDateFin = today;
 
     const userJson = localStorage.getItem('userInfo');
     if (userJson) {
@@ -102,6 +106,12 @@ export class HistoriqueTransactionComponent implements OnInit {
           this.isLoadingUser = false;
         },
       });
+  }
+
+  filterByDate(): void {
+    this.dateDebut = this.selectedDateDebut;
+    this.dateFin = this.selectedDateFin;
+    this.currentPage = 1;
   }
 
   // ========================
