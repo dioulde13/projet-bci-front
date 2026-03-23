@@ -45,7 +45,7 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
     private notification: NotificationService,
     private statutBancaireService: StatutBancaireService,
     private sidebarService: SidebarService,
-  ) {}
+  ) { }
 
   userCurrentTimeZone: string = '';
   csvData: any[] = [];
@@ -178,8 +178,25 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.sidebarService.isSubMenuOpen(menuId);
   }
 
+  infosUser: any;
+
+  userRoleId: string | number | null = null;
+
   // ── Lifecycle ────────────────────────────────────────────────────────────────
   ngOnInit(): void {
+
+    const userJson = localStorage.getItem('userInfo');
+
+    if (userJson) {
+      try {
+        this.infosUser = JSON.parse(userJson);
+        console.log('this.infosUser: ', this.infosUser);
+        this.userRoleId = this.infosUser?.iRoleID;
+        console.log('this.userRoleId: ', this.userRoleId);
+      } catch {
+        this.infosUser = null;
+      }
+    }
     // 1. Theme initialization
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {

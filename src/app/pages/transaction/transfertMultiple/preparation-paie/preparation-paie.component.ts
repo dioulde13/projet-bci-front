@@ -19,14 +19,30 @@ import { GenericFileImportComponent } from '../../../generic-file-import/generic
 import { SaveFichierCSVService } from '../../../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
 import { NotificationService } from '../../../../services/notification/notification.service';
 
+import { TransfertMultipleSideMenuComponent } from '../components/side-menu/side-menu.component';
+
 @Component({
   selector: 'app-preparation-paie',
   standalone: true,
-  imports: [RouterLink, CommonModule, FormsModule, GenericFileImportComponent],
+  imports: [RouterLink, CommonModule, FormsModule, GenericFileImportComponent, TransfertMultipleSideMenuComponent],
   templateUrl: './preparation-paie.component.html',
   styleUrls: ['./preparation-paie.component.css'],
 })
 export class PreparationPaieComponent implements OnInit, AfterViewInit {
+  activeTabId: string = 'v-pills-recapitulatifDesInformations';
+
+  handleTabChange(tabId: string) {
+    this.activeTabId = tabId;
+  }
+
+  isTabActive(tabId: string): boolean {
+    return this.activeTabId === tabId;
+  }
+
+  isNotTabActive(tabId: string): boolean {
+    return this.activeTabId !== tabId;
+  }
+
   // ─── Données API ───────────────────────────────────────────────
   beneficiaires: any[] = [];
   isLoading = false;

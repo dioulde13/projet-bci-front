@@ -66,7 +66,7 @@ export class TransfertUniqueComponent implements OnInit {
     private paiementInterneExterneService: PaiementInterneExterneService,
     private router: Router,
     private notification: NotificationService,
-  ) {}
+  ) { }
 
   private getFromStorage(key: string) {
     try {
@@ -464,24 +464,24 @@ export class TransfertUniqueComponent implements OnInit {
     const formValue = this.transferFormPaiementInterneExterne.value;
 
     // Vérifier solde nul ou indisponible
-    if (this.soldeDebiteur === null || this.soldeDebiteur <= 0) {
-      this.loadingPaiementInterneExterne = false;
-      this.notification.error(
-        this.decodeMessage(
-          'Votre solde est nul ou indisponible, vous ne pouvez pas effectuer de transaction.',
-        ),
-      );
-      return;
-    }
+    // if (this.soldeDebiteur === null || this.soldeDebiteur <= 0) {
+    //   this.loadingPaiementInterneExterne = false;
+    //   this.notification.error(
+    //     this.decodeMessage(
+    //       'Votre solde est nul ou indisponible, vous ne pouvez pas effectuer de transaction.',
+    //     ),
+    //   );
+    //   return;
+    // }
 
     // Vérifier montant > solde
-    if (formValue.mAmount > this.soldeDebiteur) {
-      this.loadingPaiementInterneExterne = false;
-      this.notification.error(
-        'Le montant saisi doit être inférieur ou égal au solde.',
-      );
-      return;
-    }
+    // if (formValue.mAmount > this.soldeDebiteur) {
+    //   this.loadingPaiementInterneExterne = false;
+    //   this.notification.error(
+    //     'Le montant saisi doit être inférieur ou égal au solde.',
+    //   );
+    //   return;
+    // }
 
     // Préparer le payload
     const payload = {

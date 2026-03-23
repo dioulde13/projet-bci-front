@@ -18,6 +18,7 @@ import { AuthServicesNodes } from '../../../servicesNodes/authServices/auth.serv
 import { ModalsService } from '../../../servicesNodes/modalsService/modals.service';
 import { AuthService } from '../../../services/authServices/auth.service';
 import * as XLSX from 'xlsx';
+import { NotificationService } from '../../../services/notification/notification.service';
 
 @Component({
   selector: 'app-utilisateurs',
@@ -43,6 +44,10 @@ export class UtilisateursComponent implements OnInit {
   selectedUser: any = null;
   selectedUserId: number | null = null;
 
+  // ─── Renvoi d'email ───────────────────────────────────────────────────────
+  selectedUserEmail: string | null = null;
+  isLoadingRenvoyerEmail: boolean = false;
+
   userInfo: any;
   phoneCode: number = 0;
   phoneFormat: string = '';
@@ -55,18 +60,24 @@ export class UtilisateursComponent implements OnInit {
   idResponsable!: number;
   iOrganisationID!: number;
 
-  // Photo / Signature
+  // Photo / Signature (upload)
   selectedFile: File | null = null;
   previewUrl: string | null = null;
   isHoveringPhoto: boolean = false;
+
+  // ─── Signature URL (affichage tableau) ────────────────────────────────────
+  readonly signatureBaseUrl =
+    'https://dev-api-bcibank.ecash-guinee.com/api/doaloadSignature';
+  readonly bciLogoFallback = 'assets/images/logo-bci.png';
 
   constructor(
     private fb: FormBuilder,
     private toastr: ToastrService,
     private authService: AuthServicesNodes,
     private authServiceSimple: AuthService,
+    private notification: NotificationService,
     private modalsService: ModalsService
-  ) {}
+  ) { }
 
   // Raccourcis pour le template
   isInvalid = (name: string) => isInvalid(this.userForm, name);
@@ -90,7 +101,6 @@ export class UtilisateursComponent implements OnInit {
 
     if (userInfoConfig) {
       this.userInfoConfig = JSON.parse(userInfoConfig);
-
       const orgData = this.userInfoConfig.organisation || [];
 
       this.country =
@@ -100,7 +110,8 @@ export class UtilisateursComponent implements OnInit {
         orgData.find((c: any) => c.vcKey === 'Telephone_Code')?.vcValue || '';
 
       this.phoneFormat =
-        orgData.find((c: any) => c.vcKey === 'Telephone_Format')?.vcValue || '';
+        orgData.find((c: any) => c.vcKey === 'Telephone_Format')?.vcValue ||
+        '';
 
       this.currency =
         orgData.find((c: any) => c.vcKey === 'Devise')?.vcValue || '';
@@ -139,7 +150,6 @@ export class UtilisateursComponent implements OnInit {
     this.authServiceSimple.getListePays().subscribe({
       next: (res: any) => {
         this.listePays = res.data;
-        console.log('res: ', this.listePays);
       },
     });
   }
@@ -161,7 +171,7 @@ export class UtilisateursComponent implements OnInit {
       ],
       modeOtp: ['', Validators.required],
       idPays: [null, Validators.required],
-      vcDescription: ['', Validators.required],
+      vcDescription: [''],
     });
   }
 
@@ -214,14 +224,13 @@ export class UtilisateursComponent implements OnInit {
     }
   }
 
-  // ─── Photo / Signature ────────────────────────────────────────────────────
+  // ─── Photo / Signature (upload dans le formulaire) ─────────────────────────
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
 
-      // Validation du type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
       if (!allowedTypes.includes(file.type)) {
         this.toastr.error(
@@ -232,7 +241,6 @@ export class UtilisateursComponent implements OnInit {
         return;
       }
 
-      // Validation de la taille (2 MB max)
       if (file.size > 2 * 1024 * 1024) {
         this.toastr.error(
           'La taille du fichier ne doit pas dépasser 2 MB.',
@@ -244,7 +252,6 @@ export class UtilisateursComponent implements OnInit {
 
       this.selectedFile = file;
 
-      // Génération de la prévisualisation
       const reader = new FileReader();
       reader.onload = () => {
         this.previewUrl = reader.result as string;
@@ -257,8 +264,31 @@ export class UtilisateursComponent implements OnInit {
     this.selectedFile = null;
     this.previewUrl = null;
     this.isHoveringPhoto = false;
-    const fileInput = document.getElementById('photoSignature') as HTMLInputElement;
+    const fileInput = document.getElementById(
+      'photoSignature'
+    ) as HTMLInputElement;
     if (fileInput) fileInput.value = '';
+  }
+
+  // ─── Signature URL (affichage dans le tableau) ─────────────────────────────
+
+  /**
+   * Construit l'URL de la photo/signature à partir du nom du fichier.
+   * Retourne le logo BCI si le nom est absent.
+   */
+  getSignatureUrl(nomImage: string | null | undefined): string {
+    if (!nomImage) return this.bciLogoFallback;
+    return `${this.signatureBaseUrl}?nomImage=${nomImage}`;
+  }
+
+  /**
+   * Fallback déclenché si l'image ne charge pas (erreur HTTP, 404, etc.).
+   * Remplace le src par le logo BCI et stoppe la récursion.
+   */
+  onImgError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = this.bciLogoFallback;
+    img.onerror = null; // évite une boucle infinie
   }
 
   // ─── Modals ───────────────────────────────────────────────────────────────
@@ -277,8 +307,6 @@ export class UtilisateursComponent implements OnInit {
     this.btEnabled = +user.btEnabled === 0 ? 1 : 0;
     this.showModalOpenBloquerDebloquer = true;
     this.modalsService.openModal('bloquerDebloquerModal');
-    console.log('Selected user : ', user);
-    console.log(this.selectedUserId, this.btEnabled);
   }
 
   openModal(modalId: string) {
@@ -293,6 +321,49 @@ export class UtilisateursComponent implements OnInit {
     this.modalsService.closeModal(modalId);
   }
 
+  // ─── Renvoi d'email ───────────────────────────────────────────────────────
+
+  /**
+   * Ouvre le modal de confirmation d'envoi d'email.
+   */
+  onRenvoyerEmail(user: any): void {
+    this.selectedUserId = user.id;
+    this.selectedUserEmail = user.email;
+    this.modalsService.openModal('renvoyerEmailModal');
+  }
+
+  /**
+   * Appelé lors de la confirmation dans le modal.
+   * Déclenche l'appel API pour renvoyer l'email.
+   */
+  // renvoyerEmail(): void {
+  //   if (!this.selectedUserId) return;
+
+  //   this.isLoadingRenvoyerEmail = true;
+
+  //   this.authService.renvoyerEmail(this.selectedUserId).subscribe({
+  //     next: (res: any) => {
+  //       if (res?.status === 200) {
+  //         this.notification.success(res?.message || 'Email envoyé avec succès.');
+  //       } else {
+  //         this.notification.error(res?.message || "Échec de l'envoi de l'email.");
+  //       }
+  //       this.isLoadingRenvoyerEmail = false;
+  //       this.selectedUserEmail = null;
+  //       this.modalsService.closeModal('renvoyerEmailModal');
+  //     },
+  //     error: (err: any) => {
+  //       this.toastr.error(
+  //         err?.error?.message || err?.message || 'Une erreur est survenue.',
+  //         '',
+  //         { positionClass: 'toast-custom-center' }
+  //       );
+  //       this.isLoadingRenvoyerEmail = false;
+  //       this.modalsService.closeModal('renvoyerEmailModal');
+  //     },
+  //   });
+  // }
+
   // ─── Soumission ───────────────────────────────────────────────────────────
 
   onSubmit() {
@@ -302,22 +373,6 @@ export class UtilisateursComponent implements OnInit {
     }
 
     const raw = this.userForm.value;
-
-    // Construction du FormData pour supporter l'envoi de fichier
-    const formData = new FormData();
-    formData.append('prenom', raw.vcFirstname);
-    formData.append('nom', raw.vcLastname);
-    formData.append('email', raw.vcEmail);
-    formData.append('iRoleID', raw.iRoleID);
-    formData.append('phoneNumber', raw.vcPhoneNumber);
-    formData.append('modeOtp', raw.modeOtp);
-    formData.append('idPays', raw.idPays);
-    formData.append('vcDescription', raw.vcDescription);
-
-    if (this.selectedFile) {
-      formData.append('photoSignature', this.selectedFile, this.selectedFile.name);
-    }
-
     this.isLoading = true;
 
     this.authServiceSimple
@@ -329,27 +384,33 @@ export class UtilisateursComponent implements OnInit {
         raw.vcPhoneNumber,
         raw.modeOtp,
         raw.idPays,
-        raw.vcDescription
-        // Passe formData à la place si ton service le supporte : formData
+        this.iOrganisationID,
+        raw.vcDescription || '',
+        this.selectedFile ?? undefined
       )
       .subscribe({
         next: (res: any) => {
-          this.toastr.success(
-            res?.message || 'Utilisateur créé avec succès',
-            '',
-            { positionClass: 'toast-custom-center' }
-          );
-          this.getAllUsers();
-          this.isLoading = false;
-          this.userForm.reset();
-          this.selectedFile = null;
-          this.previewUrl = null;
+          console.log(res);
+          if (res.status === 200) {
+            this.notification.success(res?.message);
+            this.getAllUsers();
+            this.isLoading = false;
+            this.userForm.reset();
+            this.selectedFile = null;
+            this.previewUrl = null;
+            this.modalsService.closeModal('createUserModal');
+          } else {
+            this.notification.error(res?.message);
+            this.isLoading = false;
+          }
         },
         error: (err: any) => {
           console.error('Erreur création utilisateur:', err);
-          this.toastr.error(err?.message || 'Une erreur est survenue', '', {
-            positionClass: 'toast-custom-center',
-          });
+          this.toastr.error(
+            err?.error?.message || err?.message || 'Une erreur est survenue',
+            '',
+            { positionClass: 'toast-custom-center' }
+          );
           this.isLoading = false;
         },
       });
@@ -468,7 +529,15 @@ export class UtilisateursComponent implements OnInit {
       if (this.currentPage <= 3) {
         pages.push(1, 2, 3, 4, 5, '...', total);
       } else if (this.currentPage >= total - 2) {
-        pages.push(1, '...', total - 4, total - 3, total - 2, total - 1, total);
+        pages.push(
+          1,
+          '...',
+          total - 4,
+          total - 3,
+          total - 2,
+          total - 1,
+          total
+        );
       } else {
         pages.push(
           1,
@@ -528,6 +597,7 @@ export class UtilisateursComponent implements OnInit {
     this.authService.listeUtilisateur(this.idResponsable).subscribe({
       next: (res: any) => {
         this.allUsers = res.data || [];
+        console.log('liste des utilisateurs', this.allUsers);
         this.isLoadingUser = false;
       },
       error: (err: any) => {
@@ -549,7 +619,6 @@ export class UtilisateursComponent implements OnInit {
     this.authService.listeRole(this.iOrganisationID).subscribe({
       next: (res) => {
         this.roles = res.data;
-        console.log('this.roles: ', this.roles);
         this.isLoading = false;
       },
       error: (err) => {

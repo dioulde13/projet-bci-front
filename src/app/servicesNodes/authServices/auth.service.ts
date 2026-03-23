@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 export class AuthServicesNodes {
   private baseUrlNode = environment.apiUrlNode;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(email: string): Observable<any> {
     const body = { email };

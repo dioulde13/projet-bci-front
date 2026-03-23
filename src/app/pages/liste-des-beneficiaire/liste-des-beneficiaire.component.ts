@@ -38,7 +38,6 @@ import { NotificationService } from '../../services/notification/notification.se
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    OnlyNumbersDirective,
   ],
   templateUrl: './liste-des-beneficiaire.component.html',
   styleUrl: './liste-des-beneficiaire.component.css',

@@ -25,7 +25,7 @@ import { TransactionService } from '../../servicesNodes/transactionService/trans
 import { FormsModule } from '@angular/forms';
 import { BalanceService } from '../../servicesNodes/balance/balance.service';
 import { BciLoaderService } from '../../servicesNodes/bciLoader/bci-loader.service';
-import { SaveFichierCSVService } from '../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
+// import { SaveFichierCSVService } from '../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
 import { OrdreTransfertInternationalComponent } from '../transfertInternationale/ordre-transfert-international/ordre-transfert-international.component';
 import { BeneficiaireEnAttenteService } from '../../servicesNodes/beneficiaireEnAttente/beneficiaire-en-attente.service';
 import { NotificationService } from '../../services/notification/notification.service';
@@ -119,10 +119,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private router: Router,
     private beneficiaireEnAttente: BeneficiaireEnAttenteService,
     private importBeneficiaireService: ImportListeBeneficiaireService,
-  ) {}
+  ) { }
 
   iOrganisationID!: number;
   infosUser: any;
+
+  userRoleId: string | number | null = null;
+
 
   ngOnInit(): void {
     const today = new Date();
@@ -142,6 +145,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     if (userJson) {
       try {
         this.infosUser = JSON.parse(userJson);
+        console.log('this.infosUser: ', this.infosUser);
+        this.userRoleId = this.infosUser?.iRoleID;
+        console.log('this.userRoleId: ', this.userRoleId);
       } catch {
         this.infosUser = null;
       }
@@ -408,7 +414,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       console.warn('⚠️ Aucune ligne dans le fichier importé.');
     }
 
-    console.log('importedRows: ', importedRows);
+    // console.log('importedRows: ', importedRows);
 
     const raw = localStorage.getItem('validationResults');
     const validationResults: any[] = raw ? JSON.parse(raw) : [];
@@ -467,6 +473,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
               `${beneficiaires.length} bénéficiaire(s) importé(s) avec succès.`,
             );
             this.openModal = false;
+            this.router.navigate(['/preparationPaie']);
             localStorage.removeItem('validationResults'); // ✅ nettoyage
           } else {
             this.notification.error(

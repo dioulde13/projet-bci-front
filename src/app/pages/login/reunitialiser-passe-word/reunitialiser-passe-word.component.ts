@@ -9,7 +9,7 @@ import {
 import { AuthService } from '../../../services/authServices/auth.service';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+// import { ToastrService } from 'ngx-toastr';
 import { NotificationService } from '../../../services/notification/notification.service';
 
 @Component({

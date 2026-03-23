@@ -1,0 +1,122 @@
+<div class="card p-3 h-100 shadow-sm border-0 bg-white">
+  <div class="mb-4">
+    <h5 class="fw-bold text-primary mb-4 px-2">Menu</h5>
+    <ul class="nav flex-column nav-pills custom-side-nav">
+      <!-- Item: Préparation de la Paie -->
+      <li class="nav-item" *ngIf="canSeePreparation()">
+        <a class="nav-link py-2 px-3 d-flex align-items-center transition-all mb-1" routerLink="/preparationPaie"
+          routerLinkActive="active" [class.active]="currentPage === 'preparation'">
+          <i class="icon ion-ios-compose-outline font-size-18 me-3"></i>
+          <span class="fw-semibold font-size-14">Préparation de la Paie</span>
+        </a>
+        <ng-container *ngTemplateOutlet="subMenu; context: { current: 'preparation' }"></ng-container>
+      </li>
+      <!-- Item: Résultats du Calcul de la Paie -->
+      <li class="nav-item" *ngIf="canSeeCalcul()">
+        <a class="nav-link py-2 px-3 d-flex align-items-center transition-all mb-1" routerLink="/calculPaie"
+          routerLinkActive="active" [class.active]="currentPage === 'calcul'">
+          <i class="icon ion-calculator font-size-18 me-3"></i>
+          <span class="fw-semibold font-size-14">Calcul de la Paie</span>
+        </a>
+        <ng-container *ngTemplateOutlet="subMenu; context: { current: 'calcul' }"></ng-container>
+      </li>
+
+
+      <!-- Item: Validation et Approbation -->
+      <li class="nav-item" *ngIf="canSeeValidation()">
+        <a class="nav-link py-2 px-3 d-flex align-items-center transition-all mb-1" routerLink="/validationApprobation"
+          routerLinkActive="active" [class.active]="currentPage === 'validation'">
+          <i class="icon ion-ios-checkmark-outline font-size-18 me-3"></i>
+          <span class="fw-semibold font-size-14">Validation et Approbation</span>
+        </a>
+        <ng-container *ngTemplateOutlet="subMenu; context: { current: 'validation' }"></ng-container>
+      </li>
+
+      <!-- Item: Exécution et Distribution -->
+      <li class="nav-item" *ngIf="canSeeExecution()">
+        <a class="nav-link py-2 px-3 d-flex align-items-center transition-all mb-1" routerLink="/executeDistribution"
+          routerLinkActive="active" [class.active]="currentPage === 'execution'">
+          <i class="icon ion-ios-paperplane-outline font-size-18 me-3"></i>
+          <span class="fw-semibold font-size-14">Exécution et Distribution</span>
+        </a>
+        <ng-container *ngTemplateOutlet="subMenu; context: { current: 'execution' }"></ng-container>
+      </li>
+
+      <!-- Item: Reporting (Disabled/Placeholder) -->
+      <li class="nav-item" *ngIf="canSeeReporting()">
+        <a class="nav-link py-2 px-3 d-flex align-items-center disabled bg-transparent opacity-50"
+          href="javascript:void(0);">
+          <i class="icon ion-document-text font-size-18 me-3"></i>
+          <span class="fw-semibold font-size-14">Reporting</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Reusable Sub-menu Template -->
+  <ng-template #subMenu let-current="current">
+    <ul class="nav flex-column ms-4 mb-2 mt-1 border-start border-light" *ngIf="currentPage === current">
+      <li class="nav-item">
+        <button
+          class="nav-link py-1 px-3 d-flex align-items-center text-body font-size-13 border-0 bg-transparent w-100 text-start"
+          (click)="onTabClick('v-pills-recapitulatifDesInformations')">
+          <i class="bx bx-spreadsheet me-2 text-primary"></i>
+          <span>Tableau </span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          class="nav-link py-1 px-3 d-flex align-items-center text-body font-size-13 border-0 bg-transparent w-100 text-start"
+          (click)="onTabClick('v-pills-DetailsDesPaiements')">
+          <i class="bx bx-list-ul me-2 text-primary"></i>
+          <span>Détails des paiements</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          class="nav-link py-1 px-3 d-flex align-items-center text-body font-size-13 border-0 bg-transparent w-100 text-start"
+          (click)="onTabClick('v-pills-AnomaliesEtAvertissements')">
+          <i class="bx bx-error-circle me-2 text-primary"></i>
+          <span>Anomalies</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          class="nav-link py-1 px-3 d-flex align-items-center text-body font-size-13 border-0 bg-transparent w-100 text-start"
+          (click)="onTabClick('v-pills-HistoriqueEtTracabilite')">
+          <i class="bx bx-history me-2 text-primary"></i>
+          <span>Historique et Traçabilité</span>
+        </button>
+      </li>
+
+      <!-- Status Filters -->
+      <!-- <li class="nav-item mt-3 mb-1 px-3">
+        <span class="text-body font-size-13">Filtrer par :</span>
+      </li> -->
+      <!-- <li class="nav-item">
+        <button
+          class="nav-link py-1 px-3 d-flex align-items-center justify-content-between text-body font-size-13 border-0 bg-transparent w-100 text-start"
+          (click)="onTabClick('filter-verifie')">
+          <span class="text-muted">Vérifié</span>
+          <i class="bx bxs-right-arrow-circle text-success font-size-16"></i>
+        </button>
+      </li> -->
+      <!-- <li class="nav-item">
+        <button
+          class="nav-link py-1 px-3 d-flex align-items-center justify-content-between text-body font-size-13 border-0 bg-transparent w-100 text-start"
+          (click)="onTabClick('filter-a-verifier')">
+          <span class="text-muted">A vérifié</span>
+          <i class="bx bxs-right-arrow-circle text-warning font-size-16"></i>
+        </button>
+      </li> -->
+      <!-- <li class="nav-item">
+        <button
+          class="nav-link py-1 px-3 d-flex align-items-center justify-content-between text-body font-size-13 border-0 bg-transparent w-100 text-start"
+          (click)="onTabClick('filter-rejete')">
+          <span class="text-muted">Rejeté</span>
+          <i class="bx bxs-right-arrow-circle text-danger font-size-16"></i>
+        </button>
+      </li> -->
+    </ul>
+  </ng-template>
+</div>

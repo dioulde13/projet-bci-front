@@ -23,112 +23,16 @@
     </div>
 
     <div class="row">
-      <div class="col">
-        <div class="card">
-          <!-- Onglets de navigation -->
-          <div class="card-header bg-light-subtle d-flex">
-            <div class="flex-shrink-0">
-              <ul class="nav nav-pills card-header-pills">
-                <li class="nav-item">
-                  <a class="nav-link active" routerLink="/preparationPaie">
-                    <span
-                      class="d-block d-sm-none"
-                      data-bs-toggle="tooltip"
-                      title="Préparation de la Paie"
-                    >
-                      <i
-                        class="icon ion-load-a font-size-18 align-middle me-2"
-                      ></i>
-                    </span>
-                    <span class="d-none d-sm-block">
-                      <i
-                        class="icon ion-load-a font-size-18 align-middle me-2"
-                      ></i>
-                      Préparation de la Paie
-                    </span>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" routerLink="/calculPaie">
-                    <span
-                      class="d-block d-sm-none"
-                      data-bs-toggle="tooltip"
-                      title="Calcul de la Paie"
-                    >
-                      <i
-                        class="icon ion-calculator font-size-18 align-middle me-2"
-                      ></i>
-                    </span>
-                    <span class="d-none d-sm-block">
-                      <i
-                        class="icon ion-calculator font-size-18 align-middle me-2"
-                      ></i>
-                      Calcul de la Paie
-                    </span>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" routerLink="/validationApprobation">
-                    <span
-                      class="d-block d-sm-none"
-                      data-bs-toggle="tooltip"
-                      title="Validation et Approbation"
-                    >
-                      <i
-                        class="icon ion-android-done-all font-size-18 align-middle me-2"
-                      ></i>
-                    </span>
-                    <span class="d-none d-sm-block">
-                      <i
-                        class="icon ion-android-done-all font-size-18 align-middle me-2"
-                      ></i>
-                      Validation et Approbation
-                    </span>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" routerLink="/executeDistribution">
-                    <span
-                      class="d-block d-sm-none"
-                      data-bs-toggle="tooltip"
-                      title="Exécution et Distribution"
-                    >
-                      <i
-                        class="icon ion-arrow-swap font-size-16 align-middle me-2"
-                      ></i>
-                    </span>
-                    <span class="d-none d-sm-block">
-                      <i
-                        class="icon ion-arrow-swap font-size-16 align-middle me-2"
-                      ></i>
-                      Exécution et Distribution
-                    </span>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <span class="nav-link disabled">
-                    <span
-                      class="d-block d-sm-none"
-                      data-bs-toggle="tooltip"
-                      title="Reporting et Conformité"
-                    >
-                      <i
-                        class="icon ion-document-text font-size-16 align-middle me-2"
-                      ></i>
-                    </span>
-                    <span class="d-none d-sm-block">
-                      <i
-                        class="icon ion-document-text font-size-16 align-middle me-2"
-                      ></i>
-                      Reporting et Conformité
-                    </span>
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </div>
+      <!-- Sidebar: Navigation -->
+      <div class="col-lg-3">
+        <app-transfert-multiple-side-menu currentPage="preparation" (tabChange)="handleTabChange($event)"></app-transfert-multiple-side-menu>
+      </div>
 
+      <!-- Main Content Area -->
+      <div class="col-lg-9">
+        <div class="card h-100">
           <div class="card-body">
+
             <!-- Titre section + Datepicker -->
             <div class="row">
               <div class="col-12">
@@ -170,7 +74,7 @@
             </div>
 
             <!-- Cartes de résumé -->
-            <div class="row">
+            <div class="row" *ngIf="isTabActive('v-pills-recapitulatifDesInformations')">
               <div class="col-md-6 col-xl-3">
                 <div class="card card-h-100">
                   <div class="card-header">
@@ -324,7 +228,7 @@
             </div>
 
             <!-- Tableau principal -->
-            <div class="row">
+            <div class="row" *ngIf="isTabActive('v-pills-DetailsDesPaiements')">
               <div class="col-lg-12">
                 <div class="card">
                   <div class="card-header">
@@ -1238,6 +1142,20 @@
                 </div>
               </div>
             </div>
+
+            <!-- Anomalies Placeholder -->
+            <div *ngIf="isTabActive('v-pills-AnomaliesEtAvertissements')" class="text-center py-5">
+              <i class="bx bx-error-circle font-size-48 text-warning mb-3"></i>
+              <h5>Aucune anomalie détectée pour la préparation.</h5>
+            </div>
+
+            <!-- Historique Placeholder -->
+            <div *ngIf="isTabActive('v-pills-HistoriqueEtTracabilite')" class="text-center py-5">
+              <i class="bx bx-history font-size-48 text-primary mb-3"></i>
+              <h5>Historique des préparations.</h5>
+              <p class="text-muted">L'historique des fichiers importés apparaîtra ici.</p>
+            </div>
+
           </div>
         </div>
       </div>

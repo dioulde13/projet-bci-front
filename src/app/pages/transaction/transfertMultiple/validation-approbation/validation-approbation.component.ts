@@ -4,9 +4,11 @@ import { RouterLink } from '@angular/router';
 import { French } from "flatpickr/dist/l10n/fr.js";
 import { CommonModule } from '@angular/common';
 
+import { TransfertMultipleSideMenuComponent } from '../components/side-menu/side-menu.component';
+
 @Component({
   selector: 'app-validation-approbation',
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, TransfertMultipleSideMenuComponent],
   standalone: true,
   templateUrl: './validation-approbation.component.html',
   styleUrl: './validation-approbation.component.css'
@@ -43,11 +45,22 @@ export class ValidationApprobationComponent implements OnInit , AfterViewInit {
     // }
   }
 
- isActive: boolean = false;
+  activeTabId: string = 'v-pills-recapitulatifDesInformations';
+
+  handleTabChange(tabId: any) {
+    this.activeTabId = tabId;
+  }
+
+  isTabActive(tabId: string): boolean {
+    return this.activeTabId === tabId;
+  }
+
+  isNotTabActive(tabId: string): boolean {
+    return this.activeTabId !== tabId;
+  }
 
   toggleTabPaiements(active: boolean) {
-    this.isActive = active;
-    console.log(this.isActive ? 'Affiché' : 'Masqué');
+    this.activeTabId = active ? 'v-pills-DetailsDesPaiements' : 'v-pills-recapitulatifDesInformations';
   }
 
 }

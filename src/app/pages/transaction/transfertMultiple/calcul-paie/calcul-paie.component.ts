@@ -17,11 +17,12 @@ import { NotificationService } from '../../../../services/notification/notificat
 import { TransfertMultipleService } from '../../../../services/transfertMultipleService/transfert-multiple.service';
 import { TransfertMultipleServiceNode } from '../../../../servicesNodes/transfertMultipleServices/transfert-multiple.service';
 import { GetAccountNameService } from '../../../../servicesNodes/verifierNomDebiteur/get-account-name.service';
+import { TransfertMultipleSideMenuComponent } from '../components/side-menu/side-menu.component';
 
 @Component({
   selector: 'app-calcul-paie',
   standalone: true,
-  imports: [RouterLink, CommonModule, FormsModule],
+  imports: [RouterLink, CommonModule, FormsModule, TransfertMultipleSideMenuComponent],
   templateUrl: './calcul-paie.component.html',
   styleUrl: './calcul-paie.component.css',
 })
@@ -69,6 +70,20 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
   loadingValider: boolean = false;
   successMessage: string = '';
   apiErrorMessage: string = '';
+
+  activeTabId: string = 'v-pills-recapitulatifDesInformations';
+
+  handleTabChange(tabId: string) {
+    this.activeTabId = tabId;
+  }
+
+  isTabActive(tabId: string): boolean {
+    return this.activeTabId === tabId;
+  }
+
+  isNotTabActive(tabId: string): boolean {
+    return this.activeTabId !== tabId;
+  }
 
   constructor(
     private selectedService: SelectedBeneficiairesService,

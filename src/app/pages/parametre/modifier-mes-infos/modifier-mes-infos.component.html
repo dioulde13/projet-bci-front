@@ -8,61 +8,36 @@
               <div class="mb-3">
                 <ul class="nav nav-tabs nav-pills mb-1" role="tablist">
                   <li class="nav-item">
-                    <a
-                      class="nav-link"
-                      [ngClass]="{ active: activeTab === 'profile1' }"
-                      (click)="setActiveTab('profile1')"
-                      role="tab"
-                      aria-selected="true"
-                    >
+                    <a class="nav-link" [ngClass]="{ active: activeTab === 'profile1' }"
+                      (click)="setActiveTab('profile1')" role="tab" aria-selected="true">
                       Modifier mes informations personnelles
                     </a>
                   </li>
 
                   <li class="nav-item">
-                    <a
-                      class="nav-link"
-                      [ngClass]="{ active: activeTab === 'profile2' }"
-                      (click)="setActiveTab('profile2')"
-                      role="tab"
-                      aria-selected="false"
-                    >
+                    <a class="nav-link" [ngClass]="{ active: activeTab === 'profile2' }"
+                      (click)="setActiveTab('profile2')" role="tab" aria-selected="false">
                       Modifier le mot de passe
                     </a>
                   </li>
 
                   <li class="nav-item">
-                    <a
-                      class="nav-link"
-                      [ngClass]="{ active: activeTab === 'profile3' }"
-                      (click)="setActiveTab('profile3')"
-                      role="tab"
-                      aria-selected="false"
-                    >
+                    <a class="nav-link" [ngClass]="{ active: activeTab === 'profile3' }"
+                      (click)="setActiveTab('profile3')" role="tab" aria-selected="false">
                       Configuration du fuseau horaire
                     </a>
                   </li>
 
                   <li class="nav-item">
-                    <a
-                      class="nav-link"
-                      [ngClass]="{ active: activeTab === 'profile4' }"
-                      (click)="setActiveTab('profile4')"
-                      role="tab"
-                      aria-selected="false"
-                    >
+                    <a class="nav-link" [ngClass]="{ active: activeTab === 'profile4' }"
+                      (click)="setActiveTab('profile4')" role="tab" aria-selected="false">
                       Modifier les infos des niveaux
                     </a>
                   </li>
 
                   <li class="nav-item">
-                    <a
-                      class="nav-link"
-                      [ngClass]="{ active: activeTab === 'profile5' }"
-                      (click)="setActiveTab('profile5')"
-                      role="tab"
-                      aria-selected="false"
-                    >
+                    <a class="nav-link" [ngClass]="{ active: activeTab === 'profile5' }"
+                      (click)="setActiveTab('profile5')" role="tab" aria-selected="false">
                       Mes comptes
                     </a>
                   </li>
@@ -71,10 +46,7 @@
 
               <div class="tab-content">
                 <!-- Informations personnelles -->
-                <div
-                  *ngIf="activeTab === 'profile1'"
-                  class="tab-pane fade show active"
-                >
+                <div *ngIf="activeTab === 'profile1'" class="tab-pane fade show active">
                   <h5 class="mb-3">
                     <i class="fas fa-building me-2"></i>
                     Modifier mes informations de profile
@@ -84,47 +56,27 @@
                     <div class="row">
                       <div class="col-md-6 mt-2">
                         <label>Nom <span class="text-danger">*</span></label>
-                        <input
-                          type="text"
-                          [(ngModel)]="currentUserInfo.vcLastname"
-                          name="vcLastname"
-                          placeholder="Entrez votre nom"
-                          required
-                          class="form-control form-control"
-                        />
+                        <input type="text" [(ngModel)]="currentUserInfo.vcLastname" name="vcLastname"
+                          placeholder="Entrez votre nom" required class="form-control form-control" />
                       </div>
 
                       <div class="col-md-6 mt-2">
                         <label>Prénom <span class="text-danger">*</span></label>
-                        <input
-                          type="text"
-                          [(ngModel)]="currentUserInfo.vcFirstname"
-                          name="vcFirstname"
-                          placeholder="Entrez votre prénom"
-                          required
-                          class="form-control form-control"
-                        />
+                        <input type="text" [(ngModel)]="currentUserInfo.vcFirstname" name="vcFirstname"
+                          placeholder="Entrez votre prénom" required class="form-control form-control" />
                       </div>
 
                       <div class="col-md-6 mt-2">
                         <label>Email <span class="text-danger">*</span></label>
-                        <input
-                          type="email"
-                          [(ngModel)]="currentUserInfo.email"
-                          name="email"
-                          placeholder="Entrez votre email"
-                          required
-                          class="form-control form-control"
-                        />
+                        <input type="email" [(ngModel)]="currentUserInfo.email" name="email"
+                          placeholder="Entrez votre email" required class="form-control form-control" />
                       </div>
 
                       <div class="col-md-6 mt-2">
                         <label>
                           Téléphone
-                          <span class="text-danger"
-                            >* ({{ phoneMaxLength }} carractères
-                            obligatoire)</span
-                          >
+                          <span class="text-danger">* ({{ phoneMaxLength }} carractères
+                            obligatoire)</span>
                         </label>
 
                         <div class="input-group mb-3">
@@ -132,15 +84,9 @@
                             +{{ phoneCode }}
                           </span>
 
-                          <input
-                            type="text"
-                            [(ngModel)]="currentUserInfo.vcPhoneNumber"
-                            name="vcPhoneNumber"
-                            placeholder="Entrez votre téléphone"
-                            class="form-control form-control"
-                            (keydown)="onlyDigits($event)"
-                            (paste)="onPaste($event)"
-                          />
+                          <input type="text" [(ngModel)]="currentUserInfo.vcPhoneNumber" name="vcPhoneNumber"
+                            placeholder="Entrez votre téléphone" class="form-control form-control"
+                            (keydown)="onlyDigits($event)" (paste)="onPaste($event)" />
                         </div>
                       </div>
 
@@ -173,18 +119,10 @@
                       </div> -->
 
                       <div class="col-md-3 mt-3">
-                        <button
-                          type="submit"
-                          class="btn btn-primary"
-                          [disabled]="isLoading"
-                        >
+                        <button type="submit" class="btn btn-primary" [disabled]="isLoading">
                           <span *ngIf="!isLoading">Mettre à jour</span>
                           <span *ngIf="isLoading">
-                            <span
-                              class="spinner-border spinner-border-sm"
-                              role="status"
-                              aria-hidden="true"
-                            ></span>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Mis a jours en cours...
                           </span>
                         </button>
@@ -194,10 +132,7 @@
                 </div>
 
                 <!-- Changer le mot de passe -->
-                <div
-                  *ngIf="activeTab === 'profile2'"
-                  class="tab-pane fade show active"
-                >
+                <div *ngIf="activeTab === 'profile2'" class="tab-pane fade show active">
                   <h5 class="mb-3">
                     <i class="fas fa-building me-2"></i>
                     Modifier mon mot de passe
@@ -207,77 +142,44 @@
                     <div class="row">
                       <!-- Ancien mot de passe -->
                       <div class="col-md-4 mb-3">
-                        <label
-                          >Ancien mot de passe
-                          <span class="text-danger">*</span></label
-                        >
+                        <label>Ancien mot de passe
+                          <span class="text-danger">*</span></label>
                         <div class="input-group auth-pass-inputgroup">
-                          <input
-                            class="form-control"
-                            [type]="passwordVisibleOld ? 'text' : 'password'"
-                            [(ngModel)]="password.old"
-                            name="ancien"
-                            #ancien="ngModel"
-                            placeholder="Entrez l'ancien mot de passe"
-                            required
-                          />
-                          <button
-                            class="btn btn-light shadow-none ms-0"
-                            type="button"
-                            (click)="togglePasswordVisibility('old')"
-                          >
-                            <i
-                              [ngClass]="
+                          <input class="form-control" [type]="passwordVisibleOld ? 'text' : 'password'"
+                            [(ngModel)]="password.old" name="ancien" #ancien="ngModel"
+                            placeholder="Entrez l'ancien mot de passe" required />
+                          <button class="btn btn-light shadow-none ms-0" type="button"
+                            (click)="togglePasswordVisibility('old')">
+                            <i [ngClass]="
                                 passwordVisibleOld
                                   ? 'mdi mdi-eye-off-outline'
                                   : 'mdi mdi-eye-outline'
-                              "
-                            ></i>
+                              "></i>
                           </button>
                         </div>
-                        <div
-                          *ngIf="ancien.invalid && ancien.touched"
-                          class="text-danger small"
-                        >
+                        <div *ngIf="ancien.invalid && ancien.touched" class="text-danger small">
                           L'ancien mot de passe est requis.
                         </div>
                       </div>
 
                       <!-- Nouveau mot de passe -->
                       <div class="col-md-4 mb-3">
-                        <label
-                          >Nouveau mot de passe
-                          <span class="text-danger">*</span></label
-                        >
+                        <label>Nouveau mot de passe
+                          <span class="text-danger">*</span></label>
                         <div class="input-group auth-pass-inputgroup">
-                          <input
-                            class="form-control"
-                            [type]="passwordVisibleNew ? 'text' : 'password'"
-                            [(ngModel)]="password.new"
-                            name="nouveau"
-                            #nouveau="ngModel"
-                            required
-                            minlength="6"
-                            placeholder="Entrez le nouveau mot de passe"
-                          />
-                          <button
-                            class="btn btn-light shadow-none ms-0"
-                            type="button"
-                            (click)="togglePasswordVisibility('new')"
-                          >
-                            <i
-                              [ngClass]="
+                          <input class="form-control" [type]="passwordVisibleNew ? 'text' : 'password'"
+                            [(ngModel)]="password.new" name="nouveau" #nouveau="ngModel" required minlength="6"
+                            placeholder="Entrez le nouveau mot de passe" />
+                          <button class="btn btn-light shadow-none ms-0" type="button"
+                            (click)="togglePasswordVisibility('new')">
+                            <i [ngClass]="
                                 passwordVisibleNew
                                   ? 'mdi mdi-eye-off-outline'
                                   : 'mdi mdi-eye-outline'
-                              "
-                            ></i>
+                              "></i>
                           </button>
                         </div>
-                        <div
-                          *ngIf="nouveau.invalid && nouveau.touched"
-                          class="text-danger small"
-                        >
+                        <div *ngIf="nouveau.invalid && nouveau.touched" class="text-danger small">
                           <span *ngIf="nouveau.errors?.['required']">
                             Le nouveau mot de passe est requis.
                           </span>
@@ -289,56 +191,33 @@
 
                       <!-- Confirmation -->
                       <div class="col-md-4 mb-3">
-                        <label
-                          >Confirmer mot de passe
-                          <span class="text-danger">*</span></label
-                        >
+                        <label>Confirmer mot de passe
+                          <span class="text-danger">*</span></label>
                         <div class="input-group auth-pass-inputgroup">
-                          <input
-                            class="form-control"
-                            [type]="
+                          <input class="form-control" [type]="
                               passwordVisibleConfirm ? 'text' : 'password'
-                            "
-                            [(ngModel)]="password.confirm"
-                            name="confirmer"
-                            #confirmer="ngModel"
-                            required
-                            placeholder="Confirmez le mot de passe"
-                          />
-                          <button
-                            class="btn btn-light shadow-none ms-0"
-                            type="button"
-                            (click)="togglePasswordVisibility('confirm')"
-                          >
-                            <i
-                              [ngClass]="
+                            " [(ngModel)]="password.confirm" name="confirmer" #confirmer="ngModel" required
+                            placeholder="Confirmez le mot de passe" />
+                          <button class="btn btn-light shadow-none ms-0" type="button"
+                            (click)="togglePasswordVisibility('confirm')">
+                            <i [ngClass]="
                                 passwordVisibleConfirm
                                   ? 'mdi mdi-eye-off-outline'
                                   : 'mdi mdi-eye-outline'
-                              "
-                            ></i>
+                              "></i>
                           </button>
                         </div>
-                        <div
-                          *ngIf="confirmer.invalid && confirmer.touched"
-                          class="text-danger small"
-                        >
+                        <div *ngIf="confirmer.invalid && confirmer.touched" class="text-danger small">
                           La confirmation du mot de passe est requise.
                         </div>
                       </div>
 
                       <!-- Bouton -->
                       <div class="col-md-3 mt-3">
-                        <button
-                          type="submit"
-                          class="btn btn-primary"
-                          [disabled]="isLoading"
-                        >
+                        <button type="submit" class="btn btn-primary" [disabled]="isLoading">
                           <span *ngIf="!isLoading">Mettre à jour</span>
                           <span *ngIf="isLoading">
-                            <span
-                              class="spinner-border spinner-border-sm"
-                            ></span>
+                            <span class="spinner-border spinner-border-sm"></span>
                             Mise à jour en cours...
                           </span>
                         </button>
@@ -348,10 +227,7 @@
                 </div>
 
                 <!-- Autres informations -->
-                <div
-                  *ngIf="activeTab === 'profile3'"
-                  class="tab-pane fade show active"
-                >
+                <div *ngIf="activeTab === 'profile3'" class="tab-pane fade show active">
                   <h5 class="mb-3">
                     <i class="fas fa-building me-2"></i>
                     Configuration du fuseau horaire
@@ -363,45 +239,26 @@
                         <label class="form-label">
                           Pays<span class="text-danger">*</span>
                         </label>
-                        <select
-                          class="form-select form-select"
-                          formControlName="Pays"
-                          [disabled]="isLoadingCoutries"
-                        >
+                        <select class="form-select form-select" formControlName="Pays" [disabled]="isLoadingCoutries">
                           <option value="">-- Sélectionnez un pays --</option>
-                          <option
-                            *ngFor="let country of countries"
-                            [value]="country.vcCode"
-                          >
+                          <option *ngFor="let country of countries" [value]="country.vcCode">
                             {{ country.vcName }}
                           </option>
                         </select>
                       </div>
 
                       <div class="col-md-4 mt-2">
-                        <label
-                          >Indicatif téléphonique
-                          <span class="text-danger">*</span></label
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control"
-                          formControlName="Telephone_Code"
-                          readonly
-                        />
+                        <label>Indicatif téléphonique
+                          <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control" formControlName="Telephone_Code"
+                          readonly />
                       </div>
 
                       <div class="col-md-4 mt-2">
-                        <label
-                          >Format téléphone
-                          <span class="text-danger">*</span></label
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control"
-                          formControlName="Telephone_Format"
-                          readonly
-                        />
+                        <label>Format téléphone
+                          <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control" formControlName="Telephone_Format"
+                          readonly />
                       </div>
 
                       <div class="col-md-4 mt-2">
@@ -409,22 +266,12 @@
                           Fuseau horaire
                           <span class="text-danger">*</span>
                         </label>
-                        <input
-                          type="text"
-                          class="form-control form-control"
-                          formControlName="TimeZone"
-                          readonly
-                        />
+                        <input type="text" class="form-control form-control" formControlName="TimeZone" readonly />
                       </div>
 
                       <div class="col-md-4 mt-2">
                         <label>Dévise <span class="text-danger">*</span></label>
-                        <input
-                          type="text"
-                          class="form-control form-control"
-                          formControlName="Devise"
-                          readonly
-                        />
+                        <input type="text" class="form-control form-control" formControlName="Devise" readonly />
                       </div>
 
                       <!-- <div class="col-md-6 mt-2">
@@ -446,18 +293,10 @@
                       </div> -->
 
                       <div class="col-md-12 mt-3">
-                        <button
-                          type="submit"
-                          class="btn btn-primary"
-                          [disabled]="isLoading"
-                        >
+                        <button type="submit" class="btn btn-primary" [disabled]="isLoading">
                           <span *ngIf="!isLoading">Mettre à jour</span>
                           <span *ngIf="isLoading">
-                            <span
-                              class="spinner-border spinner-border-sm"
-                              role="status"
-                              aria-hidden="true"
-                            ></span>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Mis a jours en cours...
                           </span>
                         </button>
@@ -467,19 +306,14 @@
                 </div>
 
                 <!-- Modifier les infos des niveau -->
-                <div
-                  *ngIf="activeTab === 'profile4'"
-                  class="tab-pane fade show active"
-                >
+                <div *ngIf="activeTab === 'profile4'" class="tab-pane fade show active">
                   <h5 class="mb-3">
                     <i class="fas fa-building me-2"></i>
                     Modifier les infos des niveaux
                   </h5>
 
                   <!-- Tableau des niveaux -->
-                  <table
-                    class="table table-bordered table-responsive mt-3 text-wrap"
-                  >
+                  <table class="table table-bordered table-responsive mt-3 text-wrap">
                     <thead>
                       <tr>
                         <th>Niveau</th>
@@ -499,10 +333,7 @@
                           {{ niveau.max | gnfFormat }}
                         </td>
                         <td class="wrap-text">
-                          <button
-                            class="btn btn-sm btn-primary"
-                            (click)="openEditModal(i)"
-                          >
+                          <button class="btn btn-sm btn-primary" (click)="openEditModal(i)">
                             Modifier
                           </button>
                           <!-- <button
@@ -517,112 +348,63 @@
                   </table>
 
                   <!-- Modal Édition -->
-                  <div
-                    class="modal fade"
-                    id="editModal"
-                    tabindex="-1"
-                    aria-hidden="true"
-                  >
+                  <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title">Modifier le niveau</h5>
-                          <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                          ></button>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
-                        <form
-                          [formGroup]="niveauForm"
-                          (ngSubmit)="saveNiveau()"
-                        >
+                        <form [formGroup]="niveauForm" (ngSubmit)="saveNiveau()">
                           <div class="modal-body">
                             <div class="mb-3">
                               <label>Rôle</label>
-                              <select
-                                formControlName="vcRoleName"
-                                class="form-control"
-                              >
+                              <select formControlName="vcRoleName" class="form-control">
                                 <option value="">
                                   -- Sélectionner un rôle --
                                 </option>
-                                <option
-                                  *ngFor="let role of listeRoleNiveau"
-                                  [value]="role.id"
-                                >
+                                <option *ngFor="let role of listeRoleNiveau" [value]="role.id">
                                   {{ role.vcRoleName }}
                                 </option>
                               </select>
-                              <div
-                                *ngIf="
+                              <div *ngIf="
                                   niveauForm.get('vcRoleName')?.touched &&
                                   niveauForm.get('vcRoleName')?.invalid
-                                "
-                                class="text-danger"
-                              >
+                                " class="text-danger">
                                 Veuillez sélectionner un rôle.
                               </div>
                             </div>
                             <div class="mb-3">
                               <label>Description</label>
-                              <input
-                                type="text"
-                                formControlName="description"
-                                class="form-control"
-                              />
+                              <input type="text" formControlName="description" class="form-control" />
                             </div>
                             <div class="mb-3">
                               <label>Plafond financier (GNF)</label>
                               <div class="d-flex">
-                                <input
-                                  type="text"
-                                  gnfNumberFormat
-                                  formControlName="min"
-                                  class="form-control me-2"
-                                  placeholder="Min"
-                                />
-                                <input
-                                  type="text"
-                                  gnfNumberFormat
-                                  formControlName="max"
-                                  class="form-control"
-                                  placeholder="Max"
-                                />
+                                <input type="text" gnfNumberFormat formControlName="min" class="form-control me-2"
+                                  placeholder="Min" />
+                                <input type="text" gnfNumberFormat formControlName="max" class="form-control"
+                                  placeholder="Max" />
                               </div>
-                              <div
-                                *ngIf="
+                              <div *ngIf="
                                   niveauForm.get('min')?.touched &&
                                   niveauForm.get('min')?.invalid
-                                "
-                                class="text-danger"
-                              >
+                                " class="text-danger">
                                 Veuillez saisir un montant minimum valide.
                               </div>
-                              <div
-                                *ngIf="
+                              <div *ngIf="
                                   niveauForm.get('max')?.touched &&
                                   niveauForm.get('max')?.invalid
-                                "
-                                class="text-danger"
-                              >
+                                " class="text-danger">
                                 Veuillez saisir un montant maximum valide.
                               </div>
                             </div>
                           </div>
                           <div class="modal-footer">
-                            <button
-                              type="submit"
-                              class="btn btn-primary"
-                              [disabled]="niveauForm.invalid"
-                            >
+                            <button type="submit" class="btn btn-primary" [disabled]="niveauForm.invalid">
                               Enregistrer
                             </button>
-                            <button
-                              type="button"
-                              class="btn btn-secondary"
-                              data-bs-dismiss="modal"
-                            >
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                               Annuler
                             </button>
                           </div>
@@ -632,38 +414,21 @@
                   </div>
 
                   <!-- Modal Suppression -->
-                  <div
-                    class="modal fade"
-                    id="deleteModal"
-                    tabindex="-1"
-                    aria-hidden="true"
-                  >
+                  <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title">Confirmer la suppression</h5>
-                          <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                          ></button>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
                           Êtes-vous sûr de vouloir supprimer ce niveau ?
                         </div>
                         <div class="modal-footer">
-                          <button
-                            type="button"
-                            class="btn btn-danger"
-                            (click)="confirmDelete()"
-                          >
+                          <button type="button" class="btn btn-danger" (click)="confirmDelete()">
                             Oui, supprimer
                           </button>
-                          <button
-                            type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal"
-                          >
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             Annuler
                           </button>
                         </div>
@@ -672,10 +437,7 @@
                   </div>
                 </div>
 
-                <div
-                  *ngIf="activeTab === 'profile5'"
-                  class="tab-pane fade show active"
-                >
+                <div *ngIf="activeTab === 'profile5'" class="tab-pane fade show active">
                   <h5 class="mb-3">
                     <i class="fas fa-building me-2"></i>
                     Liste des comptes
@@ -692,64 +454,37 @@
                       <i class="fas fa-plus me-1"></i> Ajouter un compte
                     </button>
                   </div> -->
-                  <div class="d-flex justify-content-end mb-3">
-                    <button
-                      type="button"
-                      class="btn btn-primary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#addCompteModal"
-                      (click)="onOpenModal()"
-                    >
+                  <div class="d-flex justify-content-end mb-3" *ngIf="userRoleId === '15'">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                      data-bs-target="#addCompteModal" (click)="onOpenModal()">
                       <i class="fas fa-plus me-1"></i> Ajouter un compte
                     </button>
                   </div>
 
                   <!-- Modal Rechercher Compte -->
-                  <div
-                    class="modal fade"
-                    id="addCompteModal"
-                    tabindex="-1"
-                    aria-hidden="true"
-                  >
+                  <div class="modal fade" id="addCompteModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title">
-                            <i class="fas fa-search me-2 text-primary"></i
-                            >Entrer votre client ID
+                            <i class="fas fa-search me-2 text-primary"></i>Entrer votre client ID
                           </h5>
-                          <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"
-                          ></button>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
                         <div class="modal-body">
                           <!-- Input grisé -->
                           <div class="input-group mb-3">
-                            <input
-                              type="text"
-                              class="form-control"
-                              placeholder="Entrer votre client ID..."
-                              [(ngModel)]="searchValue"
-                              disabled
-                            />
-                            <button
-                              class="btn btn-primary"
-                              type="button"
-                              disabled
-                            >
+                            <input type="text" class="form-control" placeholder="Entrer votre client ID..."
+                              [(ngModel)]="searchValue" disabled />
+                            <button class="btn btn-primary" type="button" disabled>
                               <i class="fas fa-search"></i>
                             </button>
                           </div>
 
                           <!-- Loader -->
                           <div *ngIf="loadingSearch" class="text-center py-3">
-                            <div
-                              class="spinner-border text-primary spinner-border-sm"
-                            ></div>
+                            <div class="spinner-border text-primary spinner-border-sm"></div>
                             <p class="mt-2 text-muted small">
                               Chargement des comptes...
                             </p>
@@ -758,63 +493,39 @@
 
 
                           <!-- Liste des comptes sous forme de cards avec checkbox -->
-                          <div
-                            *ngIf="
+                          <div *ngIf="
                               !loadingSearch &&
                               listeComptesParIdClient.length > 0
-                            "
-                          >
+                            ">
                             <p class="text-muted small mb-2">
                               <i class="fas fa-info-circle me-1"></i>
                               Sélectionnez les comptes à ajouter
                             </p>
                             <div class="row g-2">
                               <!-- Card compte -->
-                              <div
-                                class="col-12 col-md-6"
-                                *ngFor="let compte of listeComptesParIdClient"
-                              >
-                                <div
-                                  class="card border-2 cursor-pointer"
-                                  [ngClass]="{
+                              <div class="col-12 col-md-6" *ngFor="let compte of listeComptesParIdClient">
+                                <div class="card border-2 cursor-pointer" [ngClass]="{
                                     'border-primary bg-primary bg-opacity-10':
                                       isSelected(compte),
                                     'border-light': !isSelected(compte),
-                                  }"
-                                  style="cursor: pointer"
-                                  (click)="toggleSelection(compte)"
-                                >
+                                  }" style="cursor: pointer" (click)="toggleSelection(compte)">
                                   <div class="card-body p-2">
-                                    <div
-                                      class="d-flex justify-content-between align-items-start"
-                                    >
+                                    <div class="d-flex justify-content-between align-items-start">
                                       <div class="form-check m-0">
-                                        <input
-                                          class="form-check-input"
-                                          type="checkbox"
-                                          [checked]="isSelected(compte)"
+                                        <input class="form-check-input" type="checkbox" [checked]="isSelected(compte)"
                                           (click)="
                                             $event.stopPropagation();
                                             toggleSelection(compte)
-                                          "
-                                        />
+                                          " />
                                       </div>
                                     </div>
 
-                                    <h6
-                                      class="card-title mt-2 mb-1 fw-bold"
-                                      style="font-size: 0.8rem"
-                                    >
-                                      <i
-                                        class="fas fa-university me-1 text-primary"
-                                      ></i>
+                                    <h6 class="card-title mt-2 mb-1 fw-bold" style="font-size: 0.8rem">
+                                      <i class="fas fa-university me-1 text-primary"></i>
                                       {{ compte.nomCompte }}
                                     </h6>
 
-                                    <p
-                                      class="mb-1 text-muted"
-                                      style="font-size: 0.72rem"
-                                    >
+                                    <p class="mb-1 text-muted" style="font-size: 0.72rem">
                                       <strong>Solde actuel :</strong>
                                       <span class="fw-bold text-dark ms-1">
                                         {{ compte.posdisp | number: "1.2-2" }}
@@ -822,10 +533,7 @@
                                       </span>
                                     </p>
 
-                                    <p
-                                      class="mb-2 text-muted"
-                                      style="font-size: 0.72rem"
-                                    >
+                                    <p class="mb-2 text-muted" style="font-size: 0.72rem">
                                       <strong>N° Compte :</strong>
                                       {{ compte.compte }}
                                     </p>
@@ -839,35 +547,25 @@
                                         max-width: 100%;
                                         word-break: break-word;
                                         white-space: normal;
-                                      "
-                                      [ngClass]="
+                                      " [ngClass]="
                                         compte.isBlocked
                                           ? 'text-danger'
                                           : 'text-success'
-                                      "
-                                    >
-                                      <i
-                                        class="fas"
-                                        [ngClass]="
+                                      ">
+                                      <i class="fas" [ngClass]="
                                           compte.isBlocked
                                             ? 'fa-ban'
                                             : 'fa-check-circle'
-                                        "
-                                      ></i>
-                                      <span class="text-white"
-                                        >Status compte</span
-                                      >
-                                      <span
-                                        >:
+                                        "></i>
+                                      <span class="text-white">Status compte</span>
+                                      <span>:
                                         {{
-                                          compte.isBlocked ? "Inactif" : "Actif"
-                                        }}</span
-                                      >
+                                        compte.isBlocked ? "Inactif" : "Actif"
+                                        }}</span>
                                     </div>
 
                                     <!-- Badge Detail — texte wrap -->
-                                    <div
-                                      *ngIf="compte.isBlockedDetails"
+                                    <div *ngIf="compte.isBlockedDetails"
                                       class="d-inline-flex align-items-start flex-wrap gap-1 rounded-pill px-2 py-1 mt-1"
                                       style="
                                         background-color: black;
@@ -875,17 +573,12 @@
                                         max-width: 100%;
                                         word-break: break-word;
                                         white-space: normal;
-                                      "
-                                    >
-                                      <i
-                                        class="fas fa-info-circle text-warning mt-1"
-                                      ></i>
-                                      <span class="text-white"
-                                        >Detail compte :</span
-                                      >
+                                      ">
+                                      <i class="fas fa-info-circle text-warning mt-1"></i>
+                                      <span class="text-white">Detail compte :</span>
                                       <span class="text-warning fw-semibold" style="font-size: 10px;">{{
                                         compte.isBlockedDetails
-                                      }}</span>
+                                        }}</span>
                                     </div>
                                   </div>
                                 </div>
@@ -894,38 +587,26 @@
                           </div>
 
 
-                          
+
 
                           <!-- Aucun compte -->
-                          <div
-                            *ngIf="
+                          <div *ngIf="
                               !loadingSearch &&
                               listeComptesParIdClient.length === 0
-                            "
-                            class="alert alert-info text-center"
-                          >
+                            " class="alert alert-info text-center">
                             <i class="fas fa-info-circle me-2"></i> Aucun compte
                             trouvé
                           </div>
                         </div>
 
                         <div class="modal-footer">
-                          <button
-                            type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal"
-                          >
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="fas fa-times me-1"></i> Fermer
                           </button>
-                          <button
-                            type="button"
-                            class="btn btn-primary"
-                            (click)="validerAjout()"
-                            [disabled]="selectedComptes.length === 0"
-                          >
-                            <i class="fas fa-check me-1"></i
-                            >{{
-                              ajouteCompte ? "Ajout en cours..." : "Valider"
+                          <button type="button" class="btn btn-primary" (click)="validerAjout()"
+                            [disabled]="selectedComptes.length === 0">
+                            <i class="fas fa-check me-1"></i>{{
+                            ajouteCompte ? "Ajout en cours..." : "Valider"
                             }}
                             ({{ selectedComptes.length }})
                           </button>
@@ -935,65 +616,48 @@
                   </div>
 
                   <!-- Modal Confirmation Blocage/Déblocage -->
-                  <div
-                    class="modal fade"
-                    id="confirmBlocageModal"
-                    tabindex="-1"
-                    aria-hidden="true"
-                  >
+                  <div class="modal fade" id="confirmBlocageModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content">
-                        <div
-                          class="modal-header"
-                          [ngClass]="{
+                        <div class="modal-header" [ngClass]="{
                             'bg-danger text-white':
                               compteToToggle?.btEnabled === '1',
                             'bg-success text-white':
                               compteToToggle?.btEnabled !== '1',
-                          }"
-                        >
+                          }">
                           <h5 class="modal-title">
-                            <i
-                              [ngClass]="{
+                            <i [ngClass]="{
                                 'fas fa-lock me-2':
                                   compteToToggle?.btEnabled === '1',
                                 'fas fa-lock-open me-2':
                                   compteToToggle?.btEnabled !== '1',
-                              }"
-                            ></i>
+                              }"></i>
                             Confirmation
                             {{
-                              compteToToggle?.btEnabled === "1"
-                                ? "de désactivation"
-                                : "d'activation"
+                            compteToToggle?.btEnabled === "1"
+                            ? "de désactivation"
+                            : "d'activation"
                             }}
                           </h5>
-                          <button
-                            type="button"
-                            class="btn-close btn-close-white"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"
-                          ></button>
+                          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                           <div class="text-center py-3">
-                            <i
-                              [ngClass]="{
+                            <i [ngClass]="{
                                 'fas fa-exclamation-triangle text-danger':
                                   compteToToggle?.btEnabled === '1',
                                 'fas fa-check-circle text-success':
                                   compteToToggle?.btEnabled !== '1',
-                              }"
-                              style="font-size: 3rem"
-                            ></i>
+                              }" style="font-size: 3rem"></i>
 
                             <h5 class="mt-3">
                               Êtes-vous sûr de vouloir
                               <strong class="text-primary">
                                 {{
-                                  compteToToggle?.btEnabled === "1"
-                                    ? "désactiver"
-                                    : "activer"
+                                compteToToggle?.btEnabled === "1"
+                                ? "désactiver"
+                                : "activer"
                                 }}
                               </strong>
                               ce compte ?
@@ -1014,10 +678,7 @@
                               </p>
                             </div>
 
-                            <div
-                              *ngIf="compteToToggle?.btEnabled === '1'"
-                              class="alert alert-warning text-start"
-                            >
+                            <div *ngIf="compteToToggle?.btEnabled === '1'" class="alert alert-warning text-start">
                               <i class="fas fa-info-circle me-2"></i>
                               <small>
                                 <strong>Attention :</strong> La désactivation
@@ -1025,10 +686,7 @@
                               </small>
                             </div>
 
-                            <div
-                              *ngIf="compteToToggle?.btEnabled !== '1'"
-                              class="alert alert-info text-start"
-                            >
+                            <div *ngIf="compteToToggle?.btEnabled !== '1'" class="alert alert-info text-start">
                               <i class="fas fa-info-circle me-2"></i>
                               <small>
                                 <strong>Information :</strong> L'activation
@@ -1039,45 +697,31 @@
                           </div>
                         </div>
                         <div class="modal-footer">
-                          <button
-                            type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal"
-                          >
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="fas fa-times me-1"></i> Annuler
                           </button>
-                          <button
-                            type="button"
-                            [ngClass]="{
+                          <button type="button" [ngClass]="{
                               'btn btn-danger':
                                 compteToToggle?.btEnabled === '1',
                               'btn btn-success':
                                 compteToToggle?.btEnabled !== '1',
-                            }"
-                            (click)="confirmToggleBlocage()"
-                            [disabled]="isProcessingBlocage"
-                          >
+                            }" (click)="confirmToggleBlocage()" [disabled]="isProcessingBlocage">
                             <span *ngIf="!isProcessingBlocage">
-                              <i
-                                [ngClass]="{
+                              <i [ngClass]="{
                                   'fas fa-lock':
                                     compteToToggle?.btEnabled === '1',
                                   'fas fa-lock-open':
                                     compteToToggle?.btEnabled !== '1',
-                                }"
-                                class="me-1"
-                              ></i>
+                                }" class="me-1"></i>
                               Oui,
                               {{
-                                compteToToggle?.btEnabled === "1"
-                                  ? "désactiver"
-                                  : "activer"
+                              compteToToggle?.btEnabled === "1"
+                              ? "désactiver"
+                              : "activer"
                               }}
                             </span>
                             <span *ngIf="isProcessingBlocage">
-                              <span
-                                class="spinner-border spinner-border-sm me-1"
-                              ></span>
+                              <span class="spinner-border spinner-border-sm me-1"></span>
                               Traitement...
                             </span>
                           </button>
@@ -1087,10 +731,7 @@
                   </div>
 
                   <!-- Loader pendant le chargement -->
-                  <div
-                    *ngIf="loadingListeCompteClient"
-                    class="text-center py-5"
-                  >
+                  <div *ngIf="loadingListeCompteClient" class="text-center py-5">
                     <div class="spinner-border text-primary" role="status">
                       <span class="visually-hidden">Chargement...</span>
                     </div>
@@ -1100,26 +741,19 @@
                   </div>
 
                   <!-- Message si aucun compte -->
-                  <div
-                    *ngIf="
+                  <div *ngIf="
                       !loadingListeCompteClient &&
                       listeCompteClient.length === 0
-                    "
-                    class="alert alert-info text-center"
-                  >
+                    " class="alert alert-info text-center">
                     <i class="fas fa-info-circle me-2"></i>
                     Aucun compte disponible
                   </div>
 
                   <!-- Tableau des comptes -->
-                  <div
-                    *ngIf="
+                  <div *ngIf="
                       !loadingListeCompteClient && listeCompteClient.length > 0
-                    "
-                  >
-                    <table
-                      class="table table-hover table-striped datatable mb-0"
-                    >
+                    ">
+                    <table class="table table-hover table-striped datatable mb-0">
                       <thead class="table-primary">
                         <tr>
                           <th>Nom de la partie</th>
@@ -1128,7 +762,7 @@
                           <th>Solde net</th>
                           <th>Statut systeme</th>
                           <th>Statut BCI</th>
-                          <th class="text-center">Actions</th>
+                          <th class="text-center" *ngIf="userRoleId === '15'">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1147,50 +781,38 @@
                             {{ compte.vcCurrency }}
                           </td>
                           <td class="text-start align-content-center">
-                            <span
-                              [ngClass]="{
+                            <span [ngClass]="{
                                 'badge bg-success': compte.btEnabled === '1',
                                 'badge bg-danger': compte.btEnabled !== '1',
-                              }"
-                            >
+                              }">
                               {{
-                                compte.btEnabled === "1" ? "Actif" : "Désactivé"
+                              compte.btEnabled === "1" ? "Actif" : "Désactivé"
                               }}
                             </span>
                           </td>
                           <td class="text-start align-content-center">
-                            <span
-                              [ngClass]="{
+                            <span [ngClass]="{
                                 'badge bg-success': compte.btBlocked === '0',
                                 'badge bg-danger': compte.btBlocked !== '0',
-                              }"
-                            >
+                              }">
                               {{
-                                compte.btBlocked === "0" ? "Actif" : "Désactivé"
+                              compte.btBlocked === "0" ? "Actif" : "Désactivé"
                               }}
                             </span>
                           </td>
-                          <td class="text-center align-content-center">
-                            <button
-                              type="button"
-                              class="btn btn-sm"
-                              [ngClass]="{
+                          <td class="text-center align-content-center" *ngIf="userRoleId === '15'">
+                            <button type="button" class="btn btn-sm" [ngClass]="{
                                 'btn-danger': compte.btEnabled === '1',
                                 'btn-success': compte.btEnabled !== '1',
-                              }"
-                              (click)="openBlocageModal(compte)"
-                            >
-                              <i
-                                [ngClass]="{
+                              }" (click)="openBlocageModal(compte)">
+                              <i [ngClass]="{
                                   'fas fa-lock': compte.btEnabled === '1',
                                   'fas fa-lock-open': compte.btEnabled !== '1',
-                                }"
-                                class="me-1"
-                              ></i>
+                                }" class="me-1"></i>
                               {{
-                                compte.btEnabled === "1"
-                                  ? "Désactiver"
-                                  : "Activer"
+                              compte.btEnabled === "1"
+                              ? "Désactiver"
+                              : "Activer"
                               }}
                             </button>
                           </td>

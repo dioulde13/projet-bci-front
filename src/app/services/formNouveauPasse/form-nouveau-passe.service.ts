@@ -8,8 +8,8 @@ import { environment } from '../../../environments/environment';
 })
 export class FormNouveauPasseService {
 
-    private baseUrl = environment.apiUrl;
-  
+  private baseUrl = environment.apiUrl;
+
 
   constructor(private http: HttpClient) { }
 
@@ -26,10 +26,10 @@ export class FormNouveauPasseService {
     const token = this.getToken();
     const email = this.getEmail();
 
-    console.log('Token récupéré :', token);
-    console.log('Email récupéré :', email);
-    console.log('nooveau mot de passe :', Nouveaupassword);
-    console.log('Banking :', appName);
+    // console.log('Token récupéré :', token);
+    // console.log('Email récupéré :', email);
+    // console.log('nooveau mot de passe :', Nouveaupassword);
+    // console.log('Banking :', appName);
 
 
     // ✅ Si ton API attend les infos en query params :

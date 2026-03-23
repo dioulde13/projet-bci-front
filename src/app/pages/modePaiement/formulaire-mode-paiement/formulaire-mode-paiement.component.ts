@@ -78,7 +78,7 @@ export class FormulaireModePaiementComponent implements OnInit {
     private notification: NotificationService,
     private getAccount: GetAccountNameService,
     private router: Router,
-  ) {}
+  ) { }
 
   private getUserInfo(): void {
     const user = localStorage.getItem('userInfo');
@@ -410,16 +410,16 @@ export class FormulaireModePaiementComponent implements OnInit {
 
     const formValue = this.mobileMoneyForm.value;
 
-    if (
-      formValue.typeTransactionMM === 'B2W' &&
-      Number(formValue.montant) > this.soldeDebiteur
-    ) {
-      this.loadingMobileMoney = false;
-      this.notification.error(
-        'Le montant saisi doit être inférieur ou égal au solde.',
-      );
-      return;
-    }
+    // if (
+    //   formValue.typeTransactionMM === 'B2W' &&
+    //   Number(formValue.montant) > this.soldeDebiteur
+    // ) {
+    //   this.loadingMobileMoney = false;
+    //   this.notification.error(
+    //     'Le montant saisi doit être inférieur ou égal au solde.',
+    //   );
+    //   return;
+    // }
 
     const payload = {
       vcPayerAccount:

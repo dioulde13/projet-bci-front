@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 import { OtpLoginServiceService } from '../../../../services/otpLogin/otp-login-service.service';
 import { AuthService } from '../../../../services/authServices/auth.service';
 // import { AuthServicesNodes } from '../../../../servicesNodes/authServices/auth.service';
-import { ToastrService } from 'ngx-toastr';
+// import { ToastrService } from 'ngx-toastr';
 import { NotificationService } from '../../../../services/notification/notification.service';
 
 @Component({
@@ -56,7 +56,7 @@ export class VerifierOptComponent implements AfterViewInit, OnInit {
     // private authServiceNode: AuthServicesNodes,
     // private toastr: ToastrService,
     private notification: NotificationService,
-  ) {}
+  ) { }
 
   moveToNext(event: any, index: number) {
     const input = event.target;
@@ -92,7 +92,7 @@ export class VerifierOptComponent implements AfterViewInit, OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.otpService.verifierOtp(otp, this.email).subscribe({
+    this.otpService.valideMsisdnAfterCreateCompte(otp, this.email).subscribe({
       next: (response) => {
         this.isLoading = false;
         // console.log('retour api:', response);

@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { catchError, Observable, throwError, tap} from 'rxjs';
+import { catchError, Observable, throwError, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { map } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -22,8 +22,8 @@ export class AuthService {
   userInfoConfig = this._userInfoConfig.asReadonly();
 
   constructor(private http: HttpClient,
-     private inactivityService: InactivityServiceTsService
-    ) {
+    private inactivityService: InactivityServiceTsService
+  ) {
     // console.log('%c[AuthService] ✅ Initialisation du service', 'color: cyan;');
     this.restoreFromLocalStorage();
   }
@@ -286,7 +286,7 @@ export class AuthService {
           localStorage.clear();
           this._userInfo.set(null);
           this._userInfoConfig.set(null);
-           this.inactivityService.stopWatching();
+          this.inactivityService.stopWatching();
         }),
         catchError((error) => {
           console.error(
@@ -298,7 +298,7 @@ export class AuthService {
         })
       );
   }
-  
+
 
   // -------------------- Profil --------------------
   modifierProfile(
@@ -371,33 +371,38 @@ export class AuthService {
   }
 
   creerUnNouveauUtilisateur(
-    nom: string,
     prenom: string,
+    nom: string,
     email: string,
     iRoleID: number,
     PhoneNumber: string,
     modeOtp: string,
     idPays: number,
-    vcDescription: string,
-    appName: string = 'Banking web site'
+    iOrganisationID: number,
+    vcDescription: string = '',
+    vcPhotoSignature?: File,
+    appName: string = 'Backoffice web site'
   ): Observable<any> {
-    const body = {
-      nom: nom,
-      prenom: prenom,
-      email: email,
-      iRoleID: iRoleID,
-      PhoneNumber: PhoneNumber,
-      modeOtp: modeOtp,
-      idPays: idPays,
-      vcDescription: vcDescription,
-      appName: appName,
-    };
+    const formData = new FormData();
+    formData.append('prenom', prenom);
+    formData.append('nom', nom);
+    formData.append('email', email);
+    formData.append('iRoleID', iRoleID.toString());
+    formData.append('PhoneNumber', PhoneNumber);
+    formData.append('modeOtp', modeOtp);
+    formData.append('idPays', idPays.toString());
+    formData.append('iOrganisationID', iOrganisationID.toString());
+    formData.append('vcDescription', vcDescription);
+    formData.append('appName', appName);
 
-    return this.http.post(`${this.baseUrl}/api/addUserssiteclient`, body, {
+    if (vcPhotoSignature) {
+      formData.append('vcPhotoSignature', vcPhotoSignature);
+    }
+
+    return this.http.post(`${this.baseUrl}/api/addUserssiteclient`, formData, {
       withCredentials: true,
     });
   }
-
   getListePays(): Observable<any> {
     return this.http.get(`${this.baseUrl}/api/getListePays`);
   }

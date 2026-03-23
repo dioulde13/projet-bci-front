@@ -17,158 +17,50 @@
             </div>
         </div>
         <div class="row">
-            <div class="col">
-                <div class="card">
-                    <div class="card-header d-flex">
-                        <div class="flex-shrink-0">
-                            <ul class="nav nav-pills card-header-pills">
-                                <li class="nav-item"><a class="nav-link" routerLink="/preparationPaie"><span
-                                            class="d-block d-sm-none" data-bs-toggle="tooltip" data-bss-tooltip=""
-                                            title="Préparation de la Paie"><i
-                                                class="icon ion-load-a font-size-18 align-middle me-2"></i></span><span
-                                            class="d-none d-sm-block"><i
-                                                class="icon ion-load-a font-size-18 align-middle me-2"></i>Préparation
-                                            de la Paie</span></a></li>
-                                <li class="nav-item"><a class="nav-link" routerLink="/calculPaie"><span
-                                            class="d-block d-sm-none" data-bs-toggle="tooltip" data-bss-tooltip=""
-                                            title="Calcul de la Paie"><i
-                                                class="icon ion-calculator font-size-18 align-middle me-2"></i></span><span
-                                            class="d-none d-sm-block"><i
-                                                class="icon ion-calculator font-size-18 align-middle me-2"></i>Calcul de
-                                            la Paie</span></a></li>
-                                <li class="nav-item"><a class="nav-link active"
-                                        routerLink="/validationApprobation"><span class="d-block d-sm-none"
-                                            data-bs-toggle="tooltip" data-bss-tooltip=""
-                                            title="Validation et Approbation"><i
-                                                class="icon ion-android-done-all font-size-18 align-middle me-2"></i></span><span
-                                            class="d-none d-sm-block"><i
-                                                class="icon ion-android-done-all font-size-18 align-middle me-2"></i>Validation
-                                            et Approbation</span></a></li>
-                                <li class="nav-item"><a class="nav-link" routerLink="/executeDistribution"><span
-                                            class="d-block d-sm-none" data-bs-toggle="tooltip" data-bss-tooltip=""
-                                            title="Exécution et Distribution"><i
-                                                class="icon ion-arrow-swap font-size-16 align-middle me-2"></i></span><span
-                                            class="d-none d-sm-block"><i
-                                                class="icon ion-arrow-swap font-size-16 align-middle me-2"></i>Exécution
-                                            et Distribution</span></a></li>
-                                <li class="nav-item"><a class="nav-link"><span class="d-block d-sm-none"
-                                            data-bs-toggle="tooltip" data-bss-tooltip=""
-                                            title="Reporting et Conformité"><i
-                                                class="icon ion-document-text font-size-16 align-middle me-2"></i></span><span
-                                            class="d-none d-sm-block"><i
-                                                class="icon ion-document-text font-size-16 align-middle me-2"></i>Reporting
-                                            et Conformité</span></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <!-- Start: Tab -->
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
-                                    <div>
-                                        <h4 class="fw-semibold mb-sm-0 font-size-18">Validation et Approbation des
-                                            Paiements</h4>
-                                        <p class="text-secondary font-size-13 my-sm-2">Assurez-vous de vérifier et
-                                            d'approuver les données de paie préparées avant qu'elles ne soient
-                                            finalisées et exécutées.</p>
-                                    </div>
-                                    <div class="page-title-right">
-                                        <div class="d-flex align-items-center gap-1 mb-4">
-                                            <div class="form-group">
-                                                <div class="input-group" #datepickerContainer>
-                                                    <input type="text" class="form-control"
-                                                        placeholder="Sélectionner une date et heure" #datepickerInput>
-                                                    <button class="btn btn-outline-secondary" type="button"
-                                                        (click)="openCalendar()">
-                                                        <i class="bx bx-calendar-event"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
+            <!-- Sidebar: Navigation -->
+            <div class="col-lg-3">
+                <app-transfert-multiple-side-menu currentPage="validation" (tabChange)="handleTabChange($event)"></app-transfert-multiple-side-menu>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-lg-9">
+                <div class="card h-100">
+                    <div class="card-header bg-transparent border-bottom">
+                        <div class="d-sm-flex justify-content-between align-items-center page-title-box">
+                            <div>
+                                <h4 class="fw-bold mb-sm-0 font-size-18">Validation et Approbation</h4>
+                                <p class="text-secondary font-size-13 my-sm-2 mb-0">Vérifiez et approuvez les données de paie avant finalisation.</p>
+                            </div>
+                            <div class="page-title-right">
+                                <div class="d-flex align-items-center gap-1">
+                                    <div class="form-group mb-0">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" placeholder="Date et heure" #datepickerInput>
+                                            <button class="btn btn-outline-secondary" type="button" (click)="openCalendar()">
+                                                <i class="bx bx-calendar-event"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body p-0">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="card email-leftbar">
-                                            <h6>Menu :</h6>
-                                            <div class="messages-list">
-                                                <div class="flex-column nav nav-pills"
-                                                    id="v-pills-tab-Validation-et-Approbation-des-Paiements"
-                                                    role="tablist" aria-orientation="vertical">
-                                                    <a id="v-pills-recapitulatifDesInformations-tab"
-                                                        (click)="toggleTabPaiements(false)" class="mb-2 active"
-                                                        data-bs-toggle="pill"
-                                                        href="#v-pills-recapitulatifDesInformations" role="tab"
-                                                        aria-controls="v-pills-recapitulatifDesInformations"
-                                                        aria-selected="true">
-                                                        <i class="icon ion-stats-bars font-size-18 align-middle me-2">
+                        </div>
+                    </div>
+                    <div class="card-body">                        <!-- Main Content Actions -->
+                        <div class="d-flex flex-wrap gap-2 mb-4 p-3 bg-light-subtle rounded-3">
+                            <button class="btn btn-success waves-light waves-effect" data-bs-toggle="modal" data-bs-target="#validerTouslesPaiements-2">
+                                <i class="icon ion-checkmark me-2"></i>Valider Tous les Paiements
+                            </button>
+                            <button class="btn btn-primary waves-light waves-effect" data-bs-toggle="modal" data-bs-target="#soumettrePourPaiement-1">
+                                <i class="icon ion-android-send me-2"></i>Soumettre pour Paiement
+                            </button>
+                            <button class="btn btn-danger waves-light waves-effect" data-bs-toggle="modal" data-bs-target="#rejeterEtRetournerPourCorrection-1">
+                                <i class="icon ion-close-round me-2"></i>Rejeter
+                            </button>
+                        </div>
 
-                                                        </i>
-                                                        Récapitulatif
-                                                    </a>
-                                                    <a id="v-pills-DetailsDesPaiements-tab" class="mb-2"
-                                                        data-bs-toggle="pill" href="#v-pills-DetailsDesPaiements"
-                                                        role="tab" aria-controls="v-pills-DetailsDesPaiements"
-                                                        aria-selected="false">
-                                                        <i class="icon ion-ios-folder font-size-18 align-middle me-2">
-
-                                                        </i>
-                                                        Détails des paiement
-                                                    </a>
-                                                    <a class="text-nowrap mb-2"
-                                                        id="v-pills-AnomaliesEtAvertissements-tab" data-bs-toggle="pill"
-                                                        href="#v-pills-AnomaliesEtAvertissements" role="tab"
-                                                        aria-controls="v-pills-AnomaliesEtAvertissements"
-                                                        aria-selected="false"><i
-                                                            class="icon ion-alert-circled font-size-18 align-middle me-2"></i>Anomalies</a><a
-                                                        id="v-pills-HistoriqueEtTracabilite-tab" class="mb-2"
-                                                        data-bs-toggle="pill" href="#v-pills-HistoriqueEtTracabilite"
-                                                        role="tab" aria-controls="v-pills-settings"
-                                                        aria-selected="false"><i
-                                                            class="icon ion-ios-paper font-size-18 align-middle me-2"></i>Historique
-                                                        et Traçabilité</a>
-                                                </div>
-                                            </div>
-                                            <h6 class="mt-4">Filtrer par :</h6>
-                                            <div class="messages-list mt-1"><a><span
-                                                        class="text-success float-end mdi mdi-arrow-right-drop-circle"></span>Vérifié</a><a><span
-                                                        class="text-warning float-end mdi mdi-arrow-right-drop-circle"></span>A
-                                                    vérifié</a><a><span
-                                                        class="text-danger float-end mdi mdi-arrow-right-drop-circle"></span>Rejeté</a>
-                                            </div>
-                                        </div>
-                                        <div class="email-rightbar mb-3">
-                                            <div class="card">
-                                                <div class="btn-toolbar gap-2 p-3" role="toolbar">
-                                                    <div class="btn-group" role="group"><button
-                                                            class="btn btn-success waves-light waves-effect"
-                                                            data-bs-toggle="modal" data-bss-tooltip="" type="button"
-                                                            title="Confirmez tous les détails de la paie comme corrects."
-                                                            ata-bs-toggle="modal"
-                                                            data-bs-target="#validerTouslesPaiements-2"><i
-                                                                class="icon ion-checkmark me-2"></i>Valider Tous les
-                                                            Paiements</button><button
-                                                            class="btn btn-primary waves-light waves-effect"
-                                                            data-bs-toggle="modal" data-bss-tooltip="" type="button"
-                                                            title="Soumettre pour Paiement"
-                                                            data-bs-target="#soumettrePourPaiement-1"><i
-                                                                class="icon ion-android-send me-2"></i><span
-                                                                style="color: var(--bs-btn-hover-color);">Soumettre pour
-                                                                Paiement</span></button><button
-                                                            class="btn btn-danger waves-light waves-effect"
-                                                            data-bs-toggle="modal" data-bss-tooltip="" type="button"
-                                                            title="Rejeter et Retourner pour Correction." role="button"
-                                                            data-bs-target="#rejeterEtRetournerPourCorrection-1"><i
-                                                                class="icon ion-close-round me-2"></i><span
-                                                                style="color: var(--bs-btn-hover-color);">Rejeter et
-                                                                Retourner pour Correction</span></button></div>
-                                                </div>
-                                                <div class="text-muted tab-content mt-4 mt-md-0 gap-2 p-3"
-                                                    id="v-pills-tabContent-Validation-et-Approbation-des-Paiements">
-                                                    <div id="v-pills-recapitulatifDesInformations" *ngIf="!isActive"
+                        <!-- Tab Content Section -->
+                        <div class="tab-content text-muted" id="v-pills-tabContent-Validation-et-Approbation-des-Paiements">
+                                                    <div id="v-pills-recapitulatifDesInformations" *ngIf="activeTabId === 'v-pills-recapitulatifDesInformations'"
                                                         class="tab-pane fade show active" role="tabpanel"
                                                         aria-labelledby="v-pills-recapitulatifDesInformations-tab">
                                                         <div class="card mb-0">
@@ -242,7 +134,7 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="text-nowrap">
-                                                                                    <button *ngIf="!isActive"
+                                                                                    <button *ngIf="isNotTabActive('v-pills-DetailsDesPaiements')"
                                                                                         class="btn btn-primary btn-sm mb-2"
                                                                                         (click)="toggleTabPaiements(true)"
                                                                                         type="button">
@@ -251,7 +143,7 @@
                                                                                         Consulter la liste
                                                                                     </button>
 
-                                                                                    <button *ngIf="isActive"
+                                                                                    <button *ngIf="isTabActive('v-pills-DetailsDesPaiements')"
                                                                                         class="btn btn-secondary btn-sm mb-2"
                                                                                         (click)="toggleTabPaiements(false)"
                                                                                         type="button">
@@ -267,8 +159,8 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="tab-pane fade" [class.active]="isActive"
-                                                        [class.show]="isActive" id="v-pills-DetailsDesPaiements"
+                                                    <div class="tab-pane fade" [class.active]="activeTabId === 'v-pills-DetailsDesPaiements'"
+                                                        [class.show]="activeTabId === 'v-pills-DetailsDesPaiements'" id="v-pills-DetailsDesPaiements"
                                                         role="tabpanel"
                                                         aria-labelledby="v-pills-DetailsDesPaiements-tab">
                                                         <div class="card mb-0">
@@ -554,6 +446,8 @@
                                                         </div>
                                                     </div>
                                                     <div id="v-pills-AnomaliesEtAvertissements" class="tab-pane fade"
+                                                        [class.active]="activeTabId === 'v-pills-AnomaliesEtAvertissements'"
+                                                        [class.show]="activeTabId === 'v-pills-AnomaliesEtAvertissements'"
                                                         role="tabpanel"
                                                         aria-labelledby="v-pills-AnomaliesEtAvertissements-tab">
                                                         <div class="card mb-0">
@@ -681,6 +575,8 @@
                                                         </div>
                                                     </div>
                                                     <div id="v-pills-HistoriqueEtTracabilite" class="tab-pane fade"
+                                                        [class.active]="activeTabId === 'v-pills-HistoriqueEtTracabilite'"
+                                                        [class.show]="activeTabId === 'v-pills-HistoriqueEtTracabilite'"
                                                         role="tabpanel"
                                                         aria-labelledby="v-pills-HistoriqueEtTracabilite-tab">
                                                         <div class="card mb-0">
@@ -775,17 +671,12 @@
                                                                     </table>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div><!-- End: Tab -->
                     </div>
                 </div>
+
                 <div class="modal fade" role="dialog" tabindex="-1" id="rejeterEtRetournerPourCorrection-1"
                     aria-labelledby="rejeterEtRetournerPourCorrection-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">

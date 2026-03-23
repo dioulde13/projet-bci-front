@@ -51,7 +51,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     private router: Router,
     private otpService: OtpLoginServiceService,
     private getAccount: GetAccountNameService,
-  ) {}
+  ) { }
 
   paymentForm!: FormGroup;
 
@@ -410,7 +410,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     //   this.paymentFormPrepayerEDG.markAllAsTouched();
     //   return;
     // }
-    console.log('this.selectedTab: ', this.selectedTab);
+    // console.log('this.selectedTab: ', this.selectedTab);
 
     this.loadingPrepayerEDG = true;
 
@@ -693,20 +693,20 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       // Bank
       fraisBank = this.btFeesBankUsePercent
         ? (this.postpayModalForm.value.modalMontantPost *
-            Number(this.fraisNFeesBankEDG)) /
-          100
+          Number(this.fraisNFeesBankEDG)) /
+        100
         : Number(this.fraisNFeesBankEDG);
     } else {
       // Ecash
       fraisEcash = this.btFeesUsePercent
         ? this.postpayModalForm.value.modalMontantPost *
-          Number(this.fraisNFeesEDG / 100)
+        Number(this.fraisNFeesEDG / 100)
         : Number(this.fraisNFeesEDG);
 
       // Bank
       fraisBank = this.btFeesBankUsePercent
         ? this.postpayModalForm.value.modalMontantPost *
-          Number(this.fraisNFeesBankEDG / 100)
+        Number(this.fraisNFeesBankEDG / 100)
         : Number(this.fraisNFeesBankEDG);
     }
     if (this.btFeesIncluded) {
@@ -830,20 +830,20 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       // Bank
       fraisBank = this.btFeesBankUsePercent
         ? (this.postpayModalForm.value.modalMontantPost *
-            Number(this.fraisNFeesBankEDG)) /
-          100
+          Number(this.fraisNFeesBankEDG)) /
+        100
         : Number(this.fraisNFeesBankEDG);
     } else {
       // Ecash
       fraisEcash = this.btFeesUsePercent
         ? this.postpayModalForm.value.modalMontantPost *
-          Number(this.fraisNFeesEDG / 100)
+        Number(this.fraisNFeesEDG / 100)
         : Number(this.fraisNFeesEDG);
 
       // Bank
       fraisBank = this.btFeesBankUsePercent
         ? this.postpayModalForm.value.modalMontantPost *
-          Number(this.fraisNFeesBankEDG / 100)
+        Number(this.fraisNFeesBankEDG / 100)
         : Number(this.fraisNFeesBankEDG);
     }
     if (this.btFeesIncluded) {
@@ -888,74 +888,74 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
     console.log('PAYLOAD ENVOYÉ 👉', payload);
 
-    if (montantTotalPostPayerEDG > this.selectedPostpayFacture.balance) {
-      this.loadingVerificationMontant = false;
-      this.notification.error(
-        'Le montant payer plus frais ne doit pas depasser le solde restant',
-      );
-      // this.toastr.error(
-      //   'Le montant payer plus frais ne doit pas depasser le solde restant',
-      //   '',
-      //   {
-      //     positionClass: 'toast-custom-center',
-      //   },
-      // );
-      // console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
-      // console.log(
-      //   'this.selectedPostpayFacture.balance: ',
-      //   this.selectedPostpayFacture.balance,
-      // );
-    } else {
-      // console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
-      // console.log(
-      //   'this.selectedPostpayFacture.balance: ',
-      //   this.selectedPostpayFacture.balance,
-      // );
+    // if (montantTotalPostPayerEDG > this.selectedPostpayFacture.balance) {
+    //   this.loadingVerificationMontant = false;
+    //   this.notification.error(
+    //     'Le montant payer plus frais ne doit pas depasser le solde restant',
+    //   );
+    //   // this.toastr.error(
+    //   //   'Le montant payer plus frais ne doit pas depasser le solde restant',
+    //   //   '',
+    //   //   {
+    //   //     positionClass: 'toast-custom-center',
+    //   //   },
+    //   // );
+    //   // console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
+    //   // console.log(
+    //   //   'this.selectedPostpayFacture.balance: ',
+    //   //   this.selectedPostpayFacture.balance,
+    //   // );
+    // } else {
+    // console.log('montantTotalPostPayerEDG: ', montantTotalPostPayerEDG);
+    // console.log(
+    //   'this.selectedPostpayFacture.balance: ',
+    //   this.selectedPostpayFacture.balance,
+    // );
 
-      // Fermer le modal
+    // Fermer le modal
 
-      this.marchandService
-        .postPaiementMarchant(
-          payload.vcPayerAccount,
-          payload.vcBenefName,
-          payload.vcBenefAccount,
-          payload.mAmount,
-          payload.mFeesEcash,
-          payload.mFeesBCI,
-          payload.vcNotes,
-          payload.btFeesIncluded,
-          payload.iTransactionID,
-        )
-        .subscribe({
-          next: (response: any) => {
-            // console.log('Réponse API 👉', response);
-            if (response.status === 200) {
-              this.notification.success(
-                'Le paiement a été effectué avec succès',
-              );
-              // this.toastr.success('Le paiement a été effectué avec succès', '', {
-              //   positionClass: 'toast-custom-center',
-              // });
-              this.isLoading = false;
-              this.modalOtp = false;
-              this.router.navigate(['/historiqueTransactions']);
-              this.onCompteurBlurPostpayer();
-              // this.loadingPrepayerEDG = false;
-              this.postpayModalForm.reset();
-            }
-          },
-          error: (err) => {
-            this.isLoading = false;
-            this.notification.error('Une erreur interne est survenue.');
-
-            // this.toastr.error('Une erreur interne est survenue.', '', {
+    this.marchandService
+      .postPaiementMarchant(
+        payload.vcPayerAccount,
+        payload.vcBenefName,
+        payload.vcBenefAccount,
+        payload.mAmount,
+        payload.mFeesEcash,
+        payload.mFeesBCI,
+        payload.vcNotes,
+        payload.btFeesIncluded,
+        payload.iTransactionID,
+      )
+      .subscribe({
+        next: (response: any) => {
+          // console.log('Réponse API 👉', response);
+          if (response.status === 200) {
+            this.notification.success(
+              'Le paiement a été effectué avec succès',
+            );
+            // this.toastr.success('Le paiement a été effectué avec succès', '', {
             //   positionClass: 'toast-custom-center',
             // });
+            this.isLoading = false;
+            this.modalOtp = false;
+            this.router.navigate(['/historiqueTransactions']);
+            this.onCompteurBlurPostpayer();
             // this.loadingPrepayerEDG = false;
-            // console.error('Erreur API 👉', err);
-          },
-        });
-    }
+            this.postpayModalForm.reset();
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.notification.error('Une erreur interne est survenue.');
+
+          // this.toastr.error('Une erreur interne est survenue.', '', {
+          //   positionClass: 'toast-custom-center',
+          // });
+          // this.loadingPrepayerEDG = false;
+          // console.error('Erreur API 👉', err);
+        },
+      });
+    // }
   }
 
   formatDateOper(dateOper: string): string {
@@ -1138,55 +1138,56 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     this.startCountdown();
     // console.log('this.montantEDG: ', this.montantEDG);
 
-    if (this.montantEDG > this.soldeDebiteur) {
-      this.loadiongConfirmeOtp = false;
-      this.notification.error(
-        'Le montant saisi doit être inférieur ou égal au solde.',
-      );
+    // if (this.montantEDG > this.soldeDebiteur) {
+    //   this.loadiongConfirmeOtp = false;
+    //   this.notification.error(
+    //     'Le montant saisi doit être inférieur ou égal au solde.',
+    //   );
 
-      // this.toastr.error(
-      //   'Le montant saisi doit être inférieur ou égal au solde.',
-      //   '',
-      //   {
-      //     positionClass: 'toast-custom-center',
-      //   },
-      // );
-    } else {
-      // Envoi OTP via service
-      this.tranfertUniqueService
-        .sendOtpTransaction(this.vcPhoneNumber)
-        .subscribe({
-          next: (response: any) => {
-            if (response.status === 200) {
-              this.loadiongConfirmeOtp = false;
-              this.modalOtp = true;
-              this.notification.success('OTP envoyé avec succès');
-              // this.toastr.success('OTP envoyé avec succès', '', {
-              //   positionClass: 'toast-custom-center',
-              // });
-            } else {
-              this.notification.error(response.message);
-
-              // this.toastr.error(response.message, '', {
-              //   positionClass: 'toast-custom-center',
-              // });
-            }
-          },
-          error: (err) => {
-            this.notification.error('Erreur lors de l’envoi de l’OTP');
-
-            // this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
+    //   // this.toastr.error(
+    //   //   'Le montant saisi doit être inférieur ou égal au solde.',
+    //   //   '',
+    //   //   {
+    //   //     positionClass: 'toast-custom-center',
+    //   //   },
+    //   // );
+    // } 
+    // else {
+    // Envoi OTP via service
+    this.tranfertUniqueService
+      .sendOtpTransaction(this.vcPhoneNumber)
+      .subscribe({
+        next: (response: any) => {
+          if (response.status === 200) {
+            this.loadiongConfirmeOtp = false;
+            this.modalOtp = true;
+            this.notification.success('OTP envoyé avec succès');
+            // this.toastr.success('OTP envoyé avec succès', '', {
             //   positionClass: 'toast-custom-center',
             // });
-            // console.error(err);
-          },
-        });
+          } else {
+            this.notification.error(response.message);
 
-      // Focus sur le premier input OTP
-      setTimeout(() => {
-        this.otpInputs.first?.nativeElement.focus();
-      }, 100);
-    }
+            // this.toastr.error(response.message, '', {
+            //   positionClass: 'toast-custom-center',
+            // });
+          }
+        },
+        error: (err) => {
+          this.notification.error('Erreur lors de l’envoi de l’OTP');
+
+          // this.toastr.error('Erreur lors de l’envoi de l’OTP', '', {
+          //   positionClass: 'toast-custom-center',
+          // });
+          // console.error(err);
+        },
+      });
+
+    // Focus sur le premier input OTP
+    setTimeout(() => {
+      this.otpInputs.first?.nativeElement.focus();
+    }, 100);
+    // }
   }
 
   verifyOtp(): void {
@@ -1303,7 +1304,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       },
       error: (err) => {
         this.isLoadingRenvoyez = false;
-          this.notification.error('Une erreur interne est survenue.');
+        this.notification.error('Une erreur interne est survenue.');
         // this.toastr.error('Une erreur interne est survenue.', '', {
         //   positionClass: 'toast-custom-center',
         // });

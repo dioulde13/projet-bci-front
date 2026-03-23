@@ -11,7 +11,7 @@ import { NotificationComponent } from './pages/notifications/notification/notifi
 })
 export class AppComponent {
 
-    constructor(private router: Router, private rendered: Renderer2) {}
+  constructor(private router: Router, private rendered: Renderer2) { }
 
   ngOnInit(): void {
     this.router.events

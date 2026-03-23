@@ -92,7 +92,7 @@ export class ModifierMesInfosComponent {
     private listeCompteCLientService: DashboardService,
     private notification: NotificationService,
     private ajouterComptesService: AjouterComptesService,
-  ) {}
+  ) { }
 
   niveaux = [
     {
@@ -177,7 +177,12 @@ export class ModifierMesInfosComponent {
     }
   }
 
+  userRoleId: string | number | null = null;
+
+
   ngOnInit(): void {
+
+
     this.niveauForm = this.fb.group({
       vcRoleName: ['', Validators.required],
       description: [''],
@@ -194,6 +199,16 @@ export class ModifierMesInfosComponent {
     this.orgId = userInfo.iOrganisationID;
     this.idUsers = userInfo.id;
     this.currentUserInfo = { ...userInfo };
+
+    if (userInfo) {
+      try {
+        console.log('this.infosUser: ', userInfo);
+        this.userRoleId = userInfo?.iRoleID;
+        console.log('this.userRoleId: ', this.userRoleId);
+      } catch {
+        this.infosUser = null;
+      }
+    }
 
     console.log('dataConfig : ', dataConfig);
     console.log('userInfo : ', userInfo);
@@ -351,9 +366,9 @@ export class ModifierMesInfosComponent {
       .subscribe({
         next: (response: any) => {
           this.listeComptesParIdClient = response.comptes;
-           // 👇 LOG ici
-        console.log('✅ listeComptesParIdClient :', this.listeComptesParIdClient);
-        console.table(this.listeComptesParIdClient); // vue tabulaire dans la console
+          // 👇 LOG ici
+          console.log('✅ listeComptesParIdClient :', this.listeComptesParIdClient);
+          console.table(this.listeComptesParIdClient); // vue tabulaire dans la console
           this.selectedComptes = []; // reset sélection
           this.loadingSearch = false;
         },
@@ -364,7 +379,7 @@ export class ModifierMesInfosComponent {
       });
   }
 
-   // Mais si vous voulez logger à l'ouverture, utilisez un listener :
+  // Mais si vous voulez logger à l'ouverture, utilisez un listener :
   onOpenModal(): void {
     console.log('📂 Modal ouvert');
     this.onSearch();
@@ -387,7 +402,7 @@ export class ModifierMesInfosComponent {
   }
 
 
- 
+
 
   ajouteCompte: boolean = false;
   // ✅ Valider l'ajout des comptes sélectionnés
@@ -812,9 +827,9 @@ export class ModifierMesInfosComponent {
           const selectedCountry = this.countries.find(
             (c: any) =>
               c.vcName.toLowerCase().trim() ===
-                this.country?.toLowerCase().trim() ||
+              this.country?.toLowerCase().trim() ||
               c.vcCode.toLowerCase().trim() ===
-                this.country?.toLowerCase().trim(),
+              this.country?.toLowerCase().trim(),
           );
 
           if (selectedCountry) {

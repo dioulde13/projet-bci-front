@@ -1,14 +1,30 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterLink} from '@angular/router';
+
+import { TransfertMultipleSideMenuComponent } from '../components/side-menu/side-menu.component';
 
 @Component({
   selector: 'app-execution-distribution',
-  imports: [RouterLink],
+  imports: [RouterLink, TransfertMultipleSideMenuComponent, CommonModule],
   standalone: true,
   templateUrl: './execution-distribution.component.html',
   styleUrl: './execution-distribution.component.css'
 })
 export class ExecutionDistributionComponent implements OnInit{
+  activeTabId: string = 'v-pills-recapitulatifDesInformations';
+
+  handleTabChange(tabId: string) {
+    this.activeTabId = tabId;
+  }
+
+  isTabActive(tabId: string): boolean {
+    return this.activeTabId === tabId;
+  }
+
+  isNotTabActive(tabId: string): boolean {
+    return this.activeTabId !== tabId;
+  }
 
 
     ngOnInit(): void {
