@@ -21,27 +21,29 @@
           <div class="card-body">
             <form class="row gx-3 gy-2 mb-4 mb-lg-0">
 
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <label class="form-label text-muted">Mode de paiement</label>
-                <select
-                  class="form-select-sm form-select mb-0 w-100"
-                  [(ngModel)]="paymentModeName"
-                  name="paymentModeName"
-                  (change)="currentPage = 1"
-                >
+                <select class="form-select-sm form-select mb-0 w-100" [(ngModel)]="paymentModeName"
+                  name="paymentModeName">
                   <option value="">Tous les modes</option>
                   <option *ngFor="let mode of listePaymentModes" [value]="mode">{{ mode }}</option>
                 </select>
               </div>
 
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <label class="form-label text-muted">Date début</label>
-                <input class="form-control" type="date" name="dateDebut" [(ngModel)]="dateDebut" (change)="currentPage = 1" />
+                <input class="form-control" type="date" name="dateDebut" [(ngModel)]="dateDebut" />
               </div>
 
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <label class="form-label text-muted">Date fin</label>
-                <input class="form-control" type="date" name="dateFin" [(ngModel)]="dateFin" (change)="currentPage = 1" />
+                <input class="form-control" type="date" name="dateFin" [(ngModel)]="dateFin" />
+              </div>
+
+              <div class="col-md-3 d-flex align-items-end">
+                <button type="button" class="btn btn-primary" (click)="applyFilter()">
+                  <i class="fas fa-search me-1"></i>
+                </button>
               </div>
 
             </form>
@@ -76,11 +78,7 @@
                 <tbody>
                   <tr *ngFor="let row of skeletonRows">
                     <td *ngFor="let col of skeletonHeaders">
-                      <div
-                        class="skeleton-box"
-                        [style.width]="col.width"
-                        style="height:13px; border-radius:4px;"
-                      ></div>
+                      <div class="skeleton-box" [style.width]="col.width" style="height:13px; border-radius:4px;"></div>
                     </td>
                   </tr>
                 </tbody>
@@ -111,14 +109,8 @@
                     <i class="fas fa-file-pdf me-1"></i> Exporter PDF
                   </button>
                 </div>
-                <input
-                  type="text"
-                  class="form-control w-25"
-                  placeholder="Rechercher..."
-                  [(ngModel)]="searchText"
-                  name="searchText"
-                  (input)="currentPage = 1"
-                />
+                <input type="text" class="form-control w-25" placeholder="Rechercher..." [(ngModel)]="searchText"
+                  name="searchText" (input)="currentPage = 1" />
               </div>
 
               <table class="table mb-0 align-middle dt-responsive nowrap">
@@ -166,14 +158,11 @@
 
                     <!-- STATUT -->
                     <td class="text-center align-middle">
-                      <span
-                        class="badge px-3 py-2"
-                        [ngClass]="{
+                      <span class="badge px-3 py-2" [ngClass]="{
                           'bg-success': liste.Status?.toLowerCase() === 'success',
                           'bg-danger':  liste.Status?.toLowerCase() === 'cancelled' || liste.Status?.toLowerCase() === 'failed',
                           'bg-warning text-dark': liste.Status?.toLowerCase() === 'pending'
-                        }"
-                      >
+                        }">
                         {{ getStatusLabel(liste.Status!) }}
                       </span>
                     </td>
@@ -182,30 +171,21 @@
                     <td class="text-center align-middle">
                       <div class="d-flex justify-content-center gap-1">
 
-                        <button
-                          *ngIf="liste.Status?.toLowerCase() === 'success'"
-                          class="btn btn-outline-secondary btn-sm px-2"
-                          title="Imprimer le reçu"
-                          (click)="printRow(liste)"
-                        >
+                        <button *ngIf="liste.Status?.toLowerCase() === 'success'"
+                          class="btn btn-outline-secondary btn-sm px-2" title="Imprimer le reçu"
+                          (click)="printRow(liste)">
                           <i class="fas fa-print"></i>
                         </button>
 
-                        <button
-                          *ngIf="liste.Status?.toLowerCase() === 'pending'"
-                          class="btn btn-outline-info btn-sm px-2"
-                          title="Vérifier la transaction"
-                          (click)="openVerifierModal(liste)"
-                        >
+                        <button *ngIf="liste.Status?.toLowerCase() === 'pending'"
+                          class="btn btn-outline-info btn-sm px-2" title="Vérifier la transaction"
+                          (click)="openVerifierModal(liste)">
                           <i class="fas fa-sync-alt"></i>
                         </button>
 
-                        <button
-                          *ngIf="liste.Status?.toLowerCase() === 'success'"
-                          class="btn btn-outline-danger btn-sm px-2"
-                          title="Annuler la transaction"
-                          (click)="openCancelModal(liste)"
-                        >
+                        <button *ngIf="liste.Status?.toLowerCase() === 'success'"
+                          class="btn btn-outline-danger btn-sm px-2" title="Annuler la transaction"
+                          (click)="openCancelModal(liste)">
                           <i class="fas fa-times-circle"></i>
                         </button>
 
@@ -223,32 +203,21 @@
                   {{ filteredData.length }} éléments
                 </div>
                 <div>
-                  <button
-                    class="btn btn-sm btn-outline-secondary me-1"
-                    (click)="previousPage()"
-                    [disabled]="currentPage === 1"
-                  >
+                  <button class="btn btn-sm btn-outline-secondary me-1" (click)="previousPage()"
+                    [disabled]="currentPage === 1">
                     Précédent
                   </button>
 
-                  <button
-                    *ngFor="let page of getPages()"
-                    class="btn btn-sm me-1"
-                    [ngClass]="{
+                  <button *ngFor="let page of getPages()" class="btn btn-sm me-1" [ngClass]="{
                       'btn-outline-secondary': page !== currentPage && page !== '...',
                       'btn-secondary': page === currentPage,
                       disabled: page === '...'
-                    }"
-                    (click)="onPageClick(page)"
-                  >
+                    }" (click)="onPageClick(page)">
                     {{ page }}
                   </button>
 
-                  <button
-                    class="btn btn-sm btn-outline-secondary"
-                    (click)="nextPage()"
-                    [disabled]="currentPage === totalPages()"
-                  >
+                  <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()"
+                    [disabled]="currentPage === totalPages()">
                     Suivant
                   </button>
                 </div>
@@ -256,10 +225,7 @@
             </div>
 
             <!-- ================= EMPTY ================= -->
-            <div
-              *ngIf="!isLoadingUser && filteredData.length === 0"
-              class="text-center mt-4"
-            >
+            <div *ngIf="!isLoadingUser && filteredData.length === 0" class="text-center mt-4">
               <i class="fas fa-inbox fa-2x text-muted mb-2 d-block"></i>
               <p class="text-muted">Aucune transaction trouvée.</p>
             </div>

@@ -7,6 +7,7 @@ import { NgControl } from '@angular/forms';
 
 @Directive({
   selector: '[gnfNumberFormat]',
+  standalone: true,
 })
 export class GnfNumberFormatDirective {
   constructor(

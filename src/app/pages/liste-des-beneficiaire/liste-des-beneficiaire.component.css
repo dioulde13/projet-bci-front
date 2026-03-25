@@ -120,4 +120,42 @@
   overflow-y: auto;
 }
 
+/* ========== SKELETON LOADING ========== */
+@keyframes skeleton-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
 
+.skeleton {
+  background: #e0e0e0;
+  border-radius: 4px;
+  display: inline-block;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-text {
+  height: 14px;
+  display: block;
+}
+
+.skeleton-badge {
+  width: 50px;
+  height: 20px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.skeleton-btn {
+  height: 36px;
+  border-radius: 6px;
+  display: block;
+}
+
+.skeleton-thead-cell {
+  height: 14px;
+  display: block;
+  background: rgba(255,255,255,0.4);
+  border-radius: 3px;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}

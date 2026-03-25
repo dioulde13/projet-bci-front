@@ -28,14 +28,14 @@
                     </a>
                   </li>
 
-                  <li class="nav-item">
+                  <li class="nav-item" *ngIf="userRoleId !== '11'">
                     <a class="nav-link" [ngClass]="{ active: activeTab === 'profile4' }"
                       (click)="setActiveTab('profile4')" role="tab" aria-selected="false">
                       Modifier les infos des niveaux
                     </a>
                   </li>
 
-                  <li class="nav-item">
+                  <li class="nav-item" *ngIf="userRoleId !== '11'">
                     <a class="nav-link" [ngClass]="{ active: activeTab === 'profile5' }"
                       (click)="setActiveTab('profile5')" role="tab" aria-selected="false">
                       Mes comptes

@@ -23,14 +23,15 @@
           <div class="card-body text-light">
             <div class="row">
               <div class="col-12 text-center">
-                <p class="mb-1">Valeur nette</p>
+                <p class="mb-1" *ngIf="userRoleId !== '11'">Valeur nette</p>
                 <ng-container *ngIf="isDashboardLoading; else balanceContent">
                   <div class="skeleton skeleton-title mb-3"></div>
                   <div class="skeleton skeleton-small"></div>
                 </ng-container>
                 <ng-template #balanceContent>
-                  <h4 class="text-light mb-4 fs-4">
-                    {{ soldeDebiteur | number: "1.2-2" }} {{ deviseDebiteur }}
+                  <h4 class="text-light mb-4 fs-4" *ngIf="userRoleId !== '11'">
+                    {{userRoleId !== '11'?(soldeDebiteur | number: "1.2-2"):"***********" }} {{userRoleId !== '11'?
+                    deviseDebiteur:"*********" }}
                   </h4>
                   <p>
                     <small class="text-white" style="font-size: 15px">
@@ -71,14 +72,14 @@
 
               <!-- CONTENU NORMAL -->
               <ng-template #realContent>
-                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '11'">
+                <div class="col-6 col-md-4 mb-4">
                   <a routerLink="/preparationPaie" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-social-buffer custom-icon-size"></i>
                     <p class="custom-icon-text">Transferts multiples</p>
                   </a>
                 </div>
 
-                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '11'">
+                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '15'">
                   <!-- Composant d'import de fichier -->
                   <bci-generic-file-import [isOpenModal]="openModal" [fields]="fields" title="Importation des fichiers"
                     instructions="Veuillez charger le fichier des virements du mois en cours."
@@ -94,35 +95,35 @@
                   </a>
                 </div>
 
-                <div class="col-6 col-md-4 mb-4">
+                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '11'">
                   <a routerLink="/transfertUnique" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-ios-people custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert unique</p>
                   </a>
                 </div>
 
-                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '13'">
+                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '13' && userRoleId !== '11'">
                   <a routerLink="/typePaiement" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-ios-paper custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert mobile</p>
                   </a>
                 </div>
 
-                <div class="col-6 col-md-4 mb-4">
+                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '11'">
                   <a routerLink="/paiementFacture" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-ios-paper custom-icon-size"></i>
                     <p class="custom-icon-text">Paiements de factures</p>
                   </a>
                 </div>
 
-                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '11'">
+                <div class="col-6 col-md-4 mb-4">
                   <a routerLink="/listeBeneficiaire" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-ios-cog custom-icon-size"></i>
                     <p class="custom-icon-text">Gérer les bénéficiaires</p>
                   </a>
                 </div>
 
-                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '13'">
+                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '13' && userRoleId !== '11'">
                   <a class="custom-icon-container" (click)="openTransferModal()">
                     <i class="bi bi-currency-exchange custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert international</p>

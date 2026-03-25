@@ -5,8 +5,16 @@
         <div
           class="d-sm-flex justify-content-between align-items-center mt-4 page-title-box"
         >
-          <div>
-            <h4 class="fw-semibold text-primary mb-sm-0 h3">
+          <div class="d-flex align-items-center gap-3">
+            <button
+              class="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 35px; height: 35px"
+              (click)="goBack()"
+              title="Retour"
+            >
+              <i class="fas fa-arrow-left"></i>
+            </button>
+            <h4 class="fw-semibold text-primary mb-0 h3">
               Liste des bénéficiaires en attente
             </h4>
           </div>

@@ -17,17 +17,13 @@ import autoTable from 'jspdf-autotable';
 import {
   FormBuilder,
   FormGroup,
-  FormArray,
   Validators,
   FormsModule,
   ReactiveFormsModule,
-  FormControl,
 } from '@angular/forms';
 import { BeneficiaireService } from '../../services/beneficiaire/beneficiaire.service';
 import { BeneficiaireNodeService } from '../../servicesNodes/beneficiaireNode/beneficiaire-node.service';
-import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
-import { OnlyNumbersDirective } from '../onlyNumbers/only-numbers.pipe';
+import { Router, RouterLink } from '@angular/router';
 import { NotificationService } from '../../services/notification/notification.service';
 
 @Component({
@@ -38,18 +34,22 @@ import { NotificationService } from '../../services/notification/notification.se
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
+    RouterLink,
   ],
   templateUrl: './liste-des-beneficiaire.component.html',
   styleUrl: './liste-des-beneficiaire.component.css',
   standalone: true,
 })
 export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
+
   submitted = false;
   selectedTypePaiementId: string | null = null;
   selectedFile: File | null = null;
   photoPreview: string | ArrayBuffer | null = null;
   userInfo: any;
+  infosUser: any;
   idOrganisation!: number;
+  userRoleId: string | number | null = null;
 
   formBeneficiaire!: FormGroup;
 
@@ -57,23 +57,48 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
   listePays: any[] = [];
   listeBanques: any[] = [];
   listeTypeBeneficiaire: any[] = [];
+  listeBeneficiaire: any[] = [];
+
+  lodingFetch = false;
+  isLoading = false;
+  showAjoutBeneficiaireModal = false;
+
+  // Tableau / filtres
+  pageSize = 5;
+  currentPage = 1;
+  searchText = '';
+  sortColumn = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+  // ✅ CORRECTION : utilisé directement par [(ngModel)] dans le template
+  selectedBeneficiaryType = '';
 
   @ViewChild('datepickerInput', { static: false }) datepickerInput?: ElementRef;
-  calendarInstance: any;
-
-  // OTP inputs
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef>;
+
+  calendarInstance: any;
 
   constructor(
     private fb: FormBuilder,
     private beneficiaireService: BeneficiaireService,
     private beneficiaireNodeService: BeneficiaireNodeService,
-    // private toastr: ToastrService,
     private router: Router,
-    private notification: NotificationService
-  ) {}
+    private notification: NotificationService,
+  ) { }
+
+  // ─── Lifecycle ────────────────────────────────────────────────────────────
 
   ngOnInit(): void {
+    const userJson = localStorage.getItem('userInfo');
+    if (userJson) {
+      try {
+        this.infosUser = JSON.parse(userJson);
+        this.userRoleId = this.infosUser?.iRoleID;
+      } catch {
+        this.infosUser = null;
+      }
+    }
+
     this.getUserInfo();
     this.initForm();
     this.loadTypeBeneficiaires();
@@ -83,9 +108,15 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     this.getListeBeneficiaire();
   }
 
-  lodingFetch: boolean = false;
+  ngAfterViewInit(): void {
+    if (this.datepickerInput) {
+      this.calendarInstance = flatpickr(this.datepickerInput.nativeElement, {
+        locale: French,
+      });
+    }
+  }
 
-  listeBeneficiaire: any[] = [];
+  // ─── Données ──────────────────────────────────────────────────────────────
 
   getListeBeneficiaire(): void {
     this.lodingFetch = true;
@@ -95,7 +126,6 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
         next: (response: any) => {
           this.listeBeneficiaire = response?.data ?? [];
           this.lodingFetch = false;
-          console.log('liste beneficiaire :', this.listeBeneficiaire);
         },
         error: (err) => {
           this.lodingFetch = false;
@@ -104,24 +134,48 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       });
   }
 
-  pageSize = 5;
-  currentPage = 1;
-  searchText = '';
-  sortColumn = '';
-  sortDirection: 'asc' | 'desc' = 'asc';
-  selectedBeneficiaryType = '';
-
-  onCategoryChange(event: Event): void {
-    const value = (event.target as HTMLSelectElement).value;
-    this.selectedBeneficiaryType = value;
-    console.log('value: ', value);
+  private loadTypeBeneficiaires(): void {
+    this.beneficiaireService.getListeTypeBeneficiaire().subscribe({
+      next: (res) => (this.listeTypeBeneficiaire = res.data),
+      error: (err) => console.error('Erreur type bénéficiaire', err),
+    });
   }
 
-  // Filtrer et trier
-  get filteredData() {
+  private loadTypePaiements(): void {
+    this.beneficiaireService.getListeTypePaiement().subscribe({
+      next: (res) => (this.listeTypePaiement = res.data),
+      error: (err) => console.error('Erreur type paiement', err),
+    });
+  }
+
+  private listPays(): void {
+    this.beneficiaireService.getCurrency().subscribe({
+      next: (res) => (this.listePays = res.data),
+      error: (err) => console.error('Erreur récupération devise', err),
+    });
+  }
+
+  private listeDesBanques(): void {
+    this.beneficiaireNodeService.getListeBanque().subscribe({
+      next: (res) => (this.listeBanques = res.data),
+      error: (err) => console.error('Erreur récupération banques :', err),
+    });
+  }
+
+  private getUserInfo(): void {
+    const user = localStorage.getItem('userInfo');
+    if (user) {
+      this.userInfo = JSON.parse(user);
+      this.idOrganisation = this.userInfo.iOrganisationID;
+    }
+  }
+
+  // ─── Tableau : filtres, tri, pagination ──────────────────────────────────
+
+  get filteredData(): any[] {
     let data = [...this.listeBeneficiaire];
 
-    // Recherche
+    // Recherche textuelle
     if (this.searchText) {
       const term = this.searchText.toLowerCase();
       data = data.filter((d) =>
@@ -131,7 +185,7 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       );
     }
 
-    // 🎯 Filtre par type
+    // Filtre par type de bénéficiaire
     if (this.selectedBeneficiaryType) {
       data = data.filter(
         (d) => d.BeneficiaryTypeName === this.selectedBeneficiaryType,
@@ -152,37 +206,41 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     return data;
   }
 
-  get pagedBeneficiaire() {
+  get pagedBeneficiaire(): any[] {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.filteredData.slice(start, start + this.pageSize);
   }
 
-  totalPages() {
+  totalPages(): number {
     return Math.ceil(this.filteredData.length / this.pageSize);
   }
 
-  startIndex() {
+  startIndex(): number {
     return this.filteredData.length === 0
       ? 0
       : (this.currentPage - 1) * this.pageSize + 1;
   }
 
-  endIndex() {
+  endIndex(): number {
     return Math.min(this.currentPage * this.pageSize, this.filteredData.length);
   }
 
-  goToPage(page: number) {
+  goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages()) this.currentPage = page;
   }
 
-  previousPage() {
+  previousPage(): void {
     this.goToPage(this.currentPage - 1);
   }
-  nextPage() {
+
+  nextPage(): void {
     this.goToPage(this.currentPage + 1);
   }
 
-  // Pagination dynamique
+  onPageClick(page: number | string): void {
+    if (typeof page === 'number') this.goToPage(page);
+  }
+
   getPages(): (number | string)[] {
     const total = this.totalPages();
     const pages: (number | string)[] = [];
@@ -190,28 +248,23 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
 
     if (total <= maxVisible) {
       for (let i = 1; i <= total; i++) pages.push(i);
+    } else if (this.currentPage <= 3) {
+      pages.push(1, 2, 3, 4, 5, '...', total);
+    } else if (this.currentPage >= total - 2) {
+      pages.push(1, '...', total - 4, total - 3, total - 2, total - 1, total);
     } else {
-      if (this.currentPage <= 3) {
-        pages.push(1, 2, 3, 4, 5, '...', total);
-      } else if (this.currentPage >= total - 2) {
-        pages.push(1, '...', total - 4, total - 3, total - 2, total - 1, total);
-      } else {
-        pages.push(
-          1,
-          '...',
-          this.currentPage - 1,
-          this.currentPage,
-          this.currentPage + 1,
-          '...',
-          total,
-        );
-      }
+      pages.push(
+        1, '...',
+        this.currentPage - 1,
+        this.currentPage,
+        this.currentPage + 1,
+        '...', total,
+      );
     }
     return pages;
   }
 
-  // Tri par colonne
-  sort(col: string) {
+  sort(col: string): void {
     if (this.sortColumn === col) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
@@ -220,12 +273,13 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     }
   }
 
-  exportExcel() {
+  // ─── Export ───────────────────────────────────────────────────────────────
+
+  exportExcel(): void {
     if (this.filteredData.length === 0) return;
 
-    // Créer une copie des données et renommer les colonnes pour Excel
     const dataForExcel = this.filteredData.map((d) => ({
-      Date: new Date(d.BeneficiaryCreatedDate).toLocaleString(), // formater la date
+      Date: new Date(d.BeneficiaryCreatedDate).toLocaleString(),
       Nom: d.vcLastName,
       Prénom: d.vcFirstName,
       Email: d.vcEmail,
@@ -235,36 +289,20 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       Statut: d.vcStatus,
     }));
 
-    // Créer une feuille
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataForExcel);
-
-    // Créer le classeur
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Beneficiaires');
-
-    // Générer le fichier Excel
     XLSX.writeFile(wb, 'beneficiaires.xlsx');
   }
 
-  exportPdf() {
+  exportPdf(): void {
     if (this.filteredData.length === 0) return;
 
-    const doc = new jsPDF('l', 'mm', 'a4'); // paysage pour plus de place
-
+    const doc = new jsPDF('l', 'mm', 'a4');
     doc.setFontSize(14);
     doc.text('Liste des bénéficiaires', 14, 15);
 
-    const tableColumn = [
-      'Date',
-      'Nom',
-      'Prénom',
-      'Email',
-      'Type',
-      'Banque',
-      'N° Compte',
-      'Statut',
-    ];
-
+    const tableColumn = ['Date', 'Nom', 'Prénom', 'Email', 'Type', 'Banque', 'N° Compte', 'Statut'];
     const tableRows = this.filteredData.map((d) => [
       new Date(d.BeneficiaryCreatedDate).toLocaleString(),
       d.vcLastName,
@@ -280,68 +318,39 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       head: [tableColumn],
       body: tableRows,
       startY: 25,
-      styles: {
-        fontSize: 8,
-      },
-      headStyles: {
-        fillColor: [40, 167, 69], // vert Bootstrap (optionnel)
-      },
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [40, 167, 69] },
     });
 
     doc.save('beneficiaires.pdf');
   }
 
-  /** Chargement type bénéficiaire */
-  private loadTypeBeneficiaires(): void {
-    this.beneficiaireService.getListeTypeBeneficiaire().subscribe({
-      next: (res) => (this.listeTypeBeneficiaire = res.data),
-      error: (err) => console.error('Erreur type bénéficiaire', err),
-    });
-  }
+  // ─── Navigation ───────────────────────────────────────────────────────────
 
-  onPageClick(page: number | string) {
-    if (typeof page === 'number') this.goToPage(page);
-  }
-
-  // dans le composant
-  modifierBeneficiaire(id: string | number) {
-    console.log('ID reçu :', id);
-
-    if (!id) {
-      console.error('ID manquant, navigation annulée');
-      return;
-    }
-
+  modifierBeneficiaire(id: string | number): void {
+    if (!id) return;
     const numericId = Number(id);
-    if (isNaN(numericId)) {
-      console.error('ID invalide, navigation annulée');
-      return;
-    }
-
-    this.router
-      .navigate(['/beneficiaires/modifier', numericId])
-      .then((success) => console.log('Navigation réussie :', success))
-      .catch((err) => console.error('Erreur navigation :', err));
+    if (isNaN(numericId)) return;
+    this.router.navigate(['/beneficiaires/modifier', numericId]);
   }
 
-  transfererBeneficiaire(benefice: any): void {
-    console.log('Transférer :', benefice);
-    // ouvrir modal de transfert ou déclencher l'action
+  // ─── Modal ────────────────────────────────────────────────────────────────
+
+  openAjoutModalBeneficiaire(): void {
+    this.showAjoutBeneficiaireModal = true;
   }
 
-  ngAfterViewInit() {
-    if (this.datepickerInput) {
-      this.calendarInstance = flatpickr(this.datepickerInput.nativeElement, {
-        locale: French,
-      });
-    }
+  closeModalBeneficiaire(): void {
+    this.showAjoutBeneficiaireModal = false;
+    this.resetFormulaire();
   }
 
-  openCalendar() {
+  openCalendar(): void {
     this.calendarInstance?.open();
   }
 
-  /** Initialisation du formulaire */
+  // ─── Formulaire ───────────────────────────────────────────────────────────
+
   private initForm(): void {
     this.formBeneficiaire = this.fb.group({
       nom: ['', Validators.required],
@@ -375,18 +384,34 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     });
   }
 
+  get f() {
+    return this.formBeneficiaire.controls;
+  }
+
+  private resetFormulaire(): void {
+    this.submitted = false;
+    this.selectedTypePaiementId = null;
+    this.formBeneficiaire.reset();
+    this.clearPaymentValidators();
+    Object.keys(this.f).forEach((key) => {
+      this.f[key].setErrors(null);
+      this.f[key].markAsPristine();
+      this.f[key].markAsUntouched();
+    });
+  }
+
+  onPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, '');
+    this.formBeneficiaire.get('telephone')?.setValue(input.value, { emitEvent: false });
+  }
+
   onBanqueChange(event: Event): void {
     const selectedValue = (event.target as HTMLSelectElement).value;
-
     const banqueSelectionnee = this.listeBanques.find(
       (banque: any) => banque.vcName === selectedValue,
     );
-
     if (banqueSelectionnee) {
-      console.log('Nom banque:', banqueSelectionnee.vcName);
-      console.log('BIC:', banqueSelectionnee.vcBIC);
-
-      // Exemple : remplir automatiquement le champ bicCode
       this.formBeneficiaire.patchValue({
         bicCode: banqueSelectionnee.vcBIC,
         bicCodeInternational: banqueSelectionnee.vcBIC,
@@ -397,32 +422,25 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
   onTypePaiementChange(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
     this.selectedTypePaiementId = value;
-
     this.clearPaymentValidators();
 
     if (value === '1') {
       this.f['vcNumeroCompteOtp'].setValidators([Validators.required]);
-
       this.f['vcNomCompteOtp'].setValidators([Validators.required]);
     }
-
     if (value === '2') {
       this.f['banqueBeneficiaire'].setValidators([Validators.required]);
       this.f['numeroCompte'].setValidators([Validators.required]);
       this.f['vcNomCompte'].setValidators([Validators.required]);
     }
-
+    if (value === '3') {
+      this.f['numeroMobile'].setValidators([Validators.required]);
+      this.f['vcNomCompteMobile'].setValidators([Validators.required]);
+    }
     if (value === '4') {
       this.f['banqueBeneficiaireInternational'].setValidators([Validators.required]);
       this.f['numeroCompteInternational'].setValidators([Validators.required]);
       this.f['vcNomCompteInternational'].setValidators([Validators.required]);
-    }
-
-    if (value === '3') {
-      this.f['numeroMobile'].setValidators([
-        Validators.required,
-      ]);
-      this.f['vcNomCompteMobile'].setValidators([Validators.required]);
     }
 
     Object.keys(this.f).forEach((key) =>
@@ -447,158 +465,63 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
     });
   }
 
-  get f() {
-    return this.formBeneficiaire.controls;
-  }
-
-  onPhoneInput(event: Event): void {
+  onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    // Supprime tout ce qui n'est pas chiffre
-    input.value = input.value.replace(/[^0-9]/g, '');
-    // Met à jour le formControl
-    this.formBeneficiaire
-      .get('telephone')
-      ?.setValue(input.value, { emitEvent: false });
+    if (input.files?.length) {
+      this.selectedFile = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => (this.photoPreview = reader.result);
+      reader.readAsDataURL(this.selectedFile);
+    }
   }
 
-  showAjoutBeneficiaireModal: boolean = false;
-
-  openAjoutModalBeneficiaire() {
-    this.showAjoutBeneficiaireModal = true;
-  }
-
-  closeModalBeneficiaire() {
-    this.showAjoutBeneficiaireModal = false;
-    this.resetFormulaire();
-  }
-
-  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-
-  isLoading: boolean = false;
-
-  private resetFormulaire(): void {
-    this.submitted = false;
-    this.selectedTypePaiementId = null;
-
-    // Reset complet du formulaire
-    this.formBeneficiaire.reset();
-
-    // On retire aussi les validators de paiement
-    this.clearPaymentValidators();
-
-    // Remet à zéro tous les champs
-    Object.keys(this.f).forEach((key) => {
-      this.f[key].setErrors(null);
-      this.f[key].markAsPristine();
-      this.f[key].markAsUntouched();
-    });
-  }
+  // ─── Soumission ───────────────────────────────────────────────────────────
 
   submit(): void {
     this.isLoading = true;
     this.submitted = true;
 
-    // ─── 1. Validation des champs de base obligatoires ───────────────────────
+    // 1. Champs de base
     const champsBase = [
       'nom', 'prenom', 'telephone', 'email', 'date',
       'ville', 'pays', 'adresse', 'vcTypePaiement',
       'typeBeneficiaire', 'vcCurrency',
     ];
-
-    const champsBaseInvalides = champsBase.some((key) => this.f[key]?.invalid);
-
-    if (champsBaseInvalides) {
-      // this.toastr.error('⚠️ Veuillez remplir tous les champs personnels obligatoires', '', {
-      //   positionClass: 'toast-custom-center',
-      // });
+    if (champsBase.some((key) => this.f[key]?.invalid)) {
       this.formBeneficiaire.markAllAsTouched();
       this.isLoading = false;
       return;
     }
 
-    // ─── 2. Un type de paiement doit être sélectionné ────────────────────────
+    // 2. Type de paiement
     if (!this.selectedTypePaiementId) {
-       this.notification.error('⚠️ Veuillez sélectionner un type de paiement');
-      // this.toastr.error('⚠️ Veuillez sélectionner un type de paiement', '', {
-      //   positionClass: 'toast-custom-center',
-      // });
+      this.notification.error('⚠️ Veuillez sélectionner un type de paiement');
       this.isLoading = false;
       return;
     }
 
-    // ─── 3. Validation des champs selon le type de paiement ──────────────────
-
-    // Type 1 : OTP (BCI)
-    if (this.selectedTypePaiementId === '1') {
-      const champsOtp = ['vcNumeroCompteOtp', 'vcNomCompteOtp'];
-      const invalide = champsOtp.some((key) => !this.f[key]?.value?.toString().trim());
-      if (invalide) {
-        // this.toastr.error('⚠️ Veuillez renseigner le numéro et le nom du compte OTP', '', {
-        //   positionClass: 'toast-custom-center',
-        // });
-        this.formBeneficiaire.markAllAsTouched();
-        this.isLoading = false;
-        return;
-      }
+    // 3. Champs selon le type
+    const validationMap: Record<string, string[]> = {
+      '1': ['vcNumeroCompteOtp', 'vcNomCompteOtp'],
+      '2': ['banqueBeneficiaire', 'numeroCompte', 'vcNomCompte'],
+      '3': ['numeroMobile', 'vcNomCompteMobile'],
+      '4': ['banqueBeneficiaireInternational', 'numeroCompteInternational', 'vcNomCompteInternational'],
+    };
+    const champs = validationMap[this.selectedTypePaiementId] ?? [];
+    if (champs.some((key) => !this.f[key]?.value?.toString().trim())) {
+      this.formBeneficiaire.markAllAsTouched();
+      this.isLoading = false;
+      return;
     }
 
-    // Type 2 : Banque locale
-    if (this.selectedTypePaiementId === '2') {
-      const champsBanque = ['banqueBeneficiaire', 'numeroCompte', 'vcNomCompte'];
-      const invalide = champsBanque.some((key) => !this.f[key]?.value?.toString().trim());
-      if (invalide) {
-        // this.toastr.error('⚠️ Veuillez renseigner la banque, le numéro et le nom du compte', '', {
-        //   positionClass: 'toast-custom-center',
-        // });
-        this.formBeneficiaire.markAllAsTouched();
-        this.isLoading = false;
-        return;
-      }
-    }
-
-    // Type 3 : Mobile Money
-    if (this.selectedTypePaiementId === '3') {
-      const champsMobile = ['numeroMobile', 'vcNomCompteMobile'];
-      const invalide = champsMobile.some((key) => !this.f[key]?.value?.toString().trim());
-      if (invalide) {
-        // this.toastr.error('⚠️ Veuillez renseigner le numéro mobile et sélectionner l\'opérateur', '', {
-        //   positionClass: 'toast-custom-center',
-        // });
-        this.formBeneficiaire.markAllAsTouched();
-        this.isLoading = false;
-        return;
-      }
-    }
-
-    // Type 4 : Banque internationale
-    if (this.selectedTypePaiementId === '4') {
-      const champsInternational = [
-        'banqueBeneficiaireInternational',
-        'numeroCompteInternational',
-        'vcNomCompteInternational',
-      ];
-      const invalide = champsInternational.some((key) => !this.f[key]?.value?.toString().trim());
-      if (invalide) {
-        // this.toastr.error('⚠️ Veuillez renseigner la banque, le numéro et le nom du compte international', '', {
-        //   positionClass: 'toast-custom-center',
-        // });
-        this.formBeneficiaire.markAllAsTouched();
-        this.isLoading = false;
-        return;
-      }
-    }
-
-    // ─── 4. Photo obligatoire ─────────────────────────────────────────────────
+    // 4. Photo
     if (!this.selectedFile) {
       this.notification.error('📷 Aucune photo sélectionnée');
-      // this.toastr.error('📷 Aucune photo sélectionnée', '', {
-      //   positionClass: 'toast-custom-center',
-      // });
       this.isLoading = false;
       return;
     }
 
-    // ─── 5. Construction du FormData ─────────────────────────────────────────
+    // 5. Construction FormData
     const formValue = this.formBeneficiaire.value;
     const formData = new FormData();
 
@@ -616,25 +539,21 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       formData.append('iBeneficiaryTypeID', String(formValue.typeBeneficiaire));
       formData.append('vcCurrency', String(formValue.vcCurrency));
 
-      // Type de paiement
       if (this.selectedTypePaiementId === '1') {
         formData.append('vcNomCompte', formValue.vcNomCompteOtp);
         formData.append('vcAccountNumber', formValue.vcNumeroCompteOtp);
         formData.append('vcBanque', 'BCI');
         formData.append('bicCode', 'COLIGNGNXXX');
       } else if (this.selectedTypePaiementId === '2') {
-        console.log('🏦 Paiement Type 2 (Banque)');
         formData.append('vcBanque', String(formValue.banqueBeneficiaire));
         formData.append('vcAccountNumber', formValue.numeroCompte);
         formData.append('vcNomCompte', formValue.vcNomCompte);
         formData.append('bicCode', formValue.bicCode);
       } else if (this.selectedTypePaiementId === '3') {
-        console.log('📱 Paiement Type 3 (Mobile)');
         formData.append('vcAccountNumber', formValue.numeroMobile);
         formData.append('vcNomCompte', formValue.vcNomCompteMobile);
         formData.append('vcBanque', formValue.vcNomCompteMobile);
       } else if (this.selectedTypePaiementId === '4') {
-        console.log('🌍 Paiement Type 4 (International)');
         formData.append('vcBanque', String(formValue.banqueBeneficiaireInternational));
         formData.append('vcAccountNumber', formValue.numeroCompteInternational);
         formData.append('vcNomCompte', formValue.vcNomCompteInternational);
@@ -642,101 +561,43 @@ export class ListeDesBeneficiaireComponent implements AfterViewInit, OnInit {
       }
 
       formData.append('vcPhoto', this.selectedFile, this.selectedFile.name);
-
-      formData.forEach((value, key) => console.log(key, value));
     } catch (e) {
       this.isLoading = false;
       console.error('Erreur lors de la préparation des données', e);
       return;
     }
 
-    // ─── 6. Appel API ─────────────────────────────────────────────────────────
+    // 6. Appel API
     this.beneficiaireService.ajouterBeneficiaire(formData).subscribe({
       next: (res: any) => {
         this.isLoading = false;
         if (res.status === 200) {
-           this.notification.success(res.message);
-          // this.toastr.success(res.message, '', {
-          //   positionClass: 'toast-custom-center',
-          // });
+          this.notification.success(res.message);
           this.resetFormulaire();
-
           this.selectedFile = null;
           this.photoPreview = null;
-
-          if (this.fileInput) {
-            this.fileInput.nativeElement.value = '';
-          }
-
+          if (this.fileInput) this.fileInput.nativeElement.value = '';
           this.getListeBeneficiaire();
           this.showAjoutBeneficiaireModal = false;
         } else {
           this.notification.error(res.message);
-          // this.toastr.error(res.message, '', {
-          //   positionClass: 'toast-custom-center',
-          // });
         }
       },
-
       error: (err) => {
         this.isLoading = false;
-        console.error('Erreur ❌ API', err);
+        console.error('Erreur API', err);
       },
     });
   }
 
-  /** Récupération infos utilisateur */
-  private getUserInfo(): void {
-    const user = localStorage.getItem('userInfo');
-    if (user) {
-      this.userInfo = JSON.parse(user);
-      this.idOrganisation = this.userInfo.iOrganisationID;
-      console.log('this.idOrganisation: ', this.idOrganisation);
-    }
+  // ─── Skeleton helpers ─────────────────────────────────────────────────────
+
+  getSkeletonCols(n: number): number[] {
+    return Array.from({ length: n }, (_, i) => i);
   }
 
-  private listeDesBanques(): void {
-    this.beneficiaireNodeService.getListeBanque().subscribe({
-      next: (res) => {
-        console.log('Réponse API liste des banques :', res);
-        console.log('Données result :', res.data);
-
-        this.listeBanques = res.data;
-        console.log('listeBanques après affectation :', this.listeBanques);
-      },
-      error: (err) => {
-        console.error('Erreur de la récupération des banques :', err);
-      },
-      complete: () => {
-        console.log('Récupération de la liste des banques terminée');
-      },
-    });
-  }
-
-  /** Chargement type paiement */
-  private loadTypePaiements(): void {
-    this.beneficiaireService.getListeTypePaiement().subscribe({
-      next: (res) => (this.listeTypePaiement = res.data),
-      error: (err) => console.error('Erreur type paiement', err),
-    });
-  }
-
-  private listPays(): void {
-    this.beneficiaireService.getCurrency().subscribe({
-      next: (res) => (this.listePays = res.data),
-      error: (err) =>
-        console.error('Erreur lors de la recupration du curent', err),
-    });
-  }
-
-  /** Gestion fichier */
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files?.length) {
-      this.selectedFile = input.files[0];
-      const reader = new FileReader();
-      reader.onload = () => (this.photoPreview = reader.result);
-      reader.readAsDataURL(this.selectedFile);
-    }
+  private widths = ['45%', '60%', '70%', '55%', '75%', '50%', '65%', '40%'];
+  getRandomWidth(): string {
+    return this.widths[Math.floor(Math.random() * this.widths.length)];
   }
 }

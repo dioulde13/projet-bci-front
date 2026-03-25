@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class CurrencyRateService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private baseUrl = environment.apiUrlNode;
 
@@ -19,7 +19,8 @@ export class CurrencyRateService {
       vcCurrencyFrom: vcCurrencyFrom,
       vcCurrencyTo: vcCurrencyTo,
     };
-    console.log('vcBICCode:', body);
+
+    // console.log('vcBICCode:', body);
     return this.http.post(`${this.baseUrl}/api/currencyRate`, body, {
       withCredentials: true,
     });

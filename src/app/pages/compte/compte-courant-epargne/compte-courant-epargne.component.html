@@ -3,9 +3,7 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
-        <div
-          class="d-sm-flex justify-content-between align-items-center page-title-box mt-4"
-        >
+        <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
           <div>
             <h4 class="mb-sm-0 font-size-18 fw-bolder">
               Compte Courant - Epargne
@@ -168,17 +166,11 @@
               </div>
               <div class="card-body align-content-center">
                 <a class="link-light custom-icon-container">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="1em"
-                    height="1em"
-                    fill="currentColor"
-                    class="custom-icon-size-grids"
-                  >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1em" height="1em"
+                    fill="currentColor" class="custom-icon-size-grids">
                     <path
-                      d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H80c-8.8 0-16-7.2-16-16s7.2-16 16-16H448c17.7 0 32-14.3 32-32s-14.3-32-32-32H64zM416 272a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
-                    ></path>
+                      d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H80c-8.8 0-16-7.2-16-16s7.2-16 16-16H448c17.7 0 32-14.3 32-32s-14.3-32-32-32H64zM416 272a32 32 0 1 1 0 64 32 32 0 1 1 0-64z">
+                    </path>
                   </svg>
 
                   <!-- Skeleton solde -->
@@ -242,12 +234,8 @@
                       <div class="col-md">
                         <div class="mb-3">
                           <label class="form-label" for="amount">Montant</label>
-                          <input
-                            class="form-control"
-                            type="number"
-                            id="amount"
-                            placeholder="Entrez le montant"
-                          />
+                          <input class="form-control" type="text" id="amount" name="amount" [(ngModel)]="amount"
+                            gnfNumberFormat placeholder="Entrez le montant" />
                         </div>
                       </div>
                     </div>
@@ -256,13 +244,8 @@
                       <div class="col-md-6">
                         <div class="mb-3">
                           <label class="form-label" for="fromCurrency">De</label>
-                          <select
-                            data-bs-toggle="tooltip"
-                            data-bss-tooltip=""
-                            id="fromCurrency"
-                            class="form-select"
-                          >
-                            <option value="USD" selected="">USD</option>
+                          <select id="fromCurrency" name="fromCurrency" [(ngModel)]="fromCurrency" class="form-select">
+                            <option value="USD">USD</option>
                             <option value="EUR">EUR</option>
                             <option value="GNF">GNF</option>
                           </select>
@@ -271,31 +254,27 @@
                       <div class="col-md-6">
                         <div class="mb-3">
                           <label class="form-label" for="toCurrency">Converti en</label>
-                          <select
-                            data-bs-toggle="tooltip"
-                            data-bss-tooltip=""
-                            id="toCurrency"
-                            class="form-select"
-                          >
+                          <select id="toCurrency" name="toCurrency" [(ngModel)]="toCurrency" class="form-select">
                             <option value="USD">USD</option>
                             <option value="EUR">EUR</option>
-                            <option value="GNF" selected="">GNF</option>
+                            <option value="GNF">GNF</option>
                           </select>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <button
-                    class="btn btn-primary"
-                    type="button"
-                    onclick="convertCurrency()"
-                  >
+                  <button class="btn btn-primary" type="button" (click)="convertCurrency()"
+                    [disabled]="loadingCalculation">
+                    <span *ngIf="loadingCalculation" class="spinner-border spinner-border-sm me-2" role="status"
+                      aria-hidden="true"></span>
                     Calculer le taux
                   </button>
                 </form>
               </div>
               <div class="card-footer bg-transparent border-top border-white">
-                <h6 id="conversionResult" class="text-muted">Taux de change :</h6>
+                <h6 id="conversionResult" class="text-muted">
+                  {{ conversionResult }}
+                </h6>
               </div>
             </div>
           </div>
@@ -312,15 +291,9 @@
                   </h5>
                   <div class="ms-auto"></div>
                   <div class="flex-shrink-0 float-end">
-                    <select
-                      class="form-select-sm form-select mb-0 w-100"
-                      [(ngModel)]="selectedAccountNumber"
-                      (change)="onDebitAccountSelect($event)"
-                    >
-                      <option
-                        *ngFor="let c of listeCompteClient"
-                        [value]="c.vcAccountNumber"
-                      >
+                    <select class="form-select-sm form-select mb-0 w-100" [(ngModel)]="selectedAccountNumber"
+                      (change)="onDebitAccountSelect($event)">
+                      <option *ngFor="let c of listeCompteClient" [value]="c.vcAccountNumber">
                         {{ c.vcAccountNumber }}
                       </option>
                     </select>
@@ -382,10 +355,7 @@
                     </nav>
                   </div>
                   <div class="col-lg-3 text-end align-self-center">
-                    <a
-                      class="btn btn-link btn-sm text-center font-size-14"
-                      role="button"
-                    >
+                    <a class="btn btn-link btn-sm text-center font-size-14" role="button">
                       <span class="d-xxl-flex justify-content-xxl-center align-items-xxl-center">
                         Télécharger
                       </span>

@@ -337,30 +337,39 @@
                 class="icon ion-ios-speedometer active"></i><span data-key="t-dashboard">Tableau de Bord</span></a>
           </li>
 
-          <li class="nav-item mm-active">
+          <!-- <li class="nav-item mm-active">
             <a class="nav-link" routerLink="/beneficiaireEnAttente" aria-expanded="false">
               <i class="icon ion-ios-time active"></i>
               <span data-key="t-dashboard">Bénéficiaire en attente</span>
             </a>
-          </li>
+          </li> -->
 
-          <li class="nav-item" [class.mm-active]="isSubMenuOpen('comptes')">
+          <li class="nav-item" [class.mm-active]="isSubMenuOpen('comptes')" *ngIf="userRoleId !== '11'">
             <a class="nav-link has-arrow" href="javascript:void(0);" (click)="toggleSubMenu('comptes', $event)"><i
                 class="icon ion-ios-albums"></i><span>Comptes</span></a>
             <ul class="sub-menu mm-collapse" [class.mm-show]="isSubMenuOpen('comptes')" aria-expanded="false">
-              <li [class.mm-active]="isSubMenuOpen('comptes-ce')">
-                <a class="text-truncate align-self-center has-arrow" routerLink="/compteCourantEpargne"
+              <li>
+                <a routerLink="/compteCourantEpargne"><span>Vue d'ensemble</span></a>
+              </li>
+              <li>
+                <a (click)="notificationEnCoursDeveloppement()"><span>Relevé bancaire</span></a>
+              </li>
+              <li>
+                <a><span>Demande de chéquier</span></a>
+              </li>
+              <!-- <li [class.mm-active]="isSubMenuOpen('comptes-ce')"> -->
+              <!-- <a class="text-truncate align-self-center has-arrow" routerLink="/compteCourantEpargne"
                   href="javascript:void(0);" (click)="toggleSubMenu('comptes-ce', $event)"><span>Compte Courant -
-                    Ep..</span></a>
-                <ul class="sub-menu mm-collapse" [class.mm-show]="isSubMenuOpen('comptes-ce')" aria-expanded="false">
+                    Ep..</span></a> -->
+              <!-- <ul class="sub-menu mm-collapse" [class.mm-show]="isSubMenuOpen('comptes-ce')" aria-expanded="false">
                   <li>
                     <a routerLink="/compteCourantEpargne"><span>Vue d'ensemble</span></a>
                   </li>
                   <li>
                     <a (click)="notificationEnCoursDeveloppement()"><span>Relevé bancaire</span></a>
                   </li>
-                </ul>
-              </li>
+                </ul> -->
+              <!-- </li> -->
             </ul>
           </li>
           <li class="nav-item" [class.mm-active]="isSubMenuOpen('transactions')">
@@ -373,7 +382,7 @@
                 </a>
               </li>
               <li>
-                <a routerLink="/transactionsInternational">
+                <a routerLink="/transactionsInternational" *ngIf="userRoleId !== '11'">
                   <span data-key="t-chat">Transactions internationales</span>
                 </a>
               </li>
@@ -383,7 +392,7 @@
                 >
               </li> -->
               <li>
-                <a routerLink="/transfertUnique"><span>Transferts multiples</span></a>
+                <a routerLink="/preparationPaie"><span>Transferts multiples</span></a>
               </li>
 
               <!-- <li>
@@ -391,9 +400,9 @@
                   ><span>Paiements de factures</span></a
                 >
               </li> -->
-              <li>
+              <!-- <li>
                 <a routerLink="/listeBeneficiaire"><span>Gérer les Bénéficiaires</span></a>
-              </li>
+              </li> -->
             </ul>
           </li>
           <li class="nav-item" [class.mm-active]="isSubMenuOpen('parametres')">

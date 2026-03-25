@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule, NgClass, NgForOf, NgIf } from '@angular/common';
+import { CommonModule, Location, NgClass, NgForOf, NgIf } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { DataTablesModule } from 'angular-datatables';
@@ -46,6 +46,7 @@ export class BeneficiaireEnAttenteComponent implements OnInit, OnDestroy {
     private beneficiaireEnAttente: BeneficiaireEnAttenteService,
     private router: Router,
     private notification: NotificationService,
+    private location: Location,
   ) {}
 
   ngOnInit() {
@@ -439,6 +440,10 @@ export class BeneficiaireEnAttenteComponent implements OnInit, OnDestroy {
     this.router.navigate(['/beneficiairesEnAttente/detail', idDemande]).catch((err) => {
       console.error('❌ Erreur lors de la navigation :', err);
     });
+  }
+  
+  goBack(): void {
+    this.location.back();
   }
 
   ngOnDestroy(): void {

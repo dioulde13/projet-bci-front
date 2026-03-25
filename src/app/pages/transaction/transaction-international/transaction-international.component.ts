@@ -26,7 +26,10 @@ export class TransactionInternationalComponent implements OnInit {
 
   dateDebut: string = '';
   dateFin: string = '';
+  appliedDateDebut: string = '';
+  appliedDateFin: string = '';
   paymentModeName: string = '';
+  appliedPaymentModeName: string = '';
 
   listeHistoriqueTransactions: any[] = [];
   listePaymentModes: string[] = [];
@@ -61,9 +64,11 @@ export class TransactionInternationalComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    // Pas de filtre de date par défaut — on affiche tout au chargement
-    this.dateDebut = '';
-    this.dateFin = '';
+    const today = new Date().toISOString().split('T')[0];
+    this.dateDebut = today;
+    this.dateFin = today;
+    this.appliedDateDebut = today;
+    this.appliedDateFin = today;
 
     const userJson = localStorage.getItem('userInfo');
     if (userJson) {
@@ -100,6 +105,13 @@ export class TransactionInternationalComponent implements OnInit {
       });
   }
 
+  applyFilter(): void {
+    this.appliedDateDebut = this.dateDebut;
+    this.appliedDateFin = this.dateFin;
+    this.appliedPaymentModeName = this.paymentModeName;
+    this.currentPage = 1;
+  }
+
   // ========================
   // FILTRAGE + TRI
   // ========================
@@ -107,22 +119,22 @@ export class TransactionInternationalComponent implements OnInit {
     let data = [...this.listeHistoriqueTransactions];
 
     // Comparaison sur la partie date uniquement (YYYY-MM-DD)
-    if (this.dateDebut) {
+    if (this.appliedDateDebut) {
       data = data.filter((d) => {
         const dateCreated = d.dtCreated?.substring(0, 10) ?? '';
-        return dateCreated >= this.dateDebut;
+        return dateCreated >= this.appliedDateDebut;
       });
     }
 
-    if (this.dateFin) {
+    if (this.appliedDateFin) {
       data = data.filter((d) => {
         const dateCreated = d.dtCreated?.substring(0, 10) ?? '';
-        return dateCreated <= this.dateFin;
+        return dateCreated <= this.appliedDateFin;
       });
     }
 
-    if (this.paymentModeName) {
-      data = data.filter((d) => d.PaymentModeName === this.paymentModeName);
+    if (this.appliedPaymentModeName) {
+      data = data.filter((d) => d.PaymentModeName === this.appliedPaymentModeName);
     }
 
     if (this.searchText) {
