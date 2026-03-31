@@ -19,7 +19,7 @@ import { GenericFileImportComponent } from '../../../generic-file-import/generic
 import { SaveFichierCSVService } from '../../../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
 import { NotificationService } from '../../../../services/notification/notification.service';
 
-import { TransfertMultipleSideMenuComponent } from '../components/side-menu/side-menu.component';
+import { TransfertMultipleSideMenuComponent } from '../side-menu/side-menu.component';
 
 @Component({
   selector: 'app-preparation-paie',
@@ -80,7 +80,7 @@ export class PreparationPaieComponent implements OnInit, AfterViewInit {
     private balanceService: BalanceService,
     private saveFichierCSVService: SaveFichierCSVService,
     private notification: NotificationService,
-  ) {}
+  ) { }
 
   iOrganisationID!: number;
   infosUser: any;
@@ -313,6 +313,7 @@ export class PreparationPaieComponent implements OnInit, AfterViewInit {
     { key: 'nom', label: 'Nom', required: true },
     { key: 'typeBeneficiaire', label: 'Type de bénéficiaire', required: true },
     { key: 'numeroCompte', label: 'Numéro de compte', required: true },
+    { key: 'cleRib', label: 'Clé RIB', required: true },
     { key: 'bic', label: 'BIC', required: true },
     { key: 'montant', label: 'Montant', required: true, type: 'number' },
     { key: 'devise', label: 'Devise', required: true },

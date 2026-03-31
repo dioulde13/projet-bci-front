@@ -17,7 +17,7 @@ import { NotificationService } from '../../../../services/notification/notificat
 import { TransfertMultipleService } from '../../../../services/transfertMultipleService/transfert-multiple.service';
 import { TransfertMultipleServiceNode } from '../../../../servicesNodes/transfertMultipleServices/transfert-multiple.service';
 import { GetAccountNameService } from '../../../../servicesNodes/verifierNomDebiteur/get-account-name.service';
-import { TransfertMultipleSideMenuComponent } from '../components/side-menu/side-menu.component';
+import { TransfertMultipleSideMenuComponent } from '../side-menu/side-menu.component';
 
 @Component({
   selector: 'app-calcul-paie',
@@ -93,7 +93,7 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
     private notification: NotificationService,
     private transfertMultipleServiceNode: TransfertMultipleServiceNode,
     private getAccount: GetAccountNameService,
-  ) {}
+  ) { }
 
   iOrganisationID!: number;
   infosUser: any;

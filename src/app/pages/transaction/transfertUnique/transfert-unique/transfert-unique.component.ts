@@ -632,12 +632,12 @@ export class TransfertUniqueComponent implements OnInit {
 
     const formValue = this.transfertEntreCompteForm.value;
 
-    if (this.infosCompte1?.soldeDisp < Number(formValue.montant)) {
-      this.notification.error(
-        'Le montant saisi dépasse le solde disponible du Compte 1.',
-      );
-      return;
-    }
+    // if (this.infosCompte1?.soldeDisp < Number(formValue.montant)) {
+    //   this.notification.error(
+    //     'Le montant saisi dépasse le solde disponible du Compte 1.',
+    //   );
+    //   return;
+    // }
 
     if (formValue.compte1 === formValue.compte2) {
       this.notification.error(

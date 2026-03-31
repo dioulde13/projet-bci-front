@@ -19,7 +19,7 @@
                     <div class="row">
                         <!-- Sidebar: Navigation -->
                         <div class="col-lg-3">
-                            <app-transfert-multiple-side-menu currentPage="execution" (tabChange)="handleTabChange($event)"></app-transfert-multiple-side-menu>
+                            <app-transfert-multiple-side-menu currentPage="execution" [activeTabId]="activeTabId" (tabChange)="handleTabChange($event)"></app-transfert-multiple-side-menu>
                         </div>
 
                         <!-- Main Content Area -->

@@ -344,7 +344,8 @@
             </a>
           </li> -->
 
-          <li class="nav-item" [class.mm-active]="isSubMenuOpen('comptes')" *ngIf="userRoleId !== '11'">
+          <li class="nav-item" [class.mm-active]="isSubMenuOpen('comptes')"
+            *ngIf="userRoleId !== '11' && this.userRoleId !== '12'">
             <a class="nav-link has-arrow" href="javascript:void(0);" (click)="toggleSubMenu('comptes', $event)"><i
                 class="icon ion-ios-albums"></i><span>Comptes</span></a>
             <ul class="sub-menu mm-collapse" [class.mm-show]="isSubMenuOpen('comptes')" aria-expanded="false">
@@ -354,9 +355,9 @@
               <li>
                 <a (click)="notificationEnCoursDeveloppement()"><span>Relevé bancaire</span></a>
               </li>
-              <li>
+              <!-- <li>
                 <a><span>Demande de chéquier</span></a>
-              </li>
+              </li> -->
               <!-- <li [class.mm-active]="isSubMenuOpen('comptes-ce')"> -->
               <!-- <a class="text-truncate align-self-center has-arrow" routerLink="/compteCourantEpargne"
                   href="javascript:void(0);" (click)="toggleSubMenu('comptes-ce', $event)"><span>Compte Courant -
@@ -382,7 +383,8 @@
                 </a>
               </li>
               <li>
-                <a routerLink="/transactionsInternational" *ngIf="userRoleId !== '11'">
+                <a routerLink="/transactionsInternational"
+                  *ngIf="userRoleId !== '11' && this.userRoleId !== '12' && userRoleId !== '14' && userRoleId !== '13'">
                   <span data-key="t-chat">Transactions internationales</span>
                 </a>
               </li>

@@ -23,15 +23,16 @@
           <div class="card-body text-light">
             <div class="row">
               <div class="col-12 text-center">
-                <p class="mb-1" *ngIf="userRoleId !== '11'">Valeur nette</p>
+                <p class="mb-1" *ngIf="userRoleId !== '11' && this.userRoleId !== '12'">Valeur nette</p>
                 <ng-container *ngIf="isDashboardLoading; else balanceContent">
                   <div class="skeleton skeleton-title mb-3"></div>
                   <div class="skeleton skeleton-small"></div>
                 </ng-container>
                 <ng-template #balanceContent>
-                  <h4 class="text-light mb-4 fs-4" *ngIf="userRoleId !== '11'">
-                    {{userRoleId !== '11'?(soldeDebiteur | number: "1.2-2"):"***********" }} {{userRoleId !== '11'?
-                    deviseDebiteur:"*********" }}
+                  <h4 class="text-light mb-4 fs-4" *ngIf="userRoleId !== '11' && this.userRoleId !== '12'">
+                    {{ (userRoleId !== '11' && this.userRoleId !== '12') ? (soldeDebiteur | number: "1.2-2") :
+                    "***********" }}
+                    {{ (userRoleId !== '11' && this.userRoleId !== '12') ? deviseDebiteur : "*********" }}
                   </h4>
                   <p>
                     <small class="text-white" style="font-size: 15px">
@@ -60,9 +61,10 @@
 
           <div class="card-body finance-chart-container">
             <div class="row text-center justify-content-center">
+
               <!-- SKELETON -->
               <ng-container *ngIf="isDashboardLoading; else realContent">
-                <div class="col-6 col-md-4 mb-4" *ngFor="let item of [1, 2, 3, 4, 5, 6, 7]">
+                <div [class]="linksColClass + ' mb-4'" *ngFor="let item of [1, 2, 3, 4, 5, 6, 7]">
                   <div class="custom-icon-container">
                     <div class="skeleton skeleton-icon mb-3"></div>
                     <div class="skeleton skeleton-text"></div>
@@ -72,22 +74,25 @@
 
               <!-- CONTENU NORMAL -->
               <ng-template #realContent>
-                <div class="col-6 col-md-4 mb-4">
+
+                <!-- Transferts multiples — toujours visible -->
+                <div [class]="linksColClass + ' mb-4'">
                   <a routerLink="/preparationPaie" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-social-buffer custom-icon-size"></i>
                     <p class="custom-icon-text">Transferts multiples</p>
                   </a>
                 </div>
 
-                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '15'">
-                  <!-- Composant d'import de fichier -->
+                <!-- Chargement de fichier — masqué pour rôle 15 -->
+                <div [class]="linksColClass + ' mb-4'" *ngIf="userRoleId !== '15'">
                   <bci-generic-file-import [isOpenModal]="openModal" [fields]="fields" title="Importation des fichiers"
                     instructions="Veuillez charger le fichier des virements du mois en cours."
-                    previewTitle="Récapitulatif des virements" [validateButtonText]="
-                      loadingValidation ? 'Validation en cours...' : 'Valider'
-                    " [enableApiValidation]="true" [compteFieldKey]="'numeroCompte'" [bicFieldKey]="'bic'"
+                    previewTitle="Récapitulatif des virements"
+                    [validateButtonText]="loadingValidation ? 'Validation en cours...' : 'Valider'"
+                    [enableApiValidation]="true" [compteFieldKey]="'numeroCompte'" [bicFieldKey]="'bic'"
                     [deviseFieldKey]="'devise'" (importDataCompleted)="onImportDataCompleted($event)"
-                    (modalClosed)="openModal = false"></bci-generic-file-import>
+                    (modalClosed)="openModal = false">
+                  </bci-generic-file-import>
 
                   <a (click)="openModal = true" class="custom-icon-container">
                     <i class="icon ion-upload custom-icon-size"></i>
@@ -95,35 +100,43 @@
                   </a>
                 </div>
 
-                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '11'">
+                <!-- Transfert unique — masqué pour rôle 11 -->
+                <div [class]="linksColClass + ' mb-4'" *ngIf="userRoleId !== '11' && this.userRoleId !== '12'">
                   <a routerLink="/transfertUnique" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-ios-people custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert unique</p>
                   </a>
                 </div>
 
-                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '13' && userRoleId !== '11'">
+                <!-- Transfert mobile — masqué pour rôles 13 et 11 -->
+                <div [class]="linksColClass + ' mb-4'"
+                  *ngIf="userRoleId !== '13' && userRoleId !== '14' && userRoleId !== '11' && this.userRoleId !== '12'">
                   <a routerLink="/typePaiement" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-ios-paper custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert mobile</p>
                   </a>
                 </div>
 
-                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '11'">
+                <!-- Paiements de factures — masqué pour rôles 13 et 11 -->
+                <div [class]="linksColClass + ' mb-4'"
+                  *ngIf="userRoleId !== '13' && userRoleId !== '14' && userRoleId !== '11' && this.userRoleId !== '12'">
                   <a routerLink="/paiementFacture" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-ios-paper custom-icon-size"></i>
                     <p class="custom-icon-text">Paiements de factures</p>
                   </a>
                 </div>
 
-                <div class="col-6 col-md-4 mb-4">
+                <!-- Gérer les bénéficiaires — toujours visible -->
+                <div [class]="linksColClass + ' mb-4'">
                   <a routerLink="/listeBeneficiaire" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-ios-cog custom-icon-size"></i>
                     <p class="custom-icon-text">Gérer les bénéficiaires</p>
                   </a>
                 </div>
 
-                <div class="col-6 col-md-4 mb-4" *ngIf="userRoleId !== '13' && userRoleId !== '11'">
+                <!-- Transfert international — masqué pour rôles 13 et 11 -->
+                <div [class]="linksColClass + ' mb-4'"
+                  *ngIf="userRoleId !== '13' && userRoleId !== '14' && userRoleId !== '11' && this.userRoleId !== '12'">
                   <a class="custom-icon-container" (click)="openTransferModal()">
                     <i class="bi bi-currency-exchange custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert international</p>
@@ -131,7 +144,9 @@
                 </div>
 
                 <app-ordre-transfert-international [isOpenModal]="isModalOpen" (modalClosed)="closeTransferModal()"
-                  (importDataCompleted)="handleValidation($event)"></app-ordre-transfert-international>
+                  (importDataCompleted)="handleValidation($event)">
+                </app-ordre-transfert-international>
+
               </ng-template>
             </div>
           </div>
@@ -154,6 +169,7 @@
             </div>
             <div class="px-3 pt-1" data-simplebar="" style="max-height: 266px">
               <ul class="list-unstyled activity-wid mb-0">
+
                 <!-- Traité -->
                 <li class="activity-list activity-border">
                   <div class="bg-transparent activity-icon avatar-md">
@@ -252,6 +268,7 @@
                     </div>
                   </div>
                 </li>
+
               </ul>
             </div>
           </div>
@@ -261,6 +278,7 @@
 
     <!-- ===== LIGNE 2 : Récapitulatif + Transactions ===== -->
     <div class="row align-items-stretch">
+
       <!-- Récapitulatif des comptes -->
       <div class="col-xl-4 d-flex flex-column">
         <div class="card h-100 d-flex flex-column">
@@ -275,6 +293,7 @@
 
           <div class="card-body p-0 flex-grow-1 overflow-auto">
             <div class="table-responsive h-100">
+
               <!-- Skeleton -->
               <div *ngIf="loading" class="p-3">
                 <table class="table table-hover table-striped">
@@ -318,32 +337,20 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let compte of listeCompteClient">
-                    <td class="text-start align-content-center">
-                      {{ compte.vcPersonalName }}
-                    </td>
-                    <td class="text-start align-items-center">
-                      {{ compte.vcAccountNumber }}
-                    </td>
-                    <td class="text-start align-content-center">
-                      {{ compte.vcAccountType }}
-                    </td>
+                    <td class="text-start align-content-center">{{ compte.vcPersonalName }}</td>
+                    <td class="text-start align-items-center">{{ compte.vcAccountNumber }}</td>
+                    <td class="text-start align-content-center">{{ compte.vcAccountType }}</td>
                     <td class="text-nowrap align-content-center">
                       {{ compte.mBalance | number }} {{ compte.vcCurrency }}
                     </td>
-                    <td class="text-start align-content-center" [ngClass]="
-                        compte.btBlocked === '0'
-                          ? 'text-success'
-                          : 'text-danger'
-                      ">
-                      {{
-                      compte.btBlocked === "0"
-                      ? "Actif"
-                      : compte.vcBlockedStatus
-                      }}
+                    <td class="text-start align-content-center"
+                      [ngClass]="compte.btBlocked === '0' ? 'text-success' : 'text-danger'">
+                      {{ compte.btBlocked === "0" ? "Actif" : compte.vcBlockedStatus }}
                     </td>
                   </tr>
                 </tbody>
               </table>
+
             </div>
           </div>
         </div>
@@ -426,10 +433,7 @@
                     </tr>
 
                     <!-- Aucun résultat -->
-                    <tr *ngIf="
-                        !loadingDixPremiereTransactions &&
-                        listeDixPremiereTransactions.length === 0
-                      ">
+                    <tr *ngIf="!loadingDixPremiereTransactions && listeDixPremiereTransactions.length === 0">
                       <td colspan="5" class="text-center text-muted">
                         Aucune transaction trouvée
                       </td>
@@ -448,8 +452,10 @@
               </span>
             </a>
           </div>
+
         </div>
       </div>
+
     </div>
   </div>
 </div>

@@ -1,0 +1,139 @@
+/* chequier-form.component.scss */
+
+.page-wrapper {
+    min-height: 50vh;
+    background-color: #eef0f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 36px 40px;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0 0 28px 0;
+    padding-bottom: 0;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #3d5a99;
+    margin-bottom: 6px;
+
+    &.required::after {
+        content: ' *';
+        color: #d9534f;
+    }
+}
+
+/* Select Wrapper */
+.select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.form-control {
+    width: 100%;
+    height: 48px;
+    padding: 0 40px 0 14px;
+    font-size: 14px;
+    color: #aab0bf;
+    background-color: #ffffff;
+    border: 1px solid #d0d4de;
+    border-radius: 6px;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+
+    &:focus {
+        border-color: #3d5a99;
+        box-shadow: 0 0 0 3px rgba(61, 90, 153, 0.12);
+        color: #1a1a2e;
+    }
+
+    &:not([value=""]):valid {
+        color: #1a1a2e;
+    }
+
+    option {
+        color: #1a1a2e;
+    }
+
+    option[value=""][disabled] {
+        color: #aab0bf;
+    }
+}
+
+.select-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #7a8099;
+    display: flex;
+    align-items: center;
+}
+
+/* Buttons */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    justify-content: end;
+}
+
+.btn {
+    height: 44px;
+    padding: 0 28px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+.btn-cancel {
+    background-color: #e2e5ed;
+    color: #4a4f6a;
+
+    &:hover {
+        background-color: #d3d7e3;
+    }
+}
+
+.btn-primary {
+    background-color: #2e3f72;
+    color: #ffffff;
+
+    &:hover {
+        background-color: #253567;
+    }
+}

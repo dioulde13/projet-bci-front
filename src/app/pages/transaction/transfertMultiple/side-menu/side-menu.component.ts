@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../../../../services/authServices/auth.service';
+import { AuthService } from '../../../../services/authServices/auth.service';
 
 @Component({
   selector: 'app-transfert-multiple-side-menu',
@@ -12,6 +12,7 @@ import { AuthService } from '../../../../../services/authServices/auth.service';
 })
 export class TransfertMultipleSideMenuComponent implements OnInit {
   @Input() currentPage: string = '';
+  @Input() activeTabId: string = 'v-pills-recapitulatifDesInformations';
   @Output() tabChange = new EventEmitter<string>();
 
   private authService = inject(AuthService);

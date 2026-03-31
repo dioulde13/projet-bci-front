@@ -25,7 +25,6 @@ import { TransactionService } from '../../servicesNodes/transactionService/trans
 import { FormsModule } from '@angular/forms';
 import { BalanceService } from '../../servicesNodes/balance/balance.service';
 import { BciLoaderService } from '../../servicesNodes/bciLoader/bci-loader.service';
-// import { SaveFichierCSVService } from '../../servicesNodes/saveFichierCSVTransaction/save-fichier-csv.service';
 import { OrdreTransfertInternationalComponent } from '../transfertInternationale/ordre-transfert-international/ordre-transfert-international.component';
 import { BeneficiaireEnAttenteService } from '../../servicesNodes/beneficiaireEnAttente/beneficiaire-en-attente.service';
 import { NotificationService } from '../../services/notification/notification.service';
@@ -113,7 +112,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private listeCompteCLientService: DashboardService,
     private dixTransactionServiceNode: TransactionService,
     private balanceService: BalanceService,
-    // private saveFichierCSVService: SaveFichierCSVService,
     private notification: NotificationService,
     private bciLoaderService: BciLoaderService,
     private router: Router,
@@ -123,9 +121,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   iOrganisationID!: number;
   infosUser: any;
-
   userRoleId: string | number | null = null;
-
 
   ngOnInit(): void {
     const today = new Date();
@@ -174,9 +170,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   getListeCompteClient(): void {
     this.loadingListeCompteClient = true;
     if (!this.iOrganisationID) {
-      console.warn(
-        'Impossible de récupérer la liste : iOrganisationID non défini',
-      );
+      console.warn('Impossible de récupérer la liste : iOrganisationID non défini');
       return;
     }
 
@@ -196,8 +190,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           this.typesCompte = types.join(' - ');
 
           if (this.listeCompteClient.length > 0) {
-            this.selectedAccountNumber =
-              this.listeCompteClient[0].vcAccountNumber;
+            this.selectedAccountNumber = this.listeCompteClient[0].vcAccountNumber;
             this.dixTransactionsRecentsListe();
             this.onDebitAccountChange(this.selectedAccountNumber);
           }
@@ -393,6 +386,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     { key: 'nom', label: 'Nom', required: true },
     { key: 'typeBeneficiaire', label: 'Type de bénéficiaire', required: true },
     { key: 'numeroCompte', label: 'Numéro de compte', required: true },
+    { key: 'cleRib', label: 'Clé RIB', required: true },
     { key: 'bic', label: 'BIC', required: true },
     { key: 'montant', label: 'Montant', required: true, type: 'number' },
     { key: 'devise', label: 'Devise', required: true },
@@ -405,7 +399,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   onImportDataCompleted(event: { data: any[]; file: File | null }): void {
     const importedRows = event?.data ?? [];
 
-    // ✅ Log des noms de colonnes du fichier importé
     if (importedRows.length > 0) {
       const colonnes = Object.keys(importedRows[0]);
       console.log('📋 Noms des colonnes du fichier importé :', colonnes);
@@ -414,12 +407,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       console.warn('⚠️ Aucune ligne dans le fichier importé.');
     }
 
-    // console.log('importedRows: ', importedRows);
-
     const raw = localStorage.getItem('validationResults');
     const validationResults: any[] = raw ? JSON.parse(raw) : [];
 
-    // ✅ Vérifier si au moins une ligne est invalide
     const hasInvalidLines = validationResults.some((r) => r.valid === false);
 
     if (hasInvalidLines) {
@@ -429,7 +419,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       this.notification.error(
         `Impossible de valider : ${invalidCount} ligne(s) invalide(s) détectée(s). Veuillez retirer toutes les lignes invalides avant de continuer.`,
       );
-      return; // ⛔ On stoppe ici, on n'envoie rien
+      return;
     }
 
     if (!importedRows || importedRows.length === 0) {
@@ -442,6 +432,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       nom: row['nom'] ?? '',
       typeBeneficiaire: row['typeBeneficiaire'] ?? '',
       numeroCompte: row['numeroCompte'] ?? '',
+      cleRib: row['cleRib'] ?? '',
       bic: row['bic'] ?? '',
       montant: Number(row['montant']) ?? 0,
       devise: row['devise'] ?? '',
@@ -450,14 +441,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       adresseBanque: row['adresseBanque'] ?? '',
       objetPaiement: row['objetPaiement'] ?? '',
     }));
-
-    // const donneeFichier = localStorage.getItem('donneesDansFichiers');
-    // const tableauFichier: any[] = donneeFichier
-    //   ? JSON.parse(donneeFichier)
-    //   : [];
-
-    // console.log('tableauFichier: ', tableauFichier); 
-    // console.log('fields: ', this.fields); 
 
     console.log('beneficiaires: ', beneficiaires);
 
@@ -474,7 +457,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             );
             this.openModal = false;
             this.router.navigate(['/preparationPaie']);
-            localStorage.removeItem('validationResults'); // ✅ nettoyage
+            localStorage.removeItem('validationResults');
           } else {
             this.notification.error(
               res?.message ?? "Erreur lors de l'importation.",
@@ -489,6 +472,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           );
         },
       });
+  }
+  // ================================
+
+  // ===== GRILLE LIENS RAPIDES =====
+  get visibleLinksCount(): number {
+    let count = 2; // Toujours visibles : "Transferts multiples" + "Gérer les bénéficiaires"
+    if (this.userRoleId !== '15') count++;                                    // Chargement de fichier
+    if (this.userRoleId !== '11') count++;                                    // Transfert unique
+    if (this.userRoleId !== '13' && this.userRoleId !== '11' && this.userRoleId !== '12' && this.userRoleId !== '14') count += 3;    // Mobile + Factures + International
+    return count;
+  }
+
+
+  get linksColClass(): string {
+    return this.visibleLinksCount <= 4 ? 'col-6' : 'col-4';
   }
   // ================================
 

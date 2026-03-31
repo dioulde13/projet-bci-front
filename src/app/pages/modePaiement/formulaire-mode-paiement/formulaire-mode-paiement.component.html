@@ -6,61 +6,34 @@
           <div class="card-body">
 
             <!-- ═══════════════ FORMULAIRE ORANGE MONEY ═══════════════ -->
-            <form
-              *ngIf="typeOperateur?.trim() === 'ORANGE MONEY'"
-              [formGroup]="orangeMoneyForm"
-              (ngSubmit)="submitOrangeMoney()"
-              novalidate
-            >
+            <form *ngIf="typeOperateur?.trim() === 'ORANGE MONEY'" [formGroup]="orangeMoneyForm"
+              (ngSubmit)="submitOrangeMoney()" novalidate>
               <h4 class="fw-bold mb-3">Paiement Orange Money</h4>
 
-              <input
-                type="text"
-                class="form-control mb-3"
-                formControlName="typePaiement"
-                readonly
-              />
+              <input type="text" class="form-control mb-3" formControlName="typePaiement" readonly />
 
               <!-- Numéro mobile Orange -->
               <div class="mb-3">
                 <label class="form-label fw-bold required">Numéro Orange Money</label>
-                <input
-                  type="text"
-                  class="form-control"
+                <input type="text" class="form-control"
                   [class.is-invalid]="orangeMoneyForm.get('numeroMobile')?.invalid && orangeMoneyForm.get('numeroMobile')?.touched"
-                  formControlName="numeroMobile"
-                  placeholder="Ex: 622000000"
-                />
+                  formControlName="numeroMobile" placeholder="Ex: 622000000" />
                 <div class="invalid-feedback">
                   Numéro invalide. Préfixes autorisés : 622, 621, 623, 611, 612, 613
                 </div>
               </div>
 
-              <input
-                type="text"
-                class="form-control mb-3"
-                formControlName="nomCompte"
-                placeholder="Nom du compte"
-              />
+              <input type="text" class="form-control mb-3" formControlName="nomCompte" placeholder="Nom du compte" />
 
-              <input
-                type="email"
-                class="form-control mb-3"
-                formControlName="emailBeneficiaire"
-                placeholder="Email du bénéficiaire"
-              />
+              <input type="email" class="form-control mb-3" formControlName="emailBeneficiaire"
+                placeholder="Email du bénéficiaire" />
 
               <div class="mb-3 d-flex">
                 <select class="form-select w-25" formControlName="devise">
                   <option value="GNF">GNF</option>
                   <option value="USD">USD</option>
                 </select>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="montant"
-                  placeholder="Montant"
-                />
+                <input type="number" class="form-control" formControlName="montant" placeholder="Montant" />
               </div>
 
               <select class="form-select mb-3" formControlName="compteSource">
@@ -68,23 +41,15 @@
                 <option value="7308057753">7308057753</option>
               </select>
 
-              <input
-                type="text"
-                class="form-control mb-3"
-                formControlName="objetTransfert"
-                placeholder="Objet du paiement"
-              />
+              <input type="text" class="form-control mb-3" formControlName="objetTransfert"
+                placeholder="Objet du paiement" />
 
               <button class="btn btn-primary" type="submit">Payer</button>
             </form>
 
             <!-- ═══════════════ FORMULAIRE MOBILE MONEY ═══════════════ -->
-            <form
-              [formGroup]="mobileMoneyForm"
-              (ngSubmit)="submitMobileMoney()"
-              novalidate
-              class="card shadow-lg border-0 p-4"
-            >
+            <form [formGroup]="mobileMoneyForm" (ngSubmit)="submitMobileMoney()" novalidate
+              class="card shadow-lg border-0 p-4">
               <h4 class="fw-bold mb-4 text-center text-primary">
                 💳 Paiement {{ typeOperateur }}
               </h4>
@@ -96,10 +61,7 @@
                   <label class="form-label fw-bold required">
                     Type de transaction
                   </label>
-                  <select
-                    class="form-select form-select-lg"
-                    formControlName="typeTransactionMM"
-                  >
+                  <select class="form-select form-select-lg" formControlName="typeTransactionMM">
                     <option value="" disabled>-- Choisir --</option>
                     <option value="B2W">Banque → Mobile Money</option>
                     <option value="W2B">Mobile Money → Banque</option>
@@ -109,33 +71,21 @@
                 <!-- COMPTE SOURCE -->
                 <div class="col-md-6 mb-3">
                   <label class="form-label fw-bold required">Compte</label>
-                  <select
-                    class="form-select form-select-lg"
-                    formControlName="compteSource"
-                  >
+                  <select class="form-select form-select-lg" formControlName="compteSource">
                     <option value="" disabled>-- Choisir un compte --</option>
-                    <option
-                      *ngFor="let c of listeCompteClient"
-                      [value]="c.vcAccountNumber"
-                    >
+                    <option *ngFor="let c of listeCompteClient" [value]="c.vcAccountNumber">
                       {{ c.vcAccountNumber }}
                     </option>
                   </select>
 
                   <!-- Solde disponible -->
-                  <div
-                    class="mt-2 p-2 rounded"
-                    *ngIf="mobileMoneyForm.get('typeTransactionMM')?.value === 'B2W'"
-                  >
+                  <div class="mt-2 p-2 rounded" *ngIf="mobileMoneyForm.get('typeTransactionMM')?.value === 'B2W'">
                     <small style="font-size: 15px">
                       Solde disponible :
                       <b class="text-success">
                         <ng-container *ngIf="!loadingGetBalance; else loadingSolde">
-                          <span
-                            *ngIf="soldeDebiteur === null; else soldeDisponible"
-                            class="text-danger"
-                            style="font-size: 12px"
-                          >
+                          <span *ngIf="soldeDebiteur === null; else soldeDisponible" class="text-danger"
+                            style="font-size: 12px">
                             0
                           </span>
                           <ng-template #soldeDisponible>
@@ -174,66 +124,43 @@
                       </ng-template>
                     </span>
 
-                    <input
-                      type="text"
-                      class="form-control"
-                      [class.is-invalid]="
+                    <input type="text" class="form-control" [class.is-invalid]="
                         telephoneError ||
                         (mobileMoneyForm.get('telephone')?.invalid &&
                          mobileMoneyForm.get('telephone')?.touched &&
                          !telephoneSuccess)
-                      "
-                      [class.is-valid]="telephoneSuccess"
-                      formControlName="telephone"
-                      placeholder="Ex: 620000000"
-                      maxlength="9"
-                      (keydown)="onlyDigits($event)"
-                      (paste)="onPaste($event)"
-                      (input)="onInputTelephone($event)"
-                    />
+                      " [class.is-valid]="telephoneSuccess" formControlName="telephone" placeholder="Ex: 620000000"
+                      maxlength="9" (keydown)="onlyDigits($event)" (paste)="onPaste($event)"
+                      (input)="onInputTelephone($event)" />
                   </div>
 
                   <!-- ── Messages d'erreur instantanés ── -->
                   <div class="mt-1">
 
                     <!-- Erreur préfixe (prioritaire) -->
-                    <div
-                      *ngIf="telephoneError"
-                      class="d-flex align-items-start gap-1 text-danger"
-                      style="font-size: 0.82rem;"
-                    >
+                    <div *ngIf="telephoneError" class="d-flex align-items-start gap-1 text-danger"
+                      style="font-size: 0.82rem;">
                       <i class="bi bi-exclamation-triangle-fill mt-1 flex-shrink-0"></i>
                       <span>{{ telephoneError }}</span>
                     </div>
 
                     <!-- Erreurs reactive forms (si pas d'erreur préfixe) -->
-                    <ng-container
-                      *ngIf="!telephoneError && mobileMoneyForm.get('telephone') as ctrl"
-                    >
-                      <div
-                        *ngIf="ctrl.touched && ctrl.errors?.['required']"
-                        class="text-danger"
-                        style="font-size: 0.82rem;"
-                      >
+                    <ng-container *ngIf="!telephoneError && mobileMoneyForm.get('telephone') as ctrl">
+                      <div *ngIf="ctrl.touched && ctrl.errors?.['required']" class="text-danger"
+                        style="font-size: 0.82rem;">
                         <i class="bi bi-exclamation-circle me-1"></i>
                         Le numéro de téléphone est requis.
                       </div>
-                      <div
-                        *ngIf="ctrl.touched && ctrl.errors?.['pattern']"
-                        class="text-danger"
-                        style="font-size: 0.82rem;"
-                      >
+                      <div *ngIf="ctrl.touched && ctrl.errors?.['pattern']" class="text-danger"
+                        style="font-size: 0.82rem;">
                         <i class="bi bi-exclamation-circle me-1"></i>
                         Le numéro doit contenir exactement 9 chiffres.
                       </div>
                     </ng-container>
 
                     <!-- Succès -->
-                    <div
-                      *ngIf="telephoneSuccess"
-                      class="d-flex align-items-center gap-1 text-success"
-                      style="font-size: 0.82rem;"
-                    >
+                    <div *ngIf="telephoneSuccess" class="d-flex align-items-center gap-1 text-success"
+                      style="font-size: 0.82rem;">
                       <i class="bi bi-check-circle-fill"></i>
                       <span>Numéro valide ✓</span>
                     </div>
@@ -258,21 +185,13 @@
                 <div class="col-md-6 mb-3">
                   <label class="form-label fw-bold required">Montant</label>
                   <div class="input-group input-group-lg">
-                    <input
-                      type="text"
-                      class="form-control"
-                      gnfNumberFormat
-                      formControlName="montant"
-                      placeholder="Entrer le montant"
-                    />
+                    <input type="text" class="form-control" gnfNumberFormat formControlName="montant"
+                      placeholder="Entrer le montant" />
                     <span class="input-group-text fw-bold">{{ devise }}</span>
                   </div>
                   <!-- Montant total avec frais -->
-                  <div
-                    *ngIf="montantTotal > 0 && !btFeesIncluded"
-                    class="mt-1 text-primary"
-                    style="font-size: 0.82rem;"
-                  >
+                  <div *ngIf="montantTotal > 0 && !btFeesIncluded" class="mt-1 text-primary"
+                    style="font-size: 0.82rem;">
                     <i class="bi bi-calculator me-1"></i>
                     Total avec frais : <b>{{ montantTotal | number: "1.2-2" }} {{ devise }}</b>
                   </div>
@@ -284,13 +203,11 @@
                 <div class="p-3 border rounded bg-light">
                   <div class="d-flex justify-content-between align-items-center">
                     <span class="fw-bold">Frais de transaction</span>
-                    <span
-                      [ngClass]="
+                    <span [ngClass]="
                         btFeesIncluded
                           ? 'text-success fw-bold'
                           : 'text-primary fw-bold'
-                      "
-                    >
+                      ">
                       {{ fraisLabel }}
                     </span>
                   </div>
@@ -300,20 +217,12 @@
               <!-- DESCRIPTION -->
               <div class="mb-4">
                 <label class="form-label fw-bold required">Description</label>
-                <input
-                  type="text"
-                  class="form-control form-control-lg"
-                  formControlName="description"
-                  placeholder="Motif du paiement"
-                />
-                <div
-                  *ngIf="
+                <input type="text" class="form-control form-control-lg" formControlName="description"
+                  placeholder="Motif du paiement" />
+                <div *ngIf="
                     mobileMoneyForm.get('description')?.invalid &&
                     mobileMoneyForm.get('description')?.touched
-                  "
-                  class="text-danger mt-1"
-                  style="font-size: 0.82rem;"
-                >
+                  " class="text-danger mt-1" style="font-size: 0.82rem;">
                   <i class="bi bi-exclamation-circle me-1"></i>
                   La description est requise.
                 </div>
@@ -321,15 +230,11 @@
 
               <!-- BOUTON SUBMIT -->
               <div class="form-actions">
-                <button
-                  class="btn btn-suivant"
-                  type="submit"
-                  [disabled]="
+                <button class="btn btn-suivant" type="submit" [disabled]="
                     mobileMoneyForm.invalid ||
                     telephoneError ||
                     loadingMobileMoney
-                  "
-                >
+                  ">
                   <span *ngIf="!loadingMobileMoney">Suivant</span>
                   <span *ngIf="loadingMobileMoney">
                     <span class="spinner-border spinner-border-sm me-1"></span>
@@ -348,10 +253,7 @@
         <div class="card bg-light mb-4">
           <div class="card-body">
             <a href="#" class="custom-icon-container">
-              <img
-                class="my-3"
-                src="assets/img/images-bci/Icon-Info-BCI.svg?h=971d9075427a2ea3fd79b5880d5e839f"
-              />
+              <img class="my-3" src="assets/img/images-bci/Icon-Info-BCI.svg?h=971d9075427a2ea3fd79b5880d5e839f" />
             </a>
             <h4 class="fw-bold text-center">Payez vos factures facilement&nbsp;!</h4>
             <p class="text-start mt-3">

@@ -37,7 +37,7 @@ export class RecapModePaiementComponent implements OnInit {
     private location: Location,
     private otpService: OtpLoginServiceService,
     // private paiementInterneExterneService: PaiementInterneExterneService,
-  ) {}
+  ) { }
 
   /* =====================================================
      SECTION 1 — DONNÉES DU RÉCAPITULATIF
@@ -384,7 +384,7 @@ export class RecapModePaiementComponent implements OnInit {
       },
       error: (err) => {
         this.isLoadingRenvoyez = false;
-          this.notification.error("Une erreur interne est survenue.");
+        this.notification.error("Une erreur interne est survenue.");
         // this.toastr.error(err.error.message, '', {
         //   positionClass: 'toast-custom-center',
         // });

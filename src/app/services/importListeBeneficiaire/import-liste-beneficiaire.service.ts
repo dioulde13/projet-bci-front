@@ -7,6 +7,7 @@ export interface Beneficiaire {
   nom: string;
   typeBeneficiaire: string;
   numeroCompte: string;
+  cleRib: string;
   bic: string;
   montant: number;
   devise: string;

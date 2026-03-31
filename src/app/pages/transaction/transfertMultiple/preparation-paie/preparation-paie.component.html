@@ -25,7 +25,7 @@
     <div class="row">
       <!-- Sidebar: Navigation -->
       <div class="col-lg-3">
-        <app-transfert-multiple-side-menu currentPage="preparation" (tabChange)="handleTabChange($event)"></app-transfert-multiple-side-menu>
+        <app-transfert-multiple-side-menu currentPage="preparation" [activeTabId]="activeTabId" (tabChange)="handleTabChange($event)"></app-transfert-multiple-side-menu>
       </div>
 
       <!-- Main Content Area -->
@@ -647,7 +647,7 @@
                                                   <th>Nom</th>
                                                   <th>Type</th>
                                                   <th>Banque</th>
-                                                  <th>Numéro de Compte</th>
+                                                  <th>IBAN</th>
                                                   <th>Email</th>
                                                   <th>Actions</th>
                                                 </tr>
@@ -687,7 +687,7 @@
                                                   <th>Nom</th>
                                                   <th>Type</th>
                                                   <th>Banque</th>
-                                                  <th>Numéro de Compte</th>
+                                                  <th>IBAN</th>
                                                   <th>Email</th>
                                                   <th>Actions</th>
                                                 </tr>
@@ -729,7 +729,7 @@
                                                   <th>Nom</th>
                                                   <th>Type</th>
                                                   <th>Banque</th>
-                                                  <th>Numéro de Compte</th>
+                                                  <th>IBAN</th>
                                                   <th>Email</th>
                                                   <th>Actions</th>
                                                 </tr>

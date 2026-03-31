@@ -1,0 +1,83 @@
+<!-- pending-cheque.component.html -->
+<div class="page-wrapper">
+    <div class="card">
+        <h2 class="card-title">Demandes de chéquier en attente</h2>
+
+        <div class="table-controls">
+            <label class="show-entries">
+                Afficher
+                <input type="number" [(ngModel)]="pageSize" (change)="onPageSizeChange()" min="1"
+                    class="entries-input" />
+                entrées
+            </label>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Rechercher..."
+                    class="search-input" />
+                <button *ngIf="searchTerm" class="search-clear" (click)="clearSearch()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th *ngFor="let col of columns" (click)="sortBy(col.key)">
+                            <div class="th-content">
+                                <span>{{ col.label }}</span>
+                                <span class="sort-icons">
+                                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none">
+                                        <path d="M4 0L7.5 5H0.5L4 0Z"
+                                            [attr.fill]="getSortDir(col.key) === 'asc' ? '#fff' : 'rgba(255,255,255,0.4)'" />
+                                        <path d="M4 12L0.5 7H7.5L4 12Z"
+                                            [attr.fill]="getSortDir(col.key) === 'desc' ? '#fff' : 'rgba(255,255,255,0.4)'" />
+                                    </svg>
+                                </span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="pagedData.length === 0">
+                        <td [attr.colspan]="columns.length" class="no-data">Aucune donnée disponible dans le tableau
+                        </td>
+                    </tr>
+                    <tr *ngFor="let row of pagedData; let i = index" [class.row-even]="i % 2 === 0">
+                        <td>{{ row.accountNumber }}</td>
+                        <td>{{ row.transactionReference }}</td>
+                        <td>{{ row.numberOfLeaves }}</td>
+                        <td>{{ row.transactionDate }}</td>
+                        <td>{{ row.transactionDate2 }}</td>
+                        <td>
+                            <span class="badge" [ngClass]="'badge-' + row.status.toLowerCase()">
+                                {{ statusLabel(row.status) }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <span class="showing-info">
+                Affichage de {{ showingFrom }} à {{ showingTo }} sur {{ filteredData.length }} entrée(s)
+                <span *ngIf="searchTerm"> — filtrées depuis {{ totalEntries }} au total</span>
+            </span>
+            <div class="pagination">
+                <button class="btn-page" (click)="prevPage()" [disabled]="currentPage === 1">Précédent</button>
+                <button class="btn-page" (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink} from '@angular/router';
+import { RouterLink } from '@angular/router';
 
-import { TransfertMultipleSideMenuComponent } from '../components/side-menu/side-menu.component';
+import { TransfertMultipleSideMenuComponent } from '../side-menu/side-menu.component';
 
 @Component({
   selector: 'app-execution-distribution',
@@ -11,7 +11,7 @@ import { TransfertMultipleSideMenuComponent } from '../components/side-menu/side
   templateUrl: './execution-distribution.component.html',
   styleUrl: './execution-distribution.component.css'
 })
-export class ExecutionDistributionComponent implements OnInit{
+export class ExecutionDistributionComponent implements OnInit {
   activeTabId: string = 'v-pills-recapitulatifDesInformations';
 
   handleTabChange(tabId: string) {
@@ -27,7 +27,7 @@ export class ExecutionDistributionComponent implements OnInit{
   }
 
 
-    ngOnInit(): void {
+  ngOnInit(): void {
     // const hasReloaded = localStorage.getItem('execute_distribution_reloaded');
 
     // // Ne recharge qu'une seule fois

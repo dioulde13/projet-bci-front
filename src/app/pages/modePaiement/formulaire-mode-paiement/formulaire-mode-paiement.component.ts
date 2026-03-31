@@ -75,7 +75,7 @@ export class FormulaireModePaiementComponent implements OnInit {
     private route: ActivatedRoute,
     private listeCompteCLientService: DashboardService,
     private mobileMoneyService: MobileMoneyService,
-    private notification: NotificationService,
+    // private notification: NotificationService,
     private getAccount: GetAccountNameService,
     private router: Router,
   ) { }
@@ -334,7 +334,7 @@ export class FormulaireModePaiementComponent implements OnInit {
         [Validators.required, Validators.min(1)],
       ],
       frais: [''],
-      description: [payload?.vcNotes ?? '', Validators.required],
+      description: [payload?.vcNotes ?? ''],
       typeTransactionMM: [
         payload?.vcOperationType ?? 'B2W',
         Validators.required,

@@ -163,6 +163,22 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
+        path: 'demandeChequierFormulaire',
+        loadComponent: () =>
+          import('./pages/demandeChequier/demande-chequier-formulaire/demande-chequier-formulaire.component').then(
+            (m) => m.DemandeChequierFormulaireComponent,
+          ),
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'demandeChequierListe',
+        loadComponent: () =>
+          import('./pages/demandeChequier/demande-chequier-liste/demande-chequier-liste.component').then(
+            (m) => m.DemandeChequierListeComponent,
+          ),
+        canActivate: [AuthGuard],
+      },
+      {
         path: 'preparationPaie',
         loadComponent: () =>
           import('./pages/transaction/transfertMultiple/preparation-paie/preparation-paie.component').then(
@@ -481,4 +497,4 @@ export const routes: Routes = [
   imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

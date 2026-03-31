@@ -6,10 +6,12 @@ import { CommonModule } from '@angular/common';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { CurrencyRateService } from '../../../servicesNodes/currencyRate/currency-rate.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-transactions',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   standalone: true,
   templateUrl: './transactions.component.html',
   styleUrl: './transactions.component.css',
@@ -18,7 +20,8 @@ export class TransactionsComponent implements OnInit {
   constructor(
     private listeCompteCLientService: DashboardService,
     private TransactionServiceNode: TransactionService,
-  ) {}
+    private currencyRateService: CurrencyRateService,
+  ) { }
 
   iOrganisationID!: number;
   infosUser: any;
@@ -32,6 +35,13 @@ export class TransactionsComponent implements OnInit {
   errorMessage = '';
 
   listeHistoriqueTransactions: any[] = [];
+
+  // Convertisseur
+  amount: number | null = null;
+  fromCurrency: string = 'USD';
+  toCurrency: string = 'GNF';
+  conversionResult: string = 'Taux de change :';
+  loadingCalculation = false;
 
   ngOnInit(): void {
     const today = new Date().toISOString().split('T')[0];
@@ -95,7 +105,7 @@ export class TransactionsComponent implements OnInit {
   dateCompte: any;
 
   historiqueTransactionsListe(): void {
-    if (!this.selectedAccountNumber) return; 
+    if (!this.selectedAccountNumber) return;
 
     this.infosCompteSelectionner = this.listeCompteClient.filter(
       (l: any) => l.vcAccountNumber === this.selectedAccountNumber,
@@ -318,4 +328,88 @@ export class TransactionsComponent implements OnInit {
 
     return `${montant.toLocaleString('fr-FR')} ${sign}`;
   }
+
+
+
+
+
+  convertCurrency(): void {
+    console.group('🔄 convertCurrency()');
+    console.log('📥 Paramètres reçus :', {
+      amount: this.amount,
+      fromCurrency: this.fromCurrency,
+      toCurrency: this.toCurrency,
+    });
+
+    if (!this.amount || !this.fromCurrency || !this.toCurrency) {
+      console.warn('⚠️ Validation échouée — champ(s) manquant(s) :', {
+        amount: this.amount ?? 'MANQUANT',
+        fromCurrency: this.fromCurrency || 'MANQUANT',
+        toCurrency: this.toCurrency || 'MANQUANT',
+      });
+      this.conversionResult = 'Veuillez remplir tous les champs.';
+      console.groupEnd();
+      return;
+    }
+
+    console.log('✅ Validation OK — lancement de la requête...');
+    this.loadingCalculation = true;
+    this.conversionResult = 'Calcul en cours...';
+
+    console.log(`📡 Appel getCurrencyRate(${this.fromCurrency} → ${this.toCurrency})`);
+    console.time('⏱️ Durée requête getCurrencyRate');
+
+    this.currencyRateService
+      .getCurrencyRate(this.fromCurrency, this.toCurrency)
+      .subscribe({
+        next: (res) => {
+          console.timeEnd('⏱️ Durée requête getCurrencyRate');
+          console.log('📦 Réponse brute reçue :', res);
+
+          this.loadingCalculation = false;
+
+          if (res && res.data && res.data.nRate) {
+            const rate = res.data.nRate;
+            const result = (this.amount || 0) * rate;
+
+            console.log('💱 Taux extrait (nRate) :', rate);
+            console.log('🧮 Calcul :', {
+              amount: this.amount,
+              rate,
+              result,
+              formula: `${this.amount} × ${rate} = ${result}`,
+            });
+
+            this.conversionResult = `Taux de change : ${rate} | Résultat : ${result.toLocaleString('fr-FR')} ${this.toCurrency}`;
+            console.log('✅ conversionResult :', this.conversionResult);
+          } else {
+            console.warn('⚠️ Structure de réponse inattendue ou nRate absent :', {
+              res,
+              hasData: !!res?.data,
+              hasNRate: !!res?.data?.nRate,
+            });
+            this.conversionResult = 'Taux non disponible pour cette paire.';
+          }
+
+          console.groupEnd();
+        },
+        error: (err) => {
+          console.timeEnd('⏱️ Durée requête getCurrencyRate');
+          this.loadingCalculation = false;
+          console.error('❌ Erreur convertCurrency :', {
+            status: err?.status,
+            statusText: err?.statusText,
+            message: err?.message,
+            url: err?.url,
+            error: err?.error,
+          });
+          this.conversionResult = 'Erreur lors du calcul du taux.';
+          console.groupEnd();
+        },
+      });
+  }
+
+
+
+
 }

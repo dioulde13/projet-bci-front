@@ -39,7 +39,7 @@ export class GenericFileImportComponent {
 
   // --- CONFIGURATION VALIDATION API ---
   @Input() enableApiValidation: boolean = false;
-  @Input() compteFieldKey: string = 'numeroDeCompte';
+  @Input() compteFieldKey: string = 'numeroCompte';
   @Input() bicFieldKey: string = 'bic';
   @Input() deviseFieldKey: string = 'devise';
 
@@ -272,6 +272,7 @@ export class GenericFileImportComponent {
     { key: 'nom' },
     { key: 'typeBeneficiaire' },
     { key: 'numeroCompte' },
+    { key: 'cleRib' },
     { key: 'bic' },
     { key: 'montant' },
     { key: 'devise' },

@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { French } from "flatpickr/dist/l10n/fr.js";
 import { CommonModule } from '@angular/common';
 
-import { TransfertMultipleSideMenuComponent } from '../components/side-menu/side-menu.component';
+import { TransfertMultipleSideMenuComponent } from '../side-menu/side-menu.component';
 
 @Component({
   selector: 'app-validation-approbation',
@@ -13,9 +13,9 @@ import { TransfertMultipleSideMenuComponent } from '../components/side-menu/side
   templateUrl: './validation-approbation.component.html',
   styleUrl: './validation-approbation.component.css'
 })
-export class ValidationApprobationComponent implements OnInit , AfterViewInit {
+export class ValidationApprobationComponent implements OnInit, AfterViewInit {
 
- @ViewChild('datepickerInput') datepickerInput!: ElementRef;
+  @ViewChild('datepickerInput') datepickerInput!: ElementRef;
   calendarInstance: any;
 
   ngAfterViewInit() {
@@ -32,7 +32,7 @@ export class ValidationApprobationComponent implements OnInit , AfterViewInit {
   }
 
 
-    ngOnInit(): void {
+  ngOnInit(): void {
     // const hasReloaded = localStorage.getItem('validation_approbation_reloaded');
 
     // // Ne recharge qu'une seule fois
