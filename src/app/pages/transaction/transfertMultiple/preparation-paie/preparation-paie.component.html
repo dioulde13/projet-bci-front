@@ -4,9 +4,7 @@
     <!-- Titre de page -->
     <div class="row">
       <div class="col-12">
-        <div
-          class="d-sm-flex justify-content-between align-items-center page-title-box mt-4"
-        >
+        <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
           <div>
             <h4 class="mb-sm-0 font-size-18 fw-bolder">Transferts multiples</h4>
           </div>
@@ -25,7 +23,8 @@
     <div class="row">
       <!-- Sidebar: Navigation -->
       <div class="col-lg-3">
-        <app-transfert-multiple-side-menu currentPage="preparation" [activeTabId]="activeTabId" (tabChange)="handleTabChange($event)"></app-transfert-multiple-side-menu>
+        <app-transfert-multiple-side-menu currentPage="preparation" [activeTabId]="activeTabId"
+          (tabChange)="handleTabChange($event)"></app-transfert-multiple-side-menu>
       </div>
 
       <!-- Main Content Area -->
@@ -36,9 +35,7 @@
             <!-- Titre section + Datepicker -->
             <div class="row">
               <div class="col-12">
-                <div
-                  class="d-sm-flex justify-content-between align-items-center page-title-box mt-4"
-                >
+                <div class="d-sm-flex justify-content-between align-items-center page-title-box mt-4">
                   <div>
                     <h4 class="fw-bolder mb-sm-0 font-size-18">
                       Préparation de la Paie
@@ -74,13 +71,11 @@
             </div>
 
             <!-- Cartes de résumé -->
-            <div class="row" *ngIf="isTabActive('v-pills-recapitulatifDesInformations')">
+            <div class="row">
               <div class="col-md-6 col-xl-3">
                 <div class="card card-h-100">
                   <div class="card-header">
-                    <span
-                      class="text-nowrap fw-semibold text-body d-block lh-1"
-                    >
+                    <span class="text-nowrap fw-semibold text-body d-block lh-1">
                       Total des Paiements
                     </span>
                   </div>
@@ -93,9 +88,7 @@
                       </div>
                     </div>
                     <div class="text-nowrap">
-                      <span class="badge text-success bg-success-subtle"
-                        >+ 8%</span
-                      >
+                      <span class="badge text-success bg-success-subtle">+ 8%</span>
                       <span class="text-muted ms-1 font-size-13">Ce Mois</span>
                     </div>
                   </div>
@@ -104,9 +97,7 @@
               <div class="col-md-6 col-xl-3">
                 <div class="card card-h-100">
                   <div class="card-header">
-                    <span
-                      class="text-nowrap fw-semibold text-body d-block lh-1"
-                    >
+                    <span class="text-nowrap fw-semibold text-body d-block lh-1">
                       Nombre de bénéficiaires
                     </span>
                   </div>
@@ -117,20 +108,19 @@
                       </div>
                     </div>
                     <div class="text-nowrap">
-                      <span class="badge text-success bg-success-subtle"
-                        >+ 2%</span
-                      >
+                      <span class="badge text-success bg-success-subtle">+ 2%</span>
                       <span class="text-muted ms-1 font-size-13">Ce Mois</span>
                     </div>
                   </div>
                 </div>
               </div>
+
+              @if (infosUser?.iRoleID !== "11" && infosUser?.iRoleID !== "12") {
+
               <div class="col-md-6 col-xl-3">
                 <div class="card card-h-100">
                   <div class="card-header">
-                    <span
-                      class="text-nowrap fw-semibold text-body d-block lh-1"
-                    >
+                    <span class="text-nowrap fw-semibold text-body d-block lh-1">
                       Compte Source
                     </span>
                   </div>
@@ -139,46 +129,28 @@
                       <div class="col-12 mb-2">
                         <div class="input-group">
                           <div class="mb-3">
-                            <label
-                              class="form-label fw-bold text-body required"
-                            >
+                            <label class="form-label fw-bold text-body required">
                               Compte Source
                             </label>
 
                             <!-- Loader pendant le chargement -->
-                            <div
-                              *ngIf="loadingListeCompteClient"
-                              class="text-muted font-size-13"
-                            >
+                            <div *ngIf="loadingListeCompteClient" class="text-muted font-size-13">
                               <i class="bx bx-loader bx-spin me-1"></i>
                               Chargement des comptes...
                             </div>
 
-                            <select
-                              *ngIf="!loadingListeCompteClient"
-                              class="form-select w-100"
-                              [(ngModel)]="selectedAccountNumber"
-                              name="compte-source-valider"
-                              (change)="onDebitAccountSelect($event)"
-                            >
+                            <select *ngIf="!loadingListeCompteClient" class="form-select w-100"
+                              [(ngModel)]="selectedAccountNumber" name="compte-source-valider"
+                              (change)="onDebitAccountSelect($event)">
                               <!-- Option par défaut si aucun compte chargé -->
-                              <option
-                                *ngIf="listeCompteClient.length === 0"
-                                value=""
-                                disabled
-                                selected
-                              >
+                              <option *ngIf="listeCompteClient.length === 0" value="" disabled selected>
                                 Aucun compte disponible
                               </option>
 
-                              <option
-                                *ngFor="
+                              <option *ngFor="
                                   let c of listeCompteClient;
                                   let i = index
-                                "
-                                [value]="c.vcAccountNumber"
-                                [selected]="i === 0"
-                              >
+                                " [value]="c.vcAccountNumber" [selected]="i === 0">
                                 {{ c.vcAccountNumber }}
                               </option>
                             </select>
@@ -189,12 +161,16 @@
                   </div>
                 </div>
               </div>
+              }
+              <!-- je masquer cette partie pour le role 
+iRoleID
+: 
+"11"  -->
+              @if (infosUser?.iRoleID !== "11" && infosUser?.iRoleID !== "12") {
               <div class="col-md-6 col-xl-3">
                 <div class="card card-h-100">
                   <div class="card-header">
-                    <span
-                      class="text-nowrap fw-semibold text-body d-block lh-1"
-                    >
+                    <span class="text-nowrap fw-semibold text-body d-block lh-1">
                       Solde du compte
                     </span>
                   </div>
@@ -210,12 +186,9 @@
                             <span *ngIf="loadingGetBalance">
                               <i class="bx bx-loader bx-spin font-size-13"></i>
                             </span>
-                            <strong
-                              *ngIf="!loadingGetBalance"
-                              class="text-body"
-                            >
+                            <strong *ngIf="!loadingGetBalance" class="text-body">
                               {{ soldeDebiteur | number: "1.0-0" }}&nbsp;{{
-                                deviseDebiteur
+                              deviseDebiteur
                               }}
                             </strong>
                           </div>
@@ -225,6 +198,10 @@
                   </div>
                 </div>
               </div>
+
+              }
+
+
             </div>
 
             <!-- Tableau principal -->
@@ -236,40 +213,23 @@
                       <div class="col-sm">
                         <div class="d-flex flex-wrap gap-2">
                           <!-- Envoyer pour approbation -->
-                          <button
-                            class="btn btn-success waves-effect waves-light"
-                            type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#soumettrePourApprobation-1"
-                          >
-                            <i
-                              class="icon ion-android-send font-size-16 align-middle me-2"
-                            ></i>
+                          <button class="btn btn-success waves-effect waves-light" type="button" data-bs-toggle="modal"
+                            data-bs-target="#soumettrePourApprobation-1">
+                            <i class="icon ion-android-send font-size-16 align-middle me-2"></i>
                             Envoyer pour approbation
                           </button>
 
                           <!-- Calculer la Paie -->
-                          <button
-                            class="btn btn-dark waves-effect waves-light"
-                            type="button"
-                            (click)="onCalculerLaPaie()"
-                          >
-                            <i
-                              class="icon ion-calculator font-size-16 align-middle me-2"
-                            ></i>
+                          <button class="btn btn-dark waves-effect waves-light" type="button"
+                            (click)="onCalculerLaPaie()">
+                            <i class="icon ion-calculator font-size-16 align-middle me-2"></i>
                             Calculer la Paie
                           </button>
 
                           <!-- Ajouter un Bénéficiaire -->
-                          <button
-                            class="btn btn-primary waves-effect waves-light"
-                            type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#AjouterUnBeneficiaire"
-                          >
-                            <i
-                              class="icon ion-person-add font-size-16 align-middle me-2"
-                            ></i>
+                          <button class="btn btn-primary waves-effect waves-light" type="button" data-bs-toggle="modal"
+                            data-bs-target="#AjouterUnBeneficiaire">
+                            <i class="icon ion-person-add font-size-16 align-middle me-2"></i>
                             Ajouter un Bénéficiaire
                           </button>
 
@@ -285,34 +245,23 @@
                             ></i>
                             Chargement de fichier
                           </button> -->
-                          <bci-generic-file-import
-                            [isOpenModal]="openModal"
-                            [fields]="fields"
+                          <bci-generic-file-import [isOpenModal]="openModal" [fields]="fields"
                             title="Importation des Salaires BCI"
                             instructions="Veuillez charger le fichier des virements du mois en cours."
-                            previewTitle="Récapitulatif des virements"
-                            [enableApiValidation]="true"
+                            previewTitle="Récapitulatif des virements" [enableApiValidation]="true"
                             [duplicateCheckFields]="[
                               'numeroCompte',
                               'bic',
                               'montant',
-                            ]"
-                            [validateButtonText]="
+                            ]" [validateButtonText]="
                               loadingValidation
                                 ? 'Validation en cours...'
                                 : 'Valider'
-                            "
-                            (importDataCompleted)="onImportedData($event)"
-                            (modalClosed)="openModal = false"
-                          ></bci-generic-file-import>
-                          <button
-                            class="btn btn-primary waves-effect waves-light"
-                            type="button"
-                            (click)="openModal = true"
-                          >
-                            <i
-                              class="icon ion-upload font-size-16 align-middle me-2"
-                            ></i>
+                            " (importDataCompleted)="onImportedData($event)"
+                            (modalClosed)="openModal = false"></bci-generic-file-import>
+                          <button class="btn btn-primary waves-effect waves-light" type="button"
+                            (click)="openModal = true">
+                            <i class="icon ion-upload font-size-16 align-middle me-2"></i>
                             Chargement de fichier
                           </button>
                           <!-- <a
@@ -332,29 +281,16 @@
                   <!-- ════════════════════════════════════════ -->
                   <!-- MODAL : Soumettre pour Approbation       -->
                   <!-- ════════════════════════════════════════ -->
-                  <div
-                    class="modal fade"
-                    role="dialog"
-                    tabindex="-1"
-                    id="soumettrePourApprobation-1"
-                    aria-hidden="true"
-                  >
-                    <div
-                      class="modal-dialog modal-lg modal-dialog-centered"
-                      role="document"
-                    >
+                  <div class="modal fade" role="dialog" tabindex="-1" id="soumettrePourApprobation-1"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                       <div class="modal-content">
                         <form novalidate enctype="multipart/form-data">
                           <div class="modal-header">
                             <h5 class="modal-title">
                               Soumettre pour Approbation
                             </h5>
-                            <button
-                              class="btn-close"
-                              aria-label="Close"
-                              data-bs-dismiss="modal"
-                              type="button"
-                            ></button>
+                            <button class="btn-close" aria-label="Close" data-bs-dismiss="modal" type="button"></button>
                           </div>
                           <div class="modal-body">
                             <p class="fw-semibold text-body mb-3">
@@ -369,12 +305,9 @@
                                 </h5>
                               </div>
                               <div class="card-body">
-                                <div
-                                  class="d-flex border border-start-0 border-end-0 border-top-0"
-                                >
+                                <div class="d-flex border border-start-0 border-end-0 border-top-0">
                                   <div class="flex-grow-1 p-2">
-                                    <span
-                                      >Montant total des paiements à émettre :
+                                    <span>Montant total des paiements à émettre :
                                     </span>
                                   </div>
                                   <div class="p-2">
@@ -383,18 +316,15 @@
                                     </span>
                                   </div>
                                 </div>
-                                <div
-                                  class="d-flex border border-start-0 border-end-0 border-bottom-0"
-                                >
+                                <div class="d-flex border border-start-0 border-end-0 border-bottom-0">
                                   <div class="flex-grow-1 p-2">
-                                    <span
-                                      >Nombre total de bénéficiaires :
+                                    <span>Nombre total de bénéficiaires :
                                     </span>
                                   </div>
                                   <div class="p-2">
                                     <span class="fw-bolder">{{
                                       nombreBeneficiaires
-                                    }}</span>
+                                      }}</span>
                                   </div>
                                 </div>
                               </div>
@@ -407,56 +337,30 @@
                               </div>
                               <div class="card-body">
                                 <div class="mb-3">
-                                  <label
-                                    class="form-label fw-bold text-body required"
-                                    for="object"
-                                  >
+                                  <label class="form-label fw-bold text-body required" for="object">
                                     Objet du transfert
                                   </label>
-                                  <input
-                                    class="form-control"
-                                    type="text"
-                                    id="object"
-                                    name="objet_du_transfert"
-                                    required
-                                  />
+                                  <input class="form-control" type="text" id="object" name="objet_du_transfert"
+                                    required />
                                 </div>
                                 <div class="mb-3">
-                                  <label
-                                    class="form-label fw-bold text-body required"
-                                    for="description"
-                                  >
+                                  <label class="form-label fw-bold text-body required" for="description">
                                     Description
                                   </label>
-                                  <textarea
-                                    class="form-control"
-                                    id="description"
-                                    placeholder="Description du transfert"
-                                  ></textarea>
+                                  <textarea class="form-control" id="description"
+                                    placeholder="Description du transfert"></textarea>
                                 </div>
                                 <div class="mb-3">
-                                  <label
-                                    class="form-label fw-bold text-body required"
-                                  >
+                                  <label class="form-label fw-bold text-body required">
                                     Date prévue pour effectuer ses paiements
                                   </label>
-                                  <input
-                                    class="form-control"
-                                    type="datetime-local"
-                                    name="DatePrevue"
-                                    required
-                                  />
+                                  <input class="form-control" type="datetime-local" name="DatePrevue" required />
                                 </div>
                                 <div class="mb-3">
-                                  <label
-                                    class="form-label fw-bold text-body required"
-                                  >
+                                  <label class="form-label fw-bold text-body required">
                                     Compte Source
                                   </label>
-                                  <select
-                                    class="form-select"
-                                    name="compte-source"
-                                  >
+                                  <select class="form-select" name="compte-source">
                                     <option value="7308054285" selected>
                                       7308054285
                                     </option>
@@ -470,19 +374,11 @@
                             </div>
                           </div>
                           <div class="modal-footer">
-                            <button
-                              class="btn btn-secondary"
-                              data-bs-dismiss="modal"
-                              type="button"
-                            >
+                            <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">
                               Annuler
                             </button>
-                            <button
-                              class="btn btn-primary"
-                              data-bs-dismiss="modal"
-                              routerLink="/validationApprobation"
-                              type="button"
-                            >
+                            <button class="btn btn-primary" data-bs-dismiss="modal" routerLink="/validationApprobation"
+                              type="button">
                               Confirmer
                             </button>
                           </div>
@@ -494,28 +390,14 @@
                   <!-- ════════════════════════════════════════ -->
                   <!-- MODAL : Ajouter un Bénéficiaire          -->
                   <!-- ════════════════════════════════════════ -->
-                  <div
-                    class="modal fade"
-                    role="dialog"
-                    tabindex="-1"
-                    id="AjouterUnBeneficiaire"
-                    aria-hidden="true"
-                  >
-                    <div
-                      class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"
-                      role="document"
-                    >
+                  <div class="modal fade" role="dialog" tabindex="-1" id="AjouterUnBeneficiaire" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title">
                             Inclusion de bénéficiaires dans la liste.
                           </h5>
-                          <button
-                            class="btn-close"
-                            aria-label="Close"
-                            data-bs-dismiss="modal"
-                            type="button"
-                          ></button>
+                          <button class="btn-close" aria-label="Close" data-bs-dismiss="modal" type="button"></button>
                         </div>
                         <div class="modal-body">
                           <div class="card">
@@ -532,115 +414,53 @@
                                   <div class="card">
                                     <div class="card-header">
                                       <div class="d-flex flex-wrap gap-2">
-                                        <button
-                                          class="btn btn-primary waves-effect waves-light"
-                                          type="button"
-                                          data-bs-toggle="modal"
-                                          data-bs-target="#AjouterUnBeneficiaire-2"
-                                        >
-                                          <i
-                                            class="icon ion-person-add font-size-16 align-middle me-2"
-                                          ></i>
+                                        <button class="btn btn-primary waves-effect waves-light" type="button"
+                                          data-bs-toggle="modal" data-bs-target="#AjouterUnBeneficiaire-2">
+                                          <i class="icon ion-person-add font-size-16 align-middle me-2"></i>
                                           Ajouter un Bénéficiaire
                                         </button>
                                       </div>
                                     </div>
-                                    <div
-                                      class="card-header d-flex align-items-center"
-                                    >
+                                    <div class="card-header d-flex align-items-center">
                                       <h4 class="flex-grow-1 card-title mb-0">
                                         Liste des Bénéficiaires
                                       </h4>
                                       <div class="flex-shrink-0">
-                                        <ul
-                                          class="nav nav-pills justify-content-end card-header-pills"
-                                          id="beneficiary-tabs"
-                                          role="tablist"
-                                        >
-                                          <li
-                                            class="nav-item"
-                                            role="presentation"
-                                          >
-                                            <button
-                                              class="active nav-link"
-                                              id="tab-autres"
-                                              data-bs-toggle="tab"
-                                              data-bs-target="#autres"
-                                              type="button"
-                                              role="tab"
-                                            >
-                                              <span class="d-none d-sm-block"
-                                                >Autres Bénéficiaires</span
-                                              >
+                                        <ul class="nav nav-pills justify-content-end card-header-pills"
+                                          id="beneficiary-tabs" role="tablist">
+                                          <li class="nav-item" role="presentation">
+                                            <button class="active nav-link" id="tab-autres" data-bs-toggle="tab"
+                                              data-bs-target="#autres" type="button" role="tab">
+                                              <span class="d-none d-sm-block">Autres Bénéficiaires</span>
                                             </button>
                                           </li>
-                                          <li
-                                            class="nav-item"
-                                            role="presentation"
-                                          >
-                                            <button
-                                              class="nav-link"
-                                              id="tab-fournisseurs"
-                                              data-bs-toggle="tab"
-                                              data-bs-target="#fournisseurs"
-                                              type="button"
-                                              role="tab"
-                                            >
-                                              <span class="d-none d-sm-block"
-                                                >Fournisseurs</span
-                                              >
+                                          <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="tab-fournisseurs" data-bs-toggle="tab"
+                                              data-bs-target="#fournisseurs" type="button" role="tab">
+                                              <span class="d-none d-sm-block">Fournisseurs</span>
                                             </button>
                                           </li>
-                                          <li
-                                            class="nav-item"
-                                            role="presentation"
-                                          >
-                                            <button
-                                              class="nav-link"
-                                              id="tab-employes"
-                                              data-bs-toggle="tab"
-                                              data-bs-target="#employes"
-                                              type="button"
-                                              role="tab"
-                                            >
-                                              <span class="d-none d-sm-block"
-                                                >Employés</span
-                                              >
+                                          <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="tab-employes" data-bs-toggle="tab"
+                                              data-bs-target="#employes" type="button" role="tab">
+                                              <span class="d-none d-sm-block">Employés</span>
                                             </button>
                                           </li>
                                         </ul>
                                       </div>
                                     </div>
                                     <div class="card-body">
-                                      <div
-                                        class="tab-content"
-                                        id="beneficiary-tabs-content"
-                                      >
+                                      <div class="tab-content" id="beneficiary-tabs-content">
                                         <!-- Tab: Autres -->
-                                        <div
-                                          id="autres"
-                                          class="tab-pane fade show active"
-                                          role="tabpanel"
-                                        >
+                                        <div id="autres" class="tab-pane fade show active" role="tabpanel">
                                           <div class="table-responsive">
-                                            <table
-                                              class="table mb-0 align-middle nowrap"
-                                            >
+                                            <table class="table mb-0 align-middle nowrap">
                                               <thead class="table-primary">
                                                 <tr>
                                                   <th style="width: 30px">
-                                                    <div
-                                                      class="form-check font-size-16"
-                                                    >
-                                                      <input
-                                                        class="form-check-input"
-                                                        type="checkbox"
-                                                        id="checkAll-4"
-                                                      />
-                                                      <label
-                                                        class="form-check-label"
-                                                        for="checkAll-4"
-                                                      ></label>
+                                                    <div class="form-check font-size-16">
+                                                      <input class="form-check-input" type="checkbox" id="checkAll-4" />
+                                                      <label class="form-check-label" for="checkAll-4"></label>
                                                     </div>
                                                   </th>
                                                   <th>Photo</th>
@@ -657,30 +477,15 @@
                                           </div>
                                         </div>
                                         <!-- Tab: Fournisseurs -->
-                                        <div
-                                          id="fournisseurs"
-                                          class="tab-pane fade"
-                                          role="tabpanel"
-                                        >
+                                        <div id="fournisseurs" class="tab-pane fade" role="tabpanel">
                                           <div class="table-responsive">
-                                            <table
-                                              class="table mb-0 align-middle nowrap"
-                                            >
+                                            <table class="table mb-0 align-middle nowrap">
                                               <thead class="table-primary">
                                                 <tr>
                                                   <th style="width: 30px">
-                                                    <div
-                                                      class="form-check font-size-16"
-                                                    >
-                                                      <input
-                                                        class="form-check-input"
-                                                        type="checkbox"
-                                                        id="checkAll-2"
-                                                      />
-                                                      <label
-                                                        class="form-check-label"
-                                                        for="checkAll-2"
-                                                      ></label>
+                                                    <div class="form-check font-size-16">
+                                                      <input class="form-check-input" type="checkbox" id="checkAll-2" />
+                                                      <label class="form-check-label" for="checkAll-2"></label>
                                                     </div>
                                                   </th>
                                                   <th>Photo</th>
@@ -692,37 +497,20 @@
                                                   <th>Actions</th>
                                                 </tr>
                                               </thead>
-                                              <tbody
-                                                id="fournisseurs-list"
-                                              ></tbody>
+                                              <tbody id="fournisseurs-list"></tbody>
                                             </table>
                                           </div>
                                         </div>
                                         <!-- Tab: Employés -->
-                                        <div
-                                          id="employes"
-                                          class="tab-pane fade"
-                                          role="tabpanel"
-                                        >
+                                        <div id="employes" class="tab-pane fade" role="tabpanel">
                                           <div class="table-responsive">
-                                            <table
-                                              class="table mb-0 align-middle nowrap"
-                                            >
+                                            <table class="table mb-0 align-middle nowrap">
                                               <thead class="table-primary">
                                                 <tr>
                                                   <th style="width: 30px">
-                                                    <div
-                                                      class="form-check font-size-16"
-                                                    >
-                                                      <input
-                                                        class="form-check-input"
-                                                        type="checkbox"
-                                                        id="checkAll-3"
-                                                      />
-                                                      <label
-                                                        class="form-check-label"
-                                                        for="checkAll-3"
-                                                      ></label>
+                                                    <div class="form-check font-size-16">
+                                                      <input class="form-check-input" type="checkbox" id="checkAll-3" />
+                                                      <label class="form-check-label" for="checkAll-3"></label>
                                                     </div>
                                                   </th>
                                                   <th>Photo</th>
@@ -747,19 +535,11 @@
                           </div>
                         </div>
                         <div class="modal-footer">
-                          <button
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal"
-                            type="button"
-                          >
+                          <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">
                             Annuler
                           </button>
-                          <button
-                            class="btn btn-primary"
-                            type="button"
-                            data-bs-target="#confirmation-dAjoutDeBeneficiaire"
-                            data-bs-toggle="modal"
-                          >
+                          <button class="btn btn-primary" type="button"
+                            data-bs-target="#confirmation-dAjoutDeBeneficiaire" data-bs-toggle="modal">
                             Ajouter les bénéficiaires sélectionnés
                           </button>
                         </div>
@@ -770,23 +550,13 @@
                   <!-- ════════════════════════════════════════ -->
                   <!-- MODAL : Confirmation d'ajout             -->
                   <!-- ════════════════════════════════════════ -->
-                  <div
-                    class="modal fade"
-                    role="dialog"
-                    tabindex="-1"
-                    id="confirmation-dAjoutDeBeneficiaire"
-                    aria-hidden="true"
-                  >
+                  <div class="modal fade" role="dialog" tabindex="-1" id="confirmation-dAjoutDeBeneficiaire"
+                    aria-hidden="true">
                     <div class="modal-dialog" role="document">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title">Confirmation</h5>
-                          <button
-                            class="btn-close"
-                            aria-label="Close"
-                            data-bs-dismiss="modal"
-                            type="button"
-                          ></button>
+                          <button class="btn-close" aria-label="Close" data-bs-dismiss="modal" type="button"></button>
                         </div>
                         <div class="modal-body">
                           <p class="fw-semibold mb-3">
@@ -800,50 +570,36 @@
                               </h5>
                             </div>
                             <div class="card-body">
-                              <div
-                                class="d-flex border border-start-0 border-end-0 border-top-0"
-                              >
+                              <div class="d-flex border border-start-0 border-end-0 border-top-0">
                                 <div class="flex-grow-1 p-2">
                                   <span>Total des Paiements : </span>
                                 </div>
                                 <div class="p-2">
-                                  <span class="fw-bolder"
-                                    >{{
-                                      totalPaiements | number: "1.0-0"
+                                  <span class="fw-bolder">{{
+                                    totalPaiements | number: "1.0-0"
                                     }}
-                                    GNF</span
-                                  >
+                                    GNF</span>
                                 </div>
                               </div>
-                              <div
-                                class="d-flex border border-start-0 border-end-0 border-bottom-0"
-                              >
+                              <div class="d-flex border border-start-0 border-end-0 border-bottom-0">
                                 <div class="flex-grow-1 p-2">
                                   <span>Nombre de bénéficiaires : </span>
                                 </div>
                                 <div class="p-2">
                                   <span class="fw-bolder">{{
                                     nombreBeneficiaires
-                                  }}</span>
+                                    }}</span>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
                         <div class="modal-footer">
-                          <button
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal"
-                            type="button"
-                          >
+                          <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">
                             Annuler
                           </button>
-                          <button
-                            class="btn btn-primary"
-                            data-bs-dismiss="modal"
-                            routerLink="/validationApprobation"
-                            type="button"
-                          >
+                          <button class="btn btn-primary" data-bs-dismiss="modal" routerLink="/validationApprobation"
+                            type="button">
                             Confirmer
                           </button>
                         </div>
@@ -854,23 +610,12 @@
                   <!-- ════════════════════════════════════════ -->
                   <!-- MODAL : Chargement de fichier CSV        -->
                   <!-- ════════════════════════════════════════ -->
-                  <div
-                    class="modal fade"
-                    role="dialog"
-                    tabindex="-1"
-                    id="chargementDeFichier"
-                    aria-hidden="true"
-                  >
+                  <div class="modal fade" role="dialog" tabindex="-1" id="chargementDeFichier" aria-hidden="true">
                     <div class="modal-dialog modal-xl" role="document">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title">Chargement de fichier</h5>
-                          <button
-                            class="btn-close"
-                            aria-label="Close"
-                            data-bs-dismiss="modal"
-                            type="button"
-                          ></button>
+                          <button class="btn-close" aria-label="Close" data-bs-dismiss="modal" type="button"></button>
                         </div>
                         <div class="modal-body">
                           <p class="fw-semibold text-body font-size-14 mb-3">
@@ -879,45 +624,25 @@
                           </p>
                           <div class="card">
                             <div class="card-body">
-                              <form
-                                id="csvForm"
-                                class="p-5"
-                                style="
+                              <form id="csvForm" class="p-5" style="
                                   min-height: 230px;
                                   border: 2px dashed var(--bs-border-color);
                                   background: var(--bs-card-bg);
                                   border-radius: 6px;
-                                "
-                                (submit)="onFormSubmit($event)"
-                              >
+                                " (submit)="onFormSubmit($event)">
                                 <div class="mb-4">
-                                  <label
-                                    for="csvFile"
-                                    class="form-label font-size-17"
-                                  >
+                                  <label for="csvFile" class="form-label font-size-17">
                                     Sélectionnez un fichier CSV
                                   </label>
-                                  <input
-                                    type="file"
-                                    id="csvFile"
-                                    class="form-control"
-                                    accept=".csv"
-                                    (change)="onFileSelected($event)"
-                                    required
-                                  />
+                                  <input type="file" id="csvFile" class="form-control" accept=".csv"
+                                    (change)="onFileSelected($event)" required />
                                 </div>
                                 <div class="mb-3">
-                                  <button
-                                    class="btn btn-primary waves-effect waves-light"
-                                    type="submit"
-                                  >
+                                  <button class="btn btn-primary waves-effect waves-light" type="submit">
                                     Charger
                                   </button>
-                                  <button
-                                    class="btn btn-outline-dark waves-effect waves-light ms-2"
-                                    type="button"
-                                    data-bs-dismiss="modal"
-                                  >
+                                  <button class="btn btn-outline-dark waves-effect waves-light ms-2" type="button"
+                                    data-bs-dismiss="modal">
                                     Annuler
                                   </button>
                                 </div>
@@ -925,18 +650,13 @@
 
                               <div class="card mt-3">
                                 <div class="card-header">
-                                  <h3
-                                    class="font-size-15 fw-semibold card-title"
-                                  >
+                                  <h3 class="font-size-15 fw-semibold card-title">
                                     Aperçu des Transactions
                                   </h3>
                                 </div>
                                 <div class="card-body">
                                   <div class="table-responsive">
-                                    <table
-                                      *ngIf="csvData.length > 0"
-                                      class="table table-bordered table-sm"
-                                    >
+                                    <table *ngIf="csvData.length > 0" class="table table-bordered table-sm">
                                       <thead>
                                         <tr>
                                           <th *ngFor="let header of headers">
@@ -952,10 +672,7 @@
                                         </tr>
                                       </tbody>
                                     </table>
-                                    <p
-                                      *ngIf="csvData.length === 0"
-                                      class="text-muted text-center py-3"
-                                    >
+                                    <p *ngIf="csvData.length === 0" class="text-muted text-center py-3">
                                       Aucune donnée chargée.
                                     </p>
                                   </div>
@@ -965,22 +682,12 @@
                           </div>
                         </div>
                         <div class="modal-footer">
-                          <button
-                            class="btn btn-primary"
-                            type="button"
-                            routerLink="/preparationPaie"
-                            data-bs-dismiss="modal"
-                          >
-                            <i
-                              class="icon ion-checkmark font-size-16 align-middle me-2"
-                            ></i>
+                          <button class="btn btn-primary" type="button" routerLink="/preparationPaie"
+                            data-bs-dismiss="modal">
+                            <i class="icon ion-checkmark font-size-16 align-middle me-2"></i>
                             Valider les Transactions
                           </button>
-                          <button
-                            class="btn btn-secondary"
-                            type="button"
-                            data-bs-dismiss="modal"
-                          >
+                          <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">
                             Annuler
                           </button>
                         </div>
@@ -990,6 +697,13 @@
 
                   <!-- Tableau des bénéficiaires -->
                   <div class="card-body">
+                    <div class="row mb-3">
+                      <div class="col-sm-4">
+                        <input type="text" class="form-control" placeholder="Rechercher..." [(ngModel)]="searchText"
+                          (input)="currentPage = 1" />
+                      </div>
+                    </div>
+
                     <div class="table-responsive text-nowrap table">
                       <table
                         class="table table-striped table-hover link-table datatable align-middle dt-responsive table-check nowrap display"
@@ -997,29 +711,22 @@
                           border-collapse: collapse;
                           border-spacing: 0 8px;
                           width: 100%;
-                        "
-                      >
+                        ">
                         <thead>
                           <tr class="bg-transparent">
                             <th style="width: 30px" scope="col">
                               <div class="form-check font-size-16">
-                                <input
-                                  class="form-check-input"
-                                  type="checkbox"
-                                  id="checkAll-1"
-                                  [checked]="allChecked"
-                                  (change)="toggleAll($event)"
-                                />
-                                <label
-                                  class="form-check-label"
-                                  for="checkAll-1"
-                                ></label>
+                                <input class="form-check-input" type="checkbox" id="checkAll-1" [checked]="allChecked"
+                                  (change)="toggleAll($event)" />
+                                <label class="form-check-label" for="checkAll-1"></label>
                               </div>
                             </th>
                             <th style="width: 120px">ID</th>
+                            <th>Date</th>
                             <th style="width: 150px">Nom du Bénéficiaire</th>
                             <th>Type de Bénéficiaire</th>
                             <th>Numéro de Compte</th>
+                            <th style="width: 120px">Iban</th>
                             <th>Montant</th>
                             <th>Devise</th>
                             <th>Méthode de paiement</th>
@@ -1027,75 +734,57 @@
                               Institution de réception
                             </th>
                             <th>Objet du transfert</th>
-                            <!-- <th style="width:150px;">Exporter en PDF</th> -->
-                            <!-- <th style="width:90px;">Actions</th> -->
+                            <th style="width:150px;">Pdf</th>
+                            <th style="width:90px;">Actions</th>
                           </tr>
                         </thead>
                         <tbody>
                           <!-- Chargement -->
                           <tr *ngIf="isLoading">
                             <td colspan="12" class="text-center py-4">
-                              <div
-                                class="spinner-border text-primary"
-                                role="status"
-                              >
-                                <span class="visually-hidden"
-                                  >Chargement...</span
-                                >
+                              <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Chargement...</span>
                               </div>
                             </td>
                           </tr>
 
                           <!-- Erreur -->
                           <tr *ngIf="!isLoading && errorMessage">
-                            <td
-                              colspan="12"
-                              class="text-center text-danger py-3"
-                            >
+                            <td colspan="12" class="text-center text-danger py-3">
                               {{ errorMessage }}
                             </td>
                           </tr>
 
                           <!-- Aucune donnée -->
-                          <tr
-                            *ngIf="
+                          <tr *ngIf="
                               !isLoading &&
                               !errorMessage &&
                               beneficiaires.length === 0
-                            "
-                          >
-                            <td
-                              colspan="12"
-                              class="text-center text-muted py-3"
-                            >
+                            ">
+                            <td colspan="12" class="text-center text-muted py-3">
                               Aucun bénéficiaire trouvé.
                             </td>
                           </tr>
 
                           <!-- Données API -->
-                          <tr *ngFor="let b of beneficiaires">
+                          <tr *ngFor="let b of paginatedBeneficiaires">
                             <td>
                               <div class="form-check font-size-16">
-                                <input
-                                  class="form-check-input"
-                                  type="checkbox"
-                                  [checked]="isChecked(b.id)"
-                                  (change)="toggleOne(b.id, $event)"
-                                />
+                                <input class="form-check-input" type="checkbox" [checked]="isChecked(b.id)"
+                                  (change)="toggleOne(b.id, $event)" />
                                 <label class="form-check-label"></label>
                               </div>
                             </td>
                             <td>#{{ b.id | number: "6.0-0" }}</td>
+                            <td>{{ b.dtCreated | date: "dd/MM/yyyy HH:mm:ss" }}</td>
                             <td>
-                              <a
-                                class="text-body fw-medium"
-                                routerLink="/detailBeneficiaire"
-                              >
+                              <a class="text-body fw-medium" routerLink="/detailBeneficiaire">
                                 {{ b.vcFullName }}
                               </a>
                             </td>
                             <td>{{ b.vcBeneficiaryType }}</td>
                             <td>{{ b.vcAccountNumber }}</td>
+                            <td>{{ b.vcIBAN }}</td>
                             <td>{{ b.mAmount | number: "1.0-0" }}</td>
                             <td>{{ b.vcCurrency }}</td>
                             <td>{{ b.vcPaymentMode }}</td>
@@ -1104,28 +793,20 @@
                               {{ b.vcBeneficiaryBankFullAddress }}
                             </td>
                             <td>{{ b.vcDescription }}</td>
-                            <!-- <td class="no-link">
-                              <button
-                                class="btn btn-sm btn-soft-light w-xs waves-effect btn-label waves-light"
-                                type="button"
-                              >
+                            <td class="no-link">
+                              <button class="btn btn-sm btn-soft-light w-xs waves-effect btn-label waves-light"
+                                type="button">
                                 <i class="bx bx-download label-icon"></i> Pdf
                               </button>
-                            </td> -->
-                            <!-- <td class="no-link">
+                            </td>
+                            <td class="no-link">
                               <div class="dropdown">
-                                <button
-                                  class="btn dropdown-toggle btn-link font-size-18
-                                         shadow-none py-0 text-muted"
-                                  aria-expanded="false"
-                                  data-bs-toggle="dropdown"
-                                  type="button"
-                                >
+                                <button class="btn dropdown-toggle btn-link font-size-18 shadow-none py-0 text-muted"
+                                  aria-expanded="false" data-bs-toggle="dropdown" type="button">
                                   <i class="icon ion-android-more-horizontal"></i>
                                 </button>
                                 <div class="dropdown-menu">
-                                  <a class="dropdown-item"
-                                    routerLink="/modificationDetailBeneficiaire">
+                                  <a class="dropdown-item" routerLink="/modificationDetailBeneficiaire">
                                     Modifier
                                   </a>
                                   <a class="dropdown-item" routerLink="/detailBeneficiaire">
@@ -1133,10 +814,38 @@
                                   </a>
                                 </div>
                               </div>
-                            </td> -->
+                            </td>
+
                           </tr>
                         </tbody>
                       </table>
+                    </div>
+
+                    <!-- ================= PAGINATION ================= -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                      <div>
+                        Affichage {{ startIndex() }} à {{ endIndex() }} sur
+                        {{ filteredBeneficiaires.length }} éléments
+                      </div>
+                      <div>
+                        <button class="btn btn-sm btn-outline-secondary me-1" (click)="previousPage()"
+                          [disabled]="currentPage === 1">
+                          Précédent
+                        </button>
+
+                        <button *ngFor="let page of getPages()" class="btn btn-sm me-1" [ngClass]="{
+                            'btn-outline-secondary': page !== currentPage && page !== '...',
+                            'btn-secondary': page === currentPage,
+                            disabled: page === '...'
+                          }" (click)="onPageClick(page)">
+                          {{ page }}
+                        </button>
+
+                        <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()"
+                          [disabled]="currentPage === totalPages()">
+                          Suivant
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

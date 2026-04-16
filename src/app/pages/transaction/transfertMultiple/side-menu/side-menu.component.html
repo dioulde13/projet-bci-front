@@ -56,15 +56,7 @@
   <!-- Reusable Sub-menu Template -->
   <ng-template #subMenu let-current="current">
     <ul class="nav flex-column ms-4 mb-2 mt-1 border-start border-light" *ngIf="currentPage === current">
-      <li class="nav-item">
-        <button
-          class="nav-link py-1 px-3 d-flex align-items-center text-body font-size-13 border-0 bg-transparent w-100 text-start"
-          [class.active-submenu]="activeTabId === 'v-pills-recapitulatifDesInformations'"
-          (click)="onTabClick('v-pills-recapitulatifDesInformations')">
-          <i class="bx bx-spreadsheet me-2 text-primary"></i>
-          <span>Tableau </span>
-        </button>
-      </li>
+
       <li class="nav-item">
         <button
           class="nav-link py-1 px-3 d-flex align-items-center text-body font-size-13 border-0 bg-transparent w-100 text-start"

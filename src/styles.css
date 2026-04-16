@@ -41,11 +41,11 @@ body {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
   font-size: 14px !important;
   padding: 14px 16px 14px 50px !important;
+}
 
-  &:hover {
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
-    cursor: pointer;
-  }
+.ngx-toastr:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+  cursor: pointer;
 }
 
 .toast-success {
@@ -74,10 +74,10 @@ body {
   font-weight: bold !important;
   color: #fff !important;
   opacity: 0.8 !important;
+}
 
-  &:hover {
-    opacity: 1 !important;
-  }
+.toast-close-button:hover {
+  opacity: 1 !important;
 }
 
 

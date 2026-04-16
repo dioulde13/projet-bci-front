@@ -427,22 +427,40 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const beneficiaires = importedRows.map((row) => ({
-      prenom: row['prenom'] ?? '',
-      nom: row['nom'] ?? '',
-      typeBeneficiaire: row['typeBeneficiaire'] ?? '',
-      numeroCompte: row['numeroCompte'] ?? '',
-      cleRib: row['cleRib'] ?? '',
-      bic: row['bic'] ?? '',
-      montant: Number(row['montant']) ?? 0,
-      devise: row['devise'] ?? '',
-      modePaiement: row['modePaiement'] ?? '',
-      nomBanque: row['nomBanque'] ?? '',
-      adresseBanque: row['adresseBanque'] ?? '',
-      objetPaiement: row['objetPaiement'] ?? '',
-    }));
+    const beneficiaires = importedRows.map((row, index) => {
+      // Rechercher le résultat de validation correspondant à cette ligne (idtableau est 1-indexed)
+      const validationResult = (validationResults || []).find(
+        (r: any) => r.idtableau === index + 1
+      );
+
+      return {
+        prenom: row['prenom'] ?? '',
+        nom: row['nom'] ?? '',
+        typeBeneficiaire: row['typeBeneficiaire'] ?? '',
+        numeroCompte: row['numeroCompte'] ?? '',
+        cleRib: row['cleRib'] ?? '',
+        iban: validationResult?.iban ?? '', // On injecte l'IBAN retourné par l'API
+        bic: row['bic'] ?? '',
+        montant: Number(row['montant']) ?? 0,
+        devise: row['devise'] ?? '',
+        modePaiement: row['modePaiement'] ?? '',
+        nomBanque: row['nomBanque'] ?? '',
+        adresseBanque: row['adresseBanque'] ?? '',
+        objetPaiement: row['objetPaiement'] ?? '',
+      };
+    });
 
     console.log('beneficiaires: ', beneficiaires);
+
+    // Vérifier que tous les bénéficiaires ont un IBAN (généré par l'API de validation)
+    const hasMissingIban = beneficiaires.some((b) => !b.iban || b.iban.trim() === '');
+    if (hasMissingIban) {
+      const missingCount = beneficiaires.filter((b) => !b.iban || b.iban.trim() === '').length;
+      this.notification.error(
+        `Impossible d'importer : ${missingCount} bénéficiaire(s) n'ont pas d'IBAN valide. Veuillez vériifer la validation.`
+      );
+      return;
+    }
 
     this.loadingValidation = true;
 

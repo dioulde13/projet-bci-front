@@ -89,8 +89,8 @@
                 Sélectionnez un fichier Excel
                 <span class="text-muted fw-normal" style="font-size: 11px">(.xlsx, .xls)</span>
               </label>
-              <a href="assets/fichierdeBase.xlsx" download="fichierdeBase.xlsx"
-                class="text-decoration-none small text-primary fw-bold" style="font-size: 12px">
+              <a (click)="downloadBaseFile($event)"
+                class="text-decoration-none small text-primary fw-bold" style="font-size: 12px; cursor: pointer">
                 <i class="bi bi-download me-1"></i>
                 télécharger le
                 <br />
@@ -266,6 +266,7 @@
                           style="font-size: 11px; width: 24px; height: 24px; padding: 0; line-height: 1">
                           &times;
                         </button>
+                        <span *ngIf="row._valid !== false" class="text-muted" style="font-size: 9px">—</span>
                       </td>
                     </tr>
                   </ng-container>

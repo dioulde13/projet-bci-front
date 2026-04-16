@@ -112,7 +112,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     this.marchandService.loginAvoirTokenEdg().subscribe({
       next: (response: any) => {
         this.marchandService.saveToken(response.token);
-        console.log('response: ', response);
+        // console.log('response: ', response);
       },
     });
   }
@@ -178,7 +178,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
     // 🔍 Vérifier le compteur + récupérer les factures
     this.marchandService.verifierCompteurPostpayer(compteur, msisdn).subscribe({
       next: (res) => {
-        console.log('Réponse API brute:', res);
+        // console.log('Réponse API brute:', res);
 
         const apiData = res?.data?.[0];
 
@@ -295,7 +295,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       feesBCI = this.btFeesBankUsePercent
         ? (montantDeBase * Number(this.fraisNFeesBankEDG)) / 100
         : Number(this.fraisNFeesBankEDG);
-      montantTotal = montantDeBase; 
+      montantTotal = montantDeBase;
     } else {
       feesEcash = this.btFeesUsePercent
         ? (montantDeBase * Number(this.fraisNFeesEDG)) / 100
@@ -304,7 +304,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       feesBCI = this.btFeesBankUsePercent
         ? (montantDeBase * Number(this.fraisNFeesBankEDG)) / 100
         : Number(this.fraisNFeesBankEDG);
-        
+
       montantTotal = montantDeBase + feesEcash + feesBCI;
     }
 
@@ -324,7 +324,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
     const calc = this.getFeesAndTotal(montant);
     this.montantTotalEDG = calc.montantTotal;
-    
+
     if (!this.btFeesIncluded) {
       this.fraisTotal = calc.feesEcash + calc.feesBCI;
     }
@@ -347,16 +347,16 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
 
         // Filtrer les facturiers dont le nom correspond à this.nomFacture
         this.ligneSelectionner = this.facturiers.filter((l: any) => {
-          console.log('l.FacturierName: ', l.FacturierName);
-          console.log('this.nomFacture: ', this.nomFacture);
+          // console.log('l.FacturierName: ', l.FacturierName);
+          // console.log('this.nomFacture: ', this.nomFacture);
           return l.FacturierName === this.nomFacture; // condition de filtrage
         });
 
-        console.log('this.ligneSelectionner: ', this.ligneSelectionner[0]);
+        // console.log('this.ligneSelectionner: ', this.ligneSelectionner[0]);
         this.vcAccountType = this.ligneSelectionner[0].vcAccountType;
-        console.log('this.vcAccountType: ', this.vcAccountType);
+        // console.log('this.vcAccountType: ', this.vcAccountType);
         this.vcAccountName = this.ligneSelectionner[0].vcAccountName;
-        console.log('this.vcAccountName: ', this.vcAccountName);
+        // console.log('this.vcAccountName: ', this.vcAccountName);
         this.photoRecuperer = this.ligneSelectionner[0].vcLogoPath;
         this.fraisNFeesEDG = this.ligneSelectionner[0].nFees;
         this.fraisNFeesBankEDG = this.ligneSelectionner[0].nFeesBank;
@@ -364,7 +364,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         this.btFeesBankUsePercent =
           this.ligneSelectionner[0].btFeesBankUsePercent;
         this.btFeesIncluded = this.ligneSelectionner[0].btFeesIncluded;
-        console.log('this.facturiers: ', this.facturiers);
+        // console.log('this.facturiers: ', this.facturiers);
       },
       error: (err) => {
         console.error('Erreur chargement facturiers', err);
@@ -383,7 +383,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
   }
 
   onDebitAccountChangeEDG(accountNumber: string): void {
-    console.log(accountNumber);
+    // console.log(accountNumber);
     this.getAccountName(accountNumber);
   }
 
@@ -400,7 +400,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
         this.devise = res?.data?.devise ?? null;
         this.loadingGetBalance = false;
 
-        console.log('this.soldeDebiteur: ', this.soldeDebiteur);
+        // console.log('this.soldeDebiteur: ', this.soldeDebiteur);
       },
       error: () => {
         this.soldeDebiteur = null;
@@ -441,7 +441,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       vcSenderCurrency: this.devise
     };
 
-    console.log('PAYLOAD ENVOYÉ 👉', payload);
+    // console.log('PAYLOAD ENVOYÉ 👉', payload);
 
     this.transactionsBillPendingService
       .transactionsBillPending(payload)
@@ -487,14 +487,14 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
             this.notification.success('Transaction effectuée avec succès ✅');
             this.modalOtp = false;
             this.router.navigate(['/historiqueTransactions']);
-            
+
             if (isPrepaid) {
-               this.paymentFormPrepayerEDG.reset();
-               this.afficherInfosPrepayer = false;
-               this.compteurValidePrepayer = false;
+              this.paymentFormPrepayerEDG.reset();
+              this.afficherInfosPrepayer = false;
+              this.compteurValidePrepayer = false;
             } else {
-               this.postpayModalForm.reset();
-               this.onCompteurBlurPostpayer();
+              this.postpayModalForm.reset();
+              this.onCompteurBlurPostpayer();
             }
           } else {
             this.notification.error(response.message);
@@ -508,9 +508,9 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
   }
 
   resetLoadingState() {
-     this.isLoading = false;
-     this.loadingPrepayerEDG = false;
-     this.loadingVerificationMontant = false;
+    this.isLoading = false;
+    this.loadingPrepayerEDG = false;
+    this.loadingVerificationMontant = false;
   }
 
   // 🔒 chiffres uniquement
@@ -544,7 +544,7 @@ export class PaiementsDeFacturesEDGComponent implements OnInit {
       next: (res) => {
         const apiData = res?.data?.[0];
 
-        console.log('apiData: ', apiData);
+        // console.log('apiData: ', apiData);
 
         if (apiData?.APIResponse) {
           const parsed = JSON.parse(apiData.APIResponse);

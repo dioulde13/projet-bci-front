@@ -275,7 +275,7 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   logout(): void {
     this.isLoggingOut = true;
 
-    this.notification.error('Déconnexion en cours...');
+    // this.notification.error('Déconnexion en cours...');
     // const toastRef = this.toastr.success('Déconnexion en cours...', '', {
     //   positionClass: 'toast-custom-center',
     //   disableTimeOut: true,

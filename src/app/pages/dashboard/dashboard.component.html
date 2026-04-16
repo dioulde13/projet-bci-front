@@ -302,7 +302,9 @@
                       <th>Nom de la partie</th>
                       <th>Numéro de compte</th>
                       <th>Type de compte</th>
+                      @if (infosUser?.iRoleID !== "11" && infosUser?.iRoleID !== "12") {
                       <th>Solde net</th>
+                      }
                     </tr>
                   </thead>
                   <tbody>
@@ -316,9 +318,11 @@
                       <td>
                         <div class="skeleton skeleton-text w-50"></div>
                       </td>
+                      @if (infosUser?.iRoleID !== "11" && infosUser?.iRoleID !== "12") {
                       <td>
                         <div class="skeleton skeleton-text w-25"></div>
                       </td>
+                      }
                     </tr>
                   </tbody>
                 </table>
@@ -331,7 +335,9 @@
                     <th>Nom de la partie</th>
                     <th>Numéro de compte</th>
                     <th>Type de compte</th>
+                    @if (infosUser?.iRoleID !== "11" && infosUser?.iRoleID !== "12") {
                     <th>Solde net</th>
+                    }
                     <th>Status</th>
                   </tr>
                 </thead>
@@ -340,9 +346,11 @@
                     <td class="text-start align-content-center">{{ compte.vcPersonalName }}</td>
                     <td class="text-start align-items-center">{{ compte.vcAccountNumber }}</td>
                     <td class="text-start align-content-center">{{ compte.vcAccountType }}</td>
+                    @if (infosUser?.iRoleID !== "11" && infosUser?.iRoleID !== "12") {
                     <td class="text-nowrap align-content-center">
                       {{ compte.mBalance | number }} {{ compte.vcCurrency }}
                     </td>
+                    }
                     <td class="text-start align-content-center"
                       [ngClass]="compte.btBlocked === '0' ? 'text-success' : 'text-danger'">
                       {{ compte.btBlocked === "0" ? "Actif" : compte.vcBlockedStatus }}

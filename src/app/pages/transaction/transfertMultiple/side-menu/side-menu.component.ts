@@ -12,7 +12,7 @@ import { AuthService } from '../../../../services/authServices/auth.service';
 })
 export class TransfertMultipleSideMenuComponent implements OnInit {
   @Input() currentPage: string = '';
-  @Input() activeTabId: string = 'v-pills-recapitulatifDesInformations';
+  @Input() activeTabId: string = 'v-pills-DetailsDesPaiements';
   @Output() tabChange = new EventEmitter<string>();
 
   private authService = inject(AuthService);

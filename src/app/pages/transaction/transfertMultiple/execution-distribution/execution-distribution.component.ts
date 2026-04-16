@@ -12,7 +12,8 @@ import { TransfertMultipleSideMenuComponent } from '../side-menu/side-menu.compo
   styleUrl: './execution-distribution.component.css'
 })
 export class ExecutionDistributionComponent implements OnInit {
-  activeTabId: string = 'v-pills-recapitulatifDesInformations';
+  activeTabId: string = "v-pills-DetailsDesPaiements";
+
 
   handleTabChange(tabId: string) {
     this.activeTabId = tabId;

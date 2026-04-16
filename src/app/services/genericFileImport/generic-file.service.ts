@@ -6,13 +6,16 @@ import { Observable } from 'rxjs';
 export interface ValidationTransaction {
   compte: string;
   bic: string;
+  cleRib: string;
   devise: string;
   idtableau: number;
 }
 
 export interface ValidationResult {
   compte: string;
+  iban: string;
   bic: string;
+  cleRib: string;
   devise: string;
   idtableau: number;
   valid: boolean;

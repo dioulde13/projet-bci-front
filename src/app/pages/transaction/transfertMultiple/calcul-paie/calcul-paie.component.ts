@@ -27,6 +27,20 @@ import { TransfertMultipleSideMenuComponent } from '../side-menu/side-menu.compo
   styleUrl: './calcul-paie.component.css',
 })
 export class CalculPaieComponent implements OnInit, AfterViewInit {
+  activeTabId: string = "v-pills-DetailsDesPaiements";
+
+  handleTabChange(tabId: string) {
+    this.activeTabId = tabId;
+  }
+
+  isTabActive(tabId: string): boolean {
+    return this.activeTabId === tabId;
+  }
+
+  isNotTabActive(tabId: string): boolean {
+    return this.activeTabId !== tabId;
+  }
+
   // ─── Données reçues depuis PreparationPaie ─────────────────────
   beneficiaires: any[] = [];
   selectedIds: Set<string> = new Set();
@@ -45,6 +59,86 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
 
   get nombreBeneficiaires(): number {
     return this.beneficiaires.length;
+  }
+
+  // ========================
+  // FILTRAGE + PAGINATION
+  // ========================
+  get filteredBeneficiaires() {
+    let data = [...this.beneficiaires];
+    if (this.searchText) {
+      const term = this.searchText.toLowerCase();
+      data = data.filter((b) =>
+        Object.values(b).some((val) =>
+          val?.toString().toLowerCase().includes(term),
+        ),
+      );
+    }
+    return data;
+  }
+
+  get paginatedBeneficiaires() {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredBeneficiaires.slice(start, start + this.pageSize);
+  }
+
+  totalPages() {
+    return Math.ceil(this.filteredBeneficiaires.length / this.pageSize);
+  }
+
+  startIndex() {
+    return this.filteredBeneficiaires.length === 0
+      ? 0
+      : (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  endIndex() {
+    return Math.min(
+      this.currentPage * this.pageSize,
+      this.filteredBeneficiaires.length,
+    );
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage = page;
+    }
+  }
+
+  previousPage() {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  nextPage() {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  getPages(): (number | string)[] {
+    const total = this.totalPages();
+    const pages: (number | string)[] = [];
+
+    if (total <= 5) {
+      for (let i = 1; i <= total; i++) pages.push(i);
+    } else if (this.currentPage <= 3) {
+      pages.push(1, 2, 3, 4, 5, '...', total);
+    } else if (this.currentPage >= total - 2) {
+      pages.push(1, '...', total - 4, total - 3, total - 2, total - 1, total);
+    } else {
+      pages.push(
+        1,
+        '...',
+        this.currentPage - 1,
+        this.currentPage,
+        this.currentPage + 1,
+        '...',
+        total,
+      );
+    }
+    return pages;
+  }
+
+  onPageClick(page: number | string) {
+    if (typeof page === 'number') this.goToPage(page);
   }
 
   get totalSelectionnes(): number {
@@ -71,19 +165,10 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
   successMessage: string = '';
   apiErrorMessage: string = '';
 
-  activeTabId: string = 'v-pills-recapitulatifDesInformations';
-
-  handleTabChange(tabId: string) {
-    this.activeTabId = tabId;
-  }
-
-  isTabActive(tabId: string): boolean {
-    return this.activeTabId === tabId;
-  }
-
-  isNotTabActive(tabId: string): boolean {
-    return this.activeTabId !== tabId;
-  }
+  // ─── Pagination & Filtrage ────────────────────────────────────
+  pageSize = 5;
+  currentPage = 1;
+  searchText = '';
 
   constructor(
     private selectedService: SelectedBeneficiairesService,
@@ -101,8 +186,10 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.beneficiaires = this.selectedService.getSelected();
     console.log('this.beneficiaires: ', this.beneficiaires);
-    this.beneficiaires.forEach((b) => this.selectedIds.add(b.id));
-    this.allChecked = true;
+
+    // Initialisation : aucune ligne cochée par défaut
+    this.selectedIds.clear();
+    this.allChecked = false;
 
     const userJson = localStorage.getItem('userInfo');
     if (userJson) {
@@ -300,7 +387,8 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
   private buildBeneficiariesPayload(): any[] {
     return this.beneficiaires.map((b, index) => ({
       vcReceiverName: b.vcFullName,
-      vcReceiverAccount: b.vcAccountNumber,
+      // vcReceiverAccount: b.vcAccountNumber,
+      vcReceiverAccount: b.vcIBAN,
       vcReceiverBICCode: b.vcBIC ?? '',
       mAmount: parseFloat(b.mAmount || '0'),
       ImportID: b.id,
@@ -359,16 +447,6 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
             } else {
               this.loadingValider = false;
             }
-            // // ✅ Fermer le modal
-            // const modalEl = document.getElementById(
-            //   'validerTouslesPaiements-2',
-            // );
-            // if (modalEl) {
-            //   const modal = (window as any).bootstrap.Modal.getInstance(
-            //     modalEl,
-            //   );
-            //   if (modal) modal.hide();
-            // }
           } else {
             this.loadingValider = false;
 
@@ -428,8 +506,6 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
 
             this.notification.error(res.message);
           }
-          // console.log('✅ Paiements validés :', res);
-          // this.successMessage = 'Les paiements ont été validés avec succès.';
         },
         error: (err) => {
           this.loadingValider = false;
@@ -454,6 +530,7 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
     this.loadingValider = true;
     this.successMessage = '';
     this.apiErrorMessage = '';
+    console.log("this.buildBeneficiariesPayload: ", this.buildBeneficiariesPayload());
 
     const payload = {
       payment_date: this.datePrevue,

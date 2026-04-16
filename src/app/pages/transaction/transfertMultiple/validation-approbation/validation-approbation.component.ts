@@ -14,6 +14,7 @@ import { TransfertMultipleSideMenuComponent } from '../side-menu/side-menu.compo
   styleUrl: './validation-approbation.component.css'
 })
 export class ValidationApprobationComponent implements OnInit, AfterViewInit {
+  activeTabId: string = "v-pills-DetailsDesPaiements";
 
   @ViewChild('datepickerInput') datepickerInput!: ElementRef;
   calendarInstance: any;
@@ -45,7 +46,7 @@ export class ValidationApprobationComponent implements OnInit, AfterViewInit {
     // }
   }
 
-  activeTabId: string = 'v-pills-recapitulatifDesInformations';
+
 
   handleTabChange(tabId: any) {
     this.activeTabId = tabId;

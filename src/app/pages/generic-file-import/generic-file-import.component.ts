@@ -5,11 +5,13 @@ import {
   EventEmitter,
   ViewChild,
   ElementRef,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as XLSX from 'xlsx';
 import { GenericFileService } from '../../services/genericFileImport/generic-file.service';
 import { NotificationService } from '../../services/notification/notification.service';
+import { HttpClient } from '@angular/common/http';
 
 export interface FileField {
   key: string;
@@ -41,6 +43,7 @@ export class GenericFileImportComponent {
   @Input() enableApiValidation: boolean = false;
   @Input() compteFieldKey: string = 'numeroCompte';
   @Input() bicFieldKey: string = 'bic';
+  @Input() cleRibFieldKey: string = 'cleRib';
   @Input() deviseFieldKey: string = 'devise';
 
   // --- ÉVÉNEMENTS ---
@@ -68,7 +71,32 @@ export class GenericFileImportComponent {
   constructor(
     private genericFileService: GenericFileService,
     private notification: NotificationService,
-  ) {}
+    private http: HttpClient
+  ) { }
+
+  // --- TÉLÉCHARGEMENT DU FICHIER DE BASE ---
+  downloadBaseFile(event: Event): void {
+    event.preventDefault();
+    const filePath = 'assets/fichierdeBase.xlsx';
+
+    this.http.get(filePath, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'fichierdeBase.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        this.notification.success('Téléchargement lancé avec succès.');
+      },
+      error: (err) => {
+        console.error('Erreur lors du téléchargement du fichier:', err);
+        this.notification.error('Impossible de télécharger le fichier de base. Vérifiez s\'il existe sur le serveur.');
+      }
+    });
+  }
 
   get paginatedData(): any[] {
     const startIndex = (this.currentPage - 1) * this.pageSize;
@@ -173,7 +201,7 @@ export class GenericFileImportComponent {
         if (keyCount === 1 && (firstKey.includes(',') || firstKey.includes(';'))) {
           console.warn('⚠️ Données mono-colonne détectées — éclatement manuel par séparateur.');
           const separator = this.detectCsvSeparator(firstKey);
-          
+
           // On reconstruit un tableau d'objets avec les colonnes éclatées
           const splittedKeys = firstKey.split(separator).map(k => k.trim());
           const splittedData = rawData.map(row => {
@@ -367,9 +395,12 @@ export class GenericFileImportComponent {
     const transactions = this.importedData.map((row, index) => ({
       compte: String(row[this.compteFieldKey] || ''),
       bic: String(row[this.bicFieldKey] || ''),
+      cleRib: String(row[this.cleRibFieldKey] || ''),
       devise: String(row[this.deviseFieldKey] || ''),
       idtableau: index + 1,
     }));
+
+    console.log('transactions: ', transactions);
 
     this.genericFileService.validateTransactions(transactions).subscribe({
       next: (response) => {
@@ -380,6 +411,7 @@ export class GenericFileImportComponent {
             if (this.importedData[index]) {
               this.importedData[index]._valid = result.valid;
               this.importedData[index]._errors = result.errors ?? [];
+              this.importedData[index].iban = result.iban; // Sauvegarde de l'IBAN retourné par l'API
             }
           });
           localStorage.setItem(
@@ -465,6 +497,7 @@ export class GenericFileImportComponent {
     const updatedResults = this.importedData.map((row, i) => ({
       compte: String(row[this.compteFieldKey] || ''),
       bic: String(row[this.bicFieldKey] || ''),
+      cleRib: String(row[this.cleRibFieldKey] || ''),
       devise: String(row[this.deviseFieldKey] || ''),
       idtableau: i + 1,
       valid: row._valid,
