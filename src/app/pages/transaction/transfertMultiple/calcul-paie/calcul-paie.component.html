@@ -537,7 +537,8 @@
                             <span *ngIf="loadingValider">
                               <i class="bx bx-loader bx-spin me-1"></i> Validation en cours...
                             </span>
-                            <span *ngIf="!loadingValider">Valider</span>
+                            <span *ngIf="!loadingValider">{{VirementMultiAPI == '0' ? "Validation manuelle" :
+                              "Validation directe"}}</span>
                           </button>
                         </div>
                       </div>

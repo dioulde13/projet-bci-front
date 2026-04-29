@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 export class TransfertMultipleService {
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAllBeneficiaireImport(idOrganisation: number): Observable<any> {
     const params = new HttpParams().set(
@@ -33,6 +33,7 @@ export class TransfertMultipleService {
     vcCurrency: any,
     vcDescription: any,
     beneficiaries: any[],
+    isValidatedViaApi: any,
   ): Observable<any> {
     const body = {
       payment_date,
@@ -44,6 +45,7 @@ export class TransfertMultipleService {
       vcCurrency,
       vcDescription,
       beneficiaries,
+      isValidatedViaApi
     };
 
     // 🔹 Log complet du body avant envoi

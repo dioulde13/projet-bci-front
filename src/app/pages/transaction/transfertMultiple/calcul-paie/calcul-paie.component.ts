@@ -173,7 +173,7 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
   constructor(
     private selectedService: SelectedBeneficiairesService,
     private listeCompteCLientService: DashboardService,
-    private balanceService: BalanceService,
+    // private balanceService: BalanceService,
     private transactionService: TransfertMultipleService,
     private notification: NotificationService,
     private transfertMultipleServiceNode: TransfertMultipleServiceNode,
@@ -182,7 +182,8 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
 
   iOrganisationID!: number;
   infosUser: any;
-
+  userInfoConfig: any;
+  VirementMultiAPI: any;
   ngOnInit(): void {
     this.beneficiaires = this.selectedService.getSelected();
     console.log('this.beneficiaires: ', this.beneficiaires);
@@ -190,6 +191,19 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
     // Initialisation : aucune ligne cochée par défaut
     this.selectedIds.clear();
     this.allChecked = false;
+
+    const userInfoConfig = localStorage.getItem('userInfoConfig');
+    if (userInfoConfig) {
+      try {
+        this.userInfoConfig = JSON.parse(userInfoConfig);
+        this.VirementMultiAPI = this.userInfoConfig?.VirementMultiAPI;
+      } catch {
+        this.userInfoConfig = null;
+      }
+    }
+
+    console.log("userInfoConfig: ", userInfoConfig);
+    console.log("VirementMultiAPI: ", this.VirementMultiAPI);
 
     const userJson = localStorage.getItem('userInfo');
     if (userJson) {
@@ -418,6 +432,7 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
       vcCurrency: this.deviseDebiteur || 'GNF',
       vcDescription: this.descriptionTransfert,
       beneficiaries: this.buildBeneficiariesPayload(),
+      isValidatedViaApi: this.VirementMultiAPI == '0' ? 0 : 1,
     };
 
     console.log('💡 validerPaiements payload:', payload);
@@ -433,6 +448,7 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
         payload.vcCurrency,
         payload.vcDescription,
         payload.beneficiaries,
+        payload.isValidatedViaApi,
       )
       .subscribe({
         next: (res) => {
@@ -443,7 +459,25 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
               this.reference = res.data.reference;
               this.transaction_id = res.data.transaction_id;
               // this.notification.success(res.message);
-              this.validerPaiementsNodes();
+              if (this.VirementMultiAPI == '1') {
+                console.log("Passage API");
+                this.validerPaiementsNodes();
+              } else {
+                this.notification.success(res.message);
+
+                console.log("Passage Manuel");
+                // ✅ Fermer le modal
+                const modalEl = document.getElementById(
+                  'validerTouslesPaiements-2',
+                );
+                if (modalEl) {
+                  const modal = (window as any).bootstrap.Modal.getInstance(
+                    modalEl,
+                  );
+                  if (modal) modal.hide();
+                }
+                this.loadingValider = false;
+              }
             } else {
               this.loadingValider = false;
             }
@@ -542,6 +576,7 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
       vcCurrency: this.deviseDebiteur || 'GNF',
       vcDescription: this.descriptionTransfert,
       beneficiaries: this.buildBeneficiariesPayload(),
+      isValidatedViaApi: this.VirementMultiAPI === 0 ? 0 : 1,
     };
 
     console.log('💡 soumettreApprobation payload:', payload);
@@ -557,6 +592,7 @@ export class CalculPaieComponent implements OnInit, AfterViewInit {
         payload.vcCurrency,
         payload.vcDescription,
         payload.beneficiaries,
+        payload.isValidatedViaApi,
       )
       .subscribe({
         next: (res) => {
