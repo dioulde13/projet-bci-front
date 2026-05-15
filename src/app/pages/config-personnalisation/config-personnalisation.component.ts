@@ -56,6 +56,16 @@ export class ConfigPersonnalisationComponent implements OnInit {
   listeRoleNiveau: any[] = [];
   listesQuestions: any[] = [];
 
+  niveauxExplications: { [key: number]: string } = {
+    1: "Permet uniquement d'envoyer pour approbation et uploader les fichiers (Pas de plafond).",
+    2: "Permet uniquement d'envoyer pour approbation et uploader les fichiers (Pas de plafond).",
+    3: "Valide en fonction du montant (entre min et max) (Plafond financier requis).",
+    4: "Valide en fonction du montant (entre min et max) (Plafond financier requis).",
+    5: "Valide en fonction du montant (entre min et max) (Plafond financier requis).",
+    6: "Peut valider n'importe quel montant (Pas de plafond)."
+  };
+  texteExplicatifNiveau: string = '';
+
   currentStep = 1;
   totalSteps = 6;
 
@@ -103,6 +113,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     this.niveauForm = this.fb.group({
       id: [null],
       vcRoleName: ['', Validators.required],
+      niveau: ['', Validators.required],
       vcDescription: ['', Validators.required],
       min: [0, [Validators.required, Validators.min(0)]],
       max: [0, [Validators.required, Validators.min(0)]],
@@ -119,7 +130,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
         // console.log(this.listeRoleNiveau);
         // console.log(this.listeRoleNiveau);
       },
-      error(err: any) {},
+      error(err: any) { },
     });
   }
 
@@ -401,6 +412,25 @@ export class ConfigPersonnalisationComponent implements OnInit {
 
   ngOnInit() {
     this.getListeSecuriteQuestion();
+    this.niveauForm.get('niveau')?.valueChanges.subscribe(val => {
+      if (val) {
+        this.texteExplicatifNiveau = this.niveauxExplications[Number(val)] || '';
+        const minControl = this.niveauForm.get('min');
+        const maxControl = this.niveauForm.get('max');
+        if ([1, 2, 6].includes(Number(val))) {
+          minControl?.clearValidators();
+          maxControl?.clearValidators();
+        } else {
+          minControl?.setValidators([Validators.required, Validators.min(0)]);
+          maxControl?.setValidators([Validators.required, Validators.min(0)]);
+        }
+        minControl?.updateValueAndValidity();
+        maxControl?.updateValueAndValidity();
+      } else {
+        this.texteExplicatifNiveau = '';
+      }
+    });
+
     this.securiteFormCode = this.fb.group({
       codePin: ['', [Validators.required, Validators.pattern('^[0-9]{4}$')]],
     });
@@ -502,11 +532,11 @@ export class ConfigPersonnalisationComponent implements OnInit {
       this.categories = this.categories.map((c) =>
         c.id === this.selectedCategorie!.id
           ? {
-              ...c,
-              categorie: nom,
-              description,
-              approbation: approbationValue,
-            }
+            ...c,
+            categorie: nom,
+            description,
+            approbation: approbationValue,
+          }
           : c,
       );
     } else {
@@ -849,17 +879,8 @@ export class ConfigPersonnalisationComponent implements OnInit {
   // =========================
 
   trierNiveauxParHierarchie(): void {
-    // Trier selon l’ordre métier
-    this.niveaux.sort(
-      (a, b) =>
-        this.HIERARCHIE_ROLES.indexOf(a.vcRoleName) -
-        this.HIERARCHIE_ROLES.indexOf(b.vcRoleName),
-    );
-
-    // Recalcul automatique des niveaux (1 à 5)
-    this.niveaux.forEach((n, index) => {
-      n.niveau = index + 1;
-    });
+    // Trier par niveau
+    this.niveaux.sort((a, b) => Number(a.niveau) - Number(b.niveau));
   }
 
   showNiveauRetirerModal: boolean = false;
@@ -871,6 +892,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     this.niveauForm.reset({
       id: null,
       vcRoleName: '',
+      niveau: '',
       vcDescription: '',
       min: null,
       max: null,
@@ -881,13 +903,10 @@ export class ConfigPersonnalisationComponent implements OnInit {
   openEditModal(niveau: Niveau): void {
     this.isEditMode = true;
 
-    const role = this.listeRoleNiveau.find(
-      (r) => r.vcRoleName === niveau.vcRoleName,
-    );
-
     this.niveauForm.patchValue({
       id: niveau.id,
-      vcRoleName: role ? role.id : null,
+      vcRoleName: niveau.vcRoleName,
+      niveau: niveau.niveau,
       vcDescription: niveau.vcDescription,
       min: niveau.min,
       max: niveau.max,
@@ -904,41 +923,25 @@ export class ConfigPersonnalisationComponent implements OnInit {
 
     const formValue: any = this.niveauForm.value;
 
-    if (formValue.max < formValue.min) {
-      this.notification.error(
-        'La valeur max ne doit pas être inférieure à la valeur min.',
-      );
-      // this.toastr.error(
-      //   'La valeur max ne doit pas être inférieure à la valeur min.',
-      //   '',
-      //   { positionClass: 'toast-custom-center' },
-      // );
-      return;
+    if ([3, 4, 5].includes(Number(formValue.niveau))) {
+      if (formValue.max < formValue.min) {
+        this.notification.error(
+          'La valeur max ne doit pas être inférieure à la valeur min.',
+        );
+        return;
+      }
+    } else {
+      formValue.min = 0;
+      formValue.max = 0;
     }
-
-    const selectedRole = this.listeRoleNiveau.find(
-      (r) => r.id === formValue.vcRoleName,
-    );
-
-    if (!selectedRole) {
-      this.notification.error('Rôle invalide');
-      // this.toastr.error('Rôle invalide');
-      return;
-    }
-
-    formValue.vcRoleName = selectedRole.vcRoleName;
-    formValue.idRole = selectedRole.id;
 
     // 🔥 Anti-doublon rôle
     const duplicateRole = this.niveaux.some(
-      (n) => n.id !== formValue.id && n.vcRoleName === formValue.vcRoleName,
+      (n) => n.id !== formValue.id && n.vcRoleName.toLowerCase() === formValue.vcRoleName.toLowerCase(),
     );
 
     if (duplicateRole) {
       this.notification.error('Un niveau avec ce rôle existe déjà.');
-      // this.toastr.error('Un niveau avec ce rôle existe déjà.', '', {
-      //   positionClass: 'toast-custom-center',
-      // });
       return;
     }
 
@@ -1030,7 +1033,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
         Section: 'Validation Multi-Niveaux',
         Statut: this.niveaux.length
           ? `${this.niveaux.length} niveau(x) configuré(s)`
-          : 'Non configurée(s)',
+          : 'Validation multi-niveaux désactivée',
       },
       {
         Section: 'Catégories',
@@ -1187,7 +1190,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
 
 
   toggleSelection(compte: any) {
-  compte.isChecked = !compte.isChecked;
-  this.onCheckChange(compte); // garde ton comportement existant
-}
+    compte.isChecked = !compte.isChecked;
+    this.onCheckChange(compte); // garde ton comportement existant
+  }
 }

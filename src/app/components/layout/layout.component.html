@@ -344,8 +344,7 @@
             </a>
           </li> -->
 
-          <li class="nav-item" [class.mm-active]="isSubMenuOpen('comptes')"
-            *ngIf="userRoleId !== '11' && this.userRoleId !== '12'">
+          <li class="nav-item" [class.mm-active]="isSubMenuOpen('comptes')">
             <a class="nav-link has-arrow" href="javascript:void(0);" (click)="toggleSubMenu('comptes', $event)"><i
                 class="icon ion-ios-albums"></i><span>Comptes</span></a>
             <ul class="sub-menu mm-collapse" [class.mm-show]="isSubMenuOpen('comptes')" aria-expanded="false">
@@ -383,8 +382,7 @@
                 </a>
               </li>
               <li>
-                <a routerLink="/transactionsInternational"
-                  *ngIf="userRoleId !== '11' && this.userRoleId !== '12' && userRoleId !== '14' && userRoleId !== '13'">
+                <a routerLink="/transactionsInternational">
                   <span data-key="t-chat">Transactions internationales</span>
                 </a>
               </li>

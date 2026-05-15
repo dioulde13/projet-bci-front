@@ -29,32 +29,32 @@ export class TransfertMultipleSideMenuComponent implements OnInit {
     this.tabChange.emit(tabId);
   }
 
-  // Helpers for template visibility
-  canSeePreparation(): boolean {
-    // Initiateur (11), Assistant (12), Comptable (13), Chef (14)
-    const roles = [11, 12, 13, 14, '11', '12', '13', '14'];
-    return roles.includes(this.userRoleId as any);
-  }
+  // // Helpers for template visibility
+  // canSeePreparation(): boolean {
+  //   // Initiateur (11), Assistant (12), Comptable (13), Chef (14)
+  //   const roles = [11, 12, 13, 14, '11', '12', '13', '14'];
+  //   return roles.includes(this.userRoleId as any);
+  // }
 
-  canSeeCalcul(): boolean {
-    // Same as preparation
-    return this.canSeePreparation();
-  }
+  // canSeeCalcul(): boolean {
+  //   // Same as preparation
+  //   return this.canSeePreparation();
+  // }
 
-  canSeeValidation(): boolean {
-    // Assistant (12), Comptable (13), Chef (14)
-    const roles = [12, 13, 14, '12', '13', '14'];
-    return roles.includes(this.userRoleId as any);
-  }
+  // canSeeValidation(): boolean {
+  //   // Assistant (12), Comptable (13), Chef (14)
+  //   const roles = [12, 13, 14, '12', '13', '14'];
+  //   return roles.includes(this.userRoleId as any);
+  // }
 
-  canSeeExecution(): boolean {
-    // DAF (15)
-    return this.userRoleId == 15 || this.userRoleId == '15';
-  }
+  // canSeeExecution(): boolean {
+  //   // DAF (15)
+  //   return this.userRoleId == 15 || this.userRoleId == '15';
+  // }
 
-  canSeeReporting(): boolean {
-    // Everyone in the list (11-15) can see reporting based on notes
-    const roles = [11, 12, 13, 14, 15, '11', '12', '13', '14', '15'];
-    return roles.includes(this.userRoleId as any);
-  }
+  // canSeeReporting(): boolean {
+  //   // Everyone in the list (11-15) can see reporting based on notes
+  //   const roles = [11, 12, 13, 14, 15, '11', '12', '13', '14', '15'];
+  //   return roles.includes(this.userRoleId as any);
+  // }
 }

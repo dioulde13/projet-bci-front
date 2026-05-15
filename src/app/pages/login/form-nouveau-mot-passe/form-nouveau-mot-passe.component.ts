@@ -33,7 +33,7 @@ export class FormNouveauMotPasseComponent implements OnInit {
     private router: Router,
     // private toastr: ToastrService,
     private notification: NotificationService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // ✅ Création du formulaire réactif avec deux champs
@@ -83,7 +83,7 @@ export class FormNouveauMotPasseComponent implements OnInit {
       },
       error: (err) => {
         this.success = false;
-        this.notification.error(err.message);
+        this.notification.error('Une erreur s\'est produite, veuillez réessayer');
         // this.toastr.error(err?.message, '', {
         //   positionClass: 'toast-custom-center',
         // });

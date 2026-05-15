@@ -11,7 +11,7 @@ import { French } from 'flatpickr/dist/l10n/fr.js';
 import { CommonModule } from '@angular/common';
 import { SelectedBeneficiairesService } from '../../../../services/selectedBeneficiaires/selected-beneficiaires.service';
 import { DashboardService } from '../../../../services/dashboard/dashboard.service';
-import { BalanceService } from '../../../../servicesNodes/balance/balance.service';
+// import { BalanceService } from '../../../../servicesNodes/balance/balance.service';
 import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { TransfertMultipleService } from '../../../../services/transfertMultipleService/transfert-multiple.service';

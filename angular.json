@@ -21,7 +21,11 @@
             ],
             "allowedCommonJsDependencies": [
               "flatpickr",
-              "papaparse"
+              "papaparse",
+              "core-js",
+              "raf",
+              "rgbcolor",
+              "html2canvas"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [

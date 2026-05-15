@@ -522,10 +522,12 @@
                                 <span class="skeleton skeleton-btn w-100"></span>
                               </div>
                               <div class="col-12 col-md-6 col-lg-4">
-                                <span class="skeleton" style="width:100%;height:36px;border-radius:6px;display:block;"></span>
+                                <span class="skeleton"
+                                  style="width:100%;height:36px;border-radius:6px;display:block;"></span>
                               </div>
                               <div class="col-12 col-md-6 col-lg-4">
-                                <span class="skeleton" style="width:100%;height:36px;border-radius:6px;display:block;"></span>
+                                <span class="skeleton"
+                                  style="width:100%;height:36px;border-radius:6px;display:block;"></span>
                               </div>
                             </div>
 
@@ -553,11 +555,16 @@
                             <div class="d-flex justify-content-between align-items-center mt-2">
                               <span class="skeleton skeleton-text" style="width:180px;"></span>
                               <div class="d-flex gap-2">
-                                <span class="skeleton" style="width:72px;height:30px;border-radius:4px;display:block;"></span>
-                                <span class="skeleton" style="width:32px;height:30px;border-radius:4px;display:block;"></span>
-                                <span class="skeleton" style="width:32px;height:30px;border-radius:4px;display:block;"></span>
-                                <span class="skeleton" style="width:32px;height:30px;border-radius:4px;display:block;"></span>
-                                <span class="skeleton" style="width:60px;height:30px;border-radius:4px;display:block;"></span>
+                                <span class="skeleton"
+                                  style="width:72px;height:30px;border-radius:4px;display:block;"></span>
+                                <span class="skeleton"
+                                  style="width:32px;height:30px;border-radius:4px;display:block;"></span>
+                                <span class="skeleton"
+                                  style="width:32px;height:30px;border-radius:4px;display:block;"></span>
+                                <span class="skeleton"
+                                  style="width:32px;height:30px;border-radius:4px;display:block;"></span>
+                                <span class="skeleton"
+                                  style="width:60px;height:30px;border-radius:4px;display:block;"></span>
                               </div>
                             </div>
                           </ng-container>
@@ -565,109 +572,109 @@
                           <!-- ========== CONTENU RÉEL ========== -->
                           <ng-container *ngIf="!lodingFetch">
 
-                          <!-- Barre de filtres -->
-                          <div class="row align-items-center mb-3 gx-3">
-                            <div class="col-12 col-md-6 col-lg-2">
-                              <button class="btn btn-success w-100" (click)="exportExcel()">
-                                Exporter Excel
-                              </button>
-                            </div>
-                            <div class="col-12 col-md-6 col-lg-2">
-                              <button class="btn btn-danger w-100" (click)="exportPdf()">
-                                Exporter PDF
-                              </button>
-                            </div>
-                            <div class="col-12 col-md-6 col-lg-4">
-                              <input type="text" class="form-control" placeholder="Rechercher..."
-                                [(ngModel)]="searchText" (input)="currentPage = 1" />
+                            <!-- Barre de filtres -->
+                            <div class="row align-items-center mb-3 gx-3">
+                              <div class="col-12 col-md-6 col-lg-2">
+                                <button class="btn btn-success w-100" (click)="exportExcel()">
+                                  Exporter Excel
+                                </button>
+                              </div>
+                              <div class="col-12 col-md-6 col-lg-2">
+                                <button class="btn btn-danger w-100" (click)="exportPdf()">
+                                  Exporter PDF
+                                </button>
+                              </div>
+                              <div class="col-12 col-md-6 col-lg-4">
+                                <input type="text" class="form-control" placeholder="Rechercher..."
+                                  [(ngModel)]="searchText" (input)="currentPage = 1" />
+                              </div>
+
+                              <!-- ✅ CORRECTION : [(ngModel)] au lieu de formControlName -->
+                              <div class="col-12 col-md-6 col-lg-4">
+                                <select class="form-select" [(ngModel)]="selectedBeneficiaryType"
+                                  (change)="currentPage = 1">
+                                  <option value="">-- Sélectionner un type --</option>
+                                  <option *ngFor="let type of listeTypeBeneficiaire" [value]="type.vcName">
+                                    {{ type.vcName }}
+                                  </option>
+                                </select>
+                              </div>
                             </div>
 
-                            <!-- ✅ CORRECTION : [(ngModel)] au lieu de formControlName -->
-                            <div class="col-12 col-md-6 col-lg-4">
-                              <select class="form-select" [(ngModel)]="selectedBeneficiaryType"
-                                (change)="currentPage = 1">
-                                <option value="">-- Sélectionner un type --</option>
-                                <option *ngFor="let type of listeTypeBeneficiaire" [value]="type.vcName">
-                                  {{ type.vcName }}
-                                </option>
-                              </select>
-                            </div>
-                          </div>
-
-                          <!-- Tableau -->
-                          <table
-                            class="table table-bordered table-hover mb-0 datatable align-middle dt-responsive table-check nowrap display">
-                            <thead class="table-primary">
-                              <tr>
-                                <th (click)="sort('vcPhoto')">Photo</th>
-                                <th (click)="sort('BeneficiaryCreatedDate')">Date</th>
-                                <th (click)="sort('vcLastName')">Nom</th>
-                                <th (click)="sort('vcFirstName')">Prénom</th>
-                                <th (click)="sort('vcPhoneNumber')">Télephone</th>
-                                <th (click)="sort('vcEmail')">Email</th>
-                                <th (click)="sort('BeneficiaryTypeName')">Type</th>
-                                <th (click)="sort('BankName')">Banque</th>
-                                <th (click)="sort('vcAccountNumber')">N° Compte</th>
-                                <th (click)="sort('vcStatus')">Statut</th>
-                                <th class="text-center">Action</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr *ngFor="let benefice of pagedBeneficiaire">
-                                <td>{{ benefice.vcPhoto }}</td>
-                                <td>{{ benefice.BeneficiaryCreatedDate | date: "dd/MM/yyyy HH:mm" }}</td>
-                                <td>{{ benefice.vcLastName }}</td>
-                                <td>{{ benefice.vcFirstName }}</td>
-                                <td>{{ benefice.vcPhoneNumber }}</td>
-                                <td>{{ benefice.vcEmail }}</td>
-                                <td>{{ benefice.BeneficiaryTypeName }}</td>
-                                <td>{{ benefice.BankName }}</td>
-                                <td>{{ benefice.vcAccountNumber }}</td>
-                                <td>
-                                  <span class="badge" [ngClass]="{
+                            <!-- Tableau -->
+                            <table
+                              class="table table-bordered table-hover mb-0 datatable align-middle dt-responsive table-check nowrap display">
+                              <thead class="table-primary">
+                                <tr>
+                                  <th (click)="sort('vcPhoto')">Photo</th>
+                                  <th (click)="sort('BeneficiaryCreatedDate')">Date</th>
+                                  <th (click)="sort('vcLastName')">Nom</th>
+                                  <th (click)="sort('vcFirstName')">Prénom</th>
+                                  <th (click)="sort('vcPhoneNumber')">Télephone</th>
+                                  <th (click)="sort('vcEmail')">Email</th>
+                                  <th (click)="sort('BeneficiaryTypeName')">Type</th>
+                                  <th (click)="sort('BankName')">Banque</th>
+                                  <th (click)="sort('vcAccountNumber')">N° Compte</th>
+                                  <th (click)="sort('vcStatus')">Statut</th>
+                                  <th class="text-center">Action</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr *ngFor="let benefice of pagedBeneficiaire">
+                                  <td>{{ benefice.vcPhoto }}</td>
+                                  <td>{{ benefice.BeneficiaryCreatedDate | date: "dd/MM/yyyy HH:mm" }}</td>
+                                  <td>{{ benefice.vcLastName }}</td>
+                                  <td>{{ benefice.vcFirstName }}</td>
+                                  <td>{{ benefice.vcPhoneNumber }}</td>
+                                  <td>{{ benefice.vcEmail }}</td>
+                                  <td>{{ benefice.BeneficiaryTypeName }}</td>
+                                  <td>{{ benefice.BankName }}</td>
+                                  <td>{{ benefice.vcAccountNumber }}</td>
+                                  <td>
+                                    <span class="badge" [ngClass]="{
                                       'bg-danger': benefice.vcStatus === 'En traitement' || benefice.vcStatus === 'Rejete',
                                       'bg-success': benefice.vcStatus !== 'En traitement' && benefice.vcStatus !== 'Rejete'
                                     }">
-                                    {{ benefice.vcStatus }}
-                                  </span>
-                                </td>
-                                <td class="text-center">
-                                  <button class="btn btn-sm btn-outline-primary me-2 my-2"
-                                    (click)="modifierBeneficiaire(benefice.BeneficiaryID)">
-                                    Detail
-                                  </button>
-                                  <button class="btn btn-sm btn-outline-success">
-                                    Transférer
-                                  </button>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+                                      {{ benefice.vcStatus }}
+                                    </span>
+                                  </td>
+                                  <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary me-2 my-2"
+                                      (click)="modifierBeneficiaire(benefice.BeneficiaryID)">
+                                      Detail
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success">
+                                      Transférer
+                                    </button>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
 
-                          <!-- Pagination -->
-                          <div class="d-flex justify-content-between align-items-center mt-2">
-                            <div>
-                              Affichage {{ startIndex() }} à {{ endIndex() }} sur
-                              {{ filteredData.length }} éléments
-                            </div>
-                            <div>
-                              <button class="btn btn-sm btn-outline-secondary me-1" (click)="previousPage()"
-                                [disabled]="currentPage === 1">
-                                Précédent
-                              </button>
-                              <button *ngFor="let page of getPages()" class="btn btn-sm me-1" [ngClass]="{
+                            <!-- Pagination -->
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                              <div>
+                                Affichage {{ startIndex() }} à {{ endIndex() }} sur
+                                {{ filteredData.length }} éléments
+                              </div>
+                              <div>
+                                <button class="btn btn-sm btn-outline-secondary me-1" (click)="previousPage()"
+                                  [disabled]="currentPage === 1">
+                                  Précédent
+                                </button>
+                                <button *ngFor="let page of getPages()" class="btn btn-sm me-1" [ngClass]="{
                                   'btn-outline-secondary': page !== currentPage && page !== '...',
                                   'btn-secondary': page === currentPage,
                                   'disabled': page === '...'
                                 }" (click)="onPageClick(page)">
-                                {{ page }}
-                              </button>
-                              <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()"
-                                [disabled]="currentPage === totalPages()">
-                                Suivant
-                              </button>
+                                  {{ page }}
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()"
+                                  [disabled]="currentPage === totalPages()">
+                                  Suivant
+                                </button>
+                              </div>
                             </div>
-                          </div>
 
                           </ng-container>
 

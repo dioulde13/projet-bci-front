@@ -1,8 +1,5 @@
 <div class="container mt-3">
-  <div
-    class="card shadow-sm border-0 rounded-4"
-    style="max-height: 90vh; overflow-y: auto"
-  >
+  <div class="card shadow-sm border-0 rounded-4" style="max-height: 90vh; overflow-y: auto">
     <div class="card-header text-white rounded-top-4 py-2">
       <h5 class="mb-0">Récapitulatif du Transfert</h5>
     </div>
@@ -25,26 +22,20 @@
       <!-- BÉNÉFICIAIRE -->
       <div class="row g-2">
         <div class="col-md-6">
-          <small class="text-muted" style="font-size: 16px"
-            >Nom bénéficiaire</small
-          >
+          <small class="text-muted" style="font-size: 16px">Nom bénéficiaire</small>
           <div class="fw-bold">
             {{ selectedBeneficiaire?.vcFirstName }}
             {{ selectedBeneficiaire?.vcLastName }}
           </div>
         </div>
         <div class="col-md-6">
-          <small class="text-muted" style="font-size: 16px"
-            >Type bénéficiaire</small
-          >
+          <small class="text-muted" style="font-size: 16px">Type bénéficiaire</small>
           <div class="fw-bold">
             {{ selectedBeneficiaire?.typeBeneficiaire }}
           </div>
         </div>
         <div class="col-md-6">
-          <small class="text-muted" style="font-size: 16px"
-            >Compte bénéficiaire</small
-          >
+          <small class="text-muted" style="font-size: 16px">Compte bénéficiaire</small>
           <div class="fw-bold">{{ infosFormulaire?.vcBenefAccount }}</div>
         </div>
         <div class="col-md-6">
@@ -77,9 +68,7 @@
 
       <div class="row g-3">
         <div class="col-md-4">
-          <small class="text-muted" style="font-size: 16px"
-            >Compte débiteur</small
-          >
+          <small class="text-muted" style="font-size: 16px">Compte débiteur</small>
           <div class="fw-bold">{{ infosFormulaire?.vcPayerAccount }}</div>
         </div>
 
@@ -89,15 +78,13 @@
         </div>
 
         <div class="col-md-4">
-          <small class="text-muted" style="font-size: 16px"
-            >Solde disponible</small
-          >
+          <small class="text-muted" style="font-size: 16px">Solde disponible</small>
           <div class="fw-bold text-success">
-            {{ infosCompteDebiteur?.soldeDisp | number: "1.2-2" }} 
+            {{ infosCompteDebiteur?.soldeDisp | number: "1.2-2" }}
             {{ infosCompteDebiteur?.devise }}
             <span style="color: black;">({{infosFormulaire?.vcPayerAccount}})</span>
           </div>
-          
+
         </div>
 
         <div class="col-md-4">
@@ -108,13 +95,14 @@
           </div>
         </div>
 
-         <div class="col-md-4">
+        <div class="col-md-4">
           <small class="text-muted" style="font-size: 16px">Montant a transferer</small>
           <div class="fw-bold fs-5 text-danger">
             {{ montantBenConverti | number: "1.2-2" }}
             {{ selectedBeneficiaire?.vcCurrency }}
           </div>
-        </div> <div class="col-md-4">
+        </div>
+        <div class="col-md-4">
           <small class="text-muted" style="font-size: 16px">Taux d'echange</small>
           <div class="fw-bold fs-5 text-danger">
             {{ tauxConversion }}
@@ -122,9 +110,7 @@
         </div>
 
         <div class="col-md-4">
-          <small class="text-muted" style="font-size: 16px"
-            >Date transfert</small
-          >
+          <small class="text-muted" style="font-size: 16px">Date transfert</small>
           <div class="fw-bold">
             {{ infosFormulaire?.dtPaymentDate | date: "medium" }}
           </div>
@@ -141,9 +127,15 @@
 
       <!-- ACTION -->
       <div class="d-flex justify-content-end gap-2">
+        @if(userInfo?.iRoleID === '11' || userInfo?.iRoleID === '12'){
+        <button class="btn btn-success px-3">
+          {{ loadiongConfirmeOtp ? "Envoie en cours..." : "Envoie pour approbation" }}
+        </button>
+        }@else{
         <button class="btn btn-success px-3" (click)="openModalOtp()">
           {{ loadiongConfirmeOtp ? "Confirmation en cours..." : "Confirmer" }}
         </button>
+        }
         <button (click)="retour()" class="btn btn-outline-secondary px-3">
           Retour
         </button>
@@ -160,26 +152,15 @@
 
     <div class="otp-container">
       <div class="alert alert-info" role="alert">
-        <span
-          >Un code de vérification (OTP) a été envoyé à votre adresse
-          email.</span
-        >
+        <span>Un code de vérification (OTP) a été envoyé à votre adresse
+          email.</span>
       </div>
 
       <label class="form-label text-center w-100">Entrez votre code OTP</label>
       <div class="otp-inputs d-flex justify-content-center gap-2">
         <ng-container *ngFor="let item of [0, 1, 2, 3]; let i = index">
-          <input
-            class="form-control otp-input"
-            type="text"
-            maxlength="1"
-            pattern="[0-9]"
-            required
-            (input)="moveToNext($event, i)"
-            #otpInput
-            [(ngModel)]="otpValues[i]"
-            name="otp{{ i }}"
-          />
+          <input class="form-control otp-input" type="text" maxlength="1" pattern="[0-9]" required
+            (input)="moveToNext($event, i)" #otpInput [(ngModel)]="otpValues[i]" name="otp{{ i }}" />
         </ng-container>
       </div>
 
@@ -190,18 +171,9 @@
       <div class="alert alert-light" role="alert">
         <div class="d-flex justify-content-between align-items-center">
           <span>Vous n'avez pas reçu le code ?</span>
-          <button
-            (click)="reEnvoiOtp()"
-            class="btn btn-primary btn-sm"
-            type="button"
-            [disabled]="isLoadingRenvoyez"
-          >
-            <span
-              *ngIf="isLoadingRenvoyez"
-              class="spinner-border spinner-border-sm me-2"
-              role="status"
-              aria-hidden="true"
-            ></span>
+          <button (click)="reEnvoiOtp()" class="btn btn-primary btn-sm" type="button" [disabled]="isLoadingRenvoyez">
+            <span *ngIf="isLoadingRenvoyez" class="spinner-border spinner-border-sm me-2" role="status"
+              aria-hidden="true"></span>
             {{ isLoadingRenvoyez ? "En cours..." : "Renvoyer" }}
           </button>
         </div>
@@ -212,16 +184,8 @@
       <button class="btn btn-outline-danger" (click)="closeModalOtp()">
         Annuler
       </button>
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="!isOtpComplete() || isLoading"
-        (click)="verifyOtp()"
-      >
-        <span
-          *ngIf="isLoading"
-          class="spinner-border spinner-border-sm me-2"
-        ></span>
+      <button type="submit" class="btn btn-primary" [disabled]="!isOtpComplete() || isLoading" (click)="verifyOtp()">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
         {{ isLoading ? "Vérification..." : "Valider le Code" }}
       </button>
     </div>

@@ -28,7 +28,17 @@ export class ExecutionDistributionComponent implements OnInit {
   }
 
 
+  infosUser: any;
+
   ngOnInit(): void {
+    const userJson = localStorage.getItem('userInfo');
+    if (userJson) {
+      try {
+        this.infosUser = JSON.parse(userJson);
+      } catch {
+        this.infosUser = null;
+      }
+    }
     // const hasReloaded = localStorage.getItem('execute_distribution_reloaded');
 
     // // Ne recharge qu'une seule fois

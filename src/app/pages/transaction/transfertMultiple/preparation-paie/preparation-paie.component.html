@@ -115,7 +115,7 @@
                 </div>
               </div>
 
-              @if (infosUser?.iRoleID !== "11" && infosUser?.iRoleID !== "12") {
+              @if (infosUser?.iRoleID !== "11") {
 
               <div class="col-md-6 col-xl-3">
                 <div class="card card-h-100">
@@ -221,14 +221,16 @@ iRoleID
 
                           <!-- Calculer la Paie -->
                           <button class="btn btn-dark waves-effect waves-light" type="button"
-                            (click)="onCalculerLaPaie()">
+                            (click)="onCalculerLaPaie()"
+                            *ngIf="infosUser?.iRoleID !== '11' && infosUser?.iRoleID !== '12'">
                             <i class="icon ion-calculator font-size-16 align-middle me-2"></i>
                             Calculer la Paie
                           </button>
 
                           <!-- Ajouter un Bénéficiaire -->
                           <button class="btn btn-primary waves-effect waves-light" type="button" data-bs-toggle="modal"
-                            data-bs-target="#AjouterUnBeneficiaire">
+                            data-bs-target="#AjouterUnBeneficiaire"
+                            *ngIf="infosUser?.iRoleID !== '11' && infosUser?.iRoleID !== '12'">
                             <i class="icon ion-person-add font-size-16 align-middle me-2"></i>
                             Ajouter un Bénéficiaire
                           </button>

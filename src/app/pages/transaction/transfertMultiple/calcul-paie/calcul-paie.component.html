@@ -183,21 +183,24 @@
 
                           <!-- Valider Tous les Paiements -->
                           <button class="btn btn-success waves-effect waves-light" type="button" data-bs-toggle="modal"
-                            data-bs-target="#validerTouslesPaiements-2" (click)="resetMessages()">
+                            data-bs-target="#validerTouslesPaiements-2" (click)="resetMessages()"
+                            *ngIf="infosUser?.iRoleID !== '11' && infosUser?.iRoleID !== '12'">
                             <i class="icon ion-checkmark font-size-16 align-middle me-2"></i>
                             Valider Tous les Paiements
                           </button>
 
                           <!-- Soumettre pour Approbation -->
                           <button class="btn btn-primary waves-effect waves-light" type="button" data-bs-toggle="modal"
-                            data-bs-target="#soumettrePourApprobation-1" (click)="resetMessages()">
+                            data-bs-target="#soumettrePourApprobation-1" (click)="resetMessages()"
+                            *ngIf="infosUser?.iRoleID !== '11' && infosUser?.iRoleID !== '12'">
                             <i class="icon ion-android-send font-size-16 align-middle me-2"></i>
                             Soumettre pour Approbation
                           </button>
 
                           <!-- Retirer de la liste -->
                           <button class="btn btn-danger waves-effect waves-light" type="button" data-bs-toggle="modal"
-                            data-bs-target="#retirerLesBeneficiairesSelectionnes">
+                            data-bs-target="#retirerLesBeneficiairesSelectionnes"
+                            *ngIf="infosUser?.iRoleID !== '11' && infosUser?.iRoleID !== '12'">
                             <i class="icon ion-trash-a font-size-16 align-middle me-2"></i>
                             Retirer de la liste
                           </button>
@@ -576,9 +579,9 @@
                             <th>Devise</th>
                             <th>Méthode de paiement</th>
                             <!-- <th class="column300px">Institution de réception</th> -->
-                            <th>Objet du transfert</th>
-                            <th style="width:150px;">Pdf</th>
-                            <th style="width:90px;">Actions</th>
+                            <th *ngIf="infosUser?.iRoleID === '12'">Objet du transfert</th>
+                            <th *ngIf="infosUser?.iRoleID === '12'" style="width:150px;">Pdf</th>
+                            <th style="width:90px;" *ngIf="infosUser?.iRoleID === '12'">Actions</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -619,13 +622,13 @@
                               {{ b.vcBeneficiaryBankName }} - {{ b.vcBeneficiaryBankFullAddress }}
                             </td> -->
                             <td>{{ b.vcDescription }}</td>
-                            <td class="no-link">
+                            <td class="no-link" *ngIf="infosUser?.iRoleID === '12'">
                               <button class="btn btn-sm btn-soft-light w-xs waves-effect btn-label waves-light"
                                 type="button">
                                 <i class="bx bx-download label-icon"></i> Pdf
                               </button>
                             </td>
-                            <td class="no-link">
+                            <td class="no-link" *ngIf="infosUser?.iRoleID === '12'">
                               <div class="dropdown">
                                 <button class="btn dropdown-toggle btn-link font-size-18 shadow-none py-0 text-muted"
                                   aria-expanded="false" data-bs-toggle="dropdown" type="button">

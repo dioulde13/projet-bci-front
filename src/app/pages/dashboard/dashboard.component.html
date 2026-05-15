@@ -22,17 +22,20 @@
 
           <div class="card-body text-light">
             <div class="row">
+
+
+
               <div class="col-12 text-center">
-                <p class="mb-1" *ngIf="userRoleId !== '11' && this.userRoleId !== '12'">Valeur nette</p>
+                <p class="mb-1" *ngIf="userRoleId !== '11' && userRoleId !== '12'">Valeur nette</p>
                 <ng-container *ngIf="isDashboardLoading; else balanceContent">
                   <div class="skeleton skeleton-title mb-3"></div>
                   <div class="skeleton skeleton-small"></div>
                 </ng-container>
                 <ng-template #balanceContent>
-                  <h4 class="text-light mb-4 fs-4" *ngIf="userRoleId !== '11' && this.userRoleId !== '12'">
-                    {{ (userRoleId !== '11' && this.userRoleId !== '12') ? (soldeDebiteur | number: "1.2-2") :
-                    "***********" }}
-                    {{ (userRoleId !== '11' && this.userRoleId !== '12') ? deviseDebiteur : "*********" }}
+                  <h4 class="text-light mb-4 fs-4" *ngIf="userRoleId !== '11' && userRoleId !== '12'">
+                    {{ (userRoleId !== '11' && userRoleId !== '12') ? (soldeDebiteur | number: "1.2-2") : "***********"
+                    }}
+                    {{ (userRoleId !== '11' && userRoleId !== '12') ? deviseDebiteur : "*********" }}
                   </h4>
                   <p>
                     <small class="text-white" style="font-size: 15px">
@@ -84,7 +87,7 @@
                 </div>
 
                 <!-- Chargement de fichier — masqué pour rôle 15 -->
-                <div [class]="linksColClass + ' mb-4'" *ngIf="userRoleId !== '15'">
+                <div [class]="linksColClass + ' mb-4'">
                   <bci-generic-file-import [isOpenModal]="openModal" [fields]="fields" title="Importation des fichiers"
                     instructions="Veuillez charger le fichier des virements du mois en cours."
                     previewTitle="Récapitulatif des virements"
@@ -101,7 +104,7 @@
                 </div>
 
                 <!-- Transfert unique — masqué pour rôle 11 -->
-                <div [class]="linksColClass + ' mb-4'" *ngIf="userRoleId !== '11' && this.userRoleId !== '12'">
+                <div [class]="linksColClass + ' mb-4'">
                   <a routerLink="/transfertUnique" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-ios-people custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert unique</p>
@@ -109,8 +112,7 @@
                 </div>
 
                 <!-- Transfert mobile — masqué pour rôles 13 et 11 -->
-                <div [class]="linksColClass + ' mb-4'"
-                  *ngIf="userRoleId !== '13' && userRoleId !== '14' && userRoleId !== '11' && this.userRoleId !== '12'">
+                <div [class]="linksColClass + ' mb-4'">
                   <a routerLink="/typePaiement" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-ios-paper custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert mobile</p>
@@ -118,8 +120,7 @@
                 </div>
 
                 <!-- Paiements de factures — masqué pour rôles 13 et 11 -->
-                <div [class]="linksColClass + ' mb-4'"
-                  *ngIf="userRoleId !== '13' && userRoleId !== '14' && userRoleId !== '11' && this.userRoleId !== '12'">
+                <div [class]="linksColClass + ' mb-4'">
                   <a routerLink="/paiementFacture" class="custom-icon-container" (click)="showLoader()">
                     <i class="icon ion-ios-paper custom-icon-size"></i>
                     <p class="custom-icon-text">Paiements de factures</p>
@@ -135,8 +136,7 @@
                 </div>
 
                 <!-- Transfert international — masqué pour rôles 13 et 11 -->
-                <div [class]="linksColClass + ' mb-4'"
-                  *ngIf="userRoleId !== '13' && userRoleId !== '14' && userRoleId !== '11' && this.userRoleId !== '12'">
+                <div [class]="linksColClass + ' mb-4'">
                   <a class="custom-icon-container" (click)="openTransferModal()">
                     <i class="bi bi-currency-exchange custom-icon-size"></i>
                     <p class="custom-icon-text">Transfert international</p>
@@ -335,9 +335,7 @@
                     <th>Nom de la partie</th>
                     <th>Numéro de compte</th>
                     <th>Type de compte</th>
-                    @if (infosUser?.iRoleID !== "11" && infosUser?.iRoleID !== "12") {
                     <th>Solde net</th>
-                    }
                     <th>Status</th>
                   </tr>
                 </thead>

@@ -3,7 +3,7 @@
     <h5 class="fw-bold text-primary mb-4 px-2">Menu</h5>
     <ul class="nav flex-column nav-pills custom-side-nav">
       <!-- Item: Préparation de la Paie -->
-      <li class="nav-item" *ngIf="canSeePreparation()">
+      <li class="nav-item">
         <a class="nav-link py-2 px-3 d-flex align-items-center transition-all mb-1" routerLink="/preparationPaie"
           routerLinkActive="active" [class.active]="currentPage === 'preparation'">
           <i class="icon ion-ios-compose-outline font-size-18 me-3"></i>
@@ -12,7 +12,7 @@
         <ng-container *ngTemplateOutlet="subMenu; context: { current: 'preparation' }"></ng-container>
       </li>
       <!-- Item: Résultats du Calcul de la Paie -->
-      <li class="nav-item" *ngIf="canSeeCalcul()">
+      <li class="nav-item">
         <a class="nav-link py-2 px-3 d-flex align-items-center transition-all mb-1" routerLink="/calculPaie"
           routerLinkActive="active" [class.active]="currentPage === 'calcul'">
           <i class="icon ion-calculator font-size-18 me-3"></i>
@@ -23,7 +23,7 @@
 
 
       <!-- Item: Validation et Approbation -->
-      <li class="nav-item" *ngIf="canSeeValidation()">
+      <li class="nav-item">
         <a class="nav-link py-2 px-3 d-flex align-items-center transition-all mb-1" routerLink="/validationApprobation"
           routerLinkActive="active" [class.active]="currentPage === 'validation'">
           <i class="icon ion-ios-checkmark-outline font-size-18 me-3"></i>
@@ -33,7 +33,7 @@
       </li>
 
       <!-- Item: Exécution et Distribution -->
-      <li class="nav-item" *ngIf="canSeeExecution()">
+      <li class="nav-item">
         <a class="nav-link py-2 px-3 d-flex align-items-center transition-all mb-1" routerLink="/executeDistribution"
           routerLinkActive="active" [class.active]="currentPage === 'execution'">
           <i class="icon ion-ios-paperplane-outline font-size-18 me-3"></i>
@@ -43,7 +43,7 @@
       </li>
 
       <!-- Item: Reporting (Disabled/Placeholder) -->
-      <li class="nav-item" *ngIf="canSeeReporting()">
+      <li class="nav-item">
         <a class="nav-link py-2 px-3 d-flex align-items-center disabled bg-transparent opacity-50"
           href="javascript:void(0);">
           <i class="icon ion-document-text font-size-18 me-3"></i>

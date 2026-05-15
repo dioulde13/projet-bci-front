@@ -115,6 +115,11 @@
 
       <!-- ACTIONS -->
       <div class="d-flex justify-content-end gap-2">
+        @if(userInfo?.iRoleID === '11' || userInfo?.iRoleID === '12'){
+        <button class="btn btn-success px-3">
+          {{ loadiongConfirmeOtp ? "Envoie en cours..." : "Envoie pour approbation" }}
+        </button>
+        }@else{
         <button class="btn btn-success px-3" (click)="openModalOtp()" [disabled]="loadiongConfirmeOtp">
           <span *ngIf="!loadiongConfirmeOtp">Confirmer</span>
           <span *ngIf="loadiongConfirmeOtp">
@@ -122,6 +127,7 @@
             Confirmation en cours...
           </span>
         </button>
+        }
         <button (click)="retour()" class="btn btn-outline-secondary px-3">Retour</button>
       </div>
 
@@ -145,17 +151,8 @@
       <label class="form-label text-center w-100">Entrez votre code OTP</label>
       <div class="otp-inputs d-flex justify-content-center gap-2">
         <ng-container *ngFor="let item of [0, 1, 2, 3]; let i = index">
-          <input
-            class="form-control otp-input"
-            type="text"
-            maxlength="1"
-            pattern="[0-9]"
-            required
-            (input)="moveToNext($event, i)"
-            #otpInput
-            [(ngModel)]="otpValues[i]"
-            name="otp{{ i }}"
-          />
+          <input class="form-control otp-input" type="text" maxlength="1" pattern="[0-9]" required
+            (input)="moveToNext($event, i)" #otpInput [(ngModel)]="otpValues[i]" name="otp{{ i }}" />
         </ng-container>
       </div>
 
@@ -166,12 +163,7 @@
       <div class="alert alert-light" role="alert">
         <div class="d-flex justify-content-between align-items-center">
           <span>Vous n'avez pas reçu le code ?</span>
-          <button
-            (click)="reEnvoiOtp()"
-            class="btn btn-primary btn-sm"
-            type="button"
-            [disabled]="isLoadingRenvoyez"
-          >
+          <button (click)="reEnvoiOtp()" class="btn btn-primary btn-sm" type="button" [disabled]="isLoadingRenvoyez">
             <span *ngIf="isLoadingRenvoyez" class="spinner-border spinner-border-sm me-2"></span>
             {{ isLoadingRenvoyez ? 'En cours...' : 'Renvoyer' }}
           </button>
@@ -181,12 +173,7 @@
 
     <div class="d-flex justify-content-between mt-4">
       <button class="btn btn-outline-danger" (click)="closeModalOtp()">Annuler</button>
-      <button
-        type="button"
-        class="btn btn-primary"
-        [disabled]="!isOtpComplete() || isLoading"
-        (click)="verifyOtp()"
-      >
+      <button type="button" class="btn btn-primary" [disabled]="!isOtpComplete() || isLoading" (click)="verifyOtp()">
         <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
         {{ isLoading ? 'Vérification...' : 'Valider le Code' }}
       </button>

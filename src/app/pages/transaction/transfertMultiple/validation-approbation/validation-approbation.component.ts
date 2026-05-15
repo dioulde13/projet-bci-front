@@ -32,8 +32,17 @@ export class ValidationApprobationComponent implements OnInit, AfterViewInit {
     }
   }
 
+  infosUser: any;
 
   ngOnInit(): void {
+    const userJson = localStorage.getItem('userInfo');
+    if (userJson) {
+      try {
+        this.infosUser = JSON.parse(userJson);
+      } catch {
+        this.infosUser = null;
+      }
+    }
     // const hasReloaded = localStorage.getItem('validation_approbation_reloaded');
 
     // // Ne recharge qu'une seule fois
