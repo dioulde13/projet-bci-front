@@ -53,8 +53,8 @@ export class ConfigPersonnalitionService {
     };
 
     // 🔹 Log complet du body avant envoi
-    console.log('💡 addSouscription body:', JSON.stringify(body, null, 2));
-
+    // console.log('💡 addSouscription body:', JSON.stringify(body, null, 2));
+   
     return this.http.post(`${this.baseUrl}/api/addSouscription`, body);
   }
 

@@ -210,8 +210,8 @@ export class ModifierMesInfosComponent {
       }
     }
 
-    console.log('dataConfig : ', dataConfig);
-    console.log('userInfo : ', userInfo);
+    // console.log('dataConfig : ', dataConfig);
+    // console.log('userInfo : ', userInfo);
 
     // ==============================
     // 🔹 2. Extraction des valeurs depuis la config
@@ -238,14 +238,14 @@ export class ModifierMesInfosComponent {
       this.phoneMaxLength = this.phoneFormat?.length || 0;
       this.phoneFirstNumber = this.phoneFormat?.charAt(0) || '';
 
-      console.log('Config utilisateur :', {
-        country: this.country,
-        phoneCode: this.phoneCode,
-        phoneFormat: this.phoneFormat,
-        currency: this.currency,
-        timeZone: this.timeZone,
-        timeZonePerUser: this.timeZonePerUser,
-      });
+      // console.log('Config utilisateur :', {
+      //   country: this.country,
+      //   phoneCode: this.phoneCode,
+      //   phoneFormat: this.phoneFormat,
+      //   currency: this.currency,
+      //   timeZone: this.timeZone,
+      //   timeZonePerUser: this.timeZonePerUser,
+      // });
     }
 
     // ==============================
@@ -286,7 +286,7 @@ export class ModifierMesInfosComponent {
 
         // ✅ Récupération et stockage de l’ID du pays sélectionné
         this.selectedCountryId = Number(selected.id);
-        console.log('ID du pays sélectionné :', this.selectedCountryId);
+        // console.log('ID du pays sélectionné :', this.selectedCountryId);
       }
     });
 
@@ -463,7 +463,7 @@ export class ModifierMesInfosComponent {
       )
       .subscribe({
         next: (response: any) => {
-          console.log('response: ', response);
+          // console.log('response: ', response);
           this.isProcessingBlocage = false;
 
           if (response?.status === 200 || response?.success) {

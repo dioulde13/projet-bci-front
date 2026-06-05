@@ -1065,6 +1065,7 @@ export class ConfigPersonnalisationComponent implements OnInit {
     const accounts = JSON.parse(
       localStorage.getItem('listecomptesSelectioner') || '[]',
     );
+    
     const validationLevels = JSON.parse(
       localStorage.getItem('niveaux') || '[]',
     );

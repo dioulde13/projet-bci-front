@@ -114,7 +114,7 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
     this.statutBancaireService.coreBankingStatus().subscribe({
       next: (response: any) => {
         this.statusCoreBanking = response.data;
-        console.log('this.statusCoreBanking: ', this.statusCoreBanking);
+        // console.log('this.statusCoreBanking: ', this.statusCoreBanking);
 
         if (
           this.statusCoreBanking?.available === false &&

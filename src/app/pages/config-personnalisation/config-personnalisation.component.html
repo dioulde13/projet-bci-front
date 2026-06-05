@@ -319,8 +319,12 @@
                                   <td>
                                     <span
                                       style="font-weight: bold; font-size: 13px; text-align: center; font-style: italic;"
-                                      *ngIf="niveau.niveau == 1 || niveau.niveau == 2 || niveau.niveau == 6">Pas de
-                                      plafond</span>
+                                      *ngIf="niveau.niveau == 1 || niveau.niveau == 2">0
+                                      GNF</span>
+                                    <span
+                                      style="font-style: italic; font-weight: bold; font-size: 13px; text-align: center;"
+                                      *ngIf="niveau.niveau == 6">ILLIMITÉ</span>
+
                                     <span
                                       style="font-style: italic; font-weight: bold; font-size: 13px; text-align: center;"
                                       *ngIf="niveau.niveau == 3 || niveau.niveau == 4 || niveau.niveau == 5">
